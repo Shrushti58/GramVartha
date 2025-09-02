@@ -1,0 +1,63 @@
+# ======================
+# Node.js / Express (backend)
+# ======================
+backend/node_modules/
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/pnpm-debug.log*
+
+# Env files (backend)
+backend/.env
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+
+# Logs
+backend/logs
+backend/*.log
+backend/logs/*
+backend/*.pid
+backend/*.seed
+backend/*.pid.lock
+
+# Build output
+backend/dist/
+backend/build/
+
+# ======================
+# React (frontend)
+# ======================
+frontend/node_modules/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Env files (frontend)
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# React build
+frontend/build/
+
+# ======================
+# General
+# ======================
+# OS / editor files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+*.bak
+*.tmp
