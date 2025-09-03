@@ -10,8 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.4",
+    "@react-three/fiber": "^9.3.0",
+    "i18next": "^25.4.2",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "react-i18next": "^15.7.3",
+    "react-spring": "^10.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

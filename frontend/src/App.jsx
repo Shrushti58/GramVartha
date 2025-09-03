@@ -1,15 +1,10 @@
-import { useState } from 'react'
-import GramVarthaLandingPage from './pages/GramVarthaLandingPage'
+import React, { Suspense } from "react";
 import './index.css'
+import GramVarthaLandingPage from "./pages/GramVarthaLandingPage";
 
-function App() {
-  
 
+export default function App() {
   return (
-    <>
-      <GramVarthaLandingPage/>
-    </>
-  )
+   <GramVarthaLandingPage/>
+  );
 }
-
-export default App

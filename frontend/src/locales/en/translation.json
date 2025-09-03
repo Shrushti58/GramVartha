@@ -1,0 +1,17 @@
+{
+  "brand": "GramVartha",
+  "nav_home": "Home",
+  "nav_about": "About",
+  "nav_features": "Features",
+  "nav_contact": "Contact",
+  "welcome": "Welcome to GramVartha",
+  "tagline": "A digital platform for Grampanchayat governance",
+  "about_title": "About Us",
+  "about_text": "GramVartha helps Grampanchayats share official notices and Government Resolutions (GRs) with citizens easily and effectively.",
+  "features_title": "Key Features",
+  "f1": "Official GR & Notice Board",
+  "f2": "AI-based Easy Explanations",
+  "f3": "Mobile-friendly Access",
+  "contact": "Contact Us",
+  "footer": "© 2025 GramVartha. All Rights Reserved."
+}
