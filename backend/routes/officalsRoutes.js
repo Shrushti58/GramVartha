@@ -39,12 +39,13 @@ router.post("/login", async (req, res) => {
     const token = generateToken(official);
 
     // send JWT in httpOnly cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production", // true on HTTPS
-      maxAge: 24 * 60 * 60 * 1000,
-    });
+   res.cookie("token", token, {
+  httpOnly: true,
+  sameSite: "lax", // or "strict"
+  secure: false,   // true only if using HTTPS
+  maxAge: 24 * 60 * 60 * 1000,
+});
+
 
     res.json({
       message: "Login successful",

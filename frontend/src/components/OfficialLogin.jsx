@@ -17,8 +17,12 @@ export default function OfficialLogin({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:3000/officials/login", formData);
-      setMessage(res.data.message);
+      const res = await axios.post(
+      "http://localhost:3000/officials/login",
+      formData,
+      { withCredentials: true } 
+    );
+     setMessage(res.data.message);
 
       if (res.data.official) {
         
