@@ -2,7 +2,7 @@ const express = require("express")
 const router = express.Router();
 const bycrpt = require('bcryptjs')
 const Admin = require('../models/Admin')
-
+const Officals = require('../models/Officals')
 
 router.post('/register', async (req, res) => {
     try {
@@ -44,5 +44,48 @@ router.post('/login', async (req, res) => {
     }
 })
 
+router.get('/pending-officials', async (req, res) => {
+    try {
+        const pendingOfficials = await Officals.find({ status: "pending" }).select("-password");
+        res.json(pendingOfficials);
+    } catch (err) {
+        console.error("Error fetching pending officials:", err);
+        res.status(500).json({ message: "Error fetching pending officials" });
+    }
+})
+
+// ✅ Approve an official
+router.put("/approve/:id", async (req, res) => {
+  try {
+    const official = await Officals.findByIdAndUpdate(
+      req.params.id,
+      { status: "approved" },
+      { new: true }
+    );
+
+    if (!official) return res.status(404).json({ message: "Official not found" });
+
+    res.json({ message: "Official approved", official });
+  } catch (err) {
+    res.status(500).json({ message: "Error approving official" });
+  }
+});
+
+
+router.put("/reject/:id", async (req, res) => {
+  try {
+    const official = await Officals.findByIdAndUpdate(
+      req.params.id,
+      { status: "rejected" },
+      { new: true }
+    );
+
+    if (!official) return res.status(404).json({ message: "Official not found" });
+
+    res.json({ message: "Official rejected", official });
+  } catch (err) {
+    res.status(500).json({ message: "Error rejecting official" });
+  }
+});
 
 module.exports = router;

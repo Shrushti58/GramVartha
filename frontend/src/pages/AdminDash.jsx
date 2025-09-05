@@ -22,7 +22,7 @@ export default function AdminDashboard() {
 
   const handleApprove = async (id) => {
     try {
-      const res = await axios.post(`http://localhost:3000/admin/approve/${id}`);
+      const res = await axios.put(`http://localhost:3000/admin/approve/${id}`);
       setMessage(res.data.message);
       setOfficials(officials.filter((o) => o._id !== id)); // remove approved
     } catch (err) {
@@ -32,7 +32,7 @@ export default function AdminDashboard() {
 
   const handleReject = async (id) => {
     try {
-      const res = await axios.post(`http://localhost:3000/admin/reject/${id}`);
+      const res = await axios.put(`http://localhost:3000/admin/reject/${id}`);
       setMessage(res.data.message);
       setOfficials(officials.filter((o) => o._id !== id)); // remove rejected
     } catch (err) {

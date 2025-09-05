@@ -13,4 +13,4 @@ const OfficalsSchema = new moongose.Schema({
     },
 })
 
-module.exports=moongose.model('Officals',OfficalsSchema)
+module.exports=moongose.model('Officals',OfficalsSchema);

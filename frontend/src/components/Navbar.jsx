@@ -30,6 +30,13 @@ export default function Navbar() {
         >
           {t("nav_admin_login")}
         </Link>
+
+         <Link
+          to="/officals/login"
+          className="bg-white text-green-700 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition"
+        >
+          {t("nav_officals_login")}
+        </Link>
       </div>
     </nav>
   );

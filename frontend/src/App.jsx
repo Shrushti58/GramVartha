@@ -5,6 +5,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminDash from "./pages/AdminDash";
 import AdminRegister from "./components/AdminRegister";
 import AdminLogin from "./components/AdminLogin";
+import OfficialLogin from "./components/OfficialLogin";
+import OfficialRegister from "./components/OfficialRegister";
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
           <Route path="/admin/dashboard" element={<AdminDash />}></Route>
           <Route path="/admin/register" element={<AdminRegister/>} ></Route>
           <Route path="/admin/login" element={<AdminLogin/>} ></Route>
+          <Route path="/officals/login" element={<OfficialLogin/>} ></Route>
+          <Route path="/officials/register" element={<OfficialRegister/>} ></Route>
         </Routes>
       </BrowserRouter>
     </>

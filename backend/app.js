@@ -11,6 +11,7 @@ app.use(express.json());
 
 
 app.use('/admin',require('./routes/adminRoutes'))
+app.use('/officials',require('./routes/officalsRoutes'))
 
 const PORT=3000;
 app.listen(PORT,()=>{
