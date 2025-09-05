@@ -1,36 +1,52 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 export default function AdminRegister() {
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
   });
+
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Registering Admin:", formData);
-    // 👉 Call backend API: POST /admin/register
+
+    try {
+      const res = await axios.post("http://localhost:3000/admin/register", formData);
+      setMessage(res.data.message);
+
+      // Optional: redirect to login after success
+      // window.location.href = "/admin/login";
+    } catch (err) {
+      setMessage(
+        err.response?.data?.message || "Something went wrong, try again!"
+      );
+    }
   };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <div className="bg-white shadow-lg rounded-xl p-8 w-96">
         <h2 className="text-2xl font-bold mb-6 text-center">Register Admin</h2>
+
+        {message && (
+          <p
+            className={`text-center mb-4 ${
+              message.includes("success")
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            name="name"
-            placeholder="Full Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-lg"
-            required
-          />
           <input
             type="email"
             name="email"
@@ -56,6 +72,7 @@ export default function AdminRegister() {
             Register
           </button>
         </form>
+
         <p className="text-sm mt-4 text-center">
           Already have an account?{" "}
           <a href="/admin/login" className="text-green-700 font-semibold">

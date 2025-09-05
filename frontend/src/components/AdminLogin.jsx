@@ -1,20 +1,35 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-export default function AdminLogin({ onLogin }) {
+export default function AdminLogin() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Logging in Admin:", formData);
-    // 👉 Call backend API: POST /admin/login
-    onLogin(); // redirect to dashboard
+    try {
+      const res = await axios.post("http://localhost:3000/admin/login", formData);
+
+      setMessage(res.data.message);
+
+      if (res.data.message === "Login Sucessful") {
+        // redirect after short delay
+        setTimeout(() => {
+          navigate("/admin/dashboard");
+        }, 1000);
+      }
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Something went wrong, try again!");
+    }
   };
 
   return (
@@ -47,6 +62,18 @@ export default function AdminLogin({ onLogin }) {
             Login
           </button>
         </form>
+
+        {/* message display */}
+        {message && (
+          <p
+            className={`text-center mt-4 text-sm ${
+              message === "Login successful" ? "text-green-600" : "text-red-500"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+
         <p className="text-sm mt-4 text-center">
           Don’t have an account?{" "}
           <a href="/admin/register" className="text-green-700 font-semibold">

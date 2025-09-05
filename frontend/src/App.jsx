@@ -12,7 +12,7 @@ export default function App() {
       <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<GramVarthaLandingPage />}></Route>
-          <Route path="/admin" element={<AdminDash />}></Route>
+          <Route path="/admin/dashboard" element={<AdminDash />}></Route>
           <Route path="/admin/register" element={<AdminRegister/>} ></Route>
           <Route path="/admin/login" element={<AdminLogin/>} ></Route>
         </Routes>

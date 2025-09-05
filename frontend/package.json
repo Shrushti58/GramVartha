@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-three/drei": "^10.7.4",
     "@react-three/fiber": "^9.3.0",
+    "axios": "^1.11.0",
     "i18next": "^25.4.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
