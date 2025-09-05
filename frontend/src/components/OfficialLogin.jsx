@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; 
 
 export default function OfficialLogin({ onLogin }) {
   const [formData, setFormData] = useState({
@@ -7,6 +8,7 @@ export default function OfficialLogin({ onLogin }) {
     password: "",
   });
   const [message, setMessage] = useState("");
+  const navigate = useNavigate(); 
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -18,8 +20,9 @@ export default function OfficialLogin({ onLogin }) {
       const res = await axios.post("http://localhost:3000/officials/login", formData);
       setMessage(res.data.message);
 
-      if (res.data.official && onLogin) {
-        onLogin(res.data.official); // pass data up to parent
+      if (res.data.official) {
+        
+        navigate("/officials/dashboard"); 
       }
     } catch (err) {
       setMessage(err.response?.data?.message || "Something went wrong!");

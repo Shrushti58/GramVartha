@@ -7,6 +7,7 @@ import AdminRegister from "./components/AdminRegister";
 import AdminLogin from "./components/AdminLogin";
 import OfficialLogin from "./components/OfficialLogin";
 import OfficialRegister from "./components/OfficialRegister";
+import OfficialsDashboard from "./pages/OfficialsDash";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/admin/login" element={<AdminLogin/>} ></Route>
           <Route path="/officals/login" element={<OfficialLogin/>} ></Route>
           <Route path="/officials/register" element={<OfficialRegister/>} ></Route>
+          <Route path="/officials/dashboard" element={<OfficialsDashboard/>} ></Route>
         </Routes>
       </BrowserRouter>
     </>
