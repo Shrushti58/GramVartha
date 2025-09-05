@@ -1,76 +1,106 @@
-import React from 'react'
-import  { useState } from "react";
-const AdminDash = () => {
-      const [activeTab, setActiveTab] = useState("dashboard");
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+export default function AdminDashboard() {
+  const [officials, setOfficials] = useState([]);
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch pending officials from backend
+    const fetchOfficials = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/admin/pending-officials");
+        setOfficials(res.data);
+      } catch (err) {
+        setMessage("Failed to load officials list.");
+      }
+    };
+    fetchOfficials();
+  }, []);
+
+  const handleApprove = async (id) => {
+    try {
+      const res = await axios.post(`http://localhost:3000/admin/approve/${id}`);
+      setMessage(res.data.message);
+      setOfficials(officials.filter((o) => o._id !== id)); // remove approved
+    } catch (err) {
+      setMessage("Error approving official.");
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      const res = await axios.post(`http://localhost:3000/admin/reject/${id}`);
+      setMessage(res.data.message);
+      setOfficials(officials.filter((o) => o._id !== id)); // remove rejected
+    } catch (err) {
+      setMessage("Error rejecting official.");
+    }
+  };
+
+  const handleLogout = () => {
+    navigate("/admin/login");
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-64 bg-green-800 text-white p-4">
-        <h2 className="text-2xl font-bold mb-6">GramVartha Admin</h2>
-        <ul className="space-y-4">
-          <li>
-            <button
-              className={`w-full text-left ${
-                activeTab === "dashboard" ? "font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("dashboard")}
-            >
-              Dashboard
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left ${
-                activeTab === "members" ? "font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("members")}
-            >
-              Members
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left ${
-                activeTab === "notices" ? "font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("notices")}
-            >
-              Notices
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left ${
-                activeTab === "events" ? "font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("events")}
-            >
-              Events
-            </button>
-          </li>
-          <li>
-            <button
-              className={`w-full text-left ${
-                activeTab === "settings" ? "font-bold" : ""
-              }`}
-              onClick={() => setActiveTab("settings")}
-            >
-              Settings
-            </button>
-          </li>
-        </ul>
-      </div>
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Navbar */}
+      <header className="bg-green-700 text-white p-4 flex justify-between items-center">
+        <h1 className="text-xl font-bold">Admin Dashboard</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-white text-green-700 px-4 py-2 rounded-lg hover:bg-gray-200"
+        >
+          Logout
+        </button>
+      </header>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        {activeTab === "dashboard" && <h1 className="text-xl font-bold">📊 Dashboard Overview</h1>}
-        {activeTab === "members" && <h1 className="text-xl font-bold">👥 Manage Members</h1>}
-        {activeTab === "notices" && <h1 className="text-xl font-bold">📜 Manage Notices</h1>}
-        {activeTab === "events" && <h1 className="text-xl font-bold">📅 Manage Events</h1>}
-        {activeTab === "settings" && <h1 className="text-xl font-bold">⚙️ Settings</h1>}
-      </div>
+      {/* Content */}
+      <main className="flex-1 p-6">
+        <h2 className="text-2xl font-semibold mb-6">Pending Officials</h2>
+
+        {message && (
+          <p className="mb-4 text-center text-sm text-green-600">{message}</p>
+        )}
+
+        {officials.length === 0 ? (
+          <p className="text-gray-600">No pending officials.</p>
+        ) : (
+          <table className="w-full bg-white rounded-xl shadow-md overflow-hidden">
+            <thead className="bg-green-700 text-white">
+              <tr>
+                <th className="p-3 text-left">Name</th>
+                <th className="p-3 text-left">Email</th>
+                <th className="p-3 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {officials.map((official) => (
+                <tr key={official._id} className="border-b">
+                  <td className="p-3">{official.name}</td>
+                  <td className="p-3">{official.email}</td>
+                  <td className="p-3 text-center">
+                    <button
+                      onClick={() => handleApprove(official._id)}
+                      className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 mr-2"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(official._id)}
+                      className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700"
+                    >
+                      Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </main>
     </div>
-  )
+  );
 }
-
-export default AdminDash
