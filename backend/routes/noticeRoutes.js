@@ -36,4 +36,47 @@ router.get("/fetch", async (req, res) => {
   }
 });
 
+router.put("/update/:id", verifyToken, upload.single("file"), async (req, res) => {
+  try {
+    const notice = await Notice.findById(req.params.id);
+    if (!notice) return res.status(404).json({ message: "Notice not found" });
+
+    if (notice.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to update this notice" });
+    }
+
+    notice.title = req.body.title || notice.title;
+    notice.description = req.body.description || notice.description;
+
+    
+    if (req.file) {
+      notice.fileUrl = req.file.path;
+    }
+
+    await notice.save();
+    res.json({ message: "Notice updated successfully", notice });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating notice", error: err });
+  }
+});
+
+router.delete("/delete/:id", verifyToken, async (req, res) => {
+  try {
+    const notice = await Notice.findById(req.params.id);
+    if (!notice) return res.status(404).json({ message: "Notice not found" });
+
+
+    if (notice.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to delete this notice" });
+    }
+
+    await notice.deleteOne();
+    res.json({ message: "Notice deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting notice", error: err });
+  }
+});
+
 module.exports = router;
