@@ -9,19 +9,37 @@
   "about_title": "About Us",
   "about_text": "GramVartha helps Grampanchayats share official notices and Government Resolutions (GRs) with citizens easily and effectively.",
   "features_title": "Key Features",
-  "f1": "Official GR & Notice Board",
-  "f2": "AI-based Easy Explanations",
-  "f3": "Mobile-friendly Access",
+
   "contact": "Contact Us",
-  "footer": "© 2025 GramVartha. All Rights Reserved.",
+
   "nav_admin_login": "Admin Login",
   "nav_officials_login":"Officials Login",
    "nav_notices": "Notices",
   "nav_grs": "Grievance System",
   
+  "f1": "Secure & Private",
+  "f1_desc": "End-to-end encryption ensures your data remains confidential and protected from unauthorized access.",
+  "f2": "Lightning Fast",
+  "f2_desc": "Experience blazing fast performance with our optimized architecture and global CDN network.",
+  "f3": "Community Driven",
+  "f3_desc": "Join thousands of active users who contribute to making our platform better every day.",
+  "explore_all_features": "Explore All Features",
+  
   "welcome": "Stay informed, stay connected with GramVartha",
   "tagline": "Get trusted local news, community updates, and official notices in one place",
   "nav_features": "Explore Features",
-  "learn_more": "Learn More"
+  "learn_more": "Learn More",
+  
+  "footer": "Empowering communities with transparent information and digital governance",
+  "footer_about": "About Us",
+  "footer_features": "Features",
+  "footer_notices": "Notices",
+  "footer_grievance": "Grievance System",
+  "footer_contact": "Contact",
+  "footer_privacy": "Privacy Policy",
+  "footer_terms": "Terms of Service",
+  "footer_cookies": "Cookie Policy",
+  "footer_rights": "All rights reserved."
+
 
 }

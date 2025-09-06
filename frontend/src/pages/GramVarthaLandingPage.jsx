@@ -20,7 +20,7 @@ const LoadingSpinner = () => (
 const GramVarthaLandingPage = () => {
   return (
    
-     <div className="min-h-screen bg-landing">
+     <div className="min-h-screen ">
   <Navbar />
   <main className="flex-grow">
     <Hero />

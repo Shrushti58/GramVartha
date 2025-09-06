@@ -23,34 +23,18 @@ export default function Navbar() {
             GramVartha
           </Link>
 
-          {/* Desktop Navigation Links - Centered */}
-          <div className="hidden md:flex items-center justify-center flex-1 mx-8">
-            <ul className="flex space-x-8">
-              {[
-                { path: "/", key: "nav_home" },
-                { path: "/about", key: "nav_about" },
-                { path: "/features", key: "nav_features" },
-                { path: "/notices", key: "nav_notices" },
-                { path: "/grs", key: "nav_grs" },
-                { path: "/contact", key: "nav_contact" }
-              ].map((item) => (
-                <li key={item.key}>
-                  <Link 
-                    to={item.path}
-                    className="text-gray-700 font-medium relative group hover:text-gray-900 transition-colors"
-                  >
-                    {t(item.key)}
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 transition-all group-hover:w-full"></span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
           {/* Right side items */}
           <div className="hidden md:flex items-center space-x-4">
             <LanguageSwitcher />
             
+            {/* New Notices link */}
+            <Link
+              to="/notices"
+              className="text-gray-700 font-medium hover:text-green-600 transition-all"
+            >
+              {t("nav_notices")}
+            </Link>
+
             <div className="flex space-x-2">
               <Link
                 to="/admin/login"
@@ -106,26 +90,15 @@ export default function Navbar() {
           </div>
           
           <div className="flex-1 px-4 pb-4 space-y-6 overflow-y-auto">
-            <div className="space-y-2">
-              {[
-                { path: "/", key: "nav_home" },
-                { path: "/about", key: "nav_about" },
-                { path: "/features", key: "nav_features" },
-                { path: "/notices", key: "nav_notices" },
-                { path: "/grs", key: "nav_grs" },
-                { path: "/contact", key: "nav_contact" }
-              ].map((item) => (
-                <Link
-                  key={item.key}
-                  to={item.path}
-                  className="block py-3 text-gray-700 font-medium hover:text-gray-900 transition-colors border-b border-gray-100"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {t(item.key)}
-                </Link>
-              ))}
-            </div>
-            
+            {/* Notices link for mobile */}
+            <Link
+              to="/notices"
+              className="block w-full text-gray-700 font-medium text-center px-4 py-3 rounded-md hover:text-green-600 transition-all"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              {t("nav_notices")}
+            </Link>
+
             <div className="pt-6 space-y-4">
               <Link
                 to="/admin/login"
