@@ -20,24 +20,25 @@ const LoadingSpinner = () => (
 const GramVarthaLandingPage = () => {
   return (
    
-      <div>
-        <Navbar />
-        <main className="flex-grow">
-          <Hero />
-          <div className="relative">
-            {/* Decorative elements */}
-            <div className="absolute -top-20 left-0 right-0 flex justify-center">
-              <div className="w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-              <div className="w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
-              <div className="w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
-            </div>
-            
-            <About />
-            <Features />
-          </div>
-        </main>
-        <Footer />
+     <div className="min-h-screen bg-landing">
+  <Navbar />
+  <main className="flex-grow">
+    <Hero />
+    <div className="relative">
+      {/* Decorative elements */}
+      <div className="absolute -top-20 left-0 right-0 flex justify-center">
+        <div className="w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
+        <div className="w-72 h-72 bg-yellow-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
+        <div className="w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-4000"></div>
       </div>
+
+      <About />
+      <Features />
+    </div>
+  </main>
+  <Footer />
+</div>
+
 
   )
 }
