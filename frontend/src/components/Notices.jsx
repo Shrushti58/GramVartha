@@ -1,12 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  MagnifyingGlassIcon,
+  PaperClipIcon,
+  CalendarIcon,
+  UserIcon,
+  XMarkIcon,
+  DocumentTextIcon,
+  ArrowDownTrayIcon,
+} from "@heroicons/react/24/outline";
+import {
+  ExclamationCircleIcon,
+} from "@heroicons/react/20/solid";
 
-export default function Notices() {
+const Notices = () => {
   const { t } = useTranslation();
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -29,24 +41,80 @@ export default function Notices() {
     fetchNotices();
   }, []);
 
-  // Filter notices based on search and filter criteria
-  const filteredNotices = notices.filter(notice => {
-    const matchesSearch = notice.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          notice.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
+  const filteredNotices = notices.filter((notice) => {
+    const matchesSearch =
+      notice.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      notice.description.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const hasAttachment = !!notice.fileUrl;
+
     if (filter === "with-attachments") {
-      return matchesSearch && notice.file;
+      return matchesSearch && hasAttachment;
     }
-    
     return matchesSearch;
   });
 
+  const getFileExtension = (filename) => {
+    if (typeof filename !== "string" || !filename) {
+      return null;
+    }
+    return filename.split(".").pop().toLowerCase();
+  };
+
+  const isImage = (filename) => {
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+    const extension = getFileExtension(filename);
+    return extension && imageExtensions.includes(extension);
+  };
+
+  const isDocument = (filename) => {
+    const documentExtensions = ["pdf", "docx", "doc", "pptx"];
+    const extension = getFileExtension(filename);
+    return extension && documentExtensions.includes(extension);
+  };
+
+  const isOtherFile = (filename) => {
+    const extension = getFileExtension(filename);
+    return extension && !isImage(filename) && !isDocument(filename);
+  };
+  
+  const cloudName = "dciadbf71";
+  
+  const getCloudinaryPreviewUrl = (fileUrl) => {
+    if(!fileUrl){
+      return null;
+    }
+
+    const urlParts = fileUrl.split("/upload/");
+    if (urlParts.length < 2) {
+      return null;
+    }
+    
+    const pathParts = urlParts[1].split("/");
+    let publicIdStartIndex = 0;
+    if (pathParts[0].startsWith("v")) {
+      publicIdStartIndex = 1;
+    }
+    const publicId = pathParts.slice(publicIdStartIndex).join("/").split('.')[0];
+    
+    const extension = getFileExtension(fileUrl);
+    
+    if (!publicId || !extension) return null;
+    
+    if (isImage(fileUrl)) {
+      return `https://res.cloudinary.com/${cloudName}/image/upload/w_600,h_400,c_fill/${publicId}.${extension}`;
+    } else if (isDocument(fileUrl)) {
+      return `https://res.cloudinary.com/${cloudName}/image/upload/w_600,h_400,c_fill,pg_1/${publicId}.jpg`;
+    }
+    return null;
+  };
+
   if (loading) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-        <div className="flex flex-col items-center justify-center h-64">
-          <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-500 uppercase tracking-wider text-lg">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-500 uppercase tracking-wider font-semibold">
             {t("loading", { defaultValue: "Loading notices..." })}
           </p>
         </div>
@@ -56,17 +124,26 @@ export default function Notices() {
 
   if (error) {
     return (
-      <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg max-w-md mx-auto">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg shadow-md max-w-lg mx-auto">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
+              <ExclamationCircleIcon
+                className="h-8 w-8 text-red-400"
+                aria-hidden="true"
+              />
             </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700">
-                {t("error_fetching_notices", { defaultValue: "Error fetching notices" })}: {error}
+            <div className="ml-4">
+              <h3 className="text-lg font-bold text-red-800">
+                {t("error_fetching_notices_title", {
+                  defaultValue: "Something went wrong",
+                })}
+              </h3>
+              <p className="mt-1 text-sm text-red-700">
+                {t("error_fetching_notices", {
+                  defaultValue: "Error fetching notices",
+                })}
+                : {error}
               </p>
             </div>
           </div>
@@ -76,171 +153,252 @@ export default function Notices() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 md:py-16">
-      {/* Page Title */}
-      <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-6 text-center">
-        {t("notices_page_title", { defaultValue: "Notices & Announcements" })}
-      </h1>
-      
-      <p className="text-gray-600 text-center mb-10 max-w-2xl mx-auto">
-        {t("notices_page_subtitle", { defaultValue: "Stay updated with the latest news and announcements" })}
-      </p>
-
-      {/* Search and Filter Section */}
-      <div className="flex flex-col md:flex-row gap-4 mb-10 justify-between items-stretch">
-        <div className="relative flex-grow max-w-2xl">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <input
-            type="text"
-            placeholder={t("search_placeholder", { defaultValue: "Search notices..." })}
-            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        
-        <div className="flex gap-2">
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === "all" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-          >
-            {t("filter_all", { defaultValue: "All" })}
-          </button>
-          <button
-            onClick={() => setFilter("with-attachments")}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${filter === "with-attachments" ? "bg-green-600 text-white" : "bg-gray-100 text-gray-700 hover:bg-gray-200"}`}
-          >
-            {t("filter_with_attachments", { defaultValue: "With Attachments" })}
-          </button>
-        </div>
-      </div>
-
-      {filteredNotices.length === 0 ? (
-        <div className="text-center py-16 bg-gray-50 rounded-2xl">
-          <svg className="mx-auto h-12 w-12 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h3 className="mt-2 text-lg font-medium text-gray-900">
-            {searchTerm || filter !== "all" 
-              ? t("no_matching_notices", { defaultValue: "No matching notices" })
-              : t("no_notices", { defaultValue: "No notices available right now" })
-            }
-          </h3>
-          <p className="mt-1 text-gray-500 max-w-prose mx-auto">
-            {searchTerm || filter !== "all" 
-              ? t("no_matching_notices_description", { defaultValue: "Try adjusting your search or filter to find what you're looking for." })
-              : t("no_notices_description", { defaultValue: "Check back later for new announcements and updates." })
-            }
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {/* Header Section */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            {t("notices_page_title", {
+              defaultValue: "Official Notices & Announcements",
+            })}
+          </h1>
+          <p className="text-gray-600 max-w-3xl mx-auto text-lg">
+            {t("notices_page_subtitle", {
+              defaultValue:
+                "Stay informed with the latest updates, important news, and official announcements from our community.",
+            })}
           </p>
         </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredNotices.map((notice) => {
-            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(
-              notice.fileUrl || ""
-            );
 
-            return (
-              <div
-                key={notice._id}
-                className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col"
+        {/* Search and Filter Controls */}
+        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mb-10">
+          <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+            <div className="relative flex-grow w-full md:max-w-xl">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <MagnifyingGlassIcon
+                  className="h-5 w-5 text-gray-400"
+                  aria-hidden="true"
+                />
+              </div>
+              <input
+                type="text"
+                placeholder={t("search_placeholder", {
+                  defaultValue: "Search by title or description...",
+                })}
+                className="block w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 text-gray-800"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFilter("all")}
+                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === "all"
+                    ? "bg-green-600 text-white shadow-sm"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
               >
-                <div className="p-6 flex-grow">
-                  <div className="flex justify-between items-start mb-3">
-                    <h2 className="text-xl font-bold text-gray-900 line-clamp-2">
-                      {notice.title}
-                    </h2>
-                    {notice.file && (
-                      <span className="flex-shrink-0 ml-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                        {isImage ? t("has_image", { defaultValue: "Image" }) : t("has_document", { defaultValue: "Document" })}
-                      </span>
-                    )}
-                  </div>
+                {t("filter_all", { defaultValue: "All Notices" })}
+              </button>
+              <button
+                onClick={() => setFilter("with-attachments")}
+                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === "with-attachments"
+                    ? "bg-green-600 text-white shadow-sm"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                <PaperClipIcon className="h-4 w-4 mr-1.5" />
+                {t("filter_with_attachments", {
+                  defaultValue: "With Attachments",
+                })}
+              </button>
+            </div>
+          </div>
+        </div>
 
-                  <p className="text-xs text-gray-500 mb-4 flex items-center">
-                    <svg className="w-4 h-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {new Date(notice.createdAt).toLocaleDateString()}
-                    {notice.createdBy?.name && (
-                      <span className="ml-2 flex items-center">
-                        <svg className="w-4 h-4 mr-1 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        {notice.createdBy.name}
-                      </span>
-                    )}
-                  </p>
+        {/* Notice List */}
+        {filteredNotices.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-xl shadow-sm border border-gray-200">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400 mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              {searchTerm || filter !== "all"
+                ? t("no_matching_notices", {
+                    defaultValue: "No matching notices found",
+                  })
+                : t("no_notices", {
+                    defaultValue: "No notices available right now",
+                  })}
+            </h3>
+            <p className="text-gray-500 max-w-md mx-auto">
+              {searchTerm || filter !== "all"
+                ? t("no_matching_notices_description", {
+                    defaultValue:
+                      "Try adjusting your search query or filter to see more results.",
+                  })
+                : t("no_notices_description", {
+                    defaultValue:
+                      "Check back later for new announcements and updates.",
+                  })}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredNotices.map((notice) => {
+              const fileUrl = notice.fileUrl;
+              const previewUrl = getCloudinaryPreviewUrl(fileUrl);
+              
+              const isFileAnImage = isImage(fileUrl);
+              const isFileADocument = isDocument(fileUrl);
+              const isFileAnOther = isOtherFile(fileUrl);
 
-                  <p className="text-gray-700 leading-relaxed mb-4 line-clamp-3">
-                    {notice.description}
-                  </p>
-                </div>
-
-                {/* Show image or document link */}
-                {notice.file && (
-                  <div className="px-6 pb-6 pt-0">
-                    {isImage ? (
-                      <div className="relative group cursor-zoom-in" onClick={() => setSelectedImage(`http://localhost:3000/notice/${notice._id}/file`)}>
-                        <img
-                          src={`http://localhost:3000/notice/${notice._id}/file`}
-                          alt="Notice attachment"
-                          className="rounded-lg border border-gray-200 shadow-sm w-full h-48 object-cover transition-all duration-300 group-hover:brightness-90"
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-50 text-white rounded-full p-2">
-                            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3-3H7" />
-                            </svg>
+              return (
+                <div
+                  key={notice._id}
+                  className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col transition-all duration-300 hover:shadow-md group"
+                >
+                  {/* File Preview Section - Always show an image */}
+                  <div
+                    className="relative w-full aspect-video bg-gradient-to-br from-blue-50 to-green-50 flex items-center justify-center p-4 cursor-pointer"
+                    onClick={() => {
+                      if (fileUrl) {
+                        isFileAnImage
+                          ? setSelectedAttachment({ type: "image", url: fileUrl })
+                          : window.open(fileUrl, "_blank");
+                      }
+                    }}
+                  >
+                    {/* Render preview based on file type or placeholder */}
+                    {fileUrl ? (
+                      <>
+                        {isFileAnImage || isFileADocument ? (
+                          <img
+                            src={isFileAnImage ? fileUrl : previewUrl}
+                            alt="Notice attachment preview"
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          <div className="text-center p-4">
+                            <DocumentTextIcon className="mx-auto h-12 w-12 text-gray-400 mb-2" />
+                            <p className="text-sm font-medium text-gray-600">
+                              {t("unsupported_preview", { defaultValue: "No Preview Available" })}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {t("click_to_download", { defaultValue: "Click to view/download" })}
+                            </p>
+                          </div>
+                        )}
+                        
+                        {/* The overlay and icon for the click action */}
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                          <div className="bg-white/80 text-gray-800 rounded-full p-2 backdrop-blur-sm">
+                            {isFileAnImage ? (
+                              <MagnifyingGlassIcon className="w-5 h-5" />
+                            ) : (
+                              <ArrowDownTrayIcon className="w-5 h-5" />
+                            )}
                           </div>
                         </div>
-                      </div>
+                      </>
                     ) : (
-                      <a
-                        href={`http://localhost:3000/notice/${notice._id}/file`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center w-full bg-gray-900 text-white px-4 py-3 rounded-lg text-sm font-medium uppercase tracking-wide hover:bg-green-600 transition-all"
-                      >
-                        <svg className="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        {t("view_document", { defaultValue: "View Document" })}
-                      </a>
+                      // Placeholder for notices without attachments
+                      <div className="text-center p-4">
+                        <div className="mx-auto mb-3 w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                          <DocumentTextIcon className="h-8 w-8 text-green-600" />
+                        </div>
+                        <p className="text-sm font-medium text-gray-600">
+                          {t("no_attachment", { defaultValue: "No Attachment" })}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {t("text_notice_only", { defaultValue: "Text notice only" })}
+                        </p>
+                      </div>
                     )}
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+
+                  {/* Card Content Section */}
+                  <div className="p-5 flex-grow flex flex-col">
+                    <div className="flex justify-between items-start mb-3">
+                      <h2 className="text-xl font-semibold text-gray-900 pr-8 line-clamp-2">
+                        {notice.title}
+                      </h2>
+                      {notice.fileUrl && (
+                        <span className="flex-shrink-0 inline-flex items-center rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
+                          <PaperClipIcon className="h-3.5 w-3.5 mr-1" />
+                          {t("attachment_label", { defaultValue: "Attachment" })}
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-gray-600 leading-relaxed mb-4 line-clamp-3 flex-grow">
+                      {notice.description}
+                    </p>
+
+                    <div className="mt-auto flex items-center text-sm text-gray-500 space-x-4 pt-4 border-t border-gray-100">
+                      <div className="flex items-center">
+                        <CalendarIcon className="w-4 h-4 text-gray-400 mr-1.5" />
+                        <span>
+                          {new Date(notice.createdAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+                      {notice.createdBy?.name && (
+                        <div className="flex items-center">
+                          <UserIcon className="w-4 h-4 text-gray-400 mr-1.5" />
+                          <span>{notice.createdBy.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Fullscreen Modal for Image Preview */}
-      {selectedImage && (
+      {selectedAttachment && selectedAttachment.type === "image" && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-80 backdrop-blur-sm"
+          onClick={() => setSelectedAttachment(null)}
         >
-          <button
-            className="absolute top-4 right-4 md:top-6 md:right-6 text-white text-3xl font-bold bg-black bg-opacity-50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-70 transition-all"
-            onClick={() => setSelectedImage(null)}
-          >
-            ✕
-          </button>
-          <div className="relative max-h-full max-w-full">
-            <img
-              src={selectedImage}
-              alt="Notice full preview"
-              className="max-h-[90vh] max-w-full object-contain rounded-lg"
-            />
+          <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
+            <button
+              className="absolute -top-10 right-0 text-white p-2 rounded-full hover:bg-gray-800 transition-all z-10"
+              onClick={() => setSelectedAttachment(null)}
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+            <div className="max-h-[90vh] max-w-full overflow-auto rounded-lg">
+              <img
+                src={selectedAttachment.url}
+                alt="Notice full preview"
+                className="rounded-lg shadow-xl w-full"
+              />
+            </div>
           </div>
         </div>
       )}
     </div>
   );
-}
+};
+
+export default Notices;

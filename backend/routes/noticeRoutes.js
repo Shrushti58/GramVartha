@@ -1,59 +1,164 @@
 const express = require("express");
 const router = express.Router();
+const fs = require("fs");
+const multer = require("multer");
+const cloudinary = require("../config/cloudinary");
 const Notice = require("../models/Notice");
-const upload = require('../middlewares/uploadCloud');
-const { verifyToken } = require("../utlis/jwt"); 
-const axios=require('axios')
-const mime=require('mime-types')
+const { extractText } = require("../utlis/extractText");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { verifyToken } = require("../utlis/jwt");
 
+// Multer temporary local storage
+const multerUpload = multer({ dest: "uploads/" });
 
-router.post("/upload", verifyToken, upload.single("file"), async (req, res) => {
+// Gemini setup
+const googleAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
+const geminiModel = googleAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+// Generate structured AI explanation safely
+async function getStructuredExplanation(text) {
+  const prompt = `
+You are a helpful assistant.
+Rewrite this government notice in simple language for citizens.
+Provide structured JSON output only with fields:
+{
+  "summary": "2-3 line summary",
+  "bullets": ["Key point 1", "Key point 2"],
+  "full": "Full simplified explanation"
+}
+
+Notice:
+${text}
+  `;
+  const result = await geminiModel.generateContent(prompt);
+  let rawText = result.response.text().trim();
+
+  // Remove ```json or ``` blocks if present
+  rawText = rawText.replace(/```json|```/g, "").trim();
+
   try {
-    const notice = new Notice({
-      title: req.body.title,
-      description: req.body.description,
-      fileUrl: req.file ? req.file.path : null, 
-      createdBy: req.user.id,
-    });
+    return JSON.parse(rawText);
+  } catch (err) {
+    console.error("Error parsing Gemini JSON:", err);
+    return { summary: rawText, bullets: [], full: rawText };
+  }
+}
 
-    await notice.save();
-    res.status(201).json({ message: "Notice uploaded successfully", notice });
+// POST /notice/upload - create or update notice
+router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res) => {
+  try {
+    const { title, description, noticeId } = req.body;
+
+    if (!title || !description) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    let fileUrl = null;
+    let mimetype = null;
+    let extractedText = "";
+    let aiExplanation = { summary: "", bullets: [], full: "", language: "auto" };
+
+    // Upload new file to Cloudinary if provided
+    if (req.file && req.file.path) {
+      const cloudRes = await cloudinary.uploader.upload(req.file.path, {
+        resource_type: "auto",
+        folder: "gramvartha_notices",
+      });
+      fileUrl = cloudRes.secure_url;
+      mimetype = req.file.mimetype;
+
+      // Extract text from uploaded file
+      extractedText = await extractText(fileUrl, mimetype);
+
+      // Generate structured AI explanation
+      if (extractedText) {
+        aiExplanation = await getStructuredExplanation(extractedText);
+        aiExplanation.language = "auto";
+      }
+
+      // Cleanup local temp file safely
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
+
+    let notice;
+    if (noticeId) {
+      // Update existing notice
+      notice = await Notice.findById(noticeId);
+      if (!notice) return res.status(404).json({ message: "Notice not found" });
+
+      notice.title = title;
+      notice.description = description;
+      if (fileUrl) notice.fileUrl = fileUrl;
+      if (extractedText) notice.extractedText = extractedText;
+      if (aiExplanation) notice.aiExplanation = aiExplanation;
+      notice.status = extractedText ? "done" : notice.status;
+
+      await notice.save();
+    } else {
+      // Create new notice
+      notice = new Notice({
+        title,
+        description,
+        fileUrl,
+        extractedText,
+        aiExplanation,
+        createdBy: req.user.id,
+        status: extractedText ? "done" : "pending",
+      });
+
+      await notice.save();
+    }
+
+    res.status(201).json({ message: "Notice saved successfully", notice });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error uploading notice", error: err });
+    res.status(500).json({ message: "Error saving notice", error: err.message });
   }
 });
 
-// Fetch all notices (without exposing fileUrl directly)
-router.get("/fetch", async (req, res) => {
-  try {
-    const notices = await Notice.find()
-      .populate("createdBy", "name email")
-      .sort({ createdAt: -1 });
-
-    // Don't expose Cloudinary URL
-    const safeNotices = notices.map((n) => ({
-      _id: n._id,
-      title: n.title,
-      description: n.description,
-      file: !!n.fileUrl, // just tell frontend if file exists
-      createdBy: n.createdBy,
-      createdAt: n.createdAt,
-    }));
-
-    res.json(safeNotices);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching notices" });
-  }
-});
 
 
 
-/**
- * GET /notice/fetch
- * Return notice metadata WITHOUT exposing fileUrl
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.get("/fetch", async (req, res) => {
   try {
     const notices = await Notice.find()
@@ -61,14 +166,11 @@ router.get("/fetch", async (req, res) => {
       .sort({ createdAt: -1 });
 
     const safeNotices = notices.map((n) => {
-      const fileUrl = n.fileUrl || "";
-      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileUrl);
       return {
         _id: n._id,
         title: n.title,
         description: n.description,
-        hasFile: !!n.fileUrl,       // frontend can know whether file exists
-        fileIsImage: isImage,       // frontend can decide to show inline preview
+        fileUrl: n.fileUrl || null, // This is the key part for the front end
         createdBy: n.createdBy,
         createdAt: n.createdAt,
       };
@@ -77,10 +179,11 @@ router.get("/fetch", async (req, res) => {
     res.json(safeNotices);
   } catch (err) {
     console.error("fetch notices error:", err);
-    res.status(500).json({ message: "Error fetching notices", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching notices", error: err.message });
   }
 });
-
 /**
  * GET /notice/:id/file
  * Proxy/stream file from Cloudinary (or any storage) through your backend.
@@ -145,7 +248,7 @@ router.get("/:id/file", async (req, res) => {
 
 
 
-router.put("/update/:id", verifyToken, upload.single("file"), async (req, res) => {
+router.put("/update/:id", verifyToken, multerUpload.single("file"), async (req, res) => {
   try {
     const notice = await Notice.findById(req.params.id);
     if (!notice) return res.status(404).json({ message: "Notice not found" });
