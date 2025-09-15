@@ -35,49 +35,48 @@ export default function Features() {
   ];
 
   return (
-    <section className="py-20 bg-gray-50 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-br from-[#FFF9E6] to-[#f5edd8] relative overflow-hidden">
       {/* Background decorative elements */}
-      <div className="absolute top-0 left-0 w-full h-72 bg-gradient-to-b from-white to-transparent opacity-50"></div>
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply opacity-5"></div>
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply opacity-5"></div>
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#2E8B57] rounded-full mix-blend-multiply opacity-10"></div>
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#B5651D] rounded-full mix-blend-multiply opacity-10"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Title */}
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#37474F] mb-4 tracking-tight">
             {t("nav_features")}
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-green-500 to-blue-500 mx-auto"></div>
+          <div className="w-20 h-1 bg-gradient-to-r from-[#2E8B57] to-[#B5651D] mx-auto rounded-full"></div>
         </div>
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <div 
               key={feature.key}
-              className="bg-white rounded-xl shadow-md p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group relative overflow-hidden"
+              className="bg-white rounded-xl shadow-sm p-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-2 group relative overflow-hidden border border-[#f5edd8]"
             >
               {/* Hover effect background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-blue-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2E8B57]/10 to-[#B5651D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"></div>
               
               <div className="relative z-10">
                 {/* Icon Container */}
-                <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg mb-6 text-white group-hover:scale-110 transition-transform duration-300">
+                <div className="inline-flex items-center justify-center p-3 bg-gradient-to-r from-[#2E8B57] to-[#B5651D] rounded-lg mb-6 text-white group-hover:scale-110 transition-transform duration-300 shadow-md">
                   {feature.icon}
                 </div>
 
                 {/* Feature Title */}
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 tracking-tight">
+                <h3 className="text-xl md:text-2xl font-bold text-[#37474F] mb-4 tracking-tight">
                   {t(feature.key)}
                 </h3>
 
                 {/* Feature Description */}
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-[#37474F] leading-relaxed">
                   {t(feature.descKey)}
                 </p>
 
                 {/* Decorative line */}
-                <div className="w-12 h-0.5 bg-gradient-to-r from-green-500 to-blue-500 mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <div className="w-12 h-0.5 bg-gradient-to-r from-[#2E8B57] to-[#B5651D] mt-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
             </div>
           ))}
@@ -85,7 +84,7 @@ export default function Features() {
 
         {/* Bottom CTA */}
         <div className="text-center mt-16">
-          <button className="bg-gray-900 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors duration-300 transform hover:-translate-y-0.5 shadow-md">
+          <button className="bg-gradient-to-b from-[#3DA56B] to-[#2E8B57] text-white px-8 py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 shadow-md">
             {t("explore_all_features")}
           </button>
         </div>

@@ -26,7 +26,6 @@
   "explore_all_features": "Explore All Features",
   
   "welcome": "Stay informed, stay connected with GramVartha",
-  "tagline": "Get trusted local news, community updates, and official notices in one place",
   "nav_features": "Explore Features",
   "learn_more": "Learn More",
   
@@ -39,7 +38,17 @@
   "footer_privacy": "Privacy Policy",
   "footer_terms": "Terms of Service",
   "footer_cookies": "Cookie Policy",
-  "footer_rights": "All rights reserved."
+  "footer_rights": "All rights reserved.",
+
+  "serving_rural_communities": "Serving Rural Communities",
+  "welcome_to": "Welcome to",
+  "tagline": "Empowering villages with timely news and updates",
+  "explore_features": "Explore Features",
+  "watch_demo": "Watch Demo",
+  "active_readers": "Active Readers",
+  "villages_served": "Villages Served",
+  "new_notices_added": "New Notices Added",
+  "easy_to_use": "Easy to Use"
 
 
 }
