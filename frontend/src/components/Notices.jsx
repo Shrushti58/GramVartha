@@ -25,6 +25,7 @@ const Notices = () => {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [fileLoading, setFileLoading] = useState(false);
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -77,11 +78,11 @@ const Notices = () => {
     return extension && documentExtensions.includes(extension);
   };
 
-  const isOtherFile = (filename) => {
+  const isPDF = (filename) => {
     const extension = getFileExtension(filename);
-    return extension && !isImage(filename) && !isDocument(filename);
+    return extension === "pdf";
   };
-  
+
   const cloudName = "dciadbf71";
   
   const getCloudinaryPreviewUrl = (fileUrl) => {
@@ -111,6 +112,72 @@ const Notices = () => {
       return `https://res.cloudinary.com/${cloudName}/image/upload/w_600,h_400,c_fill,pg_1/${publicId}.jpg`;
     }
     return null;
+  };
+
+  // Function to handle file viewing
+  const handleFileView = async (fileUrl, filename) => {
+    setFileLoading(true);
+    try {
+      if (isImage(fileUrl)) {
+        setSelectedAttachment({ 
+          type: "image", 
+          url: fileUrl, 
+          filename: filename || "image" 
+        });
+      } else if (isPDF(fileUrl)) {
+        setSelectedAttachment({ 
+          type: "pdf", 
+          url: fileUrl, 
+          filename: filename || "document.pdf" 
+        });
+      } else {
+        // For other document types, we'll show a preview modal with download option
+        setSelectedAttachment({ 
+          type: "document", 
+          url: fileUrl, 
+          filename: filename || "document",
+          extension: getFileExtension(fileUrl)
+        });
+      }
+    } catch (error) {
+      console.error("Error viewing file:", error);
+      // Fallback to download
+      handleFileDownload(fileUrl, filename);
+    } finally {
+      setFileLoading(false);
+    }
+  };
+
+  // Function to handle file download
+  const handleFileDownload = async (fileUrl, filename) => {
+    try {
+      setFileLoading(true);
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      
+      // Create download link
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      
+      // Set filename
+      const extension = getFileExtension(fileUrl);
+      const downloadFilename = filename || `document.${extension}`;
+      link.download = downloadFilename;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert("Error downloading file. Please try again.");
+    } finally {
+      setFileLoading(false);
+    }
   };
 
   if (loading) {
@@ -321,9 +388,7 @@ const Notices = () => {
                     className="relative aspect-video bg-gradient-to-br from-field-green-50 to-sunshine-yellow-50 cursor-pointer overflow-hidden"
                     onClick={() => {
                       if (fileUrl) {
-                        isFileAnImage
-                          ? setSelectedAttachment({ type: "image", url: fileUrl })
-                          : window.open(fileUrl, "_blank");
+                        handleFileView(fileUrl, notice.title);
                       }
                     }}
                   >
@@ -354,12 +419,19 @@ const Notices = () => {
                         
                         {/* Hover Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-field-green-900/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center">
-                          <div className="bg-white/90 backdrop-blur-sm text-field-green-700 rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                            {isFileAnImage ? (
+                          <div className="flex gap-2">
+                            <div className="bg-white/90 backdrop-blur-sm text-field-green-700 rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
                               <EyeIcon className="w-5 h-5" />
-                            ) : (
+                            </div>
+                            <div 
+                              className="bg-white/90 backdrop-blur-sm text-field-green-700 rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFileDownload(fileUrl, notice.title);
+                              }}
+                            >
                               <ArrowDownTrayIcon className="w-5 h-5" />
-                            )}
+                            </div>
                           </div>
                         </div>
                       </>
@@ -386,6 +458,13 @@ const Notices = () => {
                           <PaperClipIcon className="h-3 w-3 mr-1" />
                           {getFileExtension(fileUrl)?.toUpperCase() || "FILE"}
                         </span>
+                      </div>
+                    )}
+
+                    {/* Loading Overlay */}
+                    {fileLoading && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                       </div>
                     )}
                   </div>
@@ -429,7 +508,7 @@ const Notices = () => {
       </div>
 
       {/* Enhanced Fullscreen Modal */}
-      {selectedAttachment && selectedAttachment.type === "image" && (
+      {selectedAttachment && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
           onClick={() => setSelectedAttachment(null)}
@@ -443,13 +522,57 @@ const Notices = () => {
               <XMarkIcon className="h-6 w-6" />
             </button>
             
-            {/* Image Container */}
-            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-500">
-              <img
-                src={selectedAttachment.url}
-                alt="Notice full preview"
-                className="w-full h-auto max-h-[80vh] object-contain"
-              />
+            {/* Download Button */}
+            <button
+              className="absolute -top-12 right-12 text-white/80 hover:text-white p-2 rounded-full hover:bg-white/10 transition-all z-10 transform hover:scale-110"
+              onClick={() => handleFileDownload(selectedAttachment.url, selectedAttachment.filename)}
+            >
+              <ArrowDownTrayIcon className="h-6 w-6" />
+            </button>
+            
+            {/* Content Container */}
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden transform transition-all duration-500 max-h-[90vh]">
+              {selectedAttachment.type === "image" && (
+                <img
+                  src={selectedAttachment.url}
+                  alt="Notice full preview"
+                  className="w-full h-auto max-h-[80vh] object-contain"
+                />
+              )}
+              
+              {selectedAttachment.type === "pdf" && (
+                <div className="h-[80vh]">
+                  <iframe
+                    src={selectedAttachment.url}
+                    className="w-full h-full"
+                    title="PDF Preview"
+                  />
+                </div>
+              )}
+              
+              {selectedAttachment.type === "document" && (
+                <div className="p-8 text-center">
+                  <div className="w-20 h-20 bg-field-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <DocumentTextIcon className="h-10 w-10 text-field-green-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-field-green-900 mb-4">
+                    {selectedAttachment.filename}
+                  </h3>
+                  <p className="text-warm-earth-700 mb-6">
+                    {selectedAttachment.extension?.toUpperCase()} Document
+                  </p>
+                  <p className="text-warm-earth-600 mb-8">
+                    This document type cannot be previewed in the browser. Click download to view the file.
+                  </p>
+                  <button
+                    onClick={() => handleFileDownload(selectedAttachment.url, selectedAttachment.filename)}
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-field-green-500 to-field-green-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5"
+                  >
+                    <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                    Download File
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

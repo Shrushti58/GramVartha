@@ -835,6 +835,10 @@ video {
   top: 1.5rem;
 }
 
+.right-12{
+  right: 3rem;
+}
+
 .-z-10{
   z-index: -10;
 }
@@ -1129,6 +1133,10 @@ video {
 
 .h-screen{
   height: 100vh;
+}
+
+.h-\[80vh\]{
+  height: 80vh;
 }
 
 .max-h-\[80vh\]{
@@ -1862,6 +1870,10 @@ video {
 .bg-yellow-50{
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1));
+}
+
+.bg-black\/50{
+  background-color: rgb(0 0 0 / 0.5);
 }
 
 .bg-opacity-50{
