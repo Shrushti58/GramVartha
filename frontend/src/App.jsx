@@ -9,6 +9,9 @@ import OfficialLogin from "./components/OfficialLogin";
 import OfficialRegister from "./components/OfficialRegister";
 import OfficialsDashboard from "./pages/OfficialsDash";
 import Notices from "./components/Notices";
+import NoticeDetails from "./components/NoticesDetails";
+import CitizenLogin from './components/CitizenLogin';
+import CitizenRegister from './components/CitizenRegister'
 
 export default function App() {
   return (
@@ -16,6 +19,8 @@ export default function App() {
       <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<GramVarthaLandingPage />}></Route>
+          <Route path='/citizen/login' element={<CitizenLogin/>}></Route> 
+          <Route path="/citizen/register" element={<CitizenRegister/>} />
           <Route path="/admin/dashboard" element={<AdminDash />}></Route>
           <Route path="/admin/register" element={<AdminRegister/>} ></Route>
           <Route path="/admin/login" element={<AdminLogin/>} ></Route>
@@ -23,6 +28,7 @@ export default function App() {
           <Route path="/officials/register" element={<OfficialRegister/>} ></Route>
           <Route path="/officials/dashboard" element={<OfficialsDashboard/>} ></Route>
           <Route path='/notices' element={<Notices/>} ></Route>
+          <Route path="/notice-details/:id" element={<NoticeDetails/>} ></Route>
         </Routes>
       </BrowserRouter>
     </>

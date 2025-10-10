@@ -17,6 +17,7 @@ export default function OfficialsDashboard() {
   const [editingNotice, setEditingNotice] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
 
   useEffect(() => {
     fetchNotices();
@@ -24,7 +25,7 @@ export default function OfficialsDashboard() {
 
   useEffect(() => {
     applyFilters();
-  }, [filters, allNotices]);
+  }, [filters, allNotices, activeTab]);
 
   const fetchNotices = async () => {
     try {
@@ -39,6 +40,16 @@ export default function OfficialsDashboard() {
   const applyFilters = () => {
     let filtered = [...allNotices];
 
+    // Tab filtering
+    if (activeTab === "recent") {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      filtered = filtered.filter(notice => new Date(notice.createdAt) >= oneWeekAgo);
+    } else if (activeTab === "withFiles") {
+      filtered = filtered.filter(notice => notice.fileUrl);
+    }
+
+    // Search filtering
     if (filters.keyword) {
       const keyword = filters.keyword.toLowerCase();
       filtered = filtered.filter(
@@ -73,16 +84,17 @@ export default function OfficialsDashboard() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!title.trim() || !description.trim()) return;
+    
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
+    formData.append("title", title.trim());
+    formData.append("description", description.trim());
     if (file) formData.append("file", file);
 
     try {
       if (isEditing && editingNotice) {
-        // Update existing notice
         await axios.put(
           `http://localhost:3000/notice/update/${editingNotice._id}`,
           formData,
@@ -91,21 +103,17 @@ export default function OfficialsDashboard() {
             withCredentials: true,
           }
         );
-        alert("Notice updated successfully!");
       } else {
-        // Create new notice
         await axios.post("http://localhost:3000/notice/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
           withCredentials: true,
         });
-        alert("Notice uploaded successfully!");
       }
 
       resetForm();
       fetchNotices();
     } catch (error) {
       console.error("Error saving notice:", error);
-      alert("Failed to save notice.");
     } finally {
       setIsUploading(false);
     }
@@ -118,8 +126,6 @@ export default function OfficialsDashboard() {
     setDescription(notice.description);
     setFile(null);
     setFileName(notice.fileUrl ? "Existing file attached" : "");
-    
-    document.getElementById("upload-form").scrollIntoView({ behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
@@ -127,11 +133,9 @@ export default function OfficialsDashboard() {
       await axios.delete(`http://localhost:3000/notice/delete/${id}`, {
         withCredentials: true,
       });
-      alert("Notice deleted successfully!");
       fetchNotices();
     } catch (error) {
       console.error("Error deleting notice:", error);
-      alert("Failed to delete notice.");
     } finally {
       setDeleteConfirm(null);
     }
@@ -146,35 +150,49 @@ export default function OfficialsDashboard() {
     setIsEditing(false);
   };
 
-  const cancelEdit = () => {
-    resetForm();
+  const handleLogout = () => {
+    console.log("Logout clicked");
   };
 
-  const handleLogout = () => {
-    // Implement logout functionality here
-    console.log("Logout clicked");
-    // Example: Clear tokens, redirect to login, etc.
-    // localStorage.removeItem('authToken');
-    // window.location.href = '/login';
+  const stats = {
+    total: allNotices.length,
+    recent: allNotices.filter(n => {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      return new Date(n.createdAt) >= oneWeekAgo;
+    }).length,
+    withFiles: allNotices.filter(n => n.fileUrl).length
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-green-50">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30">
+      {/* Enhanced Navbar */}
+      <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <span className="text-2xl font-bold text-blue-600">GramVartha</span>
+              <div className="flex-shrink-0 flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">G</span>
+                </div>
+                <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                  GramVartha
+                </span>
               </div>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center space-x-4">
+              <div className="hidden sm:flex items-center space-x-2 text-slate-600">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="text-sm font-medium">Admin Portal</span>
+              </div>
               <button
                 onClick={handleLogout}
-                className="ml-4 px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                className="px-4 py-2 rounded-xl font-medium text-slate-700 hover:bg-slate-100 transition-colors flex items-center space-x-2"
               >
-                Logout
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Logout</span>
               </button>
             </div>
           </div>
@@ -183,82 +201,125 @@ export default function OfficialsDashboard() {
 
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-10">
-            <h1 className="text-4xl font-bold text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-green-600">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">
               Officials Dashboard
             </h1>
-            <p className="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">
-              Manage and publish notices for your community with our intuitive dashboard
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Manage community notices with our intuitive dashboard. Create, edit, and publish announcements efficiently.
             </p>
           </div>
 
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-600 text-sm font-medium">Total Notices</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-2">{stats.total}</p>
+                </div>
+                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-600 text-sm font-medium">Recent (7 days)</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-2">{stats.recent}</p>
+                </div>
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-600 text-sm font-medium">With Attachments</p>
+                  <p className="text-3xl font-bold text-slate-900 mt-2">{stats.withFiles}</p>
+                </div>
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column - Upload/Edit Form */}
+            {/* Form Section */}
             <div className="lg:col-span-1">
-              <div id="upload-form" className="bg-white rounded-2xl shadow-lg p-6 sticky top-6 border border-gray-100">
-                <div className="flex items-center justify-between mb-6 pb-3 border-b">
-                  <h2 className="text-xl font-semibold text-gray-800">
-                    {isEditing ? "Edit Notice" : "Upload New Notice"}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-semibold text-slate-900">
+                    {isEditing ? "Edit Notice" : "Create Notice"}
                   </h2>
                   {isEditing && (
                     <button
-                      onClick={cancelEdit}
-                      className="text-sm text-gray-500 hover:text-gray-700 flex items-center"
+                      onClick={resetForm}
+                      className="text-sm text-slate-500 hover:text-slate-700 flex items-center space-x-1"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
-                      Cancel Edit
+                      <span>Cancel</span>
                     </button>
                   )}
                 </div>
+
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Title <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Title
                     </label>
                     <input
                       type="text"
                       placeholder="Enter notice title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white"
                       required
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description <span className="text-red-500">*</span>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Description
                     </label>
                     <textarea
                       placeholder="Enter notice description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-white resize-none"
                       rows="4"
                       required
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Attachment (Optional)
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Attachment
                     </label>
-                    <div className="flex items-center justify-center w-full">
-                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <svg className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <div className="border-2 border-dashed border-slate-300 rounded-xl p-4 hover:border-blue-400 transition-colors cursor-pointer">
+                      <label className="flex flex-col items-center justify-center cursor-pointer">
+                        <div className="flex flex-col items-center justify-center">
+                          <svg className="w-8 h-8 mb-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                           </svg>
-                          <p className="mb-2 text-sm text-gray-500 text-center">
-                            {fileName || (
-                              <>
-                                <span className="font-semibold">Click to upload</span> or drag and drop
-                              </>
-                            )}
+                          <p className="text-sm text-slate-500 text-center">
+                            {fileName || "Click to upload or drag and drop"}
                           </p>
-                          <p className="text-xs text-gray-500">PDF, DOC, DOCX, JPEG, PNG (Max 5MB)</p>
+                          <p className="text-xs text-slate-400 mt-1">PDF, DOC, JPEG, PNG (Max 5MB)</p>
                         </div>
                         <input 
                           type="file" 
@@ -272,27 +333,24 @@ export default function OfficialsDashboard() {
                   
                   <button
                     type="submit"
-                    disabled={isUploading}
-                    className={`w-full py-3.5 px-4 rounded-xl font-medium flex items-center justify-center ${
-                      isUploading
-                        ? "bg-blue-400 cursor-not-allowed"
-                        : "bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
-                    } text-white transition-all shadow-md hover:shadow-lg`}
+                    disabled={isUploading || !title.trim() || !description.trim()}
+                    className={`w-full py-3.5 px-4 rounded-xl font-medium flex items-center justify-center space-x-2 transition-all ${
+                      isUploading || !title.trim() || !description.trim()
+                        ? "bg-slate-300 text-slate-500 cursor-not-allowed"
+                        : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl"
+                    }`}
                   >
                     {isUploading ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        {isEditing ? "Updating..." : "Uploading..."}
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        <span>{isEditing ? "Updating..." : "Uploading..."}</span>
                       </>
                     ) : (
                       <>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
-                        {isEditing ? "Update Notice" : "Upload Notice"}
+                        <span>{isEditing ? "Update Notice" : "Publish Notice"}</span>
                       </>
                     )}
                   </button>
@@ -300,215 +358,216 @@ export default function OfficialsDashboard() {
               </div>
             </div>
 
-            {/* Right Column - Filters and Notices */}
+            {/* Notices Section */}
             <div className="lg:col-span-2">
               {/* Filters Card */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-                <h2 className="text-xl font-semibold text-gray-800 mb-5 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                  </svg>
-                  Filter Notices
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Keyword</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search by keyword..."
-                        value={filters.keyword}
-                        onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-                        className="pl-10 w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">From Date</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="date"
-                        value={filters.fromDate}
-                        onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
-                        className="pl-10 w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">To Date</label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="date"
-                        value={filters.toDate}
-                        onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
-                        className="pl-10 w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      />
-                    </div>
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                  <h2 className="text-xl font-semibold text-slate-900">Manage Notices</h2>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-slate-500">
+                      {notices.length} of {allNotices.length} notices
+                    </span>
+                    <button
+                      onClick={() => setFilters({ keyword: "", fromDate: "", toDate: "" })}
+                      className="px-3 py-1.5 text-sm text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+                    >
+                      Reset
+                    </button>
                   </div>
                 </div>
-                
-                <div className="flex justify-between items-center mt-5">
-                  <span className="text-sm text-gray-500">
-                    Showing {notices.length} of {allNotices.length} notices
-                  </span>
-                  <button
-                    onClick={() => setFilters({ keyword: "", fromDate: "", toDate: "" })}
-                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors flex items-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Reset Filters
-                  </button>
+
+                {/* Tabs */}
+                <div className="flex space-x-1 bg-slate-100 p-1 rounded-xl mb-6">
+                  {[
+                    { id: "all", label: "All Notices", count: stats.total },
+                    { id: "recent", label: "Recent", count: stats.recent },
+                    { id: "withFiles", label: "With Files", count: stats.withFiles }
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                        activeTab === tab.id
+                          ? "bg-white text-slate-900 shadow-sm"
+                          : "text-slate-600 hover:text-slate-900"
+                      }`}
+                    >
+                      {tab.label} ({tab.count})
+                    </button>
+                  ))}
+                </div>
+
+                {/* Search and Date Filters */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Search</label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search notices..."
+                        value={filters.keyword}
+                        onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
+                        className="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">From Date</label>
+                    <input
+                      type="date"
+                      value={filters.fromDate}
+                      onChange={(e) => setFilters({ ...filters, fromDate: e.target.value })}
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">To Date</label>
+                    <input
+                      type="date"
+                      value={filters.toDate}
+                      onChange={(e) => setFilters({ ...filters, toDate: e.target.value })}
+                      className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* Notices List */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-xl font-semibold text-gray-800 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                    </svg>
-                    Uploaded Notices
-                  </h2>
-                  <span className="text-sm font-medium px-3 py-1 bg-blue-100 text-blue-800 rounded-full">
-                    {notices.length} {notices.length === 1 ? 'Notice' : 'Notices'}
-                  </span>
-                </div>
-
+              <div className="space-y-4">
                 {notices.length === 0 ? (
-                  <div className="text-center py-10">
-                    <svg className="mx-auto h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <h3 className="mt-5 text-lg font-medium text-gray-900">No notices found</h3>
-                    <p className="mt-2 text-sm text-gray-500">
+                  <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-12 text-center">
+                    <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">No notices found</h3>
+                    <p className="text-slate-600 mb-4">
                       {allNotices.length === 0 
-                        ? "Get started by uploading your first notice." 
-                        : "Try changing your filters or search criteria."}
+                        ? "Get started by creating your first notice." 
+                        : "Try adjusting your search or filters."}
                     </p>
                     {allNotices.length === 0 && (
                       <button
-                        onClick={() => document.getElementById("upload-form").scrollIntoView({ behavior: "smooth" })}
-                        className="mt-4 inline-flex items-center px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        onClick={resetForm}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
                       >
-                        Create Your First Notice
+                        Create First Notice
                       </button>
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-5">
-                    {notices.map((n) => (
-                      <div
-                        key={n._id}
-                        className="border border-gray-200 rounded-2xl p-5 hover:shadow-md transition-all bg-gradient-to-br from-white to-gray-50"
-                      >
-                        <div className="flex justify-between items-start">
-                          <h3 className="text-lg font-semibold text-gray-900">{n.title}</h3>
-                          <span className="text-sm text-gray-500 whitespace-nowrap ml-2">
-                            {new Date(n.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <p className="mt-3 text-gray-600">{n.description}</p>
-
-                        <div className="mt-5 flex justify-between items-center">
-                          <div className="flex items-center">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              {n.createdBy?.name || "Unknown"}
-                            </span>
-                            {n.fileUrl && (
-                              <span className="ml-2 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Attachment Available
-                              </span>
-                            )}
-                          </div>
-                          
-                          <div className="flex space-x-2">
-                            {n.fileUrl && (
-                              <a
-                                href={n.fileUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-xl shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                                View
-                              </a>
-                            )}
-                            <button
-                              onClick={() => handleEdit(n)}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-xl shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                              </svg>
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => setDeleteConfirm(n._id)}
-                              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-xl shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                            >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Delete Confirmation Modal */}
-                        {deleteConfirm === n._id && (
-                          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white p-6 rounded-2xl shadow-xl max-w-md w-full mx-4">
-                              <h3 className="text-lg font-medium text-gray-900 mb-4">Confirm Deletion</h3>
-                              <p className="text-gray-600">Are you sure you want to delete this notice? This action cannot be undone.</p>
-                              <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                  onClick={() => setDeleteConfirm(null)}
-                                  className="px-4 py-2 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(n._id)}
-                                  className="px-4 py-2 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
-                                >
-                                  Delete Notice
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
+                  notices.map((notice) => (
+                    <div
+                      key={notice._id}
+                      className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-all"
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="text-lg font-semibold text-slate-900 pr-4">{notice.title}</h3>
+                        <span className="text-sm text-slate-500 whitespace-nowrap">
+                          {new Date(notice.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                          })}
+                        </span>
                       </div>
-                    ))}
-                  </div>
+                      
+                      <p className="text-slate-600 mb-4 leading-relaxed">{notice.description}</p>
+
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-3">
+                          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
+                            {notice.createdBy?.name || "System"}
+                          </span>
+                          {notice.fileUrl && (
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
+                              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              Attachment
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center space-x-2">
+                          {notice.fileUrl && (
+                            <a
+                              href={notice.fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center px-3 py-1.5 text-sm text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                            >
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              View
+                            </a>
+                          )}
+                          <button
+                            onClick={() => handleEdit(notice)}
+                            className="inline-flex items-center px-3 py-1.5 text-sm text-blue-700 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors"
+                          >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirm(notice._id)}
+                            className="inline-flex items-center px-3 py-1.5 text-sm text-red-700 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-slate-900 text-center mb-2">Delete Notice?</h3>
+            <p className="text-slate-600 text-center mb-6">This action cannot be undone. The notice will be permanently removed.</p>
+            <div className="flex space-x-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="flex-1 py-2.5 px-4 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deleteConfirm)}
+                className="flex-1 py-2.5 px-4 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

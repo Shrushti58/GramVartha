@@ -38,6 +38,12 @@ export default function Navbar() {
             <LanguageSwitcher />
 
             <div className="flex space-x-3 ml-4">
+               <Link
+                to="/citizen/login"
+                className="bg-button-primary text-white px-4 py-2 rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 whitespace-nowrap shadow-md"
+              >
+               Citizen Login
+              </Link>
               <Link
                 to="/admin/login"
                 className="bg-button-primary text-white px-4 py-2 rounded-full font-medium hover:shadow-lg transition-all duration-300 hover:scale-105 whitespace-nowrap shadow-md"

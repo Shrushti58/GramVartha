@@ -20,6 +20,7 @@ app.use(cookieParser());;
 app.use('/admin',require('./routes/adminRoutes'))
 app.use('/officials',require('./routes/officalsRoutes'))
 app.use('/notice',require('./routes/noticeRoutes'))
+app.use('/citizen',require('./routes/citizenRoutes'))
 
 const PORT=3000;
 app.listen(PORT,()=>{

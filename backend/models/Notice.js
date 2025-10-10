@@ -20,16 +20,16 @@ const NoticeSchema = new mongoose.Schema({
     required: true,
   },
   aiExplanation: {
-    summary: { type: String, required: true }, // Short summary for citizens
-    bullets: { type: [String], required: true }, // Key points
-    full: { type: String, required: true }, // Full explanation
-    language: { type: String, default: "auto", required: true },
+    summary: { type: String}, // Short summary for citizens
+    bullets: { type: [String]}, // Key points
+    full: { type: String}, // Full explanation
+    language: { type: String, default: "auto"},
     translations: {
       type: Map,
       of: new mongoose.Schema({
-        summary: { type: String, required: true },
-        full: { type: String, required: true },
-        bullets: { type: [String], required: true },
+        summary: { type: String},
+        full: { type: String},
+        bullets: { type: [String]},
       }),
       default: {},
     },
