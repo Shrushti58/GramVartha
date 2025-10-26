@@ -8,10 +8,15 @@ const Register = () => {
     name: "",
     email: "",
     password: "",
-    profile: { phone: "", dob: "" },
-    address: { city: "", state: "", country: "" },
+    profile: { phone: "" },
+    address: { 
+      street: "", 
+      wardNumber: "", 
+      city: "", 
+      state: "", 
+      pincode: "" 
+    },
   });
-  const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [currentStep, setCurrentStep] = useState(1);
@@ -20,10 +25,16 @@ const Register = () => {
     const { name, value } = e.target;
     if (name.startsWith("profile.")) {
       const key = name.split(".")[1];
-      setFormData((prev) => ({ ...prev, profile: { ...prev.profile, [key]: value } }));
+      setFormData((prev) => ({ 
+        ...prev, 
+        profile: { ...prev.profile, [key]: value } 
+      }));
     } else if (name.startsWith("address.")) {
       const key = name.split(".")[1];
-      setFormData((prev) => ({ ...prev, address: { ...prev.address, [key]: value } }));
+      setFormData((prev) => ({ 
+        ...prev, 
+        address: { ...prev.address, [key]: value } 
+      }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -50,7 +61,15 @@ const Register = () => {
   };
 
   const validateStep2 = () => {
-    // Step 2 fields are optional, so no validation needed
+    setError("");
+    return true;
+  };
+
+  const validateStep3 = () => {
+    if (!formData.address.wardNumber.trim()) {
+      setError("Ward number is required");
+      return false;
+    }
     setError("");
     return true;
   };
@@ -70,27 +89,57 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateStep3()) {
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
-      const data = new FormData();
-      data.append("name", formData.name);
-      data.append("email", formData.email);
-      data.append("password", formData.password);
-      data.append("profile", JSON.stringify(formData.profile));
-      data.append("address", JSON.stringify(formData.address));
-      if (avatar) data.append("avatar", avatar);
+      // Prepare the data exactly as backend expects
+      const submitData = {
+        name: formData.name.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+        profile: {
+          phone: formData.profile.phone.trim() || undefined
+        },
+        address: {
+          street: formData.address.street.trim() || undefined,
+          wardNumber: formData.address.wardNumber.trim(),
+          city: formData.address.city.trim() || undefined,
+          state: formData.address.state.trim() || undefined,
+          pincode: formData.address.pincode.trim() || undefined
+        }
+      };
 
-      const res = await axios.post("http://localhost:3000/citizen/register", data, {
-        withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" },
+      console.log("Sending registration data:", submitData);
+
+      const res = await axios.post("http://localhost:3000/citizen/register", submitData, {
+        headers: { 
+          "Content-Type": "application/json",
+        },
+        withCredentials: true // Important for cookies
       });
 
-      navigate("/citizen/login");
+      console.log("Registration successful:", res.data);
+
+      // Store token in localStorage for future requests
+      if (res.data.token) {
+        localStorage.setItem('authToken', res.data.token);
+      }
+
+      // Redirect to dashboard or login page
+      navigate("/citizen/dashboard");
+      
     } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Registration failed");
+      console.error("Registration error:", err);
+      const errorMessage = err.response?.data?.message || 
+                          err.response?.data?.error || 
+                          "Registration failed. Please try again.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -102,6 +151,8 @@ const Register = () => {
     { number: 2, title: "Personal", description: "About you" },
     { number: 3, title: "Location", description: "Where you live" }
   ];
+
+  const wardOptions = Array.from({ length: 20 }, (_, i) => (i + 1).toString());
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 flex items-center justify-center py-8 px-4 font-sans">
@@ -219,46 +270,13 @@ const Register = () => {
                     Phone Number
                   </label>
                   <input
-                    type="text"
+                    type="tel"
                     name="profile.phone"
                     placeholder="Enter your phone number"
                     value={formData.profile.phone}
                     onChange={handleChange}
                     className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
                   />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-primary-800 mb-2">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    name="profile.dob"
-                    value={formData.profile.dob}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-primary-800 mb-2">
-                    Profile Photo (Optional)
-                  </label>
-                  <div className="border-2 border-dashed border-primary-300 rounded-lg p-4 text-center hover:border-accent-teal transition-colors duration-200 bg-primary-50">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => setAvatar(e.target.files[0])}
-                      className="w-full cursor-pointer"
-                    />
-                    <p className="text-xs text-primary-500 mt-2">PNG, JPG, JPEG up to 5MB</p>
-                    {avatar && (
-                      <p className="text-xs text-accent-teal mt-1 font-medium">
-                        Selected: {avatar.name}
-                      </p>
-                    )}
-                  </div>
                 </div>
 
                 <div className="flex space-x-3">
@@ -285,6 +303,41 @@ const Register = () => {
               <div className="space-y-5 animate-slide-up">
                 <div>
                   <label className="block text-sm font-medium text-primary-800 mb-2">
+                    Ward Number *
+                  </label>
+                  <select
+                    name="address.wardNumber"
+                    value={formData.address.wardNumber}
+                    onChange={handleChange}
+                    required
+                    className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                  >
+                    <option value="">Select your ward</option>
+                    {wardOptions.map(ward => (
+                      <option key={ward} value={ward}>Ward {ward}</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-primary-500 mt-2">
+                    This helps us show you relevant notices for your area
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-primary-800 mb-2">
+                    Street Address
+                  </label>
+                  <input
+                    type="text"
+                    name="address.street"
+                    placeholder="Enter your street address"
+                    value={formData.address.street}
+                    onChange={handleChange}
+                    className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-primary-800 mb-2">
                     City
                   </label>
                   <input
@@ -297,32 +350,33 @@ const Register = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-primary-800 mb-2">
-                    State/Province
-                  </label>
-                  <input
-                    type="text"
-                    name="address.state"
-                    placeholder="Enter your state or province"
-                    value={formData.address.state}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-primary-800 mb-2">
-                    Country
-                  </label>
-                  <input
-                    type="text"
-                    name="address.country"
-                    placeholder="Enter your country"
-                    value={formData.address.country}
-                    onChange={handleChange}
-                    className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-                  />
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-primary-800 mb-2">
+                      State
+                    </label>
+                    <input
+                      type="text"
+                      name="address.state"
+                      placeholder="State"
+                      value={formData.address.state}
+                      onChange={handleChange}
+                      className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-primary-800 mb-2">
+                      Pincode
+                    </label>
+                    <input
+                      type="text"
+                      name="address.pincode"
+                      placeholder="Pincode"
+                      value={formData.address.pincode}
+                      onChange={handleChange}
+                      className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+                    />
+                  </div>
                 </div>
 
                 <div className="flex space-x-3">

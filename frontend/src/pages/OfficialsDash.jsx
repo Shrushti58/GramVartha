@@ -7,15 +7,22 @@ export default function OfficialsDashboard() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("general");
+  const [priority, setPriority] = useState("medium");
+  const [targetAudience, setTargetAudience] = useState("all");
+  const [targetWards, setTargetWards] = useState("");
+  const [tags, setTags] = useState("");
+  const [isPinned, setIsPinned] = useState(false);
+  const [expiryDate, setExpiryDate] = useState("");
   const [file, setFile] = useState(null);
   const [notices, setNotices] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [editingNotice, setEditingNotice] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [viewFileModal, setViewFileModal] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Gram Panchayat categories
+  // Enhanced categories with new "urgent" category
   const categories = [
     { value: "development", label: "Development" },
     { value: "health", label: "Health" },
@@ -26,7 +33,22 @@ export default function OfficialsDashboard() {
     { value: "tax_billing", label: "Tax & Billing" },
     { value: "election", label: "Election" },
     { value: "meeting", label: "Meeting" },
+    { value: "urgent", label: "Urgent" },
     { value: "general", label: "General" }
+  ];
+
+  // Priority levels
+  const priorities = [
+    { value: "low", label: "Low" },
+    { value: "medium", label: "Medium" },
+    { value: "high", label: "High" },
+    { value: "urgent", label: "Urgent" }
+  ];
+
+  // Target audience options
+  const targetAudiences = [
+    { value: "all", label: "All Citizens" },
+    { value: "ward_specific", label: "Specific Wards" }
   ];
 
   useEffect(() => {
@@ -35,11 +57,23 @@ export default function OfficialsDashboard() {
 
   const fetchNotices = async () => {
     try {
+      setLoading(true);
       const res = await axios.get("http://localhost:3000/notice/fetch");
-      setNotices(res.data);
+      
+      // The response has { notices: [...] } structure
+      if (res.data && Array.isArray(res.data.notices)) {
+        setNotices(res.data.notices);
+      } else {
+        console.error("Unexpected response format:", res.data);
+        setNotices([]);
+        toast.error("Unexpected data format received");
+      }
     } catch (error) {
       console.error("Error fetching notices:", error);
       toast.error("Failed to load notices");
+      setNotices([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,18 +94,28 @@ export default function OfficialsDashboard() {
     formData.append("title", title.trim());
     formData.append("description", description.trim());
     formData.append("category", category);
+    formData.append("priority", priority);
+    formData.append("targetAudience", targetAudience);
+    formData.append("tags", tags);
+    formData.append("isPinned", isPinned);
+    
+    if (targetAudience === "ward_specific" && targetWards) {
+      formData.append("targetWards", targetWards);
+    }
+    
+    if (expiryDate) {
+      formData.append("expiryDate", expiryDate);
+    }
+    
     if (file) formData.append("file", file);
 
     try {
       if (editingNotice) {
-        await axios.put(
-          `http://localhost:3000/notice/update/${editingNotice._id}`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-            withCredentials: true,
-          }
-        );
+        formData.append("noticeId", editingNotice._id);
+        await axios.post("http://localhost:3000/notice/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        });
         toast.success("Notice updated successfully");
       } else {
         await axios.post("http://localhost:3000/notice/upload", formData, {
@@ -85,7 +129,7 @@ export default function OfficialsDashboard() {
       fetchNotices();
     } catch (error) {
       console.error("Error saving notice:", error);
-      toast.error("Failed to save notice");
+      toast.error(error.response?.data?.message || "Failed to save notice");
     } finally {
       setIsUploading(false);
     }
@@ -96,7 +140,14 @@ export default function OfficialsDashboard() {
     setTitle(notice.title);
     setDescription(notice.description);
     setCategory(notice.category || "general");
+    setPriority(notice.priority || "medium");
+    setTargetAudience(notice.targetAudience || "all");
+    setTargetWards(notice.targetWards?.join(", ") || "");
+    setTags(notice.tags?.join(", ") || "");
+    setIsPinned(notice.isPinned || false);
+    setExpiryDate(notice.expiryDate ? new Date(notice.expiryDate).toISOString().split('T')[0] : "");
     setFile(null);
+    
     document.getElementById('notice-form').scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -152,29 +203,6 @@ export default function OfficialsDashboard() {
           <p className="mt-4 text-sm text-primary-600 text-center break-all px-2">{fileName}</p>
         </div>
       );
-    } else if (['doc', 'docx'].includes(extension)) {
-      return (
-        <div className="flex flex-col items-center justify-center py-8 md:py-12">
-          <div className="text-center max-w-sm">
-            <svg className="w-12 h-12 md:w-16 md:h-16 text-primary-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <p className="text-base md:text-lg font-semibold text-primary-900 mb-2">Document File</p>
-            <p className="text-primary-600 text-sm md:text-base mb-4 break-all">{fileName}</p>
-            <a
-              href={fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-4 py-2 bg-button-primary text-white rounded-lg hover:shadow-earth-md transition-all duration-200 text-sm md:text-base"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Download File
-            </a>
-          </div>
-        </div>
-      );
     } else {
       return (
         <div className="flex flex-col items-center justify-center py-8 md:py-12">
@@ -205,6 +233,12 @@ export default function OfficialsDashboard() {
     setTitle("");
     setDescription("");
     setCategory("general");
+    setPriority("medium");
+    setTargetAudience("all");
+    setTargetWards("");
+    setTags("");
+    setIsPinned(false);
+    setExpiryDate("");
     setFile(null);
     setEditingNotice(null);
   };
@@ -214,23 +248,37 @@ export default function OfficialsDashboard() {
     toast.info("Logged out successfully");
   };
 
+  const isNoticeActive = (notice) => {
+    if (!notice) return false;
+    
+    const now = new Date();
+    const isPublished = notice.status === 'published' || notice.status === 'done';
+    
+    return isPublished && 
+           (!notice.expiryDate || new Date(notice.expiryDate) >= now);
+  };
+
   const stats = {
     total: notices.length,
     recent: notices.filter(n => {
+      if (!n || !n.createdAt) return false;
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       return new Date(n.createdAt) >= oneWeekAgo;
     }).length,
-    withFiles: notices.filter(n => n.fileUrl).length,
-    categories: categories.reduce((acc, cat) => {
-      acc[cat.value] = notices.filter(n => n.category === cat.value).length;
-      return acc;
-    }, {})
+    withFiles: notices.filter(n => n && n.fileUrl).length,
+    pinned: notices.filter(n => n && n.isPinned).length,
+    urgent: notices.filter(n => n && (n.priority === "urgent" || n.category === "urgent")).length
   };
 
   const getCategoryLabel = (categoryValue) => {
     const found = categories.find(cat => cat.value === categoryValue);
     return found ? found.label : "General";
+  };
+
+  const getPriorityLabel = (priorityValue) => {
+    const found = priorities.find(p => p.value === priorityValue);
+    return found ? found.label : "Medium";
   };
 
   const getCategoryColor = (categoryValue) => {
@@ -244,9 +292,20 @@ export default function OfficialsDashboard() {
       tax_billing: "bg-red-100 text-red-700",
       election: "bg-orange-100 text-orange-700",
       meeting: "bg-cyan-100 text-cyan-700",
+      urgent: "bg-red-100 text-red-700",
       general: "bg-gray-100 text-gray-700"
     };
     return colors[categoryValue] || colors.general;
+  };
+
+  const getPriorityColor = (priorityValue) => {
+    const colors = {
+      low: "bg-gray-100 text-gray-700",
+      medium: "bg-blue-100 text-blue-700",
+      high: "bg-orange-100 text-orange-700",
+      urgent: "bg-red-100 text-red-700"
+    };
+    return colors[priorityValue] || colors.medium;
   };
 
   return (
@@ -263,7 +322,7 @@ export default function OfficialsDashboard() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold">GramVartha</h1>
-                <p className="text-primary-200 text-xs sm:text-sm">Community Portal</p>
+                <p className="text-primary-200 text-xs sm:text-sm">Officials Portal</p>
               </div>
             </div>
             <button
@@ -283,15 +342,15 @@ export default function OfficialsDashboard() {
         {/* Welcome Section */}
         <div className="text-center mb-8 sm:mb-12">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary-900 font-serif mb-3 sm:mb-4">
-            Community Notices
+            Community Notices Management
           </h2>
           <p className="text-sm sm:text-lg text-primary-600 max-w-2xl mx-auto px-4">
-            Create and manage announcements for your community. Keep everyone informed with important updates.
+            Create and manage announcements for your community. Keep everyone informed with important updates and targeted communications.
           </p>
         </div>
 
-        {/* Stats Overview */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+        {/* Enhanced Stats Overview */}
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-soft-earth border border-primary-200 text-center">
             <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-900 mb-1 sm:mb-2">{stats.total}</div>
             <div className="text-xs sm:text-sm text-primary-600 font-medium">Total Notices</div>
@@ -305,13 +364,17 @@ export default function OfficialsDashboard() {
             <div className="text-xs sm:text-sm text-primary-600 font-medium">With Files</div>
           </div>
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-soft-earth border border-primary-200 text-center">
-            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-900 mb-1 sm:mb-2">{categories.length}</div>
-            <div className="text-xs sm:text-sm text-primary-600 font-medium">Categories</div>
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-900 mb-1 sm:mb-2">{stats.pinned}</div>
+            <div className="text-xs sm:text-sm text-primary-600 font-medium">Pinned</div>
+          </div>
+          <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-soft-earth border border-primary-200 text-center">
+            <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-900 mb-1 sm:mb-2">{stats.urgent}</div>
+            <div className="text-xs sm:text-sm text-primary-600 font-medium">Urgent</div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
-          {/* Create Notice Card */}
+          {/* Enhanced Create Notice Card */}
           <div id="notice-form" className="bg-white rounded-2xl shadow-earth-lg border border-primary-200 p-6 sm:p-8">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h3 className="text-xl sm:text-2xl font-bold text-primary-900 font-serif">
@@ -332,7 +395,7 @@ export default function OfficialsDashboard() {
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
-                  Title
+                  Title *
                 </label>
                 <input
                   type="text"
@@ -344,27 +407,122 @@ export default function OfficialsDashboard() {
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
-                  Category
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
+                    Category *
+                  </label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 text-sm sm:text-base"
+                    required
+                  >
+                    {categories.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
+                    Priority
+                  </label>
+                  <select
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 text-sm sm:text-base"
+                  >
+                    {priorities.map((priority) => (
+                      <option key={priority.value} value={priority.value}>
+                        {priority.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
+                    Target Audience
+                  </label>
+                  <select
+                    value={targetAudience}
+                    onChange={(e) => setTargetAudience(e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 text-sm sm:text-base"
+                  >
+                    {targetAudiences.map((audience) => (
+                      <option key={audience.value} value={audience.value}>
+                        {audience.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                {targetAudience === "ward_specific" && (
+                  <div>
+                    <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
+                      Target Wards
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g., 1, 3, 5 or 1-5"
+                      value={targetWards}
+                      onChange={(e) => setTargetWards(e.target.value)}
+                      className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 placeholder-primary-400 text-sm sm:text-base"
+                    />
+                    <p className="text-xs text-primary-500 mt-1">Enter ward numbers separated by commas</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
+                    Tags
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., development, road, water"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 placeholder-primary-400 text-sm sm:text-base"
+                  />
+                  <p className="text-xs text-primary-500 mt-1">Separate tags with commas</p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
+                    Expiry Date (Optional)
+                  </label>
+                  <input
+                    type="date"
+                    value={expiryDate}
+                    onChange={(e) => setExpiryDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 text-sm sm:text-base"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <label className="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isPinned}
+                    onChange={(e) => setIsPinned(e.target.checked)}
+                    className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                  />
+                  <span className="text-sm font-semibold text-primary-800">Pin this notice</span>
                 </label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 text-sm sm:text-base"
-                  required
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.value} value={cat.value}>
-                      {cat.label}
-                    </option>
-                  ))}
-                </select>
               </div>
               
               <div>
                 <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
-                  Description
+                  Description *
                 </label>
                 <textarea
                   placeholder="Provide detailed information about the notice..."
@@ -427,19 +585,29 @@ export default function OfficialsDashboard() {
             </form>
           </div>
 
-          {/* Notices List */}
+          {/* Enhanced Notices List */}
           <div className="bg-white rounded-2xl shadow-earth-lg border border-primary-200 p-6 sm:p-8">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h3 className="text-xl sm:text-2xl font-bold text-primary-900 font-serif">
                 Your Notices
               </h3>
-              <span className="bg-primary-100 text-primary-700 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium">
-                {notices.length} total
-              </span>
+              <div className="flex items-center space-x-2">
+                <span className="bg-primary-100 text-primary-700 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium">
+                  {notices.length} total
+                </span>
+                <span className="bg-green-100 text-green-700 px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium">
+                  {notices.filter(n => isNoticeActive(n)).length} active
+                </span>
+              </div>
             </div>
 
             <div className="space-y-4 max-h-[500px] sm:max-h-[600px] overflow-y-auto">
-              {notices.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+                  <p className="mt-4 text-primary-600">Loading notices...</p>
+                </div>
+              ) : notices.length === 0 ? (
                 <div className="text-center py-8 sm:py-12">
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                     <svg className="w-6 h-6 sm:w-8 sm:h-8 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -459,12 +627,23 @@ export default function OfficialsDashboard() {
                 notices.map((notice) => (
                   <div
                     key={notice._id}
-                    className="bg-primary-50 rounded-xl p-4 sm:p-5 border border-primary-200 hover:shadow-soft-earth transition-all duration-200"
+                    className={`bg-primary-50 rounded-xl p-4 sm:p-5 border transition-all duration-200 ${
+                      notice.isPinned ? 'border-yellow-400 bg-yellow-50' : 
+                      !isNoticeActive(notice) ? 'border-gray-300 bg-gray-100' : 
+                      'border-primary-200 hover:shadow-soft-earth'
+                    }`}
                   >
                     <div className="flex justify-between items-start mb-2 sm:mb-3">
-                      <h4 className="font-semibold text-primary-900 text-base sm:text-lg pr-4 leading-tight">
-                        {notice.title}
-                      </h4>
+                      <div className="flex items-start space-x-2 flex-1">
+                        {notice.isPinned && (
+                          <svg className="w-4 h-4 text-yellow-500 mt-1 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5.5 17.5a.5.5 0 01-1 0V2.914l-.646-.647a.5.5 0 01.708-.708l1.5 1.5a.5.5 0 010 .708l-1.5 1.5a.5.5 0 01-.708-.708L4.5 3.914V17.5z"/>
+                          </svg>
+                        )}
+                        <h4 className="font-semibold text-primary-900 text-base sm:text-lg pr-4 leading-tight flex-1">
+                          {notice.title}
+                        </h4>
+                      </div>
                       <span className="text-xs sm:text-sm text-primary-500 whitespace-nowrap flex-shrink-0">
                         {new Date(notice.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
@@ -473,9 +652,12 @@ export default function OfficialsDashboard() {
                       </span>
                     </div>
                     
-                    <div className="flex items-center space-x-2 mb-2 sm:mb-3">
+                    <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
                       <span className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-medium ${getCategoryColor(notice.category)}`}>
                         {getCategoryLabel(notice.category)}
+                      </span>
+                      <span className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs font-medium ${getPriorityColor(notice.priority)}`}>
+                        {getPriorityLabel(notice.priority)}
                       </span>
                       {notice.fileUrl && (
                         <span className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs bg-green-100 text-green-700 font-medium">
@@ -485,6 +667,16 @@ export default function OfficialsDashboard() {
                           Attachment
                         </span>
                       )}
+                      {notice.targetAudience === "ward_specific" && notice.targetWards?.length > 0 && (
+                        <span className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium">
+                          Wards: {notice.targetWards.join(', ')}
+                        </span>
+                      )}
+                      {!isNoticeActive(notice) && (
+                        <span className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs bg-gray-100 text-gray-700 font-medium">
+                          Expired
+                        </span>
+                      )}
                     </div>
                     
                     <p className="text-primary-600 mb-3 sm:mb-4 leading-relaxed line-clamp-2 text-sm sm:text-base">
@@ -492,8 +684,11 @@ export default function OfficialsDashboard() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
-                      <div className="flex items-center space-x-2">
-                        {/* Additional info can go here */}
+                      <div className="flex items-center space-x-4 text-xs text-primary-500">
+                        <span>Views: {notice.views || 0}</span>
+                        {notice.expiryDate && (
+                          <span>Expires: {new Date(notice.expiryDate).toLocaleDateString()}</span>
+                        )}
                       </div>
                       
                       <div className="flex items-center space-x-2 sm:space-x-3">
@@ -595,6 +790,9 @@ export default function OfficialsDashboard() {
               <div className="mb-3 sm:mb-4">
                 <span className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ${getCategoryColor(viewFileModal.category)}`}>
                   {getCategoryLabel(viewFileModal.category)}
+                </span>
+                <span className={`inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium ml-2 ${getPriorityColor(viewFileModal.priority)}`}>
+                  {getPriorityLabel(viewFileModal.priority)}
                 </span>
               </div>
 

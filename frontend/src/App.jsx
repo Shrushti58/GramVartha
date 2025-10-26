@@ -32,7 +32,7 @@ export default function App() {
           <Route path="/officials/dashboard" element={<OfficialsDashboard/>} ></Route>
           <Route path='/notices' element={<Notices/>} ></Route>
           <Route path="/notice-details/:id" element={<NoticeDetails/>} ></Route>
-          <Route path="/profile" element={<CitizenDashboard/>} />
+          <Route path="/citizen/dashboard" element={<CitizenDashboard/>} />
         </Routes>
         
         {/* Global Toast Container */}
