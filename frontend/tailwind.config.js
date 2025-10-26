@@ -4,82 +4,106 @@ export default {
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
- theme: {
+  theme: {
     extend: {
-      // 1. Define your custom color palette
       colors: {
-        // Primary Colors
-        'field-green': {
-          50: '#f2f8f3',
-          100: '#e5f1e7',
-          200: '#cae3cf',
-          300: '#9fcaa9',
-          400: '#6da87d',
-          500: '#2E8B57', // PRIMARY
-          600: '#227046',
-          700: '#1c5a39',
-          800: '#18482f',
-          900: '#143b26',
+        // Original palette
+        cream: '#F9F5F0',
+        sand: '#E6CCB2',
+        latte: '#DDB892',
+        mocha: '#B08968',
+        cocoa: '#7F5539',
+        clay: '#9C6644',
+        'sage-green': '#6B705C',
+        
+        // Enhanced color system
+        primary: {
+          50: '#FEFCF9',
+          100: '#F9F5F0',
+          200: '#E6CCB2',
+          300: '#DDB892',
+          400: '#B08968',
+          500: '#9C6644',
+          600: '#7F5539',
+          700: '#5D4037',
+          800: '#4A3329',
+          900: '#3E2723',
         },
-        'warm-earth': {
-          50: '#fdf7f2',
-          100: '#faede2',
-          200: '#f3d6c0',
-          300: '#eab892',
-          400: '#de8f5b',
-          500: '#B5651D', // PRIMARY
-          600: '#a15719',
-          700: '#864717',
-          800: '#6b3916',
-          900: '#572f14',
+        accent: {
+          teal: '#2D9CA6',
+          'teal-dark': '#1A6A72',
+          berry: '#9C4A6A',
+          olive: '#8A9B6E',
         },
-        'sky-blue': {
-          50: '#f0f7ff',
-          100: '#e1effe',
-          200: '#bae0fd',
-          300: '#7cc7fc',
-          400: '#36adf7',
-          500: '#4A90E2', // PRIMARY (Note: Adjusted for harmony)
-          600: '#0c69b8',
-          700: '#0a5494',
-          800: '#09467a',
-          900: '#0c3b65',
-        },
-        'sunshine-yellow': {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#F2C94C', // PRIMARY
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
-        },
-        'background-cream': '#FFF9E6',
+        // Semantic colors
+        background: '#F9F5F0',
+        surface: '#FFFFFF',
+        text: {
+          primary: '#3E2723',
+          secondary: '#5D4037',
+          muted: '#8D6E63',
+        }
       },
-      // 2. Define your custom gradients
       backgroundImage: {
-        // Header Gradient: Left to Right (Sunshine -> Field)
-        'header-gradient': 'linear-gradient(90deg, #F2C94C 0%, #2E8B57 100%)',
-        // Notice Gradient: Top to Bottom (Light Cream -> Sunshine)
-        'notice-gradient': 'linear-gradient(180deg, #FFE39B 0%, #F2C94C 100%)',
-        // Button Gradient: Top to Bottom (Light Green -> Field Green)
-        'button-primary': 'linear-gradient(180deg, #3DA56B 0%, #2E8B57 100%)',
-        // Hero Gradient: Diagonal (Sky Blue -> Field Green)
-        'hero-gradient': 'linear-gradient(45deg, #4A90E2 0%, #2E8B57 100%)',
-        // Success Gradient: Top to Bottom (Light Teal -> Field Green)
-        'success-gradient': 'linear-gradient(180deg, #A3E4D7 0%, #2E8B57 100%)',
+        'earth-gradient': 'linear-gradient(135deg, #E6CCB2 0%, #B08968 100%)',
+        'button-gradient': 'linear-gradient(90deg, #6B705C 0%, #7F5539 100%)',
+        'button-primary': 'linear-gradient(90deg, #5D4037 0%, #7F5539 100%)',
+        'header-gradient': 'linear-gradient(90deg, #F9F5F0 0%, #DDB892 100%)',
+        'hero-pattern': 'linear-gradient(135deg, rgba(249, 245, 240, 0.9) 0%, rgba(221, 184, 146, 0.8) 100%)',
       },
-      // 3. You can also extend other properties if needed, like animation for a modern touch
+      boxShadow: {
+        'soft-earth': '0 4px 12px rgba(124, 85, 52, 0.25)',
+        'earth-md': '0 6px 20px rgba(124, 85, 52, 0.15)',
+        'earth-lg': '0 10px 40px rgba(124, 85, 52, 0.1)',
+        'inner-earth': 'inset 0 2px 4px rgba(124, 85, 52, 0.1)',
+      },
+      fontFamily: {
+        sans: ['Poppins', 'sans-serif'],
+        serif: ['Playfair Display', 'serif'], // Complementary font for headings
+      },
+      fontSize: {
+        'xs': '0.75rem',
+        'sm': '0.875rem',
+        'base': '1rem',
+        'lg': '1.125rem',
+        'xl': '1.25rem',
+        '2xl': '1.5rem',
+        '3xl': '1.875rem',
+        '4xl': '2.25rem',
+        '5xl': '3rem',
+      },
+      spacing: {
+        '18': '4.5rem',
+        '88': '22rem',
+        '128': '32rem',
+      },
+      borderRadius: {
+        'none': '0',
+        'sm': '0.125rem',
+        'DEFAULT': '0.25rem',
+        'md': '0.375rem',
+        'lg': '0.5rem',
+        'xl': '0.75rem',
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+      },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
+        'slide-up': 'slideUp 0.3s ease-out',
+        'bounce-gentle': 'bounceGentle 2s infinite',
       },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(10px)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        bounceGentle: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-5px)' },
         },
       },
     },

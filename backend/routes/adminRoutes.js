@@ -1,8 +1,9 @@
 const express = require("express")
 const router = express.Router();
-const bycrpt = require('bcryptjs')
+const bcrypt = require('bcryptjs')
 const Admin = require('../models/Admin')
 const Officals = require('../models/Officals')
+const { generateToken } = require("../utlis/jwt");
 
 router.post('/register', async (req, res) => {
     try {
@@ -24,25 +25,44 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const admin = await Admin.findOne({ email });
-        if (!admin) {
-            return res.status(401).json({ message: "Incorrect email or password" })
-        }
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-        const ismatch = await bycrpt.compare(password, admin.password);
-        if (!ismatch) {
-            return res.status(401).json({ message: "Incorrect email or password" })
-        }
-
-        return res.status(201).json({ message: 'Login Sucessful' })
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({ message: 'Internal Server Error' })
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required." });
     }
-})
+
+    // Check if admin exists
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ message: "Incorrect email or password." });
+    }
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Incorrect email or password." });
+    }
+
+    // Generate JWT token
+    const token = generateToken(admin);
+
+    // Set cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+
+    return res.status(200).json({ message: "Login successful" });
+  } catch (error) {
+    console.error("Login error:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 router.get('/pending-officials', async (req, res) => {
     try {

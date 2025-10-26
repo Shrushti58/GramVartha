@@ -12,10 +12,15 @@ import Notices from "./components/Notices";
 import NoticeDetails from "./components/NoticesDetails";
 import CitizenLogin from './components/CitizenLogin';
 import CitizenRegister from './components/CitizenRegister'
+import CitizenDashboard from "./components/CitizenDashboard";
+import { Toaster } from "react-hot-toast";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
     <>
+      
       <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<GramVarthaLandingPage />}></Route>
@@ -29,7 +34,19 @@ export default function App() {
           <Route path="/officials/dashboard" element={<OfficialsDashboard/>} ></Route>
           <Route path='/notices' element={<Notices/>} ></Route>
           <Route path="/notice-details/:id" element={<NoticeDetails/>} ></Route>
+          <Route path="/profile" element={<CitizenDashboard/>} />
         </Routes>
+         <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
       </BrowserRouter>
     </>
   );
