@@ -50,19 +50,16 @@ ${text}
   }
 }
 
-// POST /notice/upload - create or update notice (AI optional/lazy)
+// POST /notice/upload - create or update notice
 router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res) => {
   try {
-    const { title, description, noticeId } = req.body;
+    const { title, description, noticeId, category } = req.body;
 
-    if (!title || !description) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!title || !description || !category) {
+      return res.status(400).json({ message: "Missing required fields: title, description, and category are required" });
     }
 
     let fileUrl = null;
-    let mimetype = null;
-    let extractedText = "";
-    let aiExplanation = { summary: "", bullets: [], full: "", language: "auto" };
 
     // Upload new file to Cloudinary if provided
     if (req.file && req.file.path) {
@@ -71,10 +68,6 @@ router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res
         folder: "gramvartha_notices",
       });
       fileUrl = cloudRes.secure_url;
-      mimetype = req.file.mimetype;
-
-      // Extract text from uploaded file
-      extractedText = await extractText(fileUrl, mimetype);
 
       // Cleanup local temp file safely
       if (fs.existsSync(req.file.path)) {
@@ -88,11 +81,15 @@ router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res
       notice = await Notice.findById(noticeId);
       if (!notice) return res.status(404).json({ message: "Notice not found" });
 
+      if (notice.createdBy.toString() !== req.user.id) {
+        return res.status(403).json({ message: "Not authorized to update this notice" });
+      }
+
       notice.title = title;
       notice.description = description;
+      notice.category = category;
       if (fileUrl) notice.fileUrl = fileUrl;
-      if (extractedText) notice.extractedText = extractedText;
-      notice.status = extractedText ? "done" : notice.status;
+      notice.status = "done";
 
       await notice.save();
     } else {
@@ -100,55 +97,46 @@ router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res
       notice = new Notice({
         title,
         description,
+        category,
         fileUrl,
-        extractedText,
-        aiExplanation, // still empty initially
         createdBy: req.user.id,
-        status: extractedText ? "done" : "pending",
+        status: "done",
       });
 
       await notice.save();
     }
 
-    // ✅ AI Explanation is now lazy / optional
-    // You can trigger AI processing later via a separate route
-    // Example: /notice/generateAI/:id
-
     res.status(201).json({
       message: "Notice saved successfully",
       notice,
-      info: "AI explanation can be generated later on-demand",
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error saving notice", error: err.message });
   }
 });
-// POST /notice/upload - create or update notice (AI optional/lazy)
-router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res) => {
-  try {
-    const { title, description, noticeId } = req.body;
 
-    if (!title || !description) {
-      return res.status(400).json({ message: "Missing required fields" });
+// PUT /notice/update/:id - update notice
+router.put("/update/:id", verifyToken, multerUpload.single("file"), async (req, res) => {
+  try {
+    const { title, description, category } = req.body;
+    const notice = await Notice.findById(req.params.id);
+    
+    if (!notice) return res.status(404).json({ message: "Notice not found" });
+
+    if (notice.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to update this notice" });
     }
 
     let fileUrl = null;
-    let mimetype = null;
-    let extractedText = "";
-    let aiExplanation = { summary: "", bullets: [], full: "", language: "auto" };
 
-    // Upload new file to Cloudinary if provided
+    // Handle file upload if new file is provided
     if (req.file && req.file.path) {
       const cloudRes = await cloudinary.uploader.upload(req.file.path, {
         resource_type: "auto",
         folder: "gramvartha_notices",
       });
       fileUrl = cloudRes.secure_url;
-      mimetype = req.file.mimetype;
-
-      // Extract text from uploaded file
-      extractedText = await extractText(fileUrl, mimetype);
 
       // Cleanup local temp file safely
       if (fs.existsSync(req.file.path)) {
@@ -156,48 +144,38 @@ router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res
       }
     }
 
-    let notice;
-    if (noticeId) {
-      // Update existing notice
-      notice = await Notice.findById(noticeId);
-      if (!notice) return res.status(404).json({ message: "Notice not found" });
+    // Update notice fields
+    notice.title = title || notice.title;
+    notice.description = description || notice.description;
+    notice.category = category || notice.category;
+    if (fileUrl) notice.fileUrl = fileUrl;
+    notice.status = "done";
 
-      notice.title = title;
-      notice.description = description;
-      if (fileUrl) notice.fileUrl = fileUrl;
-      if (extractedText) notice.extractedText = extractedText;
-      notice.status = extractedText ? "done" : notice.status;
-
-      await notice.save();
-    } else {
-      // Create new notice
-      notice = new Notice({
-        title,
-        description,
-        fileUrl,
-        extractedText,
-        aiExplanation, // still empty initially
-        createdBy: req.user.id,
-        status: extractedText ? "done" : "pending",
-      });
-
-      await notice.save();
-    }
-
-    // ✅ AI Explanation is now lazy / optional
-    // You can trigger AI processing later via a separate route
-    // Example: /notice/generateAI/:id
-
-    res.status(201).json({
-      message: "Notice saved successfully",
-      notice,
-      info: "AI explanation can be generated later on-demand",
-    });
+    await notice.save();
+    res.json({ message: "Notice updated successfully", notice });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error saving notice", error: err.message });
+    res.status(500).json({ message: "Error updating notice", error: err.message });
   }
 });
+router.delete("/delete/:id", verifyToken, async (req, res) => {
+  try {
+    const notice = await Notice.findById(req.params.id);
+    if (!notice) return res.status(404).json({ message: "Notice not found" });
+
+
+    if (notice.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to delete this notice" });
+    }
+
+    await notice.deleteOne();
+    res.json({ message: "Notice deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error deleting notice", error: err });
+  }
+});
+
 
 router.post("/generateAI/:id", async (req, res) => {
   try {
@@ -284,9 +262,11 @@ router.get("/fetch", async (req, res) => {
         _id: n._id,
         title: n.title,
         description: n.description,
-        fileUrl: n.fileUrl || null, // This is the key part for the front end
+        category: n.category || "general", // Include category with default fallback
+        fileUrl: n.fileUrl || null,
         createdBy: n.createdBy,
         createdAt: n.createdAt,
+        status: n.status || "done" // Include status as well for completeness
       };
     });
 
@@ -298,12 +278,7 @@ router.get("/fetch", async (req, res) => {
       .json({ message: "Error fetching notices", error: err.message });
   }
 });
-/**
- * GET /notice/:id/file
- * Proxy/stream file from Cloudinary (or any storage) through your backend.
- * - ?download=true forces Content-Disposition: attachment (download)
- * - otherwise Content-Disposition: inline (view in browser)
- */
+
 router.get("/:id/file", async (req, res) => {
   try {
     const { id } = req.params;
@@ -362,47 +337,6 @@ router.get("/:id/file", async (req, res) => {
 
 
 
-router.put("/update/:id", verifyToken, multerUpload.single("file"), async (req, res) => {
-  try {
-    const notice = await Notice.findById(req.params.id);
-    if (!notice) return res.status(404).json({ message: "Notice not found" });
 
-    if (notice.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized to update this notice" });
-    }
-
-    notice.title = req.body.title || notice.title;
-    notice.description = req.body.description || notice.description;
-
-    
-    if (req.file) {
-      notice.fileUrl = req.file.path;
-    }
-
-    await notice.save();
-    res.json({ message: "Notice updated successfully", notice });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error updating notice", error: err });
-  }
-});
-
-router.delete("/delete/:id", verifyToken, async (req, res) => {
-  try {
-    const notice = await Notice.findById(req.params.id);
-    if (!notice) return res.status(404).json({ message: "Notice not found" });
-
-
-    if (notice.createdBy.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized to delete this notice" });
-    }
-
-    await notice.deleteOne();
-    res.json({ message: "Notice deleted successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error deleting notice", error: err });
-  }
-});
 
 module.exports = router;

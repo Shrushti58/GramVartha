@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import "./index.css";
 import GramVarthaLandingPage from "./pages/GramVarthaLandingPage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -13,14 +13,12 @@ import NoticeDetails from "./components/NoticesDetails";
 import CitizenLogin from './components/CitizenLogin';
 import CitizenRegister from './components/CitizenRegister'
 import CitizenDashboard from "./components/CitizenDashboard";
-import { Toaster } from "react-hot-toast";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
     <>
-      
       <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<GramVarthaLandingPage />}></Route>
@@ -36,7 +34,9 @@ export default function App() {
           <Route path="/notice-details/:id" element={<NoticeDetails/>} ></Route>
           <Route path="/profile" element={<CitizenDashboard/>} />
         </Routes>
-         <ToastContainer
+        
+        {/* Global Toast Container */}
+        <ToastContainer
           position="top-right"
           autoClose={5000}
           hideProgressBar={false}
@@ -46,6 +46,9 @@ export default function App() {
           pauseOnFocusLoss
           draggable
           pauseOnHover
+          theme="light"
+          toastClassName="font-sans"
+          progressClassName="toastProgress"
         />
       </BrowserRouter>
     </>

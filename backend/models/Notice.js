@@ -13,26 +13,23 @@ const NoticeSchema = new mongoose.Schema({
   },
   fileUrl: {
     type: String, // Cloudinary or uploaded file URL
-    required: true,
   },
-  extractedText: {
-    type: String, // Text extracted via OCR from PDF/image
+  category: {
+    type: String,
     required: true,
-  },
-  aiExplanation: {
-    summary: { type: String}, // Short summary for citizens
-    bullets: { type: [String]}, // Key points
-    full: { type: String}, // Full explanation
-    language: { type: String, default: "auto"},
-    translations: {
-      type: Map,
-      of: new mongoose.Schema({
-        summary: { type: String},
-        full: { type: String},
-        bullets: { type: [String]},
-      }),
-      default: {},
-    },
+    enum: [
+      "development",
+      "health",
+      "education", 
+      "agriculture",
+      "employment",
+      "social_welfare",
+      "tax_billing",
+      "election",
+      "meeting",
+      "general"
+    ],
+    default: "general"
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
@@ -52,7 +49,8 @@ const NoticeSchema = new mongoose.Schema({
   },
 });
 
-// Index for faster queries (by creation date)
+// Index for faster queries
 NoticeSchema.index({ createdAt: -1 });
+NoticeSchema.index({ category: 1 });
 
 module.exports = mongoose.model("Notice", NoticeSchema);
