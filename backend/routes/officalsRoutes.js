@@ -42,7 +42,7 @@ router.post("/login", async (req, res) => {
    res.cookie("token", token, {
   httpOnly: true,
   sameSite: "lax", // or "strict"
-  secure: false,   // true only if using HTTPS
+  secure: true,   // true only if using HTTPS
   maxAge: 24 * 60 * 60 * 1000,
 });
 
@@ -61,7 +61,7 @@ router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
   sameSite: "lax", // or "strict"
-  secure: false,   // true only if using HTTPS
+  secure: true,   // true only if using HTTPS
   maxAge: 24 * 60 * 60 * 1000,
   });
   res.json({ message: "Logged out successfully" });
