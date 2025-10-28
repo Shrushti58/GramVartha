@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 const app=express();
 app.use(
   cors({
-    origin: "http://localhost:5173", 
+    origin: "https://gram-vartha.vercel.app", 
     credentials: true,               
   })
 );
@@ -22,7 +22,7 @@ app.use('/officials',require('./routes/officalsRoutes'))
 app.use('/notice',require('./routes/noticeRoutes'))
 app.use('/citizen',require('./routes/citizenRoutes'))
 
-const PORT=3000;
-app.listen(PORT,()=>{
-    console.log("Server Running!!")
-})
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
