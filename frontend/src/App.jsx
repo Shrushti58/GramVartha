@@ -33,6 +33,7 @@ export default function App() {
           <Route path='/notices' element={<Notices/>} ></Route>
           <Route path="/notice-details/:id" element={<NoticeDetails/>} ></Route>
           <Route path="/citizen/dashboard" element={<CitizenDashboard/>} />
+           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
         
         {/* Global Toast Container */}
