@@ -19,26 +19,25 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function App() {
   return (
+    
     <>
-    <HashRouter>
       <BrowserRouter basename="/">
         <Routes>
-          <Route path="/" element={<GramVarthaLandingPage />}></Route>
-          <Route path='/citizen/login' element={<CitizenLogin/>}></Route> 
-          <Route path="/citizen/register" element={<CitizenRegister/>} />
-          <Route path="/admin/dashboard" element={<AdminDash />}></Route>
-          <Route path="/admin/register" element={<AdminRegister/>} ></Route>
-          <Route path="/admin/login" element={<AdminLogin/>} ></Route>
-          <Route path="/officials/login" element={<OfficialLogin/>} ></Route>
-          <Route path="/officials/register" element={<OfficialRegister/>} ></Route>
-          <Route path="/officials/dashboard" element={<OfficialsDashboard/>} ></Route>
-          <Route path='/notices' element={<Notices/>} ></Route>
-          <Route path="/notice-details/:id" element={<NoticeDetails/>} ></Route>
-          <Route path="/citizen/dashboard" element={<CitizenDashboard/>} />
-           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/" element={<GramVarthaLandingPage />} />
+          <Route path="/citizen/login" element={<CitizenLogin />} />
+          <Route path="/citizen/register" element={<CitizenRegister />} />
+          <Route path="/admin/dashboard" element={<AdminDash />} />
+          <Route path="/admin/register" element={<AdminRegister />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/officials/login" element={<OfficialLogin />} />
+          <Route path="/officials/register" element={<OfficialRegister />} />
+          <Route path="/officials/dashboard" element={<OfficialsDashboard />} />
+          <Route path="/notices" element={<Notices />} />
+          <Route path="/notice-details/:id" element={<NoticeDetails />} />
+          <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-        
-        {/* Global Toast Container */}
+
         <ToastContainer
           position="top-right"
           autoClose={5000}
@@ -54,7 +53,6 @@ export default function App() {
           progressClassName="toastProgress"
         />
       </BrowserRouter>
-      </HashRouter>
     </>
   );
 }
