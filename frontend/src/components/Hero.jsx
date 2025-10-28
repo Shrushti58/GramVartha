@@ -1,4 +1,5 @@
 import React from "react";
+import {Link} from "react-router-dom"
 
 export default function Hero() {
   return (
@@ -51,27 +52,57 @@ export default function Hero() {
               </p>
             </div>
 
-            {/* Enhanced CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start pt-2 md:pt-4">
-              <button className="group relative bg-button-primary text-primary-50 px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl font-semibold hover:shadow-earth-md transition-all duration-300 transform hover:-translate-y-1 md:hover:-translate-y-2 shadow-soft-earth overflow-hidden text-sm md:text-base font-sans">
-                <span className="relative z-10 flex items-center justify-center">
-                  Explore Features
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 ml-1 md:ml-2 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </span>
-                <div className="absolute inset-0 bg-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-              </button>
-              
-              <button className="group flex items-center justify-center gap-2 md:gap-3 bg-surface text-primary-700 border-2 border-primary-200 px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl font-semibold hover:border-primary-300 hover:shadow-soft-earth hover:bg-primary-50 transition-all duration-300 hover:-translate-y-1 text-sm md:text-base font-sans">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 md:h-5 md:w-5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Watch Demo</span>
-              </button>
-            </div>
+          {/* Enhanced CTA Buttons */}
+<div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center lg:justify-start pt-2 md:pt-4">
+  {/* View All Notices */}
+  <Link
+    to="/notices"
+    className="group relative bg-button-primary text-primary-50 px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl font-semibold hover:shadow-earth-md transition-all duration-300 transform hover:-translate-y-1 md:hover:-translate-y-2 shadow-soft-earth overflow-hidden text-sm md:text-base font-sans"
+  >
+    <span className="relative z-10 flex items-center justify-center">
+      View All Notices
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-4 w-4 md:h-5 md:w-5 ml-1 md:ml-2 group-hover:translate-x-1 transition-transform"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M13 7l5 5m0 0l-5 5m5-5H6"
+        />
+      </svg>
+    </span>
+    <div className="absolute inset-0 bg-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+  </Link>
+
+  {/* Citizen Registration */}
+  <Link
+    to="/citizen/register"
+    className="group flex items-center justify-center gap-2 md:gap-3 bg-surface text-primary-700 border-2 border-primary-200 px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl font-semibold hover:border-primary-300 hover:shadow-soft-earth hover:bg-primary-50 transition-all duration-300 hover:-translate-y-1 text-sm md:text-base font-sans"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-4 w-4 md:h-5 md:w-5 text-primary-600"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M12 4v16m8-8H4"
+      />
+    </svg>
+    <span>Register as Citizen</span>
+  </Link>
+</div>
+
 
             {/* Enhanced Stats */}
             <div className="grid grid-cols-2 gap-4 md:gap-6 max-w-md mx-auto lg:mx-0 pt-6 md:pt-8">

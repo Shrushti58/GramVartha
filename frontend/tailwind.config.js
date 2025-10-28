@@ -56,6 +56,9 @@ export default {
         'earth-md': '0 6px 20px rgba(124, 85, 52, 0.15)',
         'earth-lg': '0 10px 40px rgba(124, 85, 52, 0.1)',
         'inner-earth': 'inset 0 2px 4px rgba(124, 85, 52, 0.1)',
+        // Additional glassmorphism shadows
+        'glass': '0 8px 32px 0 rgba(124, 85, 52, 0.1)',
+        'glass-lg': '0 8px 32px 0 rgba(124, 85, 52, 0.2)',
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
@@ -91,6 +94,9 @@ export default {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'bounce-gentle': 'bounceGentle 2s infinite',
+        'slide-in-right': 'slideInRight 0.3s ease-out',
+        'slide-out-right': 'slideOutRight 0.3s ease-in',
+        'shimmer': 'shimmer 2s infinite',
       },
       keyframes: {
         fadeIn: {
@@ -105,6 +111,46 @@ export default {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-5px)' },
         },
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideOutRight: {
+          '0%': { transform: 'translateX(0)', opacity: '1' },
+          '100%': { transform: 'translateX(100%)', opacity: '0' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
+      backdropBlur: {
+        xs: '2px',
+        sm: '4px',
+        md: '12px',
+        lg: '16px',
+        xl: '24px',
+        '2xl': '40px',
+        '3xl': '64px',
+      },
+      backdropSaturate: {
+        0: '0',
+        50: '.5',
+        100: '1',
+        150: '1.5',
+        200: '2',
+      },
+      transitionDuration: {
+        '0': '0ms',
+        '200': '200ms',
+        '300': '300ms',
+        '500': '500ms',
+        '700': '700ms',
+        '1000': '1000ms',
+      },
+      transitionTimingFunction: {
+        'in-expo': 'cubic-bezier(0.95, 0.05, 0.795, 0.035)',
+        'out-expo': 'cubic-bezier(0.19, 1, 0.22, 1)',
       },
     },
   },

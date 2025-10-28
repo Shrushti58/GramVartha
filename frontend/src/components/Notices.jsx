@@ -170,10 +170,23 @@ const Notices = () => {
         }
         const data = await response.json();
         
+        // Handle different response structures
+        let noticesArray = [];
+        if (Array.isArray(data)) {
+          noticesArray = data;
+        } else if (data && Array.isArray(data.notices)) {
+          noticesArray = data.notices;
+        } else if (data && data.data && Array.isArray(data.data)) {
+          noticesArray = data.data;
+        } else {
+          console.warn("Unexpected API response structure:", data);
+          noticesArray = [];
+        }
+        
         // Initialize visitor ID
         getVisitorId();
         
-        setNotices(data);
+        setNotices(noticesArray);
       } catch (err) {
         console.error("Error fetching notices:", err);
         setError("Cannot connect to server. Please try again later.");
@@ -234,12 +247,17 @@ const Notices = () => {
     }
   };
 
-  // Enhanced filtering and sorting
+  // Enhanced filtering and sorting - FIXED VERSION
   const sortedAndFilteredNotices = useMemo(() => {
-    let filtered = notices.filter((notice) => {
+    // Ensure notices is always an array
+    const noticesArray = Array.isArray(notices) ? notices : [];
+    
+    let filtered = noticesArray.filter((notice) => {
+      if (!notice) return false;
+      
       const matchesSearch =
-        notice.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        notice.description?.toLowerCase().includes(searchTerm.toLowerCase());
+        (notice.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        notice.description?.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const hasAttachment = !!notice.fileUrl;
       const matchesCategory = selectedCategory === "all" || notice.category === selectedCategory;
@@ -254,9 +272,9 @@ const Notices = () => {
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case "newest":
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
         case "oldest":
-          return new Date(a.createdAt) - new Date(b.createdAt);
+          return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
         case "popular":
           return (b.views || 0) - (a.views || 0);
         case "title-asc":
@@ -276,8 +294,8 @@ const Notices = () => {
     if (value.length > 2) {
       const suggestions = notices
         .filter(notice => 
-          notice.title?.toLowerCase().includes(value.toLowerCase()) ||
-          notice.description?.toLowerCase().includes(value.toLowerCase())
+          notice && (notice.title?.toLowerCase().includes(value.toLowerCase()) ||
+          notice.description?.toLowerCase().includes(value.toLowerCase()))
         )
         .slice(0, 5)
         .map(notice => notice.title);
@@ -480,22 +498,22 @@ const Notices = () => {
     <div className="min-h-screen bg-background font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
- {/* Header Section - Modern & Bold */}
-<div className="mb-16 animate-slide-up">
-  <div className="text-center">
-    <div className="flex items-center justify-center gap-4 mb-6">
-      <div className="h-px w-12 bg-primary-300"></div>
-      <span className="text-primary-600 font-semibold tracking-wider text-sm uppercase">Public Portal</span>
-      <div className="h-px w-12 bg-primary-300"></div>
-    </div>
-    <h1 className="text-6xl md:text-7xl font-bold text-text-primary mb-6 font-serif tracking-tight">
-      NOTICES
-    </h1>
-    <p className="text-text-muted text-lg max-w-2xl mx-auto font-medium">
-      Your trusted source for official government communications and public announcements
-    </p>
-  </div>
-</div>
+        <div className="mb-16 animate-slide-up">
+          <div className="text-center">
+            <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="h-px w-12 bg-primary-300"></div>
+              <span className="text-primary-600 font-semibold tracking-wider text-sm uppercase">Public Portal</span>
+              <div className="h-px w-12 bg-primary-300"></div>
+            </div>
+            <h1 className="text-6xl md:text-7xl font-bold text-text-primary mb-6 font-serif tracking-tight">
+              NOTICES
+            </h1>
+            <p className="text-text-muted text-lg max-w-2xl mx-auto font-medium">
+              Your trusted source for official government communications and public announcements
+            </p>
+          </div>
+        </div>
+
         {/* Enhanced Search and Filter Section */}
         <div className="bg-surface rounded-xl shadow-soft-earth p-6 mb-8 animate-fade-in">
           <div className="flex flex-col lg:flex-row gap-4 mb-4">

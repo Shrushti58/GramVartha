@@ -71,12 +71,7 @@ export default function Features() {
           ))}
         </div>
 
-        {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <button className="bg-gradient-to-b from-primary-500 to-primary-600 text-white px-8 py-4 rounded-2xl font-medium hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 shadow-md hover:shadow-xl text-lg">
-            Explore All Features
-          </button>
-        </div>
+        
       </div>
     </section>
   );

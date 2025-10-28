@@ -13,44 +13,6 @@ const Citizen = require("../models/Citizen");
 // Multer temporary local storage
 const multerUpload = multer({ dest: "uploads/" });
 
-// Gemini setup
-const googleAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_KEY);
-const geminiModel = googleAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-
-async function getStructuredExplanation(text) {
-  const prompt = `
-You are a helpful multilingual assistant.
-If the notice is in Marathi, Hindi, or any Indian language, detect it and simplify it for citizens in the same language.
-If the notice is in English, simplify it in English.
-Output only JSON:
-{
-  "language": "detected language name",
-  "summary": "2-3 line summary",
-  "bullets": ["Key point 1", "Key point 2"],
-  "full": "Full simplified explanation"
-}
-
-Notice:
-${text}
-  `;
-
-  const result = await geminiModel.generateContent(prompt);
-  let rawText = result.response.text().trim();
-  rawText = rawText.replace(/```json|```/g, "").trim();
-
-  try {
-    return JSON.parse(rawText);
-  } catch (err) {
-    console.error("Error parsing Gemini JSON:", err);
-    return {
-      language: "auto",
-      summary: rawText.slice(0, 200),
-      bullets: [],
-      full: rawText,
-    };
-  }
-}
 
 // POST /notice/upload - create or update notice (Enhanced)
 router.post("/upload", verifyToken, multerUpload.single("file"), async (req, res) => {
@@ -742,5 +704,67 @@ router.get("/citizen/notices", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Error fetching notices", error: error.message });
   }
 });
+
+router.get("/generateDetails/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch notice by ID and populate creator details
+    const notice = await Notice.findById(id).populate("createdBy", "name email");
+
+    if (!notice) {
+      return res.status(404).json({ success: false, message: "Notice not found" });
+    }
+
+    // Prepare computed fields
+    const computed = {
+      isActive: notice.isActive,
+      daysSincePublication: notice.daysSincePublication,
+      daysUntilExpiry: notice.daysUntilExpiry,
+      isExpiringSoon: notice.isExpiringSoon(),
+    };
+
+    // Build detailed response
+    const noticeDetails = {
+      id: notice._id,
+      title: notice.title,
+      description: notice.description,
+      category: notice.category,
+      priority: notice.priority,
+      status: notice.status,
+      fileUrl: notice.fileUrl,
+      fileName: notice.fileName,
+      fileSize: notice.fileSize,
+      tags: notice.tags,
+      targetAudience: notice.targetAudience,
+      targetWards: notice.targetWards,
+      createdBy: notice.createdBy,
+      createdAt: notice.createdAt,
+      updatedAt: notice.updatedAt,
+      publishDate: notice.publishDate,
+      expiryDate: notice.expiryDate,
+      views: notice.views,
+      uniqueViews: notice.uniqueViews,
+      lastViewedAt: notice.lastViewedAt,
+      isPinned: notice.isPinned,
+      metadata: notice.metadata,
+      computed, // include computed virtuals
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "Notice details generated successfully",
+      data: noticeDetails,
+    });
+  } catch (error) {
+    console.error("Error generating notice details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
+
 
 module.exports = router;

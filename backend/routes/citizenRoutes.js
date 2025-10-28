@@ -138,18 +138,37 @@ router.post("/logout", (req, res) => {
     .json({ message: "Logged out successfully" });
 });
 
-// Add get profile route
+// GET /api/citizen/profile - Get citizen profile
 router.get("/profile", verifyToken, async (req, res) => {
   try {
-    const citizen = await Citizen.findById(req.user.id).select('-password');
+    const citizen = await Citizen.findById(req.user.id)
+      .select('-password -refreshToken') // Exclude sensitive fields
+
     if (!citizen) {
       return res.status(404).json({ message: "Citizen not found" });
     }
-    
-    res.status(200).json(citizen);
-  } catch (err) {
-    console.error("Profile fetch error:", err);
-    res.status(500).json({ message: "Server error fetching profile" });
+
+    // Format the response to match what the dashboard expects
+    const profileData = {
+      id: citizen._id,
+      name: citizen.name || citizen.user?.name,
+      email: citizen.email || citizen.user?.email,
+      phone: citizen.phone || citizen.user?.phone,
+      address: {
+        wardNumber: citizen.address.wardNumber,
+        houseNumber: citizen.address.houseNumber,
+        street: citizen.address.street,
+        village: citizen.address.village,
+        pincode: citizen.address.pincode
+      },
+      joinDate: citizen.createdAt || citizen.joinDate,
+      // Add any other relevant fields
+    };
+
+    res.json(profileData);
+  } catch (error) {
+    console.error("Error fetching citizen profile:", error);
+    res.status(500).json({ message: "Error fetching profile", error: error.message });
   }
 });
 

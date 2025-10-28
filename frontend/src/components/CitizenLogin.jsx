@@ -30,10 +30,10 @@ const Login = () => {
       const res = await axios.post(
         'http://localhost:3000/citizen/login',
         { email: email.toLowerCase().trim(), password },
-        { withCredentials: true, timeout: 30000 }
+        { withCredentials: true}
       );
       
-      navigate("/profile");
+      navigate("/citizen/dashboard");
     } catch (err) {
       console.error(err);
       let errorMessage = "Login failed";
