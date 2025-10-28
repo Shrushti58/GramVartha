@@ -117,7 +117,7 @@ const Register = () => {
 
       console.log("Sending registration data:", submitData);
 
-      const res = await axios.post(`${process.env.REACT_APP_API_URL}/citizen/register`, submitData, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/citizen/register`, submitData, {
         headers: { 
           "Content-Type": "application/json",
         },

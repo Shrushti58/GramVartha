@@ -22,7 +22,7 @@ export default function OfficialLogin({ onLogin }) {
     
     try {
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/officials/login`,
+        `${import.meta.env.VITE_API_URL}/officials/login`,
         formData,
         { withCredentials: true } 
       );

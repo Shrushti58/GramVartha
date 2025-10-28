@@ -27,8 +27,9 @@ const Login = () => {
     setError("");
 
     try {
+      
       const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/citizen/login`,
+        `${import.meta.env.VITE_API_URL}/citizen/login`,
         { email: email.toLowerCase().trim(), password },
         { withCredentials: true}
       );
