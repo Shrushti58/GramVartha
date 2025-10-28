@@ -2,7 +2,7 @@ import React from "react";
 import "./index.css";
 import { HashRouter } from "react-router-dom";
 import GramVarthaLandingPage from "./pages/GramVarthaLandingPage";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import AdminDash from "./pages/AdminDash";
 import AdminRegister from "./components/AdminRegister";
 import AdminLogin from "./components/AdminLogin";
