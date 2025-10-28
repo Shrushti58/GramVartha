@@ -287,7 +287,8 @@ const CitizenDashboard = () => {
     ).length;
 
     // Unread notifications
-    const unreadNotifications = allNoticesData.filter((notice) => {
+    const unreadNotifications =
+     allNoticesData.filter((notice) => {
       const hasViewed = localStorage.getItem(`viewed_${notice._id}`);
       return !hasViewed;
     }).length;
