@@ -24,6 +24,7 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
+     console.log("🔹 /login route hit:", req.body);
     const { email, password } = req.body;
 
     const official = await Officials.findOne({ email });
@@ -37,16 +38,15 @@ router.post("/login", async (req, res) => {
     if (!ok) return res.status(400).json({ message: "Invalid email or password" });
 
     const token = generateToken(official);
+    console.log(token)
 
-  res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,       // ✅ must be true in production (Render uses HTTPS)
-  sameSite: "none",   // ✅ allows cross-site cookies
-  path: "/",          // ✅ cookie available across app
-  maxAge: 7 * 24 * 60 * 60 * 1000 // optional (7 days)
-});
-
-
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,       // ✅ must be true in production (Render uses HTTPS)
+      sameSite: "none",   // ✅ allows cross-site cookies
+      path: "/",          // ✅ cookie available across app
+      maxAge: 7 * 24 * 60 * 60 * 1000 // optional (7 days)
+    });
 
     res.json({
       message: "Login successful",
@@ -61,9 +61,9 @@ router.post("/login", async (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-  sameSite: "lax", // or "strict"
-  secure: true,   // true only if using HTTPS
-  maxAge: 24 * 60 * 60 * 1000,
+    sameSite: "lax", // or "strict"
+    secure: true,   // true only if using HTTPS
+    maxAge: 24 * 60 * 60 * 1000,
   });
   res.json({ message: "Logged out successfully" });
 });
