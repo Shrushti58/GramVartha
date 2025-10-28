@@ -39,13 +39,13 @@ router.post("/login", async (req, res) => {
     const token = generateToken(official);
 
   res.cookie("token", token, {
-  httpOnly: true,           // ✅ Can't be accessed by JavaScript
-  secure: true,             // ✅ Required for HTTPS (true in production)
-  sameSite: "none",         // ✅ Needed for cross-site cookies (Vercel → Render)
-  path: "/",                // ✅ Cookie available for all routes
-  maxAge: 7 * 24 * 60 * 60 * 1000 // (optional) 7 days
-
+  httpOnly: true,
+  secure: true,       // ✅ must be true in production (Render uses HTTPS)
+  sameSite: "none",   // ✅ allows cross-site cookies
+  path: "/",          // ✅ cookie available across app
+  maxAge: 7 * 24 * 60 * 60 * 1000 // optional (7 days)
 });
+
 
 
     res.json({
