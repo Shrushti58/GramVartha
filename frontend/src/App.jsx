@@ -1,5 +1,6 @@
 import React from "react";
 import "./index.css";
+import { HashRouter } from "react-router-dom";
 import GramVarthaLandingPage from "./pages/GramVarthaLandingPage";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import AdminDash from "./pages/AdminDash";
@@ -19,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function App() {
   return (
     <>
+    <HashRouter>
       <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<GramVarthaLandingPage />}></Route>
@@ -52,6 +54,7 @@ export default function App() {
           progressClassName="toastProgress"
         />
       </BrowserRouter>
+      </HashRouter>
     </>
   );
 }
