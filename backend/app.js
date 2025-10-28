@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 const app=express();
 app.use(
   cors({
-    origin: "https://gram-vartha.vercel.app", 
+    origin: "https://gramvartha.vercel.app", 
     credentials: true,               
   })
 );
