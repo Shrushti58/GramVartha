@@ -38,12 +38,13 @@ router.post("/login", async (req, res) => {
 
     const token = generateToken(official);
 
-    // send JWT in httpOnly cookie
-   res.cookie("token", token, {
-  httpOnly: true,
-  sameSite: "lax", // or "strict"
-  secure: true,   // true only if using HTTPS
-  maxAge: 24 * 60 * 60 * 1000,
+  res.cookie("token", token, {
+  httpOnly: true,           // ✅ Can't be accessed by JavaScript
+  secure: true,             // ✅ Required for HTTPS (true in production)
+  sameSite: "none",         // ✅ Needed for cross-site cookies (Vercel → Render)
+  path: "/",                // ✅ Cookie available for all routes
+  maxAge: 7 * 24 * 60 * 60 * 1000 // (optional) 7 days
+
 });
 
 
