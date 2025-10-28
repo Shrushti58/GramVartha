@@ -40,13 +40,13 @@ router.post("/login", async (req, res) => {
     const token = generateToken(official);
     console.log(token)
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,       // ✅ must be true in production (Render uses HTTPS)
-      sameSite: "none",   // ✅ allows cross-site cookies
-      path: "/",          // ✅ cookie available across app
-      maxAge: 7 * 24 * 60 * 60 * 1000 // optional (7 days)
-    });
+    res
+      .cookie("token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      })
 
     res.json({
       message: "Login successful",
