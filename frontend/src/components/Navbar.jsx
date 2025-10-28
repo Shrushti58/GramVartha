@@ -9,7 +9,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-primary-700/30 backdrop-blur-xl border-b border-primary-300/30 shadow-earth-lg">
+    <nav className="sticky top-0 z-50 bg-white-700/30 backdrop-blur-xl border-b border-primary-300/30 shadow-earth-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-center h-16 sm:h-20">
           {/* Brand / Logo */}

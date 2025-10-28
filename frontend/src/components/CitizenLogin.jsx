@@ -28,7 +28,7 @@ const Login = () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:3000/citizen/login',
+        `${process.env.REACT_APP_API_URL}/citizen/login`,
         { email: email.toLowerCase().trim(), password },
         { withCredentials: true}
       );

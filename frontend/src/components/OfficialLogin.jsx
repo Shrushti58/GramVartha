@@ -22,7 +22,7 @@ export default function OfficialLogin({ onLogin }) {
     
     try {
       const res = await axios.post(
-        "http://localhost:3000/officials/login",
+        `${process.env.REACT_APP_API_URL}/officials/login`,
         formData,
         { withCredentials: true } 
       );

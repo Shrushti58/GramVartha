@@ -243,10 +243,22 @@ export default function OfficialsDashboard() {
     setEditingNotice(null);
   };
 
-  const handleLogout = () => {
-    navigate("/officials/login");
+ const handleLogout = async () => {
+  try {
+    // Call backend to clear the cookie
+    await axios.post(
+      "http://localhost:3000/officials/logout",
+      {},
+      { withCredentials: true } // important to send cookies
+    );
+
     toast.info("Logged out successfully");
-  };
+    navigate("/"); // redirect to login page
+  } catch (err) {
+    console.error(err);
+    toast.error("Error logging out");
+  }
+};
 
   const isNoticeActive = (notice) => {
     if (!notice) return false;

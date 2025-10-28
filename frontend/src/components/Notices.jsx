@@ -164,7 +164,7 @@ const Notices = () => {
     const fetchNotices = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:3000/notice/fetch");
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/notice/fetch`);
         if (!response.ok) {
           throw new Error("Failed to fetch notices");
         }
@@ -209,7 +209,7 @@ const Notices = () => {
     const visitorId = getVisitorId();
     
     try {
-      const response = await fetch(`http://localhost:3000/notice/${noticeId}/view`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/notice/${noticeId}/view`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

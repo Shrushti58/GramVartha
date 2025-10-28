@@ -57,11 +57,16 @@ router.post("/login", async (req, res) => {
   }
 });
 
-/** Logout */
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", { httpOnly: true, sameSite: "strict" });
-  res.json({ message: "Logged out" });
+  res.clearCookie("token", {
+    httpOnly: true,
+  sameSite: "lax", // or "strict"
+  secure: false,   // true only if using HTTPS
+  maxAge: 24 * 60 * 60 * 1000,
+  });
+  res.json({ message: "Logged out successfully" });
 });
+
 
 /** Who am I (protected) */
 router.get("/me", verifyToken, async (req, res) => {

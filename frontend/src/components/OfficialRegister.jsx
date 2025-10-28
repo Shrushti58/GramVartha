@@ -23,7 +23,7 @@ export default function OfficialRegister() {
     setMessage("");
     
     try {
-      const res = await axios.post("http://localhost:3000/officials/register", formData);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/officials/register`, formData);
       setMessage(res.data.message);
       
       // Redirect to login after successful registration

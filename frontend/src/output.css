@@ -1862,6 +1862,10 @@ video {
   background-color: rgb(127 85 57 / 0.2);
 }
 
+.bg-primary-700\/30{
+  background-color: rgb(93 64 55 / 0.3);
+}
+
 .bg-primary-800{
   --tw-bg-opacity: 1;
   background-color: rgb(74 51 41 / var(--tw-bg-opacity, 1));
@@ -1945,10 +1949,6 @@ video {
 .bg-yellow-50{
   --tw-bg-opacity: 1;
   background-color: rgb(254 252 232 / var(--tw-bg-opacity, 1));
-}
-
-.bg-primary-700\/30{
-  background-color: rgb(93 64 55 / 0.3);
 }
 
 .bg-opacity-0{

@@ -165,7 +165,7 @@ const CitizenDashboard = () => {
   const handleLogout = async () => {
     try {
       // Call backend logout endpoint if needed
-      await fetch(`${API_BASE_URL}/citizen/logout`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/citizen/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -215,13 +215,13 @@ const CitizenDashboard = () => {
       // Fetch citizen data, ward notices, and all notices in parallel
       const [citizenResponse, wardNoticesResponse, allNoticesResponse] =
         await Promise.all([
-          fetch(`${API_BASE_URL}/citizen/profile`, {
+          fetch(`${process.env.REACT_APP_API_URL}/citizen/profile`, {
             credentials: "include",
           }),
-          fetch(`${API_BASE_URL}/notice/citizen/notices`, {
+          fetch(`${process.env.REACT_APP_API_URL}/notice/citizen/notices`, {
             credentials: "include",
           }),
-          fetch(`${API_BASE_URL}/notice/fetch`),
+          fetch(`${process.env.REACT_APP_API_URL}/notice/fetch`),
         ]);
 
       if (
@@ -436,7 +436,7 @@ const CitizenDashboard = () => {
     console.log(`📊 Tracking view: Notice ${noticeId}, Visitor ${visitorId}`);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/notice/${noticeId}/view`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/notice/${noticeId}/view`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

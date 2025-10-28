@@ -17,7 +17,7 @@ export default function AdminRegister() {
     e.preventDefault();
 
     try {
-      const res = await axios.post("http://localhost:3000/admin/register", formData);
+      const res = await axios.post(`${process.env.REACT_APP_API_URL}/admin/register`, formData);
       setMessage(res.data.message);
 
       // Optional: redirect to login after success

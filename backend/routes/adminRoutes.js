@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs')
 const Admin = require('../models/Admin')
 const Officals = require('../models/Officals')
-const { generateToken } = require("../utlis/jwt");
+const { generateToken, verifyToken } = require("../utlis/jwt");;
 const Citizens=require('../models/Citizen')
 
 router.post('/register', async (req, res) => {
@@ -50,13 +50,14 @@ router.post("/login", async (req, res) => {
     // Generate JWT token
     const token = generateToken(admin);
 
-    // Set cookie
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
+  res.cookie("token", token, {
+  httpOnly: true,
+  secure: false,       // dev: no HTTPS
+  sameSite: "lax",     // allows cross-origin requests from different port
+  maxAge: 24 * 60 * 60 * 1000
+});
+
+
 
     return res.status(200).json({ message: "Login successful" });
   } catch (error) {
@@ -65,7 +66,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get('/pending-officials', async (req, res) => {
+router.get('/pending-officials',async (req, res) => {
     try {
         const pendingOfficials = await Officals.find({ status: "pending" }).select("-password");
         res.json(pendingOfficials);
@@ -76,7 +77,7 @@ router.get('/pending-officials', async (req, res) => {
 })
 
 
-router.put("/approve/:id", async (req, res) => {
+router.put("/approve/:id",async (req, res) => {
   try {
     const official = await Officals.findByIdAndUpdate(
       req.params.id,
@@ -92,7 +93,7 @@ router.put("/approve/:id", async (req, res) => {
   }
 });
 
-router.delete("/citizen/:id", async (req, res) => {
+router.delete("/citizen/:id",async (req, res) => {
   try {
     const deletedCitizen = await Citizens.findByIdAndDelete(req.params.id);
     if (!deletedCitizen) {
@@ -105,7 +106,7 @@ router.delete("/citizen/:id", async (req, res) => {
   }
 });
 
-router.delete("/official/:id", async (req, res) => {
+router.delete("/official/:id",async (req, res) => {
   try {
     const deletedOfficial = await Officals.findByIdAndDelete(req.params.id);
     if (!deletedOfficial) {
@@ -119,7 +120,7 @@ router.delete("/official/:id", async (req, res) => {
 });
 
 
-router.put("/reject/:id", async (req, res) => {
+router.put("/reject/:id",async (req, res) => {
   try {
     const official = await Officals.findByIdAndUpdate(
       req.params.id,
@@ -136,7 +137,7 @@ router.put("/reject/:id", async (req, res) => {
 });
 
 // Route to get all citizens
-router.get('/all-citizens', async (req, res) => {
+router.get('/all-citizens',async (req, res) => {
   try {
     const citizens = await Citizens.find().select("-password"); // Exclude passwords
     res.status(200).json(citizens);
@@ -147,7 +148,7 @@ router.get('/all-citizens', async (req, res) => {
 });
 
 // Route to get all officials
-router.get('/all-officials', async (req, res) => {
+router.get('/all-officials',async (req, res) => {
   try {
     const officials = await Officals.find().select("-password"); // Exclude passwords
     res.status(200).json(officials);
@@ -155,6 +156,15 @@ router.get('/all-officials', async (req, res) => {
     console.error("Error fetching officials:", err);
     res.status(500).json({ message: "Error fetching officials" });
   }
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: false,       // set to true in production (HTTPS)
+    sameSite: "lax",
+  });
+  return res.status(200).json({ message: "Logged out successfully" });
 });
 
 module.exports = router;

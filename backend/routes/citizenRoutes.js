@@ -138,7 +138,7 @@ router.post("/logout", (req, res) => {
     .json({ message: "Logged out successfully" });
 });
 
-// GET /api/citizen/profile - Get citizen profile
+// GET /citizen/profile - Get citizen profile
 router.get("/profile", verifyToken, async (req, res) => {
   try {
     const citizen = await Citizen.findById(req.user.id)

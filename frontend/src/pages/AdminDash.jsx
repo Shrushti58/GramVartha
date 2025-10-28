@@ -19,45 +19,47 @@ export default function AdminDashboard() {
   const [deleteTarget, setDeleteTarget] = useState({ id: null, type: "", name: "" });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      setLoading(true);
-      try {
-        // Fetch all data in parallel
-        const [citizensRes, officialsRes, pendingRes] = await Promise.all([
-          axios.get("http://localhost:3000/admin/all-citizens"),
-          axios.get("http://localhost:3000/admin/all-officials"),
-          axios.get("http://localhost:3000/admin/pending-officials")
-        ]);
+ useEffect(() => {
+  const fetchAllData = async () => {
+    setLoading(true);
+    try {
+      // Fetch all data in parallel with credentials
+      const [citizensRes, officialsRes, pendingRes] = await Promise.all([
+        axios.get("http://localhost:3000/admin/all-citizens", { withCredentials: true }),
+        axios.get("http://localhost:3000/admin/all-officials", { withCredentials: true }),
+        axios.get("http://localhost:3000/admin/pending-officials", { withCredentials: true })
+      ]);
 
-        setCitizens(citizensRes.data);
+      setCitizens(citizensRes.data);
+      setOfficials(officialsRes.data);
+      setPendingOfficials(pendingRes.data);
+
+      // Update stats
+      setStats({
+        totalCitizens: citizensRes.data.length,
+        totalOfficials: officialsRes.data.length,
+        pendingOfficials: pendingRes.data.length
+      });
+
+      // Set initial view data
+      if (view === "pending") {
+        setOfficials(pendingRes.data);
+      } else if (view === "allOfficials") {
         setOfficials(officialsRes.data);
-        setPendingOfficials(pendingRes.data);
-
-        // Update stats
-        setStats({
-          totalCitizens: citizensRes.data.length,
-          totalOfficials: officialsRes.data.length,
-          pendingOfficials: pendingRes.data.length
-        });
-
-        // Set initial view data
-        if (view === "pending") {
-          setOfficials(pendingRes.data);
-        } else if (view === "allOfficials") {
-          setOfficials(officialsRes.data);
-        } else if (view === "allCitizens") {
-          setCitizens(citizensRes.data);
-        }
-      } catch (err) {
-        setMessage("Failed to load data.");
-        toast.error("Failed to load data.");
-      } finally {
-        setLoading(false);
+      } else if (view === "allCitizens") {
+        setCitizens(citizensRes.data);
       }
-    };
-    fetchAllData();
-  }, []);
+    } catch (err) {
+      setMessage("Failed to load data.");
+      toast.error("Failed to load data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchAllData();
+}, []);
+
 
   useEffect(() => {
     // Update view when switching tabs
@@ -160,10 +162,22 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    navigate("/admin/login");
+  const handleLogout = async () => {
+  try {
+    await axios.post(
+      "http://localhost:3000/admin/logout",
+      {},
+      { withCredentials: true } // important for cookie handling
+    );
     toast.info("Logged out successfully");
-  };
+    navigate("/");
+  } catch (err) {
+    console.error(err);
+    toast.error("Error logging out");
+  }
+};
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 flex flex-col font-sans">
