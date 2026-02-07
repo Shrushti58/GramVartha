@@ -32,7 +32,7 @@ app.use(
 
 
 app.use('/admin',require('./routes/adminRoutes'))
-app.use('/officials',require('./routes/officalsRoutes'))
+app.use('/officials',require('./routes/officialsRoutes'))
 app.use('/notice',require('./routes/noticeRoutes'))
 app.use('/citizen',require('./routes/citizenRoutes'))
 

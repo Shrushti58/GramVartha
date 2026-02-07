@@ -1,4 +1,3 @@
-// models/NoticeView.js
 const mongoose = require("mongoose");
 
 const NoticeViewSchema = new mongoose.Schema({
@@ -25,9 +24,7 @@ const NoticeViewSchema = new mongoose.Schema({
   }
 });
 
-// Prevent duplicate views from same visitor
 NoticeViewSchema.index({ noticeId: 1, visitorId: 1 }, { unique: true });
-// Index for analytics
 NoticeViewSchema.index({ viewedAt: -1 });
 NoticeViewSchema.index({ noticeId: 1, viewedAt: -1 });
 
