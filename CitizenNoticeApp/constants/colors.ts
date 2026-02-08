@@ -1,20 +1,24 @@
+/**
+ * Color palette for the application
+ * Matches the web frontend theme exactly
+ */
 
 export const Colors = {
-  // Primary Colors
+  // Primary Colors (Earth/Brown tones from web)
   primary: {
-    50: '#eff6ff',
-    100: '#dbeafe',
-    200: '#bfdbfe',
-    300: '#93c5fd',
-    400: '#60a5fa',
-    500: '#3b82f6',
-    600: '#2563eb',
-    700: '#1d4ed8',
-    800: '#1e40af',
-    900: '#1e3a8a',
+    50: '#faf7f5',
+    100: '#f5efe9',
+    200: '#e8ddd1',
+    300: '#d4c0a8',
+    400: '#c0a07f',
+    500: '#a88560',
+    600: '#8B6B61',
+    700: '#6D4C41',
+    800: '#5D4037',
+    900: '#4E342E',
   },
 
-  // Neutral Colors
+  // Neutral Colors (Slate)
   neutral: {
     50: '#f8fafc',
     100: '#f1f5f9',
@@ -28,13 +32,20 @@ export const Colors = {
     900: '#0f172a',
   },
 
+  // Accent Colors
+  accent: {
+    teal: '#14b8a6',
+    blue: '#3b82f6',
+    purple: '#8b5cf6',
+  },
+
   // Semantic Colors
   success: '#10b981',
   warning: '#f59e0b',
   error: '#ef4444',
   info: '#3b82f6',
 
-  // Category Colors
+  // Category Colors (matching web categories)
   categories: {
     development: '#3b82f6',
     health: '#ef4444',
@@ -48,10 +59,16 @@ export const Colors = {
     general: '#64748b',
   },
 
+  // Button Colors (from web theme)
+  button: {
+    primary: '#8B6B61', // Matches button-primary from web
+    hover: '#6D4C41',
+  },
+
   // UI Elements
-  background: '#f8fafc',
+  background: '#faf7f5', // Matches bg-background from web
   surface: '#ffffff',
-  border: '#e2e8f0',
+  border: '#e8ddd1', // Lighter earth tone
   
   // Text Colors
   textPrimary: '#1e293b',

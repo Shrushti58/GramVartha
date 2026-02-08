@@ -26,6 +26,13 @@ export default function RootLayout() {
         <Stack.Screen
           name="index"
           options={{
+            title: 'GramVartha',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="notice"
+          options={{
             title: 'Public Notices',
             headerShown: true,
           }}
