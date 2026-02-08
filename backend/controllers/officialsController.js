@@ -35,7 +35,6 @@ const registerOfficial = async (req, res) => {
 
 const loginOfficial = async (req, res) => {
   try {
-    console.log("🔹 /login route hit:", req.body);
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -59,7 +58,6 @@ const loginOfficial = async (req, res) => {
     }
 
     const token = generateToken(official);
-    console.log("Generated token:", token);
 
     res.cookie("token", token, {
       httpOnly: true,

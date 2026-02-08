@@ -1,5 +1,5 @@
 # ======================
-# Node.js / Express (backend)
+# Node.js / Express (Backend)
 # ======================
 backend/node_modules/
 backend/npm-debug.log*
@@ -14,20 +14,20 @@ backend/.env.development.local
 backend/.env.test.local
 backend/.env.production.local
 
-# Logs
-backend/logs
+# Logs (backend)
+backend/logs/
 backend/*.log
-backend/logs/*
 backend/*.pid
 backend/*.seed
 backend/*.pid.lock
 
-# Build output
+# Build output (backend)
 backend/dist/
 backend/build/
 
+
 # ======================
-# React (frontend)
+# React (Frontend)
 # ======================
 frontend/node_modules/
 frontend/npm-debug.log*
@@ -45,10 +45,48 @@ frontend/.env.production.local
 # React build
 frontend/build/
 
+
+# ======================
+# Expo / React Native
+# App: CitizenNoticeApp
+# ======================
+CitizenNoticeApp/node_modules/
+CitizenNoticeApp/.expo/
+CitizenNoticeApp/.expo-shared/
+
+# Expo web build
+CitizenNoticeApp/web-build/
+
+# Metro / RN logs
+CitizenNoticeApp/npm-debug.log*
+CitizenNoticeApp/yarn-debug.log*
+CitizenNoticeApp/yarn-error.log*
+CitizenNoticeApp/pnpm-debug.log*
+
+# Env files (expo)
+CitizenNoticeApp/.env
+CitizenNoticeApp/.env.local
+CitizenNoticeApp/.env.development.local
+CitizenNoticeApp/.env.test.local
+CitizenNoticeApp/.env.production.local
+
+# Native builds (Expo Managed Workflow)
+CitizenNoticeApp/android/
+CitizenNoticeApp/ios/
+
+# React Native cache
+CitizenNoticeApp/.metro-health-check*
+
+# Misc
+CitizenNoticeApp/*.log
+CitizenNoticeApp/*.bak
+CitizenNoticeApp/*.tmp
+
+
 # ======================
 # General
 # ======================
-# OS / editor files
+# OS files
 .DS_Store
 Thumbs.db
 

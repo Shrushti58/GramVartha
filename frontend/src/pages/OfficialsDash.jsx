@@ -10,9 +10,7 @@ export default function OfficialsDashboard() {
   const [priority, setPriority] = useState("medium");
   const [targetAudience, setTargetAudience] = useState("all");
   const [targetWards, setTargetWards] = useState("");
-  const [tags, setTags] = useState("");
   const [isPinned, setIsPinned] = useState(false);
-  const [expiryDate, setExpiryDate] = useState("");
   const [file, setFile] = useState(null);
   const [notices, setNotices] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -22,7 +20,7 @@ export default function OfficialsDashboard() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Enhanced categories with new "urgent" category
+  // Categories (removed "meeting" to match model)
   const categories = [
     { value: "development", label: "Development" },
     { value: "health", label: "Health" },
@@ -32,17 +30,15 @@ export default function OfficialsDashboard() {
     { value: "social_welfare", label: "Social Welfare" },
     { value: "tax_billing", label: "Tax & Billing" },
     { value: "election", label: "Election" },
-    { value: "meeting", label: "Meeting" },
     { value: "urgent", label: "Urgent" },
     { value: "general", label: "General" }
   ];
 
-  // Priority levels
+  // Priority levels (removed "urgent" as it's now a category)
   const priorities = [
     { value: "low", label: "Low" },
     { value: "medium", label: "Medium" },
-    { value: "high", label: "High" },
-    { value: "urgent", label: "Urgent" }
+    { value: "high", label: "High" }
   ];
 
   // Target audience options
@@ -96,15 +92,10 @@ export default function OfficialsDashboard() {
     formData.append("category", category);
     formData.append("priority", priority);
     formData.append("targetAudience", targetAudience);
-    formData.append("tags", tags);
     formData.append("isPinned", isPinned);
     
     if (targetAudience === "ward_specific" && targetWards) {
       formData.append("targetWards", targetWards);
-    }
-    
-    if (expiryDate) {
-      formData.append("expiryDate", expiryDate);
     }
     
     if (file) formData.append("file", file);
@@ -143,9 +134,7 @@ export default function OfficialsDashboard() {
     setPriority(notice.priority || "medium");
     setTargetAudience(notice.targetAudience || "all");
     setTargetWards(notice.targetWards?.join(", ") || "");
-    setTags(notice.tags?.join(", ") || "");
     setIsPinned(notice.isPinned || false);
-    setExpiryDate(notice.expiryDate ? new Date(notice.expiryDate).toISOString().split('T')[0] : "");
     setFile(null);
     
     document.getElementById('notice-form').scrollIntoView({ behavior: 'smooth' });
@@ -236,38 +225,31 @@ export default function OfficialsDashboard() {
     setPriority("medium");
     setTargetAudience("all");
     setTargetWards("");
-    setTags("");
     setIsPinned(false);
-    setExpiryDate("");
     setFile(null);
     setEditingNotice(null);
   };
 
- const handleLogout = async () => {
-  try {
-    // Call backend to clear the cookie
-    await axios.post(
-      "http://localhost:3000/officials/logout",
-      {},
-      { withCredentials: true } // important to send cookies
-    );
+  const handleLogout = async () => {
+    try {
+      // Call backend to clear the cookie
+      await axios.post(
+        "http://localhost:3000/officials/logout",
+        {},
+        { withCredentials: true }
+      );
 
-    toast.info("Logged out successfully");
-    navigate("/"); // redirect to login page
-  } catch (err) {
-    console.error(err);
-    toast.error("Error logging out");
-  }
-};
+      toast.info("Logged out successfully");
+      navigate("/");
+    } catch (err) {
+      console.error(err);
+      toast.error("Error logging out");
+    }
+  };
 
   const isNoticeActive = (notice) => {
     if (!notice) return false;
-    
-    const now = new Date();
-    const isPublished = notice.status === 'published' || notice.status === 'done';
-    
-    return isPublished && 
-           (!notice.expiryDate || new Date(notice.expiryDate) >= now);
+    return notice.status === 'published';
   };
 
   const stats = {
@@ -280,7 +262,7 @@ export default function OfficialsDashboard() {
     }).length,
     withFiles: notices.filter(n => n && n.fileUrl).length,
     pinned: notices.filter(n => n && n.isPinned).length,
-    urgent: notices.filter(n => n && (n.priority === "urgent" || n.category === "urgent")).length
+    urgent: notices.filter(n => n && (n.priority === "high" || n.category === "urgent")).length
   };
 
   const getCategoryLabel = (categoryValue) => {
@@ -303,7 +285,6 @@ export default function OfficialsDashboard() {
       social_welfare: "bg-pink-100 text-pink-700",
       tax_billing: "bg-red-100 text-red-700",
       election: "bg-orange-100 text-orange-700",
-      meeting: "bg-cyan-100 text-cyan-700",
       urgent: "bg-red-100 text-red-700",
       general: "bg-gray-100 text-gray-700"
     };
@@ -314,8 +295,7 @@ export default function OfficialsDashboard() {
     const colors = {
       low: "bg-gray-100 text-gray-700",
       medium: "bg-blue-100 text-blue-700",
-      high: "bg-orange-100 text-orange-700",
-      urgent: "bg-red-100 text-red-700"
+      high: "bg-orange-100 text-orange-700"
     };
     return colors[priorityValue] || colors.medium;
   };
@@ -361,7 +341,7 @@ export default function OfficialsDashboard() {
           </p>
         </div>
 
-        {/* Enhanced Stats Overview */}
+        {/* Stats Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-soft-earth border border-primary-200 text-center">
             <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-900 mb-1 sm:mb-2">{stats.total}</div>
@@ -381,12 +361,12 @@ export default function OfficialsDashboard() {
           </div>
           <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-soft-earth border border-primary-200 text-center">
             <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-900 mb-1 sm:mb-2">{stats.urgent}</div>
-            <div className="text-xs sm:text-sm text-primary-600 font-medium">Urgent</div>
+            <div className="text-xs sm:text-sm text-primary-600 font-medium">High Priority</div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 sm:gap-8">
-          {/* Enhanced Create Notice Card */}
+          {/* Create Notice Form */}
           <div id="notice-form" className="bg-white rounded-2xl shadow-earth-lg border border-primary-200 p-6 sm:p-8">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h3 className="text-xl sm:text-2xl font-bold text-primary-900 font-serif">
@@ -481,7 +461,7 @@ export default function OfficialsDashboard() {
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g., 1, 3, 5 or 1-5"
+                      placeholder="e.g., 1, 3, 5"
                       value={targetWards}
                       onChange={(e) => setTargetWards(e.target.value)}
                       className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 placeholder-primary-400 text-sm sm:text-base"
@@ -489,35 +469,6 @@ export default function OfficialsDashboard() {
                     <p className="text-xs text-primary-500 mt-1">Enter ward numbers separated by commas</p>
                   </div>
                 )}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
-                    Tags
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="e.g., development, road, water"
-                    value={tags}
-                    onChange={(e) => setTags(e.target.value)}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 placeholder-primary-400 text-sm sm:text-base"
-                  />
-                  <p className="text-xs text-primary-500 mt-1">Separate tags with commas</p>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
-                    Expiry Date (Optional)
-                  </label>
-                  <input
-                    type="date"
-                    value={expiryDate}
-                    onChange={(e) => setExpiryDate(e.target.value)}
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 text-sm sm:text-base"
-                  />
-                </div>
               </div>
 
               <div className="flex items-center space-x-3">
@@ -597,7 +548,7 @@ export default function OfficialsDashboard() {
             </form>
           </div>
 
-          {/* Enhanced Notices List */}
+          {/* Notices List */}
           <div className="bg-white rounded-2xl shadow-earth-lg border border-primary-200 p-6 sm:p-8">
             <div className="flex items-center justify-between mb-4 sm:mb-6">
               <h3 className="text-xl sm:text-2xl font-bold text-primary-900 font-serif">
@@ -686,7 +637,7 @@ export default function OfficialsDashboard() {
                       )}
                       {!isNoticeActive(notice) && (
                         <span className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs bg-gray-100 text-gray-700 font-medium">
-                          Expired
+                          Inactive
                         </span>
                       )}
                     </div>
@@ -698,9 +649,6 @@ export default function OfficialsDashboard() {
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-2 sm:space-y-0">
                       <div className="flex items-center space-x-4 text-xs text-primary-500">
                         <span>Views: {notice.views || 0}</span>
-                        {notice.expiryDate && (
-                          <span>Expires: {new Date(notice.expiryDate).toLocaleDateString()}</span>
-                        )}
                       </div>
                       
                       <div className="flex items-center space-x-2 sm:space-x-3">
