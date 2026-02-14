@@ -11,7 +11,7 @@
 // For production: Use your deployed backend URL
 
 export const Config = {
-  API_BASE_URL: 'http://192.168.1.10:3000', 
+  API_BASE_URL: 'http://192.168.1.5:3000', 
   API_TIMEOUT: 10000, 
 
   APP_NAME: 'Citizen Notice',
