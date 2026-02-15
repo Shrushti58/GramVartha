@@ -6,6 +6,8 @@ const { verifyToken } = require("../utlis/jwt");
 
 router.post("/upload", verifyToken, upload.single("file"), noticeController.uploadNotice);
 router.get("/fetch", noticeController.fetchNotices);
+router.get("/location", noticeController.getNoticesByLocation);
+router.get("/official/fetch", verifyToken, noticeController.fetchOfficialNotices);
 router.put("/update/:id", verifyToken, upload.single("file"), noticeController.updateNotice);
 router.delete("/delete/:id", verifyToken, noticeController.deleteNotice);
 

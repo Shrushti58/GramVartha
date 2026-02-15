@@ -64,16 +64,20 @@ const uploadNotice = async (req, res) => {
       await notice.save();
 
     } else {
-      const noticeData = {
-        title,
-        description,
-        category,
-        priority,
-        targetAudience,
-        isPinned: isPinned === 'true' || isPinned === true,
-        createdBy: req.user.id,
-        status: "published"
-      };
+    const noticeData = {
+  title,
+  description,
+  category,
+  priority,
+  targetAudience,
+  isPinned: isPinned === 'true' || isPinned === true,
+  createdBy: req.user.id,
+
+  village: req.user.village, // ← ADD THIS
+
+  status: "published"
+};
+
       if (fileUrl) {
         noticeData.fileUrl = fileUrl;
         noticeData.fileName = fileName;
@@ -147,6 +151,50 @@ const fetchNotices = async (req, res) => {
   }
 };
 
+const fetchOfficialNotices = async (req, res) => {
+  try {
+    const { 
+      category, 
+      page = 1, 
+      limit = 10,
+      priority,
+      isPinned
+    } = req.query;
+
+    let filter = { status: "published", village: req.user.village };
+
+    if (category && category !== 'all') {
+      filter.category = category;
+    }
+
+    if (priority && priority !== 'all') {
+      filter.priority = priority;
+    }
+
+    if (isPinned !== undefined) {
+      filter.isPinned = isPinned === 'true';
+    }
+
+    const notices = await Notice.find(filter)
+      .populate('createdBy', 'name email')
+      .sort({ isPinned: -1, createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const total = await Notice.countDocuments(filter);
+
+    res.json({
+      notices,
+      totalPages: Math.ceil(total / limit),
+      currentPage: parseInt(page),
+      total
+    });
+  } catch (error) {
+    console.error("Error fetching official notices:", error);
+    res.status(500).json({ message: "Error fetching notices", error: error.message });
+  }
+};
+
 const updateNotice = async (req, res) => {
   try {
     const { 
@@ -165,7 +213,7 @@ const updateNotice = async (req, res) => {
       return res.status(404).json({ message: "Notice not found" });
     }
 
-    if (notice.createdBy.toString() !== req.user.id) {
+    if (notice.createdBy.toString() !== req.user.id || notice.village.toString() !== req.user.village.toString()) {
       return res.status(403).json({ message: "Not authorized to update this notice" });
     }
 
@@ -217,7 +265,7 @@ const deleteNotice = async (req, res) => {
       return res.status(404).json({ message: "Notice not found" });
     }
 
-    if (notice.createdBy.toString() !== req.user.id) {
+    if (notice.createdBy.toString() !== req.user.id || notice.village.toString() !== req.user.village.toString()) {
       return res.status(403).json({ message: "Not authorized to delete this notice" });
     }
 
@@ -383,13 +431,97 @@ const getNoticeById = async (req, res) => {
   }
 };
 
+// Public: get notices based on user's current location (no auth required)
+const getNoticesByLocation = async (req, res) => {
+  try {
+    const { latitude, longitude, radiusKm = 10 } = req.query;
+
+    if (!latitude || !longitude) {
+      return res.status(400).json({ 
+        message: "Missing required query params: latitude and longitude" 
+      });
+    }
+
+    // Haversine formula to calculate distance between two coordinates
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+      const R = 6371; // Earth radius in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; // Distance in km
+    };
+
+    const Village = require("../models/Village");
+    
+    // Get all villages
+    const villages = await Village.find({ status: "approved" });
+    
+    // Filter villages within radius
+    const nearbyVillages = villages.filter(village => {
+      if (!village.latitude || !village.longitude) return false;
+      const distance = calculateDistance(
+        parseFloat(latitude), 
+        parseFloat(longitude), 
+        village.latitude, 
+        village.longitude
+      );
+      return distance <= parseFloat(radiusKm);
+    });
+
+    if (nearbyVillages.length === 0) {
+      return res.json({
+        message: "No villages found within the specified radius",
+        notices: [],
+        nearbyVillages: [],
+        radius: radiusKm,
+        userLocation: { latitude, longitude }
+      });
+    }
+
+    // Get village IDs
+    const villageIds = nearbyVillages.map(v => v._id);
+
+    // Fetch notices from nearby villages
+    const notices = await Notice.find({
+      village: { $in: villageIds },
+      status: "published"
+    })
+      .populate("createdBy", "name email")
+      .populate("village", "name district state")
+      .sort({ isPinned: -1, createdAt: -1 });
+
+    res.json({
+      notices,
+      nearbyVillages: nearbyVillages.map(v => ({
+        _id: v._id,
+        name: v.name,
+        district: v.district,
+        state: v.state,
+        coordinates: { latitude: v.latitude, longitude: v.longitude }
+      })),
+      userLocation: { latitude, longitude },
+      radius: radiusKm,
+      totalNotices: notices.length
+    });
+  } catch (err) {
+    console.error("Error fetching notices by location:", err);
+    res.status(500).json({ message: "Error fetching notices", error: err.message });
+  }
+};
+
 module.exports = {
   uploadNotice,
   fetchNotices,
+  fetchOfficialNotices,
   updateNotice,
   deleteNotice,
   trackNoticeView,
   getPopularNotices,
   getCitizenNotices,
-  getNoticeById
+  getNoticeById,
+  getNoticesByLocation
 };

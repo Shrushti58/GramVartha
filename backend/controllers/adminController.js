@@ -6,19 +6,31 @@ const { generateToken } = require("../utlis/jwt");
 
 const registerAdmin = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, village } = req.body;
         
         const adminCount = await Admin.countDocuments();
-        if (adminCount > 0) {
-            return res.status(403).json({ message: 'Admin already exists. Only one admin allowed.' });
+        
+        let role = 'admin';
+        let status = 'pending';
+        
+        if (!village) {
+            // Requesting to be superadmin
+            if (adminCount > 0) {
+                return res.status(403).json({ message: 'Superadmin already exists.' });
+            }
+            role = 'superadmin';
+            status = 'approved';
+        } else {
+            // Requesting to be admin of a village
+            // Allow multiple pending requests
         }
 
         const hashedpassword = await bcrypt.hash(password, 10);
         
-        const newadmin = new Admin({ email, password: hashedpassword });
+        const newadmin = new Admin({ email, password: hashedpassword, role, status, village });
         await newadmin.save();
 
-        return res.status(201).json({ message: 'Admin registered successfully' });
+        return res.status(201).json({ message: `${role} registered successfully`, status });
 
     } catch (error) {
         console.error(error);
@@ -43,6 +55,11 @@ const loginAdmin = async (req, res) => {
         if (!isMatch) {
             return res.status(401).json({ message: "Incorrect email or password." });
         }
+
+        if (admin.status !== 'approved') {
+            return res.status(403).json({ message: "Account not approved yet." });
+        }
+
         const token = generateToken(admin);
         res.cookie("token", token, {
             httpOnly: true,
@@ -65,54 +82,6 @@ const logoutAdmin = (req, res) => {
         sameSite: "lax",
     });
     return res.status(200).json({ message: "Logged out successfully" });
-};
-
-const getPendingOfficials = async (req, res) => {
-    try {
-        const pendingOfficials = await Officals.find({ status: "pending" }).select("-password");
-        res.json(pendingOfficials);
-    } catch (err) {
-        console.error("Error fetching pending officials:", err);
-        res.status(500).json({ message: "Error fetching pending officials" });
-    }
-};
-
-const approveOfficial = async (req, res) => {
-    try {
-        const official = await Officals.findByIdAndUpdate(
-            req.params.id,
-            { status: "approved" },
-            { new: true }
-        );
-
-        if (!official) {
-            return res.status(404).json({ message: "Official not found" });
-        }
-
-        res.json({ message: "Official approved", official });
-    } catch (err) {
-        console.error("Error approving official:", err);
-        res.status(500).json({ message: "Error approving official" });
-    }
-};
-
-const rejectOfficial = async (req, res) => {
-    try {
-        const official = await Officals.findByIdAndUpdate(
-            req.params.id,
-            { status: "rejected" },
-            { new: true }
-        );
-
-        if (!official) {
-            return res.status(404).json({ message: "Official not found" });
-        }
-
-        res.json({ message: "Official rejected", official });
-    } catch (err) {
-        console.error("Error rejecting official:", err);
-        res.status(500).json({ message: "Error rejecting official" });
-    }
 };
 
 const deleteCitizen = async (req, res) => {
@@ -152,13 +121,41 @@ const getAllCitizens = async (req, res) => {
 };
 
 
-const getAllOfficials = async (req, res) => {
+const getPendingAdmins = async (req, res) => {
     try {
-        const officials = await Officals.find().select("-password"); 
-        res.status(200).json(officials);
+        const pendingAdmins = await Admin.find({ status: 'pending' }).populate('village');
+        res.status(200).json(pendingAdmins);
     } catch (err) {
-        console.error("Error fetching officials:", err);
-        res.status(500).json({ message: "Error fetching officials" });
+        console.error("Error fetching pending admins:", err);
+        res.status(500).json({ message: "Error fetching pending admins" });
+    }
+};
+
+const approveAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const admin = await Admin.findByIdAndUpdate(id, { status: 'approved' }, { new: true });
+        if (!admin) {
+            return res.status(404).json({ message: "Admin not found" });
+        }
+        res.status(200).json({ message: "Admin approved", admin });
+    } catch (err) {
+        console.error("Error approving admin:", err);
+        res.status(500).json({ message: "Error approving admin" });
+    }
+};
+
+const rejectAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const admin = await Admin.findByIdAndDelete(id);
+        if (!admin) {
+            return res.status(404).json({ message: "Admin not found" });
+        }
+        res.status(200).json({ message: "Admin rejected and removed" });
+    } catch (err) {
+        console.error("Error rejecting admin:", err);
+        res.status(500).json({ message: "Error rejecting admin" });
     }
 };
 
@@ -166,11 +163,9 @@ module.exports = {
     registerAdmin,
     loginAdmin,
     logoutAdmin,
-    getPendingOfficials,
-    approveOfficial,
-    rejectOfficial,
     deleteCitizen,
-    deleteOfficial,
     getAllCitizens,
-    getAllOfficials
+    getPendingAdmins,
+    approveAdmin,
+    rejectAdmin
 };

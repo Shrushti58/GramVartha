@@ -4,11 +4,11 @@ const { generateToken } = require("../utlis/jwt");
 
 const registerOfficial = async (req, res) => {
   try {
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone, village } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !village) {
       return res.status(400).json({ 
-        message: "Missing required fields: name, email, and password are required" 
+        message: "Missing required fields: name, email, password, and village are required" 
       });
     }
 
@@ -23,10 +23,11 @@ const registerOfficial = async (req, res) => {
       name, 
       email, 
       password: hashed, 
-      phone 
+      phone,
+      village
     });
 
-    res.status(201).json({ message: "Registered successfully! Awaiting admin approval." });
+    res.status(201).json({ message: "Registered successfully! Awaiting village admin approval." });
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({ message: "Server error during registration" });
@@ -106,9 +107,98 @@ const getCurrentOfficial = async (req, res) => {
   }
 };
 
+const getPendingOfficials = async (req, res) => {
+  try {
+    let query = { status: 'pending' };
+    if (req.user.role === 'admin') {
+      query.village = req.user.village;
+    }
+    const officials = await Officials.find(query).populate('village');
+    res.status(200).json(officials);
+  } catch (err) {
+    console.error("Error fetching pending officials:", err);
+    res.status(500).json({ message: "Error fetching pending officials" });
+  }
+};
+
+const approveOfficial = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const official = await Officials.findById(id);
+    if (!official) {
+      return res.status(404).json({ message: "Official not found" });
+    }
+    if (req.user.role === 'admin' && official.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    official.status = 'approved';
+    await official.save();
+    res.status(200).json({ message: "Official approved", official });
+  } catch (err) {
+    console.error("Error approving official:", err);
+    res.status(500).json({ message: "Error approving official" });
+  }
+};
+
+const rejectOfficial = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const official = await Officials.findById(id);
+    if (!official) {
+      return res.status(404).json({ message: "Official not found" });
+    }
+    if (req.user.role === 'admin' && official.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    official.status = 'rejected';
+    await official.save();
+    res.status(200).json({ message: "Official rejected", official });
+  } catch (err) {
+    console.error("Error rejecting official:", err);
+    res.status(500).json({ message: "Error rejecting official" });
+  }
+};
+
+const getAllOfficials = async (req, res) => {
+  try {
+    let query = {};
+    if (req.user.role === 'admin') {
+      query.village = req.user.village;
+    }
+    const officials = await Officials.find(query).select("-password").populate('village');
+    res.status(200).json(officials);
+  } catch (err) {
+    console.error("Error fetching officials:", err);
+    res.status(500).json({ message: "Error fetching officials" });
+  }
+};
+
+const deleteOfficial = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const official = await Officials.findById(id);
+    if (!official) {
+      return res.status(404).json({ message: "Official not found" });
+    }
+    if (req.user.role === 'admin' && official.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    await Officials.findByIdAndDelete(id);
+    res.status(200).json({ message: "Official deleted" });
+  } catch (err) {
+    console.error("Error deleting official:", err);
+    res.status(500).json({ message: "Error deleting official" });
+  }
+};
+
 module.exports = {
   registerOfficial,
   loginOfficial,
   logoutOfficial,
-  getCurrentOfficial
+  getCurrentOfficial,
+  getPendingOfficials,
+  approveOfficial,
+  rejectOfficial,
+  getAllOfficials,
+  deleteOfficial
 };

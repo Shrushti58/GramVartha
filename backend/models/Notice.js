@@ -69,7 +69,9 @@ const NoticeSchema = new mongoose.Schema({
   isPinned: {
     type: Boolean,
     default: false
-  }
+  },
+  village: { type: mongoose.Schema.Types.ObjectId, ref: "Village", required: true }
+
 }, {
   timestamps: true
 });

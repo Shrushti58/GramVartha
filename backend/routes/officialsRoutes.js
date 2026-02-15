@@ -9,4 +9,10 @@ router.post("/logout", officialsController.logoutOfficial);
 
 router.get("/me", verifyToken, officialsController.getCurrentOfficial);
 
+router.get("/pending", verifyToken, officialsController.getPendingOfficials);
+router.put("/approve/:id", verifyToken, officialsController.approveOfficial);
+router.put("/reject/:id", verifyToken, officialsController.rejectOfficial);
+router.get("/all", verifyToken, officialsController.getAllOfficials);
+router.delete("/:id", verifyToken, officialsController.deleteOfficial);
+
 module.exports = router;

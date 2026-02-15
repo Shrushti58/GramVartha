@@ -1,6 +1,6 @@
-const moongose = require('mongoose')
+const mongoose = require("mongoose");
 
-const OfficalsSchema = new moongose.Schema({
+const OfficalsSchema = new mongoose.Schema({
 
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -11,6 +11,8 @@ const OfficalsSchema = new moongose.Schema({
         enum: ["pending", "approved", "rejected"],
         default: "pending",
     },
+    village: { type: mongoose.Schema.Types.ObjectId, ref: "Village", required: true }
+
 })
 
-module.exports=moongose.model('Officals',OfficalsSchema);
+module.exports=mongoose.model('Officals',OfficalsSchema);
