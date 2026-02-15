@@ -6,6 +6,7 @@ const OfficalsSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: String },
+    profileImage: { type: String }, // Cloudinary URL for profile photo
     status: {
         type: String,
         enum: ["pending", "approved", "rejected"],
@@ -13,6 +14,6 @@ const OfficalsSchema = new mongoose.Schema({
     },
     village: { type: mongoose.Schema.Types.ObjectId, ref: "Village", required: true }
 
-})
+}, { timestamps: true })
 
 module.exports=mongoose.model('Officals',OfficalsSchema);

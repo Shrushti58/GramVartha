@@ -79,28 +79,6 @@ export default function Hero() {
     <div className="absolute inset-0 bg-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
     <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
   </Link>
-
-  {/* Citizen Registration */}
-  <Link
-    to="/citizen/register"
-    className="group flex items-center justify-center gap-2 md:gap-3 bg-surface text-primary-700 border-2 border-primary-200 px-6 py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl font-semibold hover:border-primary-300 hover:shadow-soft-earth hover:bg-primary-50 transition-all duration-300 hover:-translate-y-1 text-sm md:text-base font-sans"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-4 w-4 md:h-5 md:w-5 text-primary-600"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M12 4v16m8-8H4"
-      />
-    </svg>
-    <span>Register as Citizen</span>
-  </Link>
 </div>
 
 

@@ -6,8 +6,8 @@ const villageSchema = new mongoose.Schema({
   state: String,
   pincode: String,
   latitude: Number,
-  longitude: Number
-  ,
+  longitude: Number,
+  documentUrl: { type: String }, // Cloudinary URL for village registration proof document
   status: {
     type: String,
     enum: ["pending", "approved"],

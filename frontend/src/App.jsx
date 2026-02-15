@@ -8,12 +8,13 @@ import AdminRegister from "./components/AdminRegister";
 import AdminLogin from "./components/AdminLogin";
 import OfficialLogin from "./components/OfficialLogin";
 import OfficialRegister from "./components/OfficialRegister";
+import OfficialProfile from "./components/OfficialProfile";
 import OfficialsDashboard from "./pages/OfficialsDash";
-import Notices from "./components/Notices";
 import NoticeDetails from "./components/NoticesDetails";
-import CitizenLogin from './components/CitizenLogin';
-import CitizenRegister from './components/CitizenRegister'
-import CitizenDashboard from "./components/CitizenDashboard";
+import SuperadminDash from "./pages/SuperadminDash";
+import VillageAdminDash from "./pages/VillageAdminDash";
+import VillageRegistration from "./pages/VillageRegistration";
+import LocationBasedNotices from "./pages/LocationBasedNotices";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -24,17 +25,18 @@ export default function App() {
       <BrowserRouter basename="/">
         <Routes>
           <Route path="/" element={<GramVarthaLandingPage />} />
-          <Route path="/citizen/login" element={<CitizenLogin />} />
-          <Route path="/citizen/register" element={<CitizenRegister />} />
           <Route path="/admin/dashboard" element={<AdminDash />} />
+          <Route path="/admin/superadmin" element={<SuperadminDash />} />
+          <Route path="/admin/village" element={<VillageAdminDash />} />
           <Route path="/admin/register" element={<AdminRegister />} />
           <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/village/register" element={<VillageRegistration />} />
           <Route path="/officials/login" element={<OfficialLogin />} />
           <Route path="/officials/register" element={<OfficialRegister />} />
+          <Route path="/officials/profile" element={<OfficialProfile />} />
           <Route path="/officials/dashboard" element={<OfficialsDashboard />} />
-          <Route path="/notices" element={<Notices />} />
           <Route path="/notice-details/:id" element={<NoticeDetails />} />
-          <Route path="/citizen/dashboard" element={<CitizenDashboard />} />
+          <Route path="/notices/location" element={<LocationBasedNotices />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 

@@ -31,22 +31,15 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-2 lg:space-x-3">
             <Link
-              to="/notices"
+              to="/notices/location"
               className="relative text-primary-900 font-medium transition-all duration-300 px-4 py-2 rounded-xl hover:bg-latte/30 backdrop-blur-md border border-transparent hover:border-mocha/40 hover:shadow-soft-earth group overflow-hidden"
             >
-              <span className="relative z-10">Notices</span>
+              <span className="relative z-10">📍 Near Me</span>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
             </Link>
 
             {/* Login Buttons with Glassmorphism */}
             <div className="flex items-center space-x-2 lg:space-x-3 ml-4">
-              <Link
-                to="/citizen/login"
-                className="relative bg-cream/40 hover:bg-sand/50 text-primary-900 px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-md border border-latte/50 hover:border-mocha/60 shadow-soft-earth hover:shadow-earth-md hover:scale-105 group overflow-hidden"
-              >
-                <span className="relative z-10">Citizen Login</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
-              </Link>
               <Link
                 to="/officials/login"
                 className="relative bg-cream/40 hover:bg-sand/50 text-primary-900 px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-md border border-latte/50 hover:border-mocha/60 shadow-soft-earth hover:shadow-earth-md hover:scale-105 group overflow-hidden"
@@ -64,6 +57,13 @@ export default function Navbar() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+              </Link>
+              <Link
+                to="/village/register"
+                className="relative bg-gradient-to-r from-green-400/30 to-green-500/30 hover:from-green-400/40 hover:to-green-500/40 text-primary-900 px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-md border border-green-600/50 hover:border-green-600/70 shadow-soft-earth hover:shadow-earth-md hover:scale-105 group overflow-hidden"
+              >
+                <span className="relative z-10">Register Village</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
               </Link>
             </div>
@@ -160,24 +160,24 @@ export default function Navbar() {
                   </svg>
                 </span>
               </Link>
+
+              <Link
+                to="/notices/location"
+                className="block w-full text-primary-900 font-medium px-4 py-3 rounded-xl hover:bg-latte/40 transition-all duration-300 border border-latte/50 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="flex items-center justify-between">
+                  <span>📍 Notices Near Me</span>
+                  <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
+              </Link>
             </div>
 
             {/* Login Buttons Section */}
             <div className="pt-6 space-y-3 border-t border-latte/40">
               <p className="text-text-secondary text-sm font-medium px-2 mb-3">Login Portals</p>
-              
-              <Link
-                to="/citizen/login"
-                className="block w-full bg-cream/50 text-primary-900 px-4 py-3 rounded-xl font-medium text-center hover:bg-sand/60 transition-all duration-300 border border-latte/50 hover:border-mocha/60 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="flex items-center justify-center space-x-2">
-                  <svg className="w-5 h-5 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <span>Citizen Login</span>
-                </span>
-              </Link>
               
               <Link
                 to="/officials/login"
@@ -202,6 +202,19 @@ export default function Navbar() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                   <span>Admin Login</span>
+                </span>
+              </Link>
+
+              <Link
+                to="/village/register"
+                className="block w-full bg-gradient-to-r from-green-400/40 to-green-500/40 text-primary-900 px-4 py-3 rounded-xl font-medium text-center hover:from-green-400/50 hover:to-green-500/50 transition-all duration-300 border border-green-600/60 hover:border-green-600/80 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span className="flex items-center justify-center space-x-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8m0 8l-9 2m9-2l9 2m-18-2v-8" />
+                  </svg>
+                  <span>Register Village</span>
                 </span>
               </Link>
             </div>

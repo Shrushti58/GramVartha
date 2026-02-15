@@ -1,30 +1,61 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import * as api from '../services/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegisterMode, setIsRegisterMode] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/admin/login`,
-        { email, password },
-        { withCredentials: true }
-      );
-
+      const res = await api.adminLogin(email, password);
       if (res.status === 200) {
-        navigate("/admin/dashboard");
+        // Get user profile to determine role
+        const profileRes = await api.getAdminProfile();
+        const userRole = profileRes.data.role;
+        
+        toast.success('Login successful!');
+        // Route based on role
+        setTimeout(() => {
+          if (userRole === 'superadmin') {
+            navigate("/admin/superadmin");
+          } else if (userRole === 'admin') {
+            navigate("/admin/village");
+          } else {
+            toast.error('Unknown user role');
+            navigate("/admin/login");
+          }
+        }, 500);
       }
     } catch (err) {
       console.error(err);
-      toast.error("Invalid credentials");
+      toast.error(err.response?.data?.message || 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const res = await api.adminRegister(email, password);
+      if (res.status === 201) {
+        toast.success('Registration successful! Please login.');
+        setIsRegisterMode(false);
+        setEmail('');
+        setPassword('');
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || 'Registration failed');
     } finally {
       setIsLoading(false);
     }
@@ -44,7 +75,7 @@ const LoginPage = () => {
             <p className="text-primary-600 text-sm mt-1">Welcome back to your dashboard</p>
           </div>
 
-          <form className="space-y-6" onSubmit={handleLogin}>
+          <form className="space-y-6" onSubmit={isRegisterMode ? handleRegister : handleLogin}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-primary-800 mb-2">
                 Email Address
@@ -86,15 +117,22 @@ const LoginPage = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Signing in...
+                  {isRegisterMode ? 'Creating Account...' : 'Signing in...'}
                 </div>
               ) : (
-                'Sign in to Dashboard'
+                isRegisterMode ? 'Create Superadmin Account' : 'Sign in to Dashboard'
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-6 text-center space-y-3">
+            <button
+              type="button"
+              onClick={() => setIsRegisterMode(!isRegisterMode)}
+              className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+            >
+              {isRegisterMode ? 'Already have an account? Login' : 'First time? Register as Superadmin'}
+            </button>
             <p className="text-xs text-primary-600">Secure admin access only</p>
           </div>
         </div>

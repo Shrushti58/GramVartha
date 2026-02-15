@@ -19,6 +19,11 @@ const registerVillage = async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields: name, requesterEmail, requesterPassword' });
     }
 
+    // Check if document was uploaded
+    if (!req.file) {
+      return res.status(400).json({ message: 'Document proof is required for village registration' });
+    }
+
     // check if email already exists in Admin
     const Admin = require('../models/Admin');
     const bcrypt = require('bcryptjs');
@@ -33,8 +38,18 @@ const registerVillage = async (req, res) => {
     const newAdmin = new Admin({ email: requesterEmail, password: hashed, role: 'admin', status: 'pending' });
     await newAdmin.save();
 
-    // create village in pending state and link requestedBy
-    const village = await Village.create({ name, district, state, pincode, latitude, longitude, status: 'pending', requestedBy: newAdmin._id });
+    // create village in pending state and link requestedBy with document URL
+    const village = await Village.create({ 
+      name, 
+      district, 
+      state, 
+      pincode, 
+      latitude, 
+      longitude, 
+      documentUrl: req.file.path, // Cloudinary URL from uploaded document
+      status: 'pending', 
+      requestedBy: newAdmin._id 
+    });
 
     // link admin to village (pending)
     newAdmin.village = village._id;
@@ -140,4 +155,29 @@ const rejectVillage = async (req, res) => {
   }
 };
 
-module.exports = { createVillage, registerVillage, getVillages, updateVillage, deleteVillage, getPendingVillages, approveVillage, rejectVillage };
+const updateVillageCoordinates = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { latitude, longitude } = req.body;
+
+    if (!latitude || !longitude) {
+      return res.status(400).json({ message: 'Latitude and longitude are required' });
+    }
+
+    const village = await Village.findByIdAndUpdate(
+      id, 
+      { latitude, longitude }, 
+      { new: true }
+    );
+
+    if (!village) {
+      return res.status(404).json({ error: "Village not found" });
+    }
+
+    res.json(village);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { createVillage, registerVillage, getVillages, updateVillage, deleteVillage, getPendingVillages, approveVillage, rejectVillage, updateVillageCoordinates };

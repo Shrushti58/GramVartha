@@ -1,6 +1,7 @@
 const express = require("express");
-const { createVillage, registerVillage, getVillages, updateVillage, deleteVillage, getPendingVillages, approveVillage, rejectVillage } = require("../controllers/villageController");
+const { createVillage, registerVillage, getVillages, updateVillage, deleteVillage, getPendingVillages, approveVillage, rejectVillage, updateVillageCoordinates } = require("../controllers/villageController");
 const { verifyToken } = require("../utlis/jwt");
+const { uploadVillageDoc } = require("../middlewares/uploadCloud");
 
 const router = express.Router();
 
@@ -13,7 +14,10 @@ const requireSuperAdmin = (req, res, next) => {
 };
 
 // Public endpoint: request village be added (creates pending village + pending admin)
-router.post("/register", registerVillage);
+router.post("/register", uploadVillageDoc.single('document'), registerVillage);
+
+// Public endpoint: update village coordinates (for location detection)
+router.put("/coordinates/:id", updateVillageCoordinates);
 
 router.post("/create", verifyToken, requireSuperAdmin, createVillage);
 router.get("/", getVillages);

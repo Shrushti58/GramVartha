@@ -12,7 +12,7 @@ export default function AdminDashboard() {
     totalOfficials: 0,
     pendingOfficials: 0
   });
-  const [view, setView] = useState("pending"); // "pending", "allOfficials", "allCitizens"
+  const [view, setView] = useState("pending"); // "pending", "allOfficials"
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -23,21 +23,17 @@ export default function AdminDashboard() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      // Fetch all data in parallel with credentials
-      const [citizensRes, officialsRes, pendingRes] = await Promise.all([
-        axios.get("http://localhost:3000/admin/all-citizens", { withCredentials: true }),
-        axios.get("http://localhost:3000/admin/all-officials", { withCredentials: true }),
-        axios.get("http://localhost:3000/admin/pending-officials", { withCredentials: true })
-      ]);
+      // Fetch officials data - this is for village admins
+      const pendingRes = await axios.get("http://localhost:3000/officials/pending", { withCredentials: true });
+      const allOfficialsRes = await axios.get("http://localhost:3000/officials/all", { withCredentials: true });
 
-      setCitizens(citizensRes.data);
-      setOfficials(officialsRes.data);
       setPendingOfficials(pendingRes.data);
+      setOfficials(allOfficialsRes.data);
 
       // Update stats
       setStats({
-        totalCitizens: citizensRes.data.length,
-        totalOfficials: officialsRes.data.length,
+        totalCitizens: 0,
+        totalOfficials: allOfficialsRes.data.length,
         pendingOfficials: pendingRes.data.length
       });
 
@@ -45,13 +41,15 @@ export default function AdminDashboard() {
       if (view === "pending") {
         setOfficials(pendingRes.data);
       } else if (view === "allOfficials") {
-        setOfficials(officialsRes.data);
-      } else if (view === "allCitizens") {
-        setCitizens(citizensRes.data);
+        setOfficials(allOfficialsRes.data);
       }
     } catch (err) {
-      setMessage("Failed to load data.");
+      setMessage("Failed to load data. This page is only for Village Admins.");
       toast.error("Failed to load data.");
+      // Redirect to login if unauthorized
+      if (err.response?.status === 401) {
+        navigate("/");
+      }
     } finally {
       setLoading(false);
     }
@@ -68,29 +66,19 @@ export default function AdminDashboard() {
     } else if (view === "allOfficials") {
       const fetchOfficials = async () => {
         try {
-          const res = await axios.get("http://localhost:3000/admin/all-officials");
+          const res = await axios.get("http://localhost:3000/officials/all", { withCredentials: true });
           setOfficials(res.data);
         } catch (err) {
           toast.error("Failed to load officials.");
         }
       };
       fetchOfficials();
-    } else if (view === "allCitizens") {
-      const fetchCitizens = async () => {
-        try {
-          const res = await axios.get("http://localhost:3000/admin/all-citizens");
-          setCitizens(res.data);
-        } catch (err) {
-          toast.error("Failed to load citizens.");
-        }
-      };
-      fetchCitizens();
     }
   }, [view, pendingOfficials]);
 
   const handleApprove = async (id) => {
     try {
-      const res = await axios.put(`http://localhost:3000/admin/approve/${id}`);
+      const res = await axios.put(`http://localhost:3000/officials/approve/${id}`, {}, { withCredentials: true });
       setMessage(res.data.message);
       setOfficials(officials.filter((o) => o._id !== id));
       setPendingOfficials(pendingOfficials.filter((o) => o._id !== id));
@@ -100,15 +88,16 @@ export default function AdminDashboard() {
         totalOfficials: prev.totalOfficials + 1
       }));
       toast.success("Official approved successfully!");
-    } catch {
+    } catch (err) {
+      console.error(err);
       setMessage("Error approving official.");
-      toast.error("Error approving official.");
+      toast.error(err.response?.data?.message || "Error approving official.");
     }
   };
 
   const handleReject = async (id) => {
     try {
-      const res = await axios.put(`http://localhost:3000/admin/reject/${id}`);
+      const res = await axios.put(`http://localhost:3000/officials/reject/${id}`, {}, { withCredentials: true });
       setMessage(res.data.message);
       setOfficials(officials.filter((o) => o._id !== id));
       setPendingOfficials(pendingOfficials.filter((o) => o._id !== id));
@@ -117,9 +106,10 @@ export default function AdminDashboard() {
         pendingOfficials: prev.pendingOfficials - 1
       }));
       toast.success("Official rejected successfully!");
-    } catch {
+    } catch (err) {
+      console.error(err);
       setMessage("Error rejecting official.");
-      toast.error("Error rejecting official.");
+      toast.error(err.response?.data?.message || "Error rejecting official.");
     }
   };
 
@@ -131,7 +121,7 @@ export default function AdminDashboard() {
   const handleDelete = async () => {
     try {
       if (deleteTarget.type === "official") {
-        const res = await axios.delete(`http://localhost:3000/admin/official/${deleteTarget.id}`);
+        const res = await axios.delete(`http://localhost:3000/officials/delete/${deleteTarget.id}`, { withCredentials: true });
         setOfficials(officials.filter((o) => o._id !== deleteTarget.id));
         setPendingOfficials(pendingOfficials.filter((o) => o._id !== deleteTarget.id));
         setMessage(res.data.message);
@@ -143,19 +133,11 @@ export default function AdminDashboard() {
             : prev.pendingOfficials
         }));
         toast.success("Official deleted successfully!");
-      } else if (deleteTarget.type === "citizen") {
-        const res = await axios.delete(`http://localhost:3000/admin/citizen/${deleteTarget.id}`);
-        setCitizens(citizens.filter((c) => c._id !== deleteTarget.id));
-        setMessage(res.data.message);
-        setStats(prev => ({
-          ...prev,
-          totalCitizens: prev.totalCitizens - 1
-        }));
-        toast.success("Citizen deleted successfully!");
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       setMessage("Error deleting user.");
-      toast.error("Error deleting user.");
+      toast.error(err.response?.data?.message || "Error deleting user.");
     } finally {
       setShowModal(false);
       setDeleteTarget({ id: null, type: "", name: "" });
@@ -167,7 +149,7 @@ export default function AdminDashboard() {
     await axios.post(
       "http://localhost:3000/admin/logout",
       {},
-      { withCredentials: true } // important for cookie handling
+      { withCredentials: true }
     );
     toast.info("Logged out successfully");
     navigate("/");
@@ -202,28 +184,7 @@ export default function AdminDashboard() {
 
       {/* Stats Cards */}
       <div className="px-6 mt-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Total Citizens Card */}
-          <div className="bg-surface rounded-2xl shadow-earth-lg border border-primary-200 p-6 hover:shadow-earth-md transition-all duration-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-primary-600 text-sm font-medium">Total Citizens</p>
-                <p className="text-3xl font-bold text-primary-900 mt-2">{stats.totalCitizens}</p>
-              </div>
-              <div className="w-12 h-12 bg-accent-teal/20 rounded-full flex items-center justify-center">
-                <svg className="w-6 h-6 text-accent-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm text-primary-500">
-              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-              </svg>
-              Registered citizens in the system
-            </div>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Total Officials Card */}
           <div className="bg-surface rounded-2xl shadow-earth-lg border border-primary-200 p-6 hover:shadow-earth-md transition-all duration-200">
             <div className="flex items-center justify-between">
@@ -290,16 +251,6 @@ export default function AdminDashboard() {
         >
           All Officials ({stats.totalOfficials})
         </button>
-        <button
-          className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-soft-earth ${
-            view === "allCitizens" 
-              ? "bg-button-primary text-primary-50 shadow-earth-md" 
-              : "bg-surface text-primary-700 hover:bg-primary-100 border border-primary-200"
-          }`}
-          onClick={() => setView("allCitizens")}
-        >
-          All Citizens ({stats.totalCitizens})
-        </button>
       </div>
 
       {/* Content */}
@@ -317,48 +268,6 @@ export default function AdminDashboard() {
         {loading ? (
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-button-primary"></div>
-          </div>
-        ) : view === "allCitizens" ? (
-          <div className="bg-surface rounded-2xl shadow-earth-lg border border-primary-200 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-button-primary text-primary-50">
-                <tr>
-                  <th className="p-4 text-left font-semibold font-serif">Name</th>
-                  <th className="p-4 text-left font-semibold font-serif">Email</th>
-                  <th className="p-4 text-left font-semibold font-serif">Status</th>
-                  <th className="p-4 text-center font-semibold font-serif">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {citizens.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" className="p-6 text-center text-primary-500">
-                      No citizens found.
-                    </td>
-                  </tr>
-                ) : (
-                  citizens.map((citizen, index) => (
-                    <tr key={citizen._id} className={`${index % 2 === 0 ? 'bg-primary-50' : 'bg-surface'} hover:bg-primary-100 transition-colors`}>
-                      <td className="p-4 text-primary-900 font-medium">{citizen.name}</td>
-                      <td className="p-4 text-primary-700">{citizen.email}</td>
-                      <td className="p-4">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          Active
-                        </span>
-                      </td>
-                      <td className="p-4 text-center">
-                        <button
-                          onClick={() => openDeleteModal(citizen._id, "citizen", citizen.name)}
-                          className="bg-red-500 text-primary-50 px-4 py-2 rounded-lg hover:bg-red-600 transition-colors duration-200 font-semibold shadow-soft-earth"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
           </div>
         ) : (
           <div className="bg-surface rounded-2xl shadow-earth-lg border border-primary-200 overflow-hidden">

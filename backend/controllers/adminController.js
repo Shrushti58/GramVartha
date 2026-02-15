@@ -159,13 +159,28 @@ const rejectAdmin = async (req, res) => {
     }
 };
 
+const getAdminMe = async (req, res) => {
+    try {
+        const admin = await Admin.findById(req.user.id).populate('village').select("-password");
+        if (!admin) {
+            return res.status(404).json({ message: "Admin not found" });
+        }
+        res.status(200).json(admin);
+    } catch (err) {
+        console.error("Error fetching admin profile:", err);
+        res.status(500).json({ message: "Error fetching admin profile" });
+    }
+};
+
 module.exports = {
     registerAdmin,
     loginAdmin,
     logoutAdmin,
     deleteCitizen,
+    deleteOfficial,
     getAllCitizens,
     getPendingAdmins,
     approveAdmin,
-    rejectAdmin
+    rejectAdmin,
+    getAdminMe
 };

@@ -7,8 +7,8 @@ const registerOfficial = async (req, res) => {
     const { name, email, password, phone, village } = req.body;
 
     if (!name || !email || !password || !village) {
-      return res.status(400).json({ 
-        message: "Missing required fields: name, email, password, and village are required" 
+      return res.status(400).json({
+        message: "Missing required fields: name, email, password, and village are required"
       });
     }
 
@@ -18,14 +18,21 @@ const registerOfficial = async (req, res) => {
     }
 
     const hashed = await bcrypt.hash(password, 10);
-    
-    await Officials.create({ 
-      name, 
-      email, 
-      password: hashed, 
+
+    const officialData = {
+      name,
+      email,
+      password: hashed,
       phone,
       village
-    });
+    };
+
+    // Add profile image if uploaded
+    if (req.file) {
+      officialData.profileImage = req.file.path;
+    }
+
+    await Officials.create(officialData);
 
     res.status(201).json({ message: "Registered successfully! Awaiting village admin approval." });
   } catch (error) {
@@ -191,6 +198,51 @@ const deleteOfficial = async (req, res) => {
   }
 };
 
+// Profile management functions
+const getOfficialProfile = async (req, res) => {
+  try {
+    const official = await Officials.findById(req.user.id)
+      .populate('village', 'name district state')
+      .select('-password');
+
+    if (!official) {
+      return res.status(404).json({ message: "Official not found" });
+    }
+
+    res.status(200).json(official);
+  } catch (error) {
+    console.error("Error fetching official profile:", error);
+    res.status(500).json({ message: "Error fetching profile" });
+  }
+};
+
+const uploadProfileImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "No image file provided" });
+    }
+
+    const official = await Officials.findByIdAndUpdate(
+      req.user.id,
+      { profileImage: req.file.path },
+      { new: true }
+    ).select('-password');
+
+    if (!official) {
+      return res.status(404).json({ message: "Official not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile image uploaded successfully",
+      profileImage: req.file.path,
+      official
+    });
+  } catch (error) {
+    console.error("Error uploading profile image:", error);
+    res.status(500).json({ message: "Error uploading image" });
+  }
+};
+
 module.exports = {
   registerOfficial,
   loginOfficial,
@@ -200,5 +252,7 @@ module.exports = {
   approveOfficial,
   rejectOfficial,
   getAllOfficials,
-  deleteOfficial
+  deleteOfficial,
+  getOfficialProfile,
+  uploadProfileImage
 };

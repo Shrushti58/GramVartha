@@ -49,7 +49,6 @@ app.use(
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/officials", require("./routes/officialsRoutes"));
 app.use("/notice", require("./routes/noticeRoutes"));
-app.use("/citizen", require("./routes/citizenRoutes"));
 app.use("/villages", require("./routes/villageRoutes"));
 
 

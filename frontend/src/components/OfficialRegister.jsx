@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
+import * as api from '../services/api';
 
 export default function OfficialRegister() {
   const [formData, setFormData] = useState({
@@ -8,32 +9,135 @@ export default function OfficialRegister() {
     email: "",
     phone: "",
     password: "",
+    village: "",
   });
-  const [message, setMessage] = useState("");
+  const [villages, setVillages] = useState([]);
+  const [selectedVillage, setSelectedVillage] = useState(null);
+  const [locationLoading, setLocationLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    loadVillages();
+  }, []);
+
+  const loadVillages = async () => {
+    try {
+      const res = await api.getAllVillages();
+      setVillages(res.data);
+    } catch (err) {
+      toast.error('Failed to load villages');
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleVillageChange = async (e) => {
+    const villageId = e.target.value;
+    setFormData({ ...formData, village: villageId });
+
+    if (villageId) {
+      const village = villages.find(v => v._id === villageId);
+      setSelectedVillage(village);
+
+      // Auto-detect location if village doesn't have coordinates
+      if (village && (!village.latitude || !village.longitude)) {
+        await detectLocation(village);
+      }
+    } else {
+      setSelectedVillage(null);
+    }
+  };
+
+  const detectLocation = async (village) => {
+    setLocationLoading(true);
+    try {
+      if (!navigator.geolocation) {
+        toast.error('Geolocation is not supported by this browser');
+        return;
+      }
+
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000
+        });
+      });
+
+      const { latitude, longitude } = position.coords;
+
+      // Update village with detected coordinates
+      await api.updateVillageCoordinates(village._id, {
+        latitude,
+        longitude
+      });
+
+      toast.success(`Location detected: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
+      
+      // Refresh villages list to show updated coordinates
+      loadVillages();
+    } catch (error) {
+      console.error('Error getting location:', error);
+      toast.error('Failed to detect location. Please ensure location permissions are enabled.');
+    } finally {
+      setLocationLoading(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select a valid image file');
+        return;
+      }
+      
+      // Validate file size (5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+      
+      setProfileImage(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setProfileImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
     
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/officials/register`, formData);
-      setMessage(res.data.message);
+      const res = await api.officialRegister(formData, profileImage);
+      toast.success(res.data.message);
       
       // Redirect to login after successful registration
-      if (res.status === 201) {
-        setTimeout(() => {
-          navigate("/officials/login");
-        }, 2000);
-      }
+      setTimeout(() => {
+        navigate("/officials/login");
+      }, 2000);
     } catch (err) {
-      setMessage(err.response?.data?.message || "Something went wrong!");
+      toast.error(err.response?.data?.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }
@@ -51,19 +155,6 @@ export default function OfficialRegister() {
           <h2 className="text-2xl font-semibold text-primary-900 font-serif">Register as Official</h2>
           <p className="text-primary-600 text-sm mt-1">Create your official account</p>
         </div>
-
-        {message && (
-          <div className={`px-4 py-3 rounded-lg text-sm mb-6 text-center animate-slide-up ${
-            message.includes("wrong") || message.includes("error") || message.includes("invalid") || message.includes("failed")
-              ? "bg-red-50 border border-red-200 text-red-700"
-              : "bg-green-50 border border-green-200 text-green-700"
-          }`}>
-            {message}
-            {!message.includes("wrong") && !message.includes("error") && !message.includes("invalid") && !message.includes("failed") && (
-              <p className="text-xs mt-1 text-primary-600">Redirecting to login...</p>
-            )}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -114,6 +205,53 @@ export default function OfficialRegister() {
           </div>
 
           <div>
+            <label htmlFor="village" className="block text-sm font-medium text-primary-800 mb-2">
+              Village *
+            </label>
+            <select
+              name="village"
+              value={formData.village}
+              onChange={handleVillageChange}
+              className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
+              required
+              disabled={loading}
+            >
+              <option value="">Select your village</option>
+              {villages.map(village => (
+                <option key={village._id} value={village._id}>
+                  {village.name} - {village.district}, {village.state}
+                </option>
+              ))}
+            </select>
+            {selectedVillage && (
+              <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-700">
+                  <strong>Selected Village:</strong> {selectedVillage.name}
+                </p>
+                {selectedVillage.latitude && selectedVillage.longitude ? (
+                  <p className="text-sm text-blue-600">
+                    📍 Location: {selectedVillage.latitude.toFixed(6)}, {selectedVillage.longitude.toFixed(6)}
+                  </p>
+                ) : (
+                  <div className="flex items-center mt-1">
+                    {locationLoading ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span className="text-sm text-blue-600">Detecting location...</span>
+                      </>
+                    ) : (
+                      <span className="text-sm text-amber-600">⚠️ Location not set - will auto-detect when selected</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div>
             <label htmlFor="password" className="block text-sm font-medium text-primary-800 mb-2">
               Password *
             </label>
@@ -128,6 +266,60 @@ export default function OfficialRegister() {
               disabled={loading}
             />
             <p className="text-xs text-primary-500 mt-2">Must be at least 6 characters long</p>
+          </div>
+
+          <div>
+            <label htmlFor="profileImage" className="block text-sm font-medium text-primary-800 mb-2">
+              Profile Photo
+            </label>
+            <div className="space-y-3">
+              {imagePreview ? (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Profile preview"
+                    className="w-24 h-24 rounded-full object-cover border-2 border-primary-300 mx-auto"
+                  />
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                    disabled={loading}
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-24 h-24 rounded-full border-2 border-dashed border-primary-300 bg-primary-50 mx-auto flex items-center justify-center cursor-pointer hover:border-primary-500 hover:bg-primary-100 transition-colors"
+                >
+                  <svg className="w-8 h-8 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                id="profileImage"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+                disabled={loading}
+              />
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="text-sm text-primary-600 hover:text-primary-800 underline"
+                  disabled={loading}
+                >
+                  {imagePreview ? 'Change photo' : 'Upload profile photo'}
+                </button>
+              </div>
+              <p className="text-xs text-primary-500 text-center">Max size: 5MB. Supported formats: JPG, PNG, GIF</p>
+            </div>
           </div>
 
           <button
