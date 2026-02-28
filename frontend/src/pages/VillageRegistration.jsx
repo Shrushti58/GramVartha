@@ -67,8 +67,8 @@ export default function VillageRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.requesterEmail || !formData.requesterPassword) {
-      toast.error('Please fill all required fields');
+    if (!formData.name || !formData.requesterEmail || !formData.requesterPassword || !formData.latitude || !formData.longitude) {
+      toast.error('Please fill all required fields including coordinates');
       return;
     }
 
@@ -173,7 +173,7 @@ export default function VillageRegistration() {
 
               <div>
                 <label className="block text-sm font-medium text-green-800 mb-1">
-                  Latitude
+                  Latitude *
                 </label>
                 <input
                   type="number"
@@ -182,13 +182,14 @@ export default function VillageRegistration() {
                   onChange={handleChange}
                   placeholder="e.g., 18.5204"
                   step="0.0001"
+                  required
                   className="w-full px-4 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-green-800 mb-1">
-                  Longitude
+                  Longitude *
                 </label>
                 <input
                   type="number"
@@ -197,6 +198,7 @@ export default function VillageRegistration() {
                   onChange={handleChange}
                   placeholder="e.g., 73.8567"
                   step="0.0001"
+                  required
                   className="w-full px-4 py-2 border border-green-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
               </div>

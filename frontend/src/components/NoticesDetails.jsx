@@ -284,35 +284,6 @@ const NoticeDetails = () => {
 
             {/* Key Information Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Audience & Wards */}
-              <div className="bg-primary-50 rounded-lg p-4 border border-primary-200">
-                <h3 className="font-semibold text-text-primary mb-2 flex items-center gap-2">
-                  <UsersIcon className="w-4 h-4 text-primary-500" />
-                  Target Information
-                </h3>
-                <div className="space-y-2">
-                  <div>
-                    <span className="text-sm text-text-muted">Audience: </span>
-                    <span className="font-medium text-text-primary">
-                      {notice.targetAudience === "all" ? "All Citizens" : notice.targetAudience}
-                    </span>
-                  </div>
-                  {notice.targetWards && notice.targetWards.length > 0 ? (
-                    <div>
-                      <span className="text-sm text-text-muted">Wards: </span>
-                      <span className="font-medium text-text-primary">
-                        {notice.targetWards.join(", ")}
-                      </span>
-                    </div>
-                  ) : (
-                    <div>
-                      <span className="text-sm text-text-muted">Wards: </span>
-                      <span className="font-medium text-text-primary">All Wards</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
               {/* Stats Card */}
               <div className="bg-accent-teal bg-opacity-10 rounded-lg p-4 border border-accent-teal border-opacity-20">
                 <h3 className="font-semibold text-text-primary mb-3 flex items-center gap-2">

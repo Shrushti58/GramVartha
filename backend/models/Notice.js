@@ -43,15 +43,6 @@ const NoticeSchema = new mongoose.Schema({
     enum: ["low", "medium", "high"],
     default: "medium"
   },
-  targetAudience: {
-    type: String,
-    enum: ["all", "ward_specific"],
-    default: "all"
-  },
-  targetWards: [{
-    type: String,
-    trim: true
-  }],
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Officals",
@@ -80,6 +71,5 @@ NoticeSchema.index({ createdAt: -1 });
 NoticeSchema.index({ category: 1 });
 NoticeSchema.index({ status: 1 });
 NoticeSchema.index({ isPinned: -1 });
-NoticeSchema.index({ targetAudience: 1, targetWards: 1 });
 
 module.exports = mongoose.model("Notice", NoticeSchema);

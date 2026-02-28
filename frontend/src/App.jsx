@@ -14,7 +14,8 @@ import NoticeDetails from "./components/NoticesDetails";
 import SuperadminDash from "./pages/SuperadminDash";
 import VillageAdminDash from "./pages/VillageAdminDash";
 import VillageRegistration from "./pages/VillageRegistration";
-import LocationBasedNotices from "./pages/LocationBasedNotices";
+import QRScanner from "./components/QRScanner";
+import QRNotices from "./pages/QRNotices";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -36,7 +37,9 @@ export default function App() {
           <Route path="/officials/profile" element={<OfficialProfile />} />
           <Route path="/officials/dashboard" element={<OfficialsDashboard />} />
           <Route path="/notice-details/:id" element={<NoticeDetails />} />
-          <Route path="/notices/location" element={<LocationBasedNotices />} />
+          <Route path="/notice/:id" element={<NoticeDetails />} />
+          <Route path="/qr-scanner" element={<QRScanner />} />
+          <Route path="/qr-notices/:villageId" element={<QRNotices />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 

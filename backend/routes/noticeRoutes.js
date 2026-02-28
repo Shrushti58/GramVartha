@@ -5,15 +5,15 @@ const upload = require("../middlewares/uploadCloud");
 const { verifyToken } = require("../utlis/jwt");
 
 router.post("/upload", verifyToken, upload.single("file"), noticeController.uploadNotice);
-router.get("/location", noticeController.getNoticesByLocation);
+router.get("/fetch", noticeController.fetchNotices);
+router.get("/village/:villageId", noticeController.getNoticesByVillage);
 router.get("/official/fetch", verifyToken, noticeController.fetchOfficialNotices);
+router.get("/popular", noticeController.getPopularNotices);
 router.put("/update/:id", verifyToken, upload.single("file"), noticeController.updateNotice);
 router.delete("/delete/:id", verifyToken, noticeController.deleteNotice);
 
+// Place parameterized routes LAST to avoid conflicts
 router.get("/:id", noticeController.getNoticeById);
-
 router.post("/:id/view", noticeController.trackNoticeView);
-
-router.get("/popular", noticeController.getPopularNotices);
 
 module.exports = router;

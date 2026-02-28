@@ -128,11 +128,6 @@ export const fetchOfficialNotices = (filters = {}) => {
   return api.get('/notice/official/fetch', { params: filters });
 };
 
-export const getNoticesByLocation = (latitude, longitude, radiusKm = 10) => {
-  return api.get('/notice/location', {
-    params: { latitude, longitude, radiusKm }
-  });
-};
 
 export const updateNotice = (noticeId, formData) => {
   return api.put(`/notice/update/${noticeId}`, formData, {
@@ -200,6 +195,19 @@ export const uploadOfficialProfileImage = (imageFile) => {
       'Content-Type': 'multipart/form-data',
     },
   });
+};
+
+// QR Code APIs
+export const getVillageByQRCode = (qrCodeId) => {
+  return api.get(`/villages/qr/${qrCodeId}`);
+};
+
+export const getVillageQRCode = (villageId) => {
+  return api.get(`/villages/${villageId}/qrcode`);
+};
+
+export const getNoticesByVillage = (villageId, params = {}) => {
+  return api.get(`/notice/village/${villageId}`, { params });
 };
 
 export default api;

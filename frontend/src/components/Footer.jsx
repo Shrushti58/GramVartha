@@ -1,94 +1,157 @@
 import React from "react";
+import { Link } from "react-router-dom";
+
+const scrollTo = (id) => {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+};
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-r from-primary-50 to-primary-100 text-primary-900 p-8 border-t border-primary-200 font-sans">
-      <div className="max-w-6xl mx-auto">
-        {/* Main Footer Content */}
-        <div className="text-center mb-8">
-          <p className="text-lg font-medium opacity-90">
-            Empowering rural communities through digital innovation and transparent governance
-          </p>
-        </div>
-        
-        {/* Footer Links & Additional Info */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Brand Section */}
-          <div className="text-center md:text-left">
-            <h3 className="text-xl font-bold mb-4 text-primary-700 font-serif">GramVartha</h3>
-            <p className="text-primary-600 text-sm">
-              Connecting communities through trusted local information and digital governance solutions.
+    <footer className="bg-[#1a3a2a] text-white overflow-hidden">
+
+      {/* CTA Banner */}
+      <div className="border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div>
+            <h2 className="text-3xl lg:text-4xl font-bold text-white leading-tight">
+              Ready to connect your village?
+            </h2>
+            <p className="mt-3 text-white/50 text-lg">
+              Join 50+ villages already on GramVartha.
             </p>
           </div>
-          
-          {/* Quick Links */}
-          <div className="text-center">
-            <h4 className="font-semibold mb-4 text-primary-800">Quick Links</h4>
-            <ul className="space-y-2">
-              {[
-                { name: 'About', href: '#about' },
-                { name: 'Features', href: '#features' },
-                { name: 'Notices', href: '#notices' },
-                { name: 'Grievance', href: '#grievance' },
-                { name: 'Contact', href: '#contact' }
-              ].map((item) => (
-                <li key={item.name}>
-                  <a 
-                    href={item.href} 
-                    className="text-primary-600 hover:text-primary-700 transition-colors duration-300 text-sm"
-                  >
-                    {item.name}
-                  </a>
-                </li>
-              ))}
+          <div className="flex gap-4 flex-shrink-0">
+            <Link
+              to="/village/register"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-semibold px-7 py-3.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-green-500/30"
+            >
+              Register Village
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link
+              to="/qr-scanner"
+              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-7 py-3.5 rounded-xl transition-all duration-200"
+            >
+              Scan QR
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Footer */}
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+
+          {/* Brand */}
+          <div className="md:col-span-2 space-y-5">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg overflow-hidden bg-green-500/20 border border-green-400/20 flex items-center justify-center">
+                <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
+              </div>
+              <span className="text-xl font-bold text-white">GramVartha</span>
+            </div>
+            <p className="text-white/50 text-sm leading-relaxed max-w-xs">
+              Connecting rural communities with their local government through transparent digital governance.
+            </p>
+            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span className="text-xs text-white/60 font-medium">Platform is live across Maharashtra</span>
+            </div>
+          </div>
+
+          {/* Platform Links */}
+          <div>
+            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">Platform</h4>
+            <ul className="space-y-3">
+              <li>
+                <button
+                  onClick={() => scrollTo("about")}
+                  className="text-sm text-white/50 hover:text-green-400 transition-colors duration-200 text-left"
+                >
+                  About
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => scrollTo("features")}
+                  className="text-sm text-white/50 hover:text-green-400 transition-colors duration-200 text-left"
+                >
+                  Features
+                </button>
+              </li>
+              <li>
+                <Link
+                  to="/qr-scanner"
+                  className="text-sm text-white/50 hover:text-green-400 transition-colors duration-200"
+                >
+                  Scan QR
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/village/register"
+                  className="text-sm text-white/50 hover:text-green-400 transition-colors duration-200"
+                >
+                  Register Village
+                </Link>
+              </li>
             </ul>
           </div>
-          
-          {/* Social Links */}
-          <div className="text-center md:text-right">
-            <h4 className="font-semibold mb-4 text-primary-800">Connect With Us</h4>
-            <div className="flex justify-center md:justify-end space-x-4">
-              {[
-                { icon: 'fab fa-facebook-f', label: 'Facebook' },
-                { icon: 'fab fa-twitter', label: 'Twitter' },
-                { icon: 'fab fa-instagram', label: 'Instagram' },
-                { icon: 'fab fa-linkedin-in', label: 'LinkedIn' }
-              ].map((social) => (
-                <a
-                  key={social.label}
-                  href="#"
-                  className="w-10 h-10 rounded-full bg-primary-200 flex items-center justify-center text-primary-600 hover:bg-primary-500 hover:text-white transition-all duration-300 transform hover:scale-110"
-                  aria-label={social.label}
+
+          {/* Portals */}
+          <div>
+            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">Portals</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/officials/login"
+                  className="text-sm text-white/50 hover:text-green-400 transition-colors duration-200"
                 >
-                  <i className={social.icon}></i>
+                  Officials Login
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/admin/login"
+                  className="text-sm text-white/50 hover:text-green-400 transition-colors duration-200"
+                >
+                  Admin Login
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Bottom bar + Giant wordmark */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-4">
+            <p className="text-xs text-white/30">
+              © {new Date().getFullYear()} GramVartha. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6">
+              {["Privacy Policy", "Terms of Service"].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="text-xs text-white/30 hover:text-white/60 transition-colors duration-200"
+                >
+                  {item}
                 </a>
               ))}
             </div>
           </div>
         </div>
-        
-        {/* Copyright & Legal */}
-        <div className="pt-6 border-t border-primary-200 text-center">
-          <p className="text-sm text-primary-600">
-            © {new Date().getFullYear()} GramVartha. All rights reserved.
-          </p>
-          <div className="mt-2 flex justify-center space-x-6">
-            {[
-              { name: 'Privacy Policy', href: '#' },
-              { name: 'Terms of Service', href: '#' },
-              { name: 'Cookie Policy', href: '#' }
-            ].map((item) => (
-              <a 
-                key={item.name}
-                href={item.href} 
-                className="text-xs text-primary-600 hover:text-primary-700 transition-colors duration-300"
-              >
-                {item.name}
-              </a>
-            ))}
-          </div>
-        </div>
+
+        {/* Giant wordmark */}
+       
       </div>
+
     </footer>
   );
 }

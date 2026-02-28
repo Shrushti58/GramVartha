@@ -1,6 +1,6 @@
 /**
- * Home Screen - With Professional Splash Screen
- * Shows logo then fades to main content
+ * Home Screen - QR-First Landing Page
+ * Simple landing page guiding users to scan QR codes for village notices
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -13,26 +13,39 @@ import {
   Dimensions,
   Animated,
   Image,
+  FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../constants/colors';
 
 const { width, height } = Dimensions.get('window');
 
+interface ScannedVillage {
+  villageId: string;
+  villageName: string;
+  district: string;
+  state: string;
+  pincode: string;
+  scannedAt: string;
+  qrCodeId: string;
+}
+
 export default function HomeScreen() {
-  const [selectedVillage, setSelectedVillage] = useState('Kasaba');
   const [isLoading, setIsLoading] = useState(true);
+  const [recentVillages, setRecentVillages] = useState<ScannedVillage[]>([]);
   
   // Animation values
   const splashOpacity = useRef(new Animated.Value(1)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const logoScale = useRef(new Animated.Value(1)).current;
   const appNameSlide = useRef(new Animated.Value(0)).current;
+  const qrButtonScale = useRef(new Animated.Value(0.8)).current;
 
   useEffect(() => {
-    // Simulate loading time (2 seconds)
+    // Splash animation
     const timer = setTimeout(() => {
-      // Fade out splash and fade in content
       Animated.parallel([
         Animated.timing(splashOpacity, {
           toValue: 0,
@@ -63,13 +76,61 @@ export default function HomeScreen() {
         }),
       ]).start(() => {
         setIsLoading(false);
+        loadRecentVillages();
       });
-    }, 2000);
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, []);
 
-  // Splash Screen Component
+  // Animate QR button after content loads
+  useEffect(() => {
+    if (!isLoading) {
+      Animated.sequence([
+        Animated.timing(qrButtonScale, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(qrButtonScale, {
+              toValue: 1.05,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(qrButtonScale, {
+              toValue: 1,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ])
+        ),
+      ]).start();
+    }
+  }, [isLoading]);
+
+  const loadRecentVillages = async () => {
+    try {
+      const stored = await AsyncStorage.getItem('recentVillages');
+      if (stored) {
+        const villages = JSON.parse(stored) as ScannedVillage[];
+        setRecentVillages(villages.slice(0, 5)); // Show last 5 scanned
+      }
+    } catch (err) {
+      console.error('Error loading recent villages:', err);
+    }
+  };
+
+  const handleVillagePress = (village: ScannedVillage) => {
+    router.push(`qr-notices/${village.villageId}` as any);
+  };
+
+  const handleScanQR = () => {
+    router.push('qr-scanner' as any);
+  };
+
+  // Splash Screen
   const SplashScreen = () => (
     <Animated.View 
       style={[
@@ -98,7 +159,7 @@ export default function HomeScreen() {
         >
           GramVartha
         </Animated.Text>
-        <Text style={styles.splashTagline}>Digital Governance Portal</Text>
+        <Text style={styles.splashTagline}>Village Notices on Demand</Text>
       </View>
     </Animated.View>
   );
@@ -119,142 +180,95 @@ export default function HomeScreen() {
             </View>
             <View>
               <Text style={styles.appName}>GramVartha</Text>
-              <Text style={styles.villageText}>{selectedVillage} ‚Ä¢ GP</Text>
+              <Text style={styles.tagline}>Digital Village Updates</Text>
             </View>
           </View>
-          
-          <TouchableOpacity style={styles.villageSelector}>
-            <Text style={styles.villageSelectorText}>Change</Text>
-            <Text style={styles.chevron}>‚ñº</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Content */}
+      {/* Main Content */}
       <View style={styles.content}>
-        {/* Welcome Message */}
+        {/* Welcome Section */}
         <View style={styles.welcomeSection}>
-          <Text style={styles.greeting}>Good morning,</Text>
-          <Text style={styles.welcomeTitle}>Your Village Updates</Text>
+          <Text style={styles.welcomeTitle}>Scan QR to View</Text>
+          <Text style={styles.welcomeSubtitle}>Village notices from your area</Text>
         </View>
 
-        {/* Stats Cards */}
-        <View style={styles.statsGrid}>
-          <View style={[styles.statCard, { backgroundColor: Colors.primary[50] }]}>
-            <Text style={[styles.statValue, { color: Colors.primary[700] }]}>23</Text>
-            <Text style={[styles.statLabel, { color: Colors.textSecondary }]}>New Notices</Text>
-            <View style={[styles.statBadge, { backgroundColor: Colors.primary[500] }]}>
-              <Text style={styles.statBadgeText}>+5 today</Text>
-            </View>
-          </View>
-
-          <View style={[styles.statCard, { backgroundColor: Colors.success + '15' }]}>
-            <Text style={[styles.statValue, { color: Colors.success }]}>5</Text>
-            <Text style={[styles.statLabel, { color: Colors.textSecondary }]}>Urgent</Text>
-            <View style={[styles.statBadge, { backgroundColor: Colors.success }]}>
-              <Text style={styles.statBadgeText}>Action needed</Text>
-            </View>
-          </View>
-
-          <View style={[styles.statCard, { backgroundColor: Colors.warning + '15' }]}>
-            <Text style={[styles.statValue, { color: Colors.warning }]}>12</Text>
-            <Text style={[styles.statLabel, { color: Colors.textSecondary }]}>Events</Text>
-            <View style={[styles.statBadge, { backgroundColor: Colors.warning }]}>
-              <Text style={styles.statBadgeText}>This week</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Quick Actions */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Quick Access</Text>
-          <TouchableOpacity>
-            <Text style={[styles.seeAllLink, { color: Colors.primary[600] }]}>Customize ‚Üí</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.actionsGrid}>
-          <TouchableOpacity 
-            style={[styles.actionCard, { backgroundColor: Colors.surface }]}
-            onPress={() => router.push('notice' as any)}
-          >
-            <View style={[styles.actionIcon, { backgroundColor: Colors.primary[100] }]}>
-              <Text style={styles.iconText}>üìã</Text>
-            </View>
-            <Text style={styles.actionLabel}>All Notices</Text>
-            <Text style={styles.actionCount}>156 total</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.actionCard, { backgroundColor: Colors.surface }]}>
-            <View style={[styles.actionIcon, { backgroundColor: Colors.error + '20' }]}>
-              <Text style={styles.iconText}>‚ö°</Text>
-            </View>
-            <Text style={styles.actionLabel}>Urgent</Text>
-            <Text style={styles.actionCount}>5 new</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.actionCard, { backgroundColor: Colors.surface }]}>
-            <View style={[styles.actionIcon, { backgroundColor: Colors.success + '20' }]}>
-              <Text style={styles.iconText}>üìÖ</Text>
-            </View>
-            <Text style={styles.actionLabel}>Events</Text>
-            <Text style={styles.actionCount}>12 upcoming</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={[styles.actionCard, { backgroundColor: Colors.surface }]}>
-            <View style={[styles.actionIcon, { backgroundColor: Colors.warning + '20' }]}>
-              <Text style={styles.iconText}>üèõÔ∏è</Text>
-            </View>
-            <Text style={styles.actionLabel}>Schemes</Text>
-            <Text style={styles.actionCount}>8 active</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Featured Notice */}
-        <View style={[styles.featuredCard, { 
-          backgroundColor: Colors.primary[600],
-          shadowColor: Colors.primary[700] 
-        }]}>
-          <View style={styles.featuredContent}>
-            <View>
-              <View style={styles.featuredTag}>
-                <Text style={styles.featuredTagText}>üì¢ FEATURED</Text>
-              </View>
-              <Text style={styles.featuredTitle}>Gram Sabha Meeting</Text>
-              <Text style={styles.featuredDesc}>Today at 10:00 AM ‚Ä¢ Panchayat Hall</Text>
-            </View>
-            <TouchableOpacity style={styles.featuredButton}>
-              <Text style={styles.featuredButtonText}>View ‚Üí</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Trust Indicators */}
-        <View style={styles.trustSection}>
-          <View style={styles.trustItem}>
-            <View style={[styles.trustDot, { backgroundColor: Colors.success }]} />
-            <Text style={styles.trustText}>Official Government Updates</Text>
-          </View>
-          <View style={styles.trustItem}>
-            <View style={[styles.trustDot, { backgroundColor: Colors.primary[500] }]} />
-            <Text style={styles.trustText}>No Login Required</Text>
-          </View>
-        </View>
-
-      </View>
-
-      {/* Bottom CTA */}
-      <View style={styles.bottomCta}>
-        <TouchableOpacity 
-          style={[styles.primaryButton, { backgroundColor: Colors.button.primary }]}
-          onPress={() => router.push('notice' as any)}
-          activeOpacity={0.9}
+        {/* Large QR Scanner Button */}
+        <Animated.View 
+          style={[
+            styles.qrButtonContainer,
+            {
+              transform: [{ scale: qrButtonScale }]
+            }
+          ]}
         >
-          <Text style={styles.buttonText}>View All Village Notices</Text>
-          <View style={styles.buttonIcon}>
-            <Text style={styles.buttonIconText}>‚Üí</Text>
+          <TouchableOpacity 
+            style={styles.qrButton}
+            onPress={handleScanQR}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.qrButtonIcon}>Ì≥±</Text>
+            <Text style={styles.qrButtonTitle}>Scan QR Code</Text>
+            <Text style={styles.qrButtonSubtitle}>Point camera at QR code</Text>
+          </TouchableOpacity>
+        </Animated.View>
+
+        {/* Info Cards */}
+        <View style={styles.infoCards}>
+          <View style={[styles.infoCard, { backgroundColor: Colors.primary[50] }]}>
+            <Text style={styles.infoIcon}>‚úì</Text>
+            <Text style={styles.infoText}>No login required</Text>
           </View>
-        </TouchableOpacity>
+          <View style={[styles.infoCard, { backgroundColor: Colors.success + '15' }]}>
+            <Text style={styles.infoIcon}>Ì≥ç</Text>
+            <Text style={styles.infoText}>Location-based notices</Text>
+          </View>
+        </View>
+
+        {/* Recently Scanned Section */}
+        {recentVillages.length > 0 && (
+          <View style={styles.recentSection}>
+            <Text style={styles.recentTitle}>Recently Scanned</Text>
+            <FlatList
+              data={recentVillages}
+              keyExtractor={(item) => item.villageId}
+              scrollEnabled={false}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.recentVillageCard}
+                  onPress={() => handleVillagePress(item)}
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.recentVillageContent}>
+                    <Text style={styles.recentVillageLabel}>Ì≥ç {item.villageName}</Text>
+                    <Text style={styles.recentVillageSubtitle}>
+                      {item.district}, {item.state}
+                    </Text>
+                  </View>
+                  <Text style={styles.recentVillageArrow}>‚Üí</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        )}
+
+        {/* How it Works */}
+        <View style={styles.howItWorks}>
+          <Text style={styles.howItWorksTitle}>How it works</Text>
+          <View style={styles.step}>
+            <Text style={styles.stepNumber}>1</Text>
+            <Text style={styles.stepText}>Scan the village QR code</Text>
+          </View>
+          <View style={styles.step}>
+            <Text style={styles.stepNumber}>2</Text>
+            <Text style={styles.stepText}>View all village notices</Text>
+          </View>
+          <View style={styles.step}>
+            <Text style={styles.stepNumber}>3</Text>
+            <Text style={styles.stepText}>Get location-based updates</Text>
+          </View>
+        </View>
       </View>
     </Animated.View>
   );
@@ -324,13 +338,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  // Original Header Styles
+  // Header Styles
   header: {
     backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
     paddingTop: 50,
-    paddingBottom: 12,
+    paddingBottom: 16,
     paddingHorizontal: 20,
   },
   headerContent: {
@@ -341,12 +355,13 @@ const styles = StyleSheet.create({
   logoSection: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   logoCircle: {
-    width: 60,
-    height: 60,
+    width: 56,
+    height: 56,
     backgroundColor: Colors.primary[600],
-    borderRadius: 30,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -357,251 +372,177 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   logoImage: {
-    width: 50,
-    height: 50,
+    width: 45,
+    height: 45,
   },
   appName: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: '800',
     color: Colors.primary[700],
-    lineHeight: 32,
+    lineHeight: 26,
   },
-  villageText: {
-    fontSize: 13,
+  tagline: {
+    fontSize: 12,
     color: Colors.textSecondary,
     marginTop: 2,
     fontWeight: '500',
-  },
-  villageSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.primary[50],
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: Colors.primary[200],
-  },
-  villageSelectorText: {
-    fontSize: 12,
-    color: Colors.primary[700],
-    fontWeight: '500',
-    marginRight: 4,
-  },
-  chevron: {
-    fontSize: 10,
-    color: Colors.primary[600],
   },
 
   // Content Styles
   content: {
     flex: 1,
     paddingHorizontal: 20,
-    paddingTop: 20,
+    paddingTop: 24,
+    paddingBottom: 20,
   },
   welcomeSection: {
-    marginBottom: 20,
-  },
-  greeting: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginBottom: 4,
+    marginBottom: 32,
+    alignItems: 'center',
   },
   welcomeTitle: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: '800',
     color: Colors.textPrimary,
+    marginBottom: 8,
     letterSpacing: -0.5,
+    textAlign: 'center',
   },
-  statsGrid: {
-    flexDirection: 'row',
-    gap: 10,
+  welcomeSubtitle: {
+    fontSize: 15,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+
+  // QR Button
+  qrButtonContainer: {
     marginBottom: 24,
   },
-  statCard: {
-    flex: 1,
-    padding: 14,
-    borderRadius: 16,
-    position: 'relative',
-  },
-  statValue: {
-    fontSize: 26,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  statBadge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  statBadgeText: {
-    color: Colors.textInverse,
-    fontSize: 9,
-    fontWeight: '600',
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-  },
-  seeAllLink: {
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 10,
-    marginBottom: 20,
-  },
-  actionCard: {
-    width: (width - 50) / 2,
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  actionIcon: {
-    width: 48,
-    height: 48,
+  qrButton: {
+    backgroundColor: Colors.primary[600],
     borderRadius: 24,
-    justifyContent: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 24,
     alignItems: 'center',
+    shadowColor: Colors.primary[700],
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  qrButtonIcon: {
+    fontSize: 48,
     marginBottom: 12,
   },
-  iconText: {
-    fontSize: 22,
-  },
-  actionLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: Colors.textPrimary,
-    marginBottom: 4,
-  },
-  actionCount: {
-    fontSize: 12,
-    color: Colors.textSecondary,
-  },
-  featuredCard: {
-    borderRadius: 20,
-    padding: 18,
-    marginBottom: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  featuredContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  featuredTag: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: 'flex-start',
-    marginBottom: 10,
-  },
-  featuredTagText: {
-    color: Colors.textInverse,
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  featuredTitle: {
-    fontSize: 18,
+  qrButtonTitle: {
+    fontSize: 20,
     fontWeight: '700',
     color: Colors.textInverse,
     marginBottom: 4,
   },
-  featuredDesc: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.9)',
-  },
-  featuredButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  featuredButtonText: {
-    color: Colors.textInverse,
+  qrButtonSubtitle: {
     fontSize: 13,
-    fontWeight: '600',
-  },
-  trustSection: {
-    flexDirection: 'row',
-    gap: 16,
-    marginBottom: 16,
-  },
-  trustItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  trustDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginRight: 6,
-  },
-  trustText: {
-    fontSize: 11,
-    color: Colors.textSecondary,
+    color: 'rgba(255,255,255,0.85)',
     fontWeight: '500',
   },
-  bottomCta: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-    paddingTop: 8,
-    backgroundColor: Colors.background,
+
+  // Info Cards
+  infoCards: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 28,
   },
-  primaryButton: {
+  infoCard: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 16,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 12,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.textInverse,
+  infoIcon: {
+    fontSize: 18,
     marginRight: 8,
   },
-  buttonIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+  infoText: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+    flex: 1,
   },
-  buttonIconText: {
-    color: Colors.textInverse,
+
+  // Recent Villages
+  recentSection: {
+    marginBottom: 24,
+  },
+  recentTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 12,
+  },
+  recentVillageCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.surface,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: Colors.border,
+  },
+  recentVillageContent: {
+    flex: 1,
+  },
+  recentVillageLabel: {
     fontSize: 14,
     fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: 2,
+  },
+  recentVillageSubtitle: {
+    fontSize: 12,
+    color: Colors.textSecondary,
+  },
+  recentVillageArrow: {
+    fontSize: 16,
+    color: Colors.primary[600],
+  },
+
+  // How It Works
+  howItWorks: {
+    backgroundColor: Colors.primary[50],
+    borderRadius: 16,
+    padding: 16,
+  },
+  howItWorksTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    marginBottom: 12,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  stepNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: Colors.primary[600],
+    color: Colors.textInverse,
+    fontWeight: '700',
+    fontSize: 12,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    marginRight: 10,
+  },
+  stepText: {
+    fontSize: 13,
+    color: Colors.textSecondary,
+    fontWeight: '500',
+    flex: 1,
   },
 });

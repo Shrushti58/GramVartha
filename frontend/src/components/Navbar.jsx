@@ -1,242 +1,185 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+const scrollTo = (id) => {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth" });
+};
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
+  const isHome = location.pathname === "/";
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleNavClick = (id) => {
+    setIsMenuOpen(false);
+    if (isHome) {
+      scrollTo(id);
+    } else {
+      window.location.href = `/#${id}`;
+    }
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white-700/30 backdrop-blur-xl border-b border-primary-300/30 shadow-earth-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex justify-between items-center h-16 sm:h-20">
-          {/* Brand / Logo */}
-          <Link to="/" className="flex items-center space-x-3 sm:space-x-4 group">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-cream/20 backdrop-blur-md flex items-center justify-center overflow-hidden border border-latte/40 shadow-soft-earth transition-all duration-300 group-hover:scale-105 group-hover:bg-cream/30 group-hover:shadow-earth-md">
-              <img
-                src="/gramvarthalogo.png"
-                alt="GramVartha Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold font-serif tracking-wide text-primary-900 drop-shadow-lg transition-all duration-300 group-hover:scale-105">
-                GramVartha
-              </h1>
-            </div>
-          </Link>
+    <>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white shadow-md border-b border-gray-100"
+            : "bg-white/95 backdrop-blur-md border-b border-gray-100"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-2 lg:space-x-3">
-            <Link
-              to="/notices/location"
-              className="relative text-primary-900 font-medium transition-all duration-300 px-4 py-2 rounded-xl hover:bg-latte/30 backdrop-blur-md border border-transparent hover:border-mocha/40 hover:shadow-soft-earth group overflow-hidden"
-            >
-              <span className="relative z-10">📍 Near Me</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+            {/* Logo */}
+            <Link to="/" className="flex items-center space-x-3 group">
+              <div className="w-9 h-9 rounded-lg overflow-hidden border border-green-100 flex items-center justify-center bg-green-50">
+                <img
+                  src="/gramvarthalogo.png"
+                  alt="GramVartha Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <span className="text-lg font-bold text-gray-900 tracking-tight group-hover:text-green-700 transition-colors duration-200">
+                GramVartha
+              </span>
             </Link>
 
-            {/* Login Buttons with Glassmorphism */}
-            <div className="flex items-center space-x-2 lg:space-x-3 ml-4">
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center space-x-1">
+              <button
+                onClick={() => handleNavClick("about")}
+                className="text-sm font-medium text-gray-600 hover:text-green-700 px-4 py-2 rounded-lg hover:bg-green-50 transition-all duration-200"
+              >
+                About
+              </button>
+              <button
+                onClick={() => handleNavClick("features")}
+                className="text-sm font-medium text-gray-600 hover:text-green-700 px-4 py-2 rounded-lg hover:bg-green-50 transition-all duration-200"
+              >
+                Features
+              </button>
+              <Link
+                to="/qr-scanner"
+                className="text-sm font-medium text-gray-600 hover:text-green-700 px-4 py-2 rounded-lg hover:bg-green-50 transition-all duration-200"
+              >
+                Scan QR
+              </Link>
+
+              <div className="w-px h-5 bg-gray-200 mx-2" />
+
               <Link
                 to="/officials/login"
-                className="relative bg-cream/40 hover:bg-sand/50 text-primary-900 px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-md border border-latte/50 hover:border-mocha/60 shadow-soft-earth hover:shadow-earth-md hover:scale-105 group overflow-hidden"
+                className="text-sm font-medium text-gray-700 px-4 py-2 rounded-lg border border-gray-200 hover:border-green-300 hover:text-green-700 hover:bg-green-50 transition-all duration-200"
               >
-                <span className="relative z-10">Officials Login</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                Officials Login
               </Link>
               <Link
                 to="/admin/login"
-                className="relative bg-gradient-to-r from-mocha/30 to-clay/30 hover:from-mocha/40 hover:to-clay/40 text-primary-900 px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-md border border-cocoa/50 hover:border-cocoa/70 shadow-soft-earth hover:shadow-earth-md hover:scale-105 group overflow-hidden"
+                className="text-sm font-medium text-gray-700 px-4 py-2 rounded-lg border border-gray-200 hover:border-green-300 hover:text-green-700 hover:bg-green-50 transition-all duration-200"
               >
-                <span className="relative z-10 flex items-center space-x-2">
-                  <span>Admin Login</span>
-                  <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                Admin Login
               </Link>
               <Link
                 to="/village/register"
-                className="relative bg-gradient-to-r from-green-400/30 to-green-500/30 hover:from-green-400/40 hover:to-green-500/40 text-primary-900 px-4 py-2 rounded-xl font-medium transition-all duration-300 backdrop-blur-md border border-green-600/50 hover:border-green-600/70 shadow-soft-earth hover:shadow-earth-md hover:scale-105 group overflow-hidden"
+                className="text-sm font-semibold text-white px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 transition-all duration-200 shadow-sm"
               >
-                <span className="relative z-10">Register Village</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-latte/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                Register Village
               </Link>
             </div>
-          </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+            {/* Mobile Hamburger */}
             <button
-              onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-xl text-primary-900 hover:bg-latte/30 focus:outline-none transition-all duration-300 backdrop-blur-md border border-latte/50 shadow-soft-earth hover:scale-105"
-              aria-expanded={isMenuOpen}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all duration-200"
+              aria-label="Toggle menu"
             >
-              {!isMenuOpen ? (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
+              {isMenuOpen ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg
-                  className="block h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Mobile menu with enhanced glassmorphism */}
-      <div
-        className={`md:hidden fixed inset-y-0 right-0 w-72 bg-cream/30 backdrop-blur-2xl shadow-earth-lg transform ${
-          isMenuOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-300 ease-in-out z-50 border-l border-latte/40`}
-      >
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex justify-between items-center p-5 border-b border-latte/40 bg-sand/20">
-            <span className="text-lg font-semibold text-primary-900 drop-shadow-lg">Menu</span>
+        {/* Mobile Menu */}
+        <div
+          className={`md:hidden overflow-hidden transition-all duration-300 ${
+            isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="bg-white border-t border-gray-100 px-6 py-4 space-y-1">
             <button
-              onClick={toggleMenu}
-              className="p-2 rounded-xl text-primary-900 hover:bg-latte/30 transition-all duration-300 border border-latte/50 backdrop-blur-md hover:scale-105 shadow-soft-earth"
+              onClick={() => handleNavClick("about")}
+              className="block w-full text-left text-sm font-medium text-gray-700 px-4 py-3 rounded-lg hover:bg-green-50 hover:text-green-700 transition-all duration-200"
             >
-              <svg
-                className="h-6 w-6"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              About
             </button>
-          </div>
+            <button
+              onClick={() => handleNavClick("features")}
+              className="block w-full text-left text-sm font-medium text-gray-700 px-4 py-3 rounded-lg hover:bg-green-50 hover:text-green-700 transition-all duration-200"
+            >
+              Features
+            </button>
+            <Link
+              to="/qr-scanner"
+              onClick={() => setIsMenuOpen(false)}
+              className="block text-sm font-medium text-gray-700 px-4 py-3 rounded-lg hover:bg-green-50 hover:text-green-700 transition-all duration-200"
+            >
+              Scan QR
+            </Link>
 
-          {/* Menu Items */}
-          <div className="flex-1 px-5 pb-5 space-y-6 overflow-y-auto mt-6">
-            {/* Navigation Links */}
-            <div className="space-y-3">
-              <Link
-                to="/notices"
-                className="block w-full text-primary-900 font-medium px-4 py-3 rounded-xl hover:bg-latte/40 transition-all duration-300 border border-latte/50 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="flex items-center justify-between">
-                  <span>Notices</span>
-                  <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </Link>
-
-              <Link
-                to="/notices/location"
-                className="block w-full text-primary-900 font-medium px-4 py-3 rounded-xl hover:bg-latte/40 transition-all duration-300 border border-latte/50 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span className="flex items-center justify-between">
-                  <span>📍 Notices Near Me</span>
-                  <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </span>
-              </Link>
-            </div>
-
-            {/* Login Buttons Section */}
-            <div className="pt-6 space-y-3 border-t border-latte/40">
-              <p className="text-text-secondary text-sm font-medium px-2 mb-3">Login Portals</p>
-              
+            <div className="pt-2 border-t border-gray-100 space-y-2 mt-2">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-4 pb-1">
+                Login Portals
+              </p>
               <Link
                 to="/officials/login"
-                className="block w-full bg-cream/50 text-primary-900 px-4 py-3 rounded-xl font-medium text-center hover:bg-sand/60 transition-all duration-300 border border-latte/50 hover:border-mocha/60 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
                 onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-medium text-gray-700 px-4 py-3 rounded-lg border border-gray-200 hover:border-green-300 hover:text-green-700 hover:bg-green-50 transition-all duration-200"
               >
-                <span className="flex items-center justify-center space-x-2">
-                  <svg className="w-5 h-5 text-mocha" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span>Officials Login</span>
-                </span>
+                <span>Officials Login</span>
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </Link>
-              
               <Link
                 to="/admin/login"
-                className="block w-full bg-gradient-to-r from-mocha/40 to-clay/40 text-cream px-4 py-3 rounded-xl font-medium text-center hover:from-mocha/50 hover:to-clay/50 transition-all duration-300 border border-cocoa/60 hover:border-cocoa/80 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
                 onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-between text-sm font-medium text-gray-700 px-4 py-3 rounded-lg border border-gray-200 hover:border-green-300 hover:text-green-700 hover:bg-green-50 transition-all duration-200"
               >
-                <span className="flex items-center justify-center space-x-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span>Admin Login</span>
-                </span>
+                <span>Admin Login</span>
+                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </Link>
-
               <Link
                 to="/village/register"
-                className="block w-full bg-gradient-to-r from-green-400/40 to-green-500/40 text-primary-900 px-4 py-3 rounded-xl font-medium text-center hover:from-green-400/50 hover:to-green-500/50 transition-all duration-300 border border-green-600/60 hover:border-green-600/80 backdrop-blur-md shadow-soft-earth hover:shadow-earth-md hover:scale-105 group"
                 onClick={() => setIsMenuOpen(false)}
+                className="block text-sm font-semibold text-white text-center px-4 py-3 rounded-lg bg-green-600 hover:bg-green-700 transition-all duration-200"
               >
-                <span className="flex items-center justify-center space-x-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8m0 8l-9 2m9-2l9 2m-18-2v-8" />
-                  </svg>
-                  <span>Register Village</span>
-                </span>
+                Register Village
               </Link>
-            </div>
-          </div>
-
-          {/* Footer decoration */}
-          <div className="p-5 border-t border-latte/40 bg-sand/20">
-            <div className="flex items-center justify-center space-x-2 text-text-secondary text-sm">
-              <div className="w-2 h-2 rounded-full bg-mocha/60 animate-pulse"></div>
-              <span>Powered by GramVartha</span>
             </div>
           </div>
         </div>
-      </div>
+      </nav>
 
-      {/* Backdrop overlay with blur */}
-      {isMenuOpen && (
-        <div
-          className="fixed inset-0 bg-primary-900/30 backdrop-blur-sm z-40 md:hidden animate-fade-in"
-          onClick={() => setIsMenuOpen(false)}
-        ></div>
-      )}
-    </nav>
+      {/* Spacer */}
+      <div className="h-16" />
+    </>
   );
 }

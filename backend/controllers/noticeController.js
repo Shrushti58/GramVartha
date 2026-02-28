@@ -10,8 +10,6 @@ const uploadNotice = async (req, res) => {
       noticeId, 
       category,
       priority = "medium",
-      targetAudience = "all",
-      targetWards = "",
       isPinned = false
     } = req.body;
 
@@ -45,16 +43,7 @@ const uploadNotice = async (req, res) => {
       notice.description = description;
       notice.category = category;
       notice.priority = priority;
-      notice.targetAudience = targetAudience;
       notice.isPinned = isPinned === 'true' || isPinned === true;
-      
-      if (targetAudience === 'ward_specific' && targetWards) {
-        notice.targetWards = Array.isArray(targetWards) 
-          ? targetWards 
-          : targetWards.split(',').map(ward => ward.trim());
-      } else {
-        notice.targetWards = [];
-      }
       
       if (fileUrl) {
         notice.fileUrl = fileUrl;
@@ -69,7 +58,6 @@ const uploadNotice = async (req, res) => {
   description,
   category,
   priority,
-  targetAudience,
   isPinned: isPinned === 'true' || isPinned === true,
   createdBy: req.user.id,
 
@@ -81,11 +69,6 @@ const uploadNotice = async (req, res) => {
       if (fileUrl) {
         noticeData.fileUrl = fileUrl;
         noticeData.fileName = fileName;
-      }
-      if (targetAudience === 'ward_specific' && targetWards) {
-        noticeData.targetWards = Array.isArray(targetWards) 
-          ? targetWards 
-          : targetWards.split(',').map(ward => ward.trim());
       }
 
       notice = new Notice(noticeData);
@@ -202,8 +185,6 @@ const updateNotice = async (req, res) => {
       description, 
       category,
       priority,
-      targetAudience,
-      targetWards,
       isPinned
     } = req.body;
     
@@ -228,16 +209,7 @@ const updateNotice = async (req, res) => {
     notice.description = description || notice.description;
     notice.category = category || notice.category;
     notice.priority = priority || notice.priority;
-    notice.targetAudience = targetAudience || notice.targetAudience;
     notice.isPinned = isPinned !== undefined ? (isPinned === 'true' || isPinned === true) : notice.isPinned;
-    
-    if (targetAudience === 'ward_specific' && targetWards) {
-      notice.targetWards = Array.isArray(targetWards) 
-        ? targetWards 
-        : targetWards.split(',').map(ward => ward.trim());
-    } else if (targetAudience === 'all') {
-      notice.targetWards = [];
-    }
     
     if (fileUrl) {
       notice.fileUrl = fileUrl;
@@ -377,14 +349,6 @@ const getCitizenNotices = async (req, res) => {
       filter.category = category;
     }
 
-    filter.$or = [
-      { targetAudience: 'all' },
-      {
-        targetAudience: 'ward_specific',
-        targetWards: citizenWard
-      }
-    ];
-
     const notices = await Notice.find(filter)
       .populate('createdBy', 'name email')
       .sort({ isPinned: -1, createdAt: -1 })
@@ -431,84 +395,60 @@ const getNoticeById = async (req, res) => {
   }
 };
 
-// Public: get notices based on user's current location (no auth required)
-const getNoticesByLocation = async (req, res) => {
+
+// Public: Get notices by village ID (for QR code scanning)
+const getNoticesByVillage = async (req, res) => {
   try {
-    const { latitude, longitude, radiusKm = 10 } = req.query;
-
-    if (!latitude || !longitude) {
-      return res.status(400).json({ 
-        message: "Missing required query params: latitude and longitude" 
-      });
-    }
-
-    // Haversine formula to calculate distance between two coordinates
-    const calculateDistance = (lat1, lon1, lat2, lon2) => {
-      const R = 6371; // Earth radius in km
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c; // Distance in km
-    };
+    const { villageId } = req.params;
+    const { page = 1, limit = 10, category = 'all' } = req.query;
 
     const Village = require("../models/Village");
     
-    // Get all villages
-    const villages = await Village.find({ status: "approved" });
-    
-    // Filter villages within radius
-    const nearbyVillages = villages.filter(village => {
-      if (!village.latitude || !village.longitude) return false;
-      const distance = calculateDistance(
-        parseFloat(latitude), 
-        parseFloat(longitude), 
-        village.latitude, 
-        village.longitude
-      );
-      return distance <= parseFloat(radiusKm);
-    });
-
-    if (nearbyVillages.length === 0) {
-      return res.json({
-        message: "No villages found within the specified radius",
-        notices: [],
-        nearbyVillages: [],
-        radius: radiusKm,
-        userLocation: { latitude, longitude }
-      });
+    // Verify village exists and is approved
+    const village = await Village.findById(villageId);
+    if (!village) {
+      return res.status(404).json({ message: "Village not found" });
     }
 
-    // Get village IDs
-    const villageIds = nearbyVillages.map(v => v._id);
+    if (village.status !== 'approved') {
+      return res.status(403).json({ message: "Village is not approved yet" });
+    }
 
-    // Fetch notices from nearby villages
-    const notices = await Notice.find({
-      village: { $in: villageIds },
+    // Build filter
+    let filter = {
+      village: villageId,
       status: "published"
-    })
+    };
+
+    if (category && category !== 'all') {
+      filter.category = category;
+    }
+
+    // Fetch notices
+    const notices = await Notice.find(filter)
       .populate("createdBy", "name email")
-      .populate("village", "name district state")
-      .sort({ isPinned: -1, createdAt: -1 });
+      .populate("village", "name district state pincode")
+      .sort({ isPinned: -1, createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const total = await Notice.countDocuments(filter);
 
     res.json({
       notices,
-      nearbyVillages: nearbyVillages.map(v => ({
-        _id: v._id,
-        name: v.name,
-        district: v.district,
-        state: v.state,
-        coordinates: { latitude: v.latitude, longitude: v.longitude }
-      })),
-      userLocation: { latitude, longitude },
-      radius: radiusKm,
-      totalNotices: notices.length
+      village: {
+        _id: village._id,
+        name: village.name,
+        district: village.district,
+        state: village.state,
+        pincode: village.pincode
+      },
+      totalPages: Math.ceil(total / limit),
+      currentPage: parseInt(page),
+      total
     });
   } catch (err) {
-    console.error("Error fetching notices by location:", err);
+    console.error("Error fetching notices by village:", err);
     res.status(500).json({ message: "Error fetching notices", error: err.message });
   }
 };
@@ -523,5 +463,5 @@ module.exports = {
   getPopularNotices,
   getCitizenNotices,
   getNoticeById,
-  getNoticesByLocation
+  getNoticesByVillage
 };

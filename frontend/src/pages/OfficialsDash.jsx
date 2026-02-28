@@ -8,8 +8,6 @@ export default function OfficialsDashboard() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("general");
   const [priority, setPriority] = useState("medium");
-  const [targetAudience, setTargetAudience] = useState("all");
-  const [targetWards, setTargetWards] = useState("");
   const [isPinned, setIsPinned] = useState(false);
   const [file, setFile] = useState(null);
   const [notices, setNotices] = useState([]);
@@ -42,10 +40,6 @@ export default function OfficialsDashboard() {
   ];
 
   // Target audience options
-  const targetAudiences = [
-    { value: "all", label: "All Citizens" },
-    { value: "ward_specific", label: "Specific Wards" }
-  ];
 
   useEffect(() => {
     fetchNotices();
@@ -91,12 +85,7 @@ export default function OfficialsDashboard() {
     formData.append("description", description.trim());
     formData.append("category", category);
     formData.append("priority", priority);
-    formData.append("targetAudience", targetAudience);
     formData.append("isPinned", isPinned);
-    
-    if (targetAudience === "ward_specific" && targetWards) {
-      formData.append("targetWards", targetWards);
-    }
     
     if (file) formData.append("file", file);
 
@@ -132,8 +121,7 @@ export default function OfficialsDashboard() {
     setDescription(notice.description);
     setCategory(notice.category || "general");
     setPriority(notice.priority || "medium");
-    setTargetAudience(notice.targetAudience || "all");
-    setTargetWards(notice.targetWards?.join(", ") || "");
+    // ward-specific removed
     setIsPinned(notice.isPinned || false);
     setFile(null);
     
@@ -223,8 +211,7 @@ export default function OfficialsDashboard() {
     setDescription("");
     setCategory("general");
     setPriority("medium");
-    setTargetAudience("all");
-    setTargetWards("");
+    // ward-specific reset removed
     setIsPinned(false);
     setFile(null);
     setEditingNotice(null);
@@ -244,6 +231,63 @@ export default function OfficialsDashboard() {
     } catch (err) {
       console.error(err);
       toast.error("Error logging out");
+    }
+  };
+
+  // Village QR states & handlers (use logged-in official's village)
+  const [officialVillage, setOfficialVillage] = useState(null);
+  const [showVillageModal, setShowVillageModal] = useState(false);
+  const [qrLoading, setQrLoading] = useState(false);
+
+  const fetchCurrentOfficialProfile = async () => {
+    try {
+      const res = await axios.get('http://localhost:3000/officials/profile', { withCredentials: true });
+      if (res.data) {
+        setOfficialVillage(res.data.village || null);
+      }
+    } catch (err) {
+      console.error('Error fetching official profile:', err);
+    }
+  };
+
+  const generateAndShareVillageQRCode = async (village) => {
+    try {
+      setQrLoading(true);
+      // Ask server to generate QR (server will create and store image once)
+      const res = await axios.post(`http://localhost:3000/villages/${village._id}/qrcode/generate`, {}, { withCredentials: true });
+
+      const imageUrl = res.data?.village?.qrCode?.imageUrl || res.data?.downloadUrl;
+      const qrImageUrl = imageUrl || `${window.location.origin}/qr-notices/${village._id}`;
+
+      // Prefer sharing server image when available
+      if (navigator.share && navigator.canShare && imageUrl) {
+        try {
+          const blob = await (await fetch(imageUrl)).blob();
+          const file = new File([blob], `${(village.name || 'village').replace(/\s+/g, '_')}.png`, { type: blob.type });
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: village.name, text: qrImageUrl });
+            toast.success('Shared QR successfully');
+            return;
+          }
+        } catch (e) {
+          console.warn('Web Share of server image failed, falling back to download', e);
+        }
+      }
+
+      // Fallback download: server image if present, else generate client-side QR image
+      const finalDataUrl = imageUrl ? imageUrl : await (await import('qrcode')).default.toDataURL(qrImageUrl, { margin: 1, width: 400 });
+      const a = document.createElement('a');
+      a.href = finalDataUrl;
+      a.download = `${(village.name || 'village').replace(/\s+/g, '_')}.png`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast.success('QR ready');
+    } catch (err) {
+      console.error('QR generation error:', err);
+      toast.error(err.response?.data?.message || 'Failed to generate/share QR');
+    } finally {
+      setQrLoading(false);
     }
   };
 
@@ -318,6 +362,16 @@ export default function OfficialsDashboard() {
               </div>
             </div>
             <div className="flex items-center space-x-3">
+              <button
+                onClick={async () => { await fetchCurrentOfficialProfile(); setShowVillageModal(true); }}
+                className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30 text-sm"
+                title="Generate Village QR"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7M8 3h8v4H8V3zM9 12h6v6H9v-6z" />
+                </svg>
+                <span className="font-semibold">Village QR</span>
+              </button>
               <button
                 onClick={() => navigate('/officials/profile')}
                 className="flex items-center space-x-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-xl transition-all duration-200 backdrop-blur-sm border border-white/20 hover:border-white/30 text-sm"
@@ -447,40 +501,6 @@ export default function OfficialsDashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
-                    Target Audience
-                  </label>
-                  <select
-                    value={targetAudience}
-                    onChange={(e) => setTargetAudience(e.target.value)}
-                    className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 text-sm sm:text-base"
-                  >
-                    {targetAudiences.map((audience) => (
-                      <option key={audience.value} value={audience.value}>
-                        {audience.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                
-                {targetAudience === "ward_specific" && (
-                  <div>
-                    <label className="block text-sm font-semibold text-primary-800 mb-2 sm:mb-3">
-                      Target Wards
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g., 1, 3, 5"
-                      value={targetWards}
-                      onChange={(e) => setTargetWards(e.target.value)}
-                      className="w-full px-3 py-2 sm:px-4 sm:py-3 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 bg-white text-primary-900 placeholder-primary-400 text-sm sm:text-base"
-                    />
-                    <p className="text-xs text-primary-500 mt-1">Enter ward numbers separated by commas</p>
-                  </div>
-                )}
-              </div>
 
               <div className="flex items-center space-x-3">
                 <label className="flex items-center space-x-3 cursor-pointer">
@@ -641,11 +661,6 @@ export default function OfficialsDashboard() {
                           Attachment
                         </span>
                       )}
-                      {notice.targetAudience === "ward_specific" && notice.targetWards?.length > 0 && (
-                        <span className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs bg-blue-100 text-blue-700 font-medium">
-                          Wards: {notice.targetWards.join(', ')}
-                        </span>
-                      )}
                       {!isNoticeActive(notice) && (
                         <span className="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs bg-gray-100 text-gray-700 font-medium">
                           Inactive
@@ -707,6 +722,60 @@ export default function OfficialsDashboard() {
       </main>
 
       {/* Delete Confirmation Modal */}
+      {/* Village QR Modal */}
+      {showVillageModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-2xl w-full mx-4 shadow-earth-lg border border-primary-200">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl sm:text-2xl font-bold text-primary-900">Generate Village QR</h3>
+              <button onClick={() => setShowVillageModal(false)} className="text-primary-500 hover:text-primary-700 p-1">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="space-y-3 max-h-72 overflow-y-auto">
+              {!officialVillage ? (
+                <div className="text-center text-primary-600 py-8">No village linked to your account.</div>
+              ) : (
+                <div className="flex items-center justify-between border-b last:border-b-0 py-2">
+                  <div>
+                    <div className="font-semibold text-primary-900">{officialVillage.name}</div>
+                    <div className="text-xs text-primary-500">{officialVillage.district}, {officialVillage.state} {officialVillage.pincode}</div>
+                    <div className="text-xs text-primary-500">QR generated: {officialVillage.qrCode?.imageUrl ? 'Yes' : 'No'}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => generateAndShareVillageQRCode(officialVillage)}
+                      disabled={qrLoading}
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${
+                        qrLoading
+                          ? 'bg-emerald-300 text-white cursor-not-allowed opacity-75'
+                          : 'bg-emerald-500 hover:bg-emerald-600 text-white shadow-md hover:shadow-lg hover:scale-105'
+                      }`}
+                    >
+                      {qrLoading ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
+                          <span>Share / Download</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-earth-lg border border-primary-200">

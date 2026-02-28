@@ -117,6 +117,34 @@ class ApiService {
       throw error;
     }
   }
+
+  /**
+   * Get village by QR code
+   */
+  async getVillageByQRCode(qrCodeId: string): Promise<any> {
+    try {
+      const response = await this.api.get(`/villages/qr/${qrCodeId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching village by QR code:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get notices by village with pagination
+   */
+  async getNoticesByVillage(villageId: string, page: number = 1, limit: number = 10): Promise<any> {
+    try {
+      const response = await this.api.get(`/notice/village/${villageId}`, {
+        params: { page, limit }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching notices for village:', error);
+      throw error;
+    }
+  }
 }
 
 export const apiService = new ApiService();
