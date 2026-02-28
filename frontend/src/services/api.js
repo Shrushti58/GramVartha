@@ -206,6 +206,14 @@ export const getVillageQRCode = (villageId) => {
   return api.get(`/villages/${villageId}/qrcode`);
 };
 
+export const generateVillageQRCode = (villageId) => {
+  return api.post(`/villages/${villageId}/qrcode/generate`);
+};
+
+export const downloadVillageQRCode = (villageId) => {
+  return api.get(`/villages/${villageId}/qrcode/download`);
+};
+
 export const getNoticesByVillage = (villageId, params = {}) => {
   return api.get(`/notice/village/${villageId}`, { params });
 };

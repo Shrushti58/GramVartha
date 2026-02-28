@@ -16,6 +16,7 @@ import VillageAdminDash from "./pages/VillageAdminDash";
 import VillageRegistration from "./pages/VillageRegistration";
 import QRScanner from "./components/QRScanner";
 import QRNotices from "./pages/QRNotices";
+import VillageAdminNotices from "./pages/VillageAdminNotices";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -29,6 +30,7 @@ export default function App() {
           <Route path="/admin/dashboard" element={<AdminDash />} />
           <Route path="/admin/superadmin" element={<SuperadminDash />} />
           <Route path="/admin/village" element={<VillageAdminDash />} />
+          <Route path="/admin/village/notices" element={<VillageAdminNotices />} />
           <Route path="/admin/register" element={<AdminRegister />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/village/register" element={<VillageRegistration />} />

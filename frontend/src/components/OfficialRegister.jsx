@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function OfficialRegister() {
-  const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "", village: "", phone: "" });
+  const [profileImage, setProfileImage] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState({ text: "", success: false });
@@ -14,6 +15,20 @@ export default function OfficialRegister() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const [villages, setVillages] = useState([]);
+
+  useEffect(() => {
+    const fetchVillages = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/villages`);
+        setVillages(res.data || []);
+      } catch (err) {
+        // ignore
+      }
+    };
+    fetchVillages();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -22,11 +37,24 @@ export default function OfficialRegister() {
     }
     setLoading(true);
     setMessage({ text: "", success: false });
+    if (!profileImage) {
+      setMessage({ text: "Profile image is required for verification", success: false });
+      return;
+    }
+
     try {
+      const formDataObj = new FormData();
+      formDataObj.append('name', formData.name);
+      formDataObj.append('email', formData.email);
+      formDataObj.append('password', formData.password);
+      formDataObj.append('village', formData.village);
+      if (formData.phone) formDataObj.append('phone', formData.phone);
+      formDataObj.append('profileImage', profileImage);
+
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/officials/register`,
-        { email: formData.email, password: formData.password },
-        { withCredentials: true }
+        formDataObj,
+        { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } }
       );
       setMessage({ text: res.data.message, success: true });
       if (res.data.official) navigate("/officials/dashboard");
@@ -133,6 +161,39 @@ export default function OfficialRegister() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+              <input id="name" name="name" required value={formData.name} onChange={handleChange}
+                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60" />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="village" className="block text-sm font-medium text-gray-700">Village</label>
+              <select id="village" name="village" required value={formData.village} onChange={handleChange}
+                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60">
+                <option value="">Select your village</option>
+                {villages.map(v => (
+                  <option key={v._id} value={v._id}>{v.name} {v.district ? `- ${v.district}` : ''}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
+              <input id="phone" type="tel" name="phone" required value={formData.phone} onChange={handleChange}
+                placeholder="+91 98765 43210"
+                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60" />
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="profileImage" className="block text-sm font-medium text-gray-700">
+                Profile Photo <span className="text-red-500">*</span> (for verification)
+              </label>
+              <input id="profileImage" type="file" accept="image/*" required
+                onChange={(e) => setProfileImage(e.target.files?.[0] || null)}
+                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
+              {profileImage && <p className="text-xs text-gray-500">✓ {profileImage.name}</p>}
+            </div>
             <div className="space-y-2">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address

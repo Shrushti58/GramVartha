@@ -6,9 +6,15 @@ const registerOfficial = async (req, res) => {
   try {
     const { name, email, password, phone, village } = req.body;
 
-    if (!name || !email || !password || !village) {
+    if (!name || !email || !password || !village || !phone) {
       return res.status(400).json({
-        message: "Missing required fields: name, email, password, and village are required"
+        message: "Missing required fields: name, email, password, phone, and village are required"
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Profile image is required for verification"
       });
     }
 
