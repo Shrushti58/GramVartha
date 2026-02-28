@@ -1,356 +1,283 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from 'react-toastify';
-import * as api from '../services/api';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function OfficialRegister() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    password: "",
-    village: "",
-  });
-  const [villages, setVillages] = useState([]);
-  const [selectedVillage, setSelectedVillage] = useState(null);
-  const [locationLoading, setLocationLoading] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "", confirmPassword: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [message, setMessage] = useState({ text: "", success: false });
   const [loading, setLoading] = useState(false);
-  const [profileImage, setProfileImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const fileInputRef = useRef(null);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    loadVillages();
-  }, []);
-
-  const loadVillages = async () => {
-    try {
-      const res = await api.getAllVillages();
-      setVillages(res.data);
-    } catch (err) {
-      toast.error('Failed to load villages');
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleVillageChange = async (e) => {
-    const villageId = e.target.value;
-    setFormData({ ...formData, village: villageId });
-
-    if (villageId) {
-      const village = villages.find(v => v._id === villageId);
-      setSelectedVillage(village);
-
-      // Auto-detect location if village doesn't have coordinates
-      if (village && (!village.latitude || !village.longitude)) {
-        await detectLocation(village);
-      }
-    } else {
-      setSelectedVillage(null);
-    }
-  };
-
-  const detectLocation = async (village) => {
-    setLocationLoading(true);
-    try {
-      if (!navigator.geolocation) {
-        toast.error('Geolocation is not supported by this browser');
-        return;
-      }
-
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 300000
-        });
-      });
-
-      const { latitude, longitude } = position.coords;
-
-      // Update village with detected coordinates
-      await api.updateVillageCoordinates(village._id, {
-        latitude,
-        longitude
-      });
-
-      toast.success(`Location detected: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`);
-      
-      // Refresh villages list to show updated coordinates
-      loadVillages();
-    } catch (error) {
-      console.error('Error getting location:', error);
-      toast.error('Failed to detect location. Please ensure location permissions are enabled.');
-    } finally {
-      setLocationLoading(false);
-    }
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select a valid image file');
-        return;
-      }
-      
-      // Validate file size (5MB max)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
-        return;
-      }
-      
-      setProfileImage(file);
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImagePreview(e.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const removeImage = () => {
-    setProfileImage(null);
-    setImagePreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      setMessage({ text: "Passwords do not match!", success: false });
+      return;
+    }
     setLoading(true);
-    
+    setMessage({ text: "", success: false });
     try {
-      const res = await api.officialRegister(formData, profileImage);
-      toast.success(res.data.message);
-      
-      // Redirect to login after successful registration
-      setTimeout(() => {
-        navigate("/officials/login");
-      }, 2000);
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/officials/register`,
+        { email: formData.email, password: formData.password },
+        { withCredentials: true }
+      );
+      setMessage({ text: res.data.message, success: true });
+      if (res.data.official) navigate("/officials/dashboard");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Something went wrong!");
+      setMessage({
+        text: err.response?.data?.message || "Something went wrong!",
+        success: false,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-primary-100 to-primary-200 py-8 px-4 font-sans">
-      <div className="bg-surface/90 backdrop-blur-sm rounded-2xl shadow-earth-lg border border-primary-200 p-8 w-full max-w-md animate-fade-in">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-button-primary rounded-full flex items-center justify-center mb-4 shadow-soft-earth">
-            <svg className="w-8 h-8 text-primary-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-semibold text-primary-900 font-serif">Register as Official</h2>
-          <p className="text-primary-600 text-sm mt-1">Create your official account</p>
+    <div className="min-h-screen flex">
+
+      {/* ── Left Panel ── */}
+      <div className="hidden lg:flex lg:w-[52%] relative flex-col justify-between overflow-hidden">
+        <img
+          src="/illu1.png"
+          alt="Village"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0d2218]/95 via-[#1a3a2a]/80 to-[#0d2218]/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0d2218]/90 via-transparent to-transparent" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
+            backgroundSize: "40px 40px",
+          }}
+        />
+        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-green-500/15 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Logo */}
+        <div className="relative z-10 p-10">
+          <Link to="/" className="inline-flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center">
+              <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-lg font-bold text-white tracking-tight">GramVartha</span>
+          </Link>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-primary-800 mb-2">
-              Full Name *
-            </label>
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter your full name"
-              value={formData.name}
-              onChange={handleChange}
-              className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-              required
-              disabled={loading}
-            />
+        {/* Copy */}
+        <div className="relative z-10 px-10 pb-16 space-y-5">
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 backdrop-blur-sm rounded-full px-4 py-2">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <span className="text-xs text-white/70 font-medium tracking-wide">Officials Portal</span>
+          </div>
+          <h2 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-tight">
+            Join as a<br />
+            <span className="text-green-400">verified official</span>
+          </h2>
+          <p className="text-white/50 leading-relaxed max-w-sm text-sm">
+            Register to publish public notices, communicate with your village community, and empower citizens with real-time updates.
+          </p>
+          <div className="flex flex-wrap gap-2 pt-2">
+            {["Publish Notices", "Manage Updates", "Community Access", "QR Tools"].map((f) => (
+              <span key={f} className="text-xs text-white/60 border border-white/10 rounded-full px-3 py-1.5">
+                {f}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Right Panel ── */}
+      <div className="w-full lg:w-[48%] flex items-center justify-center bg-white px-8 py-12">
+        <div className="w-full max-w-[400px] space-y-8">
+
+          {/* Mobile logo */}
+          <div className="lg:hidden flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg overflow-hidden bg-green-50 border border-green-100">
+              <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
+            </div>
+            <span className="text-lg font-bold text-gray-900">GramVartha</span>
           </div>
 
+          {/* Heading */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-primary-800 mb-2">
-              Email Address *
-            </label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your official email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-              required
-              disabled={loading}
-            />
+            <h1 className="text-2xl font-bold text-gray-900">Create Official Account</h1>
+            <p className="text-sm text-gray-400 mt-1.5">Enter your details to register as a village official</p>
           </div>
 
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-primary-800 mb-2">
-              Phone Number
-            </label>
-            <input
-              type="text"
-              name="phone"
-              placeholder="Enter your phone number"
-              value={formData.phone}
-              onChange={handleChange}
-              className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-              disabled={loading}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="village" className="block text-sm font-medium text-primary-800 mb-2">
-              Village *
-            </label>
-            <select
-              name="village"
-              value={formData.village}
-              onChange={handleVillageChange}
-              className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-              required
-              disabled={loading}
-            >
-              <option value="">Select your village</option>
-              {villages.map(village => (
-                <option key={village._id} value={village._id}>
-                  {village.name} - {village.district}, {village.state}
-                </option>
-              ))}
-            </select>
-            {selectedVillage && (
-              <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-700">
-                  <strong>Selected Village:</strong> {selectedVillage.name}
-                </p>
-                {selectedVillage.latitude && selectedVillage.longitude ? (
-                  <p className="text-sm text-blue-600">
-                    📍 Location: {selectedVillage.latitude.toFixed(6)}, {selectedVillage.longitude.toFixed(6)}
-                  </p>
+          {/* Status message */}
+          {message.text && (
+            <div className={`flex items-start gap-3 px-4 py-3 rounded-xl text-sm border ${
+              message.success
+                ? "bg-green-50 border-green-100 text-green-700"
+                : "bg-red-50 border-red-100 text-red-600"
+            }`}>
+              <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {message.success ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 ) : (
-                  <div className="flex items-center mt-1">
-                    {locationLoading ? (
-                      <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        <span className="text-sm text-blue-600">Detecting location...</span>
-                      </>
-                    ) : (
-                      <span className="text-sm text-amber-600">⚠️ Location not set - will auto-detect when selected</span>
-                    )}
-                  </div>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 )}
-              </div>
-            )}
-          </div>
+              </svg>
+              {message.text}
+            </div>
+          )}
 
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-primary-800 mb-2">
-              Password *
-            </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Create a secure password"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full p-3 border border-primary-200 rounded-lg bg-primary-50 text-primary-900 placeholder-primary-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all duration-200"
-              required
-              disabled={loading}
-            />
-            <p className="text-xs text-primary-500 mt-2">Must be at least 6 characters long</p>
-          </div>
-
-          <div>
-            <label htmlFor="profileImage" className="block text-sm font-medium text-primary-800 mb-2">
-              Profile Photo
-            </label>
-            <div className="space-y-3">
-              {imagePreview ? (
-                <div className="relative">
-                  <img
-                    src={imagePreview}
-                    alt="Profile preview"
-                    className="w-24 h-24 rounded-full object-cover border-2 border-primary-300 mx-auto"
-                  />
-                  <button
-                    type="button"
-                    onClick={removeImage}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
-                    disabled={loading}
-                  >
-                    ×
-                  </button>
-                </div>
-              ) : (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-24 h-24 rounded-full border-2 border-dashed border-primary-300 bg-primary-50 mx-auto flex items-center justify-center cursor-pointer hover:border-primary-500 hover:bg-primary-100 transition-colors"
-                >
-                  <svg className="w-8 h-8 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </div>
-              )}
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email address
+              </label>
               <input
-                ref={fileInputRef}
-                type="file"
-                id="profileImage"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
+                id="email"
+                type="email"
+                name="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="official@gramvartha.in"
                 disabled={loading}
+                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60"
               />
-              <div className="text-center">
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  required
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a strong password"
+                  disabled={loading}
+                  className="w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60"
+                />
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="text-sm text-primary-600 hover:text-primary-800 underline"
-                  disabled={loading}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  tabIndex={-1}
                 >
-                  {imagePreview ? 'Change photo' : 'Upload profile photo'}
+                  {showPassword ? (
+                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
                 </button>
               </div>
-              <p className="text-xs text-primary-500 text-center">Max size: 5MB. Supported formats: JPG, PNG, GIF</p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Re-enter your password"
+                  disabled={loading}
+                  className="w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? (
+                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 px-4 bg-[#1a3a2a] hover:bg-green-800 text-white text-sm font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 shadow-sm hover:shadow-lg hover:shadow-green-900/20"
+            >
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Creating account...
+                </>
+              ) : (
+                <>
+                  Create Account
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-gray-100" />
+            <span className="text-xs text-gray-300 font-medium">or</span>
+            <div className="flex-1 h-px bg-gray-100" />
+          </div>
+
+          <div className="text-center space-y-4">
+            <Link
+              to="/officials/login"
+              className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors duration-200"
+            >
+              Already have an account? Login here
+            </Link>
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-300">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Secure, encrypted official access
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full p-3 bg-button-primary text-primary-50 rounded-lg font-semibold hover:shadow-earth-md hover:brightness-110 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-soft-earth"
+          <Link
+            to="/"
+            className="flex items-center justify-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors duration-200"
           >
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Creating Account...
-              </div>
-            ) : (
-              'Register as Official'
-            )}
-          </button>
-        </form>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to homepage
+          </Link>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-primary-600">
-            Already have an official account?{" "}
-            <a 
-              href="/officials/login" 
-              className="font-semibold text-accent-teal hover:text-accent-teal-dark transition-colors duration-200"
-            >
-              Login here
-            </a>
-          </p>
         </div>
       </div>
     </div>
