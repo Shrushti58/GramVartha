@@ -21,6 +21,7 @@ export default function RootLayout() {
             fontSize: 18,
           },
           headerShadowVisible: true,
+          headerShown:false,
         }}
       >
         <Stack.Screen

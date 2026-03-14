@@ -30,7 +30,7 @@ export default function About() {
             {/* Main image */}
             <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-xl">
               <img
-                src="/illu1.png"
+                src="/about.jpg"
                 alt="GramVartha in action"
                 className="w-full h-full object-cover"
               />

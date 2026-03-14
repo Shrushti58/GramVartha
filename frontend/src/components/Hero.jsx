@@ -8,7 +8,7 @@ export default function Hero() {
       {/* Background image overlay */}
       <div className="absolute inset-0">
         <img
-          src="/illu1.png"
+          src="/smallgirls.jpg"
           alt=""
           className="w-full h-full object-cover opacity-20"
         />

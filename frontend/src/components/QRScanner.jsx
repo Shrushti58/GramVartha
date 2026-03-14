@@ -113,7 +113,7 @@ export default function QRScanner() {
 
       {/* ── Left Panel ── */}
       <div className="hidden lg:flex lg:w-[52%] relative flex-col justify-between overflow-hidden">
-        <img src="/illu1.png" alt="Village" className="absolute inset-0 w-full h-full object-cover" />
+        <img src="/qrs.jpg" alt="Village" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-[#0d2218]/95 via-[#1a3a2a]/80 to-[#0d2218]/60" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0d2218]/90 via-transparent to-transparent" />
         <div className="absolute inset-0 opacity-[0.04]" style={{

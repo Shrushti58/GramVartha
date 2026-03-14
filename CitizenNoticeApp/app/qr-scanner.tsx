@@ -1,6 +1,6 @@
 /**
  * QR Scanner Screen - Scan village QR codes
- * Allows citizens to scan QR codes and view village notices
+ * Restyled: production-ready, clean civic-tech aesthetic
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -14,6 +14,8 @@ import {
   ActivityIndicator,
   TextInput,
   ScrollView,
+  Animated,
+  StatusBar,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
@@ -23,7 +25,79 @@ import { Config } from '../constants/config';
 import axios from 'axios';
 
 const { width, height } = Dimensions.get('window');
+const FRAME_SIZE = width * 0.72;
 
+// ─── Corner bracket component for scanner frame ───────────────────────────────
+const CornerBracket = ({
+  position,
+}: {
+  position: 'tl' | 'tr' | 'bl' | 'br';
+}) => {
+  const isTop = position.startsWith('t');
+  const isLeft = position.endsWith('l');
+  return (
+    <View
+      style={[
+        scannerStyles.corner,
+        isTop ? { top: -2 } : { bottom: -2 },
+        isLeft ? { left: -2 } : { right: -2 },
+      ]}
+    >
+      <View
+        style={[
+          scannerStyles.cornerH,
+          isLeft ? { left: 0 } : { right: 0 },
+          isTop ? { top: 0 } : { bottom: 0 },
+        ]}
+      />
+      <View
+        style={[
+          scannerStyles.cornerV,
+          isLeft ? { left: 0 } : { right: 0 },
+          isTop ? { top: 0 } : { bottom: 0 },
+        ]}
+      />
+    </View>
+  );
+};
+
+// ─── Animated scan line ────────────────────────────────────────────────────────
+const ScanLine = ({ isActive }: { isActive: boolean }) => {
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!isActive) return;
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 2200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(anim, {
+          toValue: 0,
+          duration: 2200,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [isActive]);
+
+  const translateY = anim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, FRAME_SIZE - 4],
+  });
+
+  return (
+    <Animated.View
+      style={[scannerStyles.scanLine, { transform: [{ translateY }] }]}
+    />
+  );
+};
+
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function QRScannerScreen() {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
@@ -32,27 +106,32 @@ export default function QRScannerScreen() {
   const [showManualInput, setShowManualInput] = useState(false);
   const cameraRef = useRef(null);
 
+  // Fade-in on mount
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    if (!permission?.granted) {
-      requestPermission();
-    }
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 350,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  useEffect(() => {
+    if (!permission?.granted) requestPermission();
   }, [permission]);
 
   const handleBarCodeScanned = async ({ data }: { data: string }) => {
     if (scanned || loading) return;
-
     setScanned(true);
     setLoading(true);
 
     try {
       const qrCodeId = data.trim();
-      console.log('Scanned QR Code:', qrCodeId);
-
-      // Verify village exists by QR code
-      const response = await axios.get(`${Config.API_BASE_URL}/villages/qr/${qrCodeId}`);
+      const response = await axios.get(
+        `${Config.API_BASE_URL}/villages/qr/${qrCodeId}`
+      );
       const villageData = response.data.village;
 
-      // Store current scanned village
       const scannedVillageData = {
         villageId: villageData._id,
         villageName: villageData.name,
@@ -60,7 +139,7 @@ export default function QRScannerScreen() {
         state: villageData.state,
         pincode: villageData.pincode,
         scannedAt: new Date().toISOString(),
-        qrCodeId: qrCodeId,
+        qrCodeId,
       };
 
       await AsyncStorage.setItem(
@@ -68,40 +147,28 @@ export default function QRScannerScreen() {
         JSON.stringify(scannedVillageData)
       );
 
-      // Add to recent villages list
       const recentStr = await AsyncStorage.getItem('recentVillages');
       const recent = recentStr ? JSON.parse(recentStr) : [];
-      // Remove duplicate if exists
-      const filtered = recent.filter((v: any) => v.villageId !== villageData._id);
-      // Add to front
+      const filtered = recent.filter(
+        (v: any) => v.villageId !== villageData._id
+      );
       filtered.unshift(scannedVillageData);
-      // Keep only last 10
-      await AsyncStorage.setItem('recentVillages', JSON.stringify(filtered.slice(0, 10)));
+      await AsyncStorage.setItem(
+        'recentVillages',
+        JSON.stringify(filtered.slice(0, 10))
+      );
 
-      Alert.alert('Success', `Village "${villageData.name}" scanned successfully!`, [
-        {
-          text: 'View Notices',
-          onPress: () => {
-            router.push(`qr-notices/${villageData._id}` as any);
-          },
-        },
-        {
-          text: 'Scan Another',
-          onPress: () => {
-            setScanned(false);
-            setLoading(false);
-          },
-        },
-      ]);
-    } catch (err: unknown) {
-      console.error('Error verifying QR code:', err);
-      const errorMessage = (err as any)?.response?.data?.error || 'Invalid QR code. Please try again.';
       Alert.alert(
-        'Error',
-        errorMessage,
+        '✓ Village Found',
+        `"${villageData.name}" has been scanned successfully.`,
         [
           {
-            text: 'Try Again',
+            text: 'View Notices',
+            onPress: () => router.push(`qr-notices/${villageData._id}` as any),
+          },
+          {
+            text: 'Scan Another',
+            style: 'cancel',
             onPress: () => {
               setScanned(false);
               setLoading(false);
@@ -109,304 +176,534 @@ export default function QRScannerScreen() {
           },
         ]
       );
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as any)?.response?.data?.error ||
+        'Invalid QR code. Please try again.';
+      Alert.alert('Unrecognised Code', errorMessage, [
+        {
+          text: 'Try Again',
+          onPress: () => {
+            setScanned(false);
+            setLoading(false);
+          },
+        },
+      ]);
     }
   };
 
   const handleManualSubmit = async () => {
     if (!manualInput.trim()) {
-      Alert.alert('Error', 'Please enter a QR code or village ID');
+      Alert.alert('Required', 'Please enter a QR code or village ID.');
       return;
     }
-
     await handleBarCodeScanned({ data: manualInput });
     setManualInput('');
   };
 
+  // ── Permission screens ─────────────────────────────────────────────────────
   if (!permission) {
     return (
-      <View style={styles.container}>
-        <Text>Requesting camera permission...</Text>
+      <View style={styles.permissionContainer}>
+        <ActivityIndicator color={Colors.primary[500]} />
+        <Text style={styles.permissionSubtext}>
+          Checking camera permissions…
+        </Text>
       </View>
     );
   }
 
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <Text style={styles.title}>Camera Permission Required</Text>
-          <Text style={styles.description}>
-            We need camera access to scan QR codes. Please grant permission to continue.
-          </Text>
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={requestPermission}
-          >
-            <Text style={styles.buttonText}>Grant Permission</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.buttonTextSecondary}>Go Back</Text>
-          </TouchableOpacity>
+      <View style={styles.permissionContainer}>
+        <StatusBar barStyle="dark-content" />
+        <View style={styles.iconCircle}>
+          <Text style={styles.iconEmoji}>📷</Text>
         </View>
+        <Text style={styles.permissionTitle}>Camera Access Needed</Text>
+        <Text style={styles.permissionBody}>
+          Allow camera access so you can scan village QR codes and view local
+          notices.
+        </Text>
+        <TouchableOpacity
+          style={styles.primaryBtn}
+          onPress={requestPermission}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.primaryBtnText}>Allow Camera</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.ghostBtn}
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.ghostBtnText}>Go Back</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
-  return (
-    <View style={styles.container}>
-      {/* Camera View */}
-      {!showManualInput ? (
-        <>
-          <CameraView
-            ref={cameraRef}
-            style={styles.camera}
-            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-            barcodeScannerSettings={{
-              barcodeTypes: ['qr'],
-            }}
-          >
-            {/* Scanner Frame */}
-            <View style={styles.scannerOverlay}>
-              <View style={styles.scannerFrame} />
-              <Text style={styles.scannerText}>Position QR code in frame</Text>
-            </View>
+  // ── Manual entry screen ────────────────────────────────────────────────────
+  if (showManualInput) {
+    return (
+      <Animated.View style={[styles.flex, { opacity: fadeAnim }]}>
+        <StatusBar barStyle="dark-content" />
+        <ScrollView
+          style={styles.flex}
+          contentContainerStyle={styles.manualScroll}
+          keyboardShouldPersistTaps="handled"
+        >
+          {/* Header row */}
+          <View style={styles.manualHeader}>
+            <TouchableOpacity
+              onPress={() => {
+                setShowManualInput(false);
+                setManualInput('');
+              }}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={styles.backChip}
+            >
+              <Text style={styles.backChipText}>← Scanner</Text>
+            </TouchableOpacity>
+          </View>
 
-            {/* Top Controls */}
-            <View style={styles.topControls}>
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => router.back()}
-              >
-                <Text style={styles.backButtonText}>✕</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Bottom Controls */}
-            <View style={styles.bottomControls}>
-              {loading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={Colors.primary[500]} />
-                  <Text style={styles.loadingText}>Verifying QR code...</Text>
-                </View>
-              ) : (
-                <>
-                  {scanned && (
-                    <TouchableOpacity
-                      style={styles.rescanButton}
-                      onPress={() => setScanned(false)}
-                    >
-                      <Text style={styles.buttonText}>Tap to Rescan</Text>
-                    </TouchableOpacity>
-                  )}
-                  <TouchableOpacity
-                    style={styles.manualButton}
-                    onPress={() => setShowManualInput(true)}
-                  >
-                    <Text style={styles.buttonTextSecondary}>Manual Entry</Text>
-                  </TouchableOpacity>
-                </>
-              )}
-            </View>
-          </CameraView>
-        </>
-      ) : (
-        /* Manual Input Screen */
-        <ScrollView style={styles.manualContainer}>
-          <View style={styles.manualContent}>
-            <Text style={styles.title}>Enter QR Code</Text>
-            <Text style={styles.description}>
-              Manually enter the QR code or village ID if scanning doesn't work.
+          <View style={styles.manualBody}>
+            <Text style={styles.manualLabel}>Manual Entry</Text>
+            <Text style={styles.manualTitle}>Enter Village Code</Text>
+            <Text style={styles.manualDesc}>
+              Type or paste the QR code value or village ID below.
             </Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder="Enter QR code or village ID"
-              placeholderTextColor={Colors.textSecondary}
-              value={manualInput}
-              onChangeText={setManualInput}
-              editable={!loading}
-            />
+            <View style={styles.inputWrapper}>
+              <Text style={styles.inputLabel}>QR CODE / VILLAGE ID</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. VLG-MH-2024-0041"
+                placeholderTextColor={Colors.textSecondary}
+                value={manualInput}
+                onChangeText={setManualInput}
+                editable={!loading}
+                autoCapitalize="characters"
+                returnKeyType="done"
+                onSubmitEditing={handleManualSubmit}
+              />
+            </View>
 
             <TouchableOpacity
-              style={styles.primaryButton}
+              style={[styles.primaryBtn, loading && styles.btnDisabled]}
               onPress={handleManualSubmit}
               disabled={loading}
+              activeOpacity={0.85}
             >
               {loading ? (
-                <ActivityIndicator size="small" color="white" />
+                <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Submit</Text>
+                <Text style={styles.primaryBtnText}>Look Up Village</Text>
               )}
             </TouchableOpacity>
 
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
+
             <TouchableOpacity
-              style={styles.secondaryButton}
+              style={styles.ghostBtn}
               onPress={() => {
                 setShowManualInput(false);
                 setManualInput('');
               }}
               disabled={loading}
+              activeOpacity={0.7}
             >
-              <Text style={styles.buttonTextSecondary}>Back to Scanner</Text>
+              <Text style={styles.ghostBtnText}>Back to Scanner</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
-      )}
+      </Animated.View>
+    );
+  }
+
+  // ── Camera / scanner screen ────────────────────────────────────────────────
+  return (
+    <View style={styles.flex}>
+      <StatusBar barStyle="light-content" />
+      <CameraView
+        ref={cameraRef}
+        style={StyleSheet.absoluteFill}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+        barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+      />
+
+      {/* Dark vignette overlay with a clear centre window */}
+      <View style={StyleSheet.absoluteFill} pointerEvents="none">
+        {/* Top dark band */}
+        <View
+          style={[
+            styles.overlayBand,
+            { height: (height - FRAME_SIZE) / 2 - 10 },
+          ]}
+        />
+        {/* Middle row */}
+        <View style={styles.overlayMiddleRow}>
+          <View
+            style={[
+              styles.overlaySide,
+              { width: (width - FRAME_SIZE) / 2 },
+            ]}
+          />
+          {/* Scanner frame */}
+          <View style={{ width: FRAME_SIZE, height: FRAME_SIZE }}>
+            <CornerBracket position="tl" />
+            <CornerBracket position="tr" />
+            <CornerBracket position="bl" />
+            <CornerBracket position="br" />
+            <ScanLine isActive={!scanned && !loading} />
+          </View>
+          <View
+            style={[
+              styles.overlaySide,
+              { width: (width - FRAME_SIZE) / 2 },
+            ]}
+          />
+        </View>
+        {/* Bottom dark band */}
+        <View style={[styles.overlayBand, { flex: 1 }]} />
+      </View>
+
+      {/* Close button */}
+      <View style={styles.topBar} pointerEvents="box-none">
+        <TouchableOpacity
+          style={styles.closeBtn}
+          onPress={() => router.back()}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.closeBtnText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Centre instruction text */}
+      <View style={styles.frameLabelContainer} pointerEvents="none">
+        <Text style={styles.frameLabelText}>
+          {loading
+            ? 'Verifying…'
+            : scanned
+            ? 'Code captured'
+            : 'Align QR code within frame'}
+        </Text>
+      </View>
+
+      {/* Bottom panel */}
+      <View style={styles.bottomPanel}>
+        {loading ? (
+          <View style={styles.loadingRow}>
+            <ActivityIndicator
+              size="small"
+              color={Colors.primary[500]}
+              style={{ marginRight: 10 }}
+            />
+            <Text style={styles.loadingText}>Verifying QR code…</Text>
+          </View>
+        ) : (
+          <>
+            {scanned && (
+              <TouchableOpacity
+                style={styles.primaryBtnSolid}
+                onPress={() => {
+                  setScanned(false);
+                  setLoading(false);
+                }}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.primaryBtnText}>Scan Again</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={styles.manualEntryBtn}
+              onPress={() => setShowManualInput(true)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.manualEntryText}>Enter code manually</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
     </View>
   );
 }
 
+// ─── Shared styles ─────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  container: {
+  flex: { flex: 1, backgroundColor: Colors.background },
+
+  // Permission / loading screens
+  permissionContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: Colors.background,
+    paddingHorizontal: 32,
   },
-  camera: {
-    flex: 1,
-  },
-  scannerOverlay: {
-    flex: 1,
+  iconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: `${Colors.primary[500]}18`,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 24,
   },
-  scannerFrame: {
-    width: 280,
-    height: 280,
-    borderWidth: 3,
-    borderColor: Colors.primary[500],
-    borderRadius: 8,
-    backgroundColor: 'transparent',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-  },
-  scannerText: {
-    color: Colors.textInverse,
-    fontSize: 14,
-    marginTop: 20,
-    textAlign: 'center',
-  },
-  topControls: {
-    position: 'absolute',
-    top: 40,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 20,
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backButtonText: {
-    color: Colors.textInverse,
-    fontSize: 24,
-    fontWeight: '300',
-  },
-  bottomControls: {
-    position: 'absolute',
-    bottom: 40,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 20,
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    paddingVertical: 20,
-    borderRadius: 8,
-  },
-  loadingText: {
-    color: Colors.textInverse,
-    fontSize: 14,
-    marginTop: 10,
-  },
-  rescanButton: {
-    backgroundColor: Colors.primary[500],
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    marginBottom: 12,
-    alignItems: 'center',
-  },
-  manualButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.textInverse,
-    alignItems: 'center',
-  },
-  manualContainer: {
-    flex: 1,
-    paddingTop: 40,
-  },
-  manualContent: {
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
+  iconEmoji: { fontSize: 36 },
+  permissionTitle: {
+    fontSize: 22,
     fontWeight: '700',
     color: Colors.textPrimary,
-    marginBottom: 8,
+    marginBottom: 10,
+    textAlign: 'center',
+    letterSpacing: -0.3,
   },
-  description: {
+  permissionBody: {
+    fontSize: 15,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+  },
+  permissionSubtext: {
     fontSize: 14,
     color: Colors.textSecondary,
-    marginBottom: 24,
-    lineHeight: 21,
+    marginTop: 12,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.border,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    color: Colors.textPrimary,
-    marginBottom: 16,
-  },
-  primaryButton: {
+
+  // Buttons
+  primaryBtn: {
     backgroundColor: Colors.primary[500],
-    paddingVertical: 14,
+    paddingVertical: 15,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
+    width: '100%',
     marginBottom: 12,
   },
-  buttonText: {
-    color: Colors.textInverse,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  secondaryButton: {
-    backgroundColor: Colors.surface,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    paddingVertical: 14,
+  primaryBtnSolid: {
+    backgroundColor: Colors.primary[500],
+    paddingVertical: 15,
     paddingHorizontal: 24,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
+    width: '100%',
+    marginBottom: 10,
   },
-  buttonTextSecondary: {
-    color: Colors.textPrimary,
-    fontSize: 14,
+  btnDisabled: { opacity: 0.55 },
+  primaryBtnText: {
+    color: '#fff',
+    fontSize: 15,
     fontWeight: '600',
+    letterSpacing: 0.1,
   },
-  content: {
-    flex: 1,
+  ghostBtn: {
+    paddingVertical: 15,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    width: '100%',
+  },
+  ghostBtnText: {
+    color: Colors.textPrimary,
+    fontSize: 15,
+    fontWeight: '500',
+  },
+
+  // Camera overlay
+  overlayBand: {
+    width: '100%',
+    backgroundColor: 'rgba(0,0,0,0.62)',
+  },
+  overlayMiddleRow: {
+    flexDirection: 'row',
+    height: FRAME_SIZE,
+  },
+  overlaySide: {
+    backgroundColor: 'rgba(0,0,0,0.62)',
+  },
+
+  // Top bar
+  topBar: {
+    position: 'absolute',
+    top: 52,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  closeBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  closeBtnText: { color: '#fff', fontSize: 18, lineHeight: 20 },
+
+  // Frame label
+  frameLabelContainer: {
+    position: 'absolute',
+    top: (height - FRAME_SIZE) / 2 + FRAME_SIZE + 16,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  frameLabelText: {
+    color: 'rgba(255,255,255,0.85)',
+    fontSize: 13,
+    letterSpacing: 0.3,
+    fontWeight: '500',
+  },
+
+  // Bottom panel
+  bottomPanel: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: 24,
+    paddingTop: 20,
+    paddingBottom: 40,
+    backgroundColor: 'rgba(255,255,255,0.97)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+  },
+  loadingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 18,
+  },
+  loadingText: {
+    color: Colors.textSecondary,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  manualEntryBtn: {
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  manualEntryText: {
+    color: Colors.primary[500],
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  // Manual entry screen
+  manualScroll: { flexGrow: 1, backgroundColor: Colors.background },
+  manualHeader: {
+    paddingTop: 56,
     paddingHorizontal: 20,
+    paddingBottom: 8,
+  },
+  backChip: {
+    alignSelf: 'flex-start',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 20,
+    backgroundColor: `${Colors.primary[500]}14`,
+  },
+  backChipText: {
+    color: Colors.primary[500],
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  manualBody: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 28,
+  },
+  manualLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    color: Colors.primary[500],
+    textTransform: 'uppercase',
+    marginBottom: 6,
+  },
+  manualTitle: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    marginBottom: 8,
+    letterSpacing: -0.5,
+  },
+  manualDesc: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 21,
+    marginBottom: 32,
+  },
+  inputWrapper: { marginBottom: 20 },
+  inputLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+    color: Colors.textSecondary,
+    marginBottom: 8,
+  },
+  input: {
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontSize: 16,
+    color: Colors.textPrimary,
+    backgroundColor: Colors.surface,
+    letterSpacing: 0.5,
+  },
+
+  // Divider
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
+  dividerText: {
+    color: Colors.textSecondary,
+    fontSize: 13,
+    marginHorizontal: 12,
+  },
+});
+
+// ─── Scanner frame corner styles ───────────────────────────────────────────────
+const BRACKET = 24;
+const THICK = 3;
+const scannerStyles = StyleSheet.create({
+  corner: { position: 'absolute', width: BRACKET, height: BRACKET },
+  cornerH: {
+    position: 'absolute',
+    width: BRACKET,
+    height: THICK,
+    backgroundColor: Colors.primary[500],
+    borderRadius: 2,
+  },
+  cornerV: {
+    position: 'absolute',
+    width: THICK,
+    height: BRACKET,
+    backgroundColor: Colors.primary[500],
+    borderRadius: 2,
+  },
+  scanLine: {
+    position: 'absolute',
+    left: 8,
+    right: 8,
+    height: 2,
+    borderRadius: 1,
+    backgroundColor: Colors.primary[500],
+    opacity: 0.75,
   },
 });

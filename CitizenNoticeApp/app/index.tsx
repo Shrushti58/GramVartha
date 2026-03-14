@@ -1,6 +1,6 @@
 /**
  * Home Screen - QR-First Landing Page
- * Simple landing page guiding users to scan QR codes for village notices
+ * Restyled: production-ready civic-tech aesthetic
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -14,13 +14,13 @@ import {
   Animated,
   Image,
   FlatList,
-  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../constants/colors';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 interface ScannedVillage {
   villageId: string;
@@ -32,517 +32,607 @@ interface ScannedVillage {
   qrCodeId: string;
 }
 
+// ─── Animated scan-ring around CTA ────────────────────────────────────────────
+const PulseRing = () => {
+  const scale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(0.45)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.parallel([
+        Animated.sequence([
+          Animated.timing(scale, { toValue: 1.28, duration: 1600, useNativeDriver: true }),
+          Animated.timing(scale, { toValue: 1, duration: 1600, useNativeDriver: true }),
+        ]),
+        Animated.sequence([
+          Animated.timing(opacity, { toValue: 0, duration: 1600, useNativeDriver: true }),
+          Animated.timing(opacity, { toValue: 0.45, duration: 1600, useNativeDriver: true }),
+        ]),
+      ])
+    ).start();
+  }, []);
+
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        styles.pulseRing,
+        { transform: [{ scale }], opacity },
+      ]}
+    />
+  );
+};
+
+// ─── QR grid icon (pure view, no emoji) ───────────────────────────────────────
+const QRIcon = ({ size = 36, color = '#fff' }: { size?: number; color?: string }) => {
+  const cell = size / 7;
+  const dot = (x: number, y: number, w = 1, h = 1) => (
+    <View
+      key={`${x}-${y}`}
+      style={{
+        position: 'absolute',
+        left: x * cell,
+        top: y * cell,
+        width: cell * w,
+        height: cell * h,
+        backgroundColor: color,
+        borderRadius: 1,
+      }}
+    />
+  );
+
+  return (
+    <View style={{ width: size, height: size }}>
+      {/* Top-left finder */}
+      {dot(0, 0, 3, 3)}
+      <View style={{ position: 'absolute', left: cell, top: cell, width: cell, height: cell, backgroundColor: color === '#fff' ? Colors.primary[600] : '#fff', borderRadius: 1 }} />
+      {/* Top-right finder */}
+      {dot(4, 0, 3, 3)}
+      <View style={{ position: 'absolute', left: 5 * cell, top: cell, width: cell, height: cell, backgroundColor: color === '#fff' ? Colors.primary[600] : '#fff', borderRadius: 1 }} />
+      {/* Bottom-left finder */}
+      {dot(0, 4, 3, 3)}
+      <View style={{ position: 'absolute', left: cell, top: 5 * cell, width: cell, height: cell, backgroundColor: color === '#fff' ? Colors.primary[600] : '#fff', borderRadius: 1 }} />
+      {/* Data dots */}
+      {dot(4, 3, 1, 1)}{dot(5, 4, 1, 1)}{dot(6, 3, 1, 1)}
+      {dot(4, 5, 1, 1)}{dot(6, 5, 1, 1)}{dot(5, 6, 1, 1)}{dot(6, 6, 1, 1)}
+      {dot(3, 3, 1, 1)}{dot(3, 5, 1, 1)}
+    </View>
+  );
+};
+
+// ─── Village card ──────────────────────────────────────────────────────────────
+const VillageCard = ({
+  item,
+  onPress,
+  index,
+}: {
+  item: ScannedVillage;
+  onPress: () => void;
+  index: number;
+}) => {
+  const slideAnim = useRef(new Animated.Value(20)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 320,
+        delay: index * 60,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 320,
+        delay: index * 60,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  const initials = item.villageName
+    .split(' ')
+    .slice(0, 2)
+    .map((w) => w[0])
+    .join('')
+    .toUpperCase();
+
+  return (
+    <Animated.View
+      style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
+    >
+      <TouchableOpacity
+        style={styles.villageCard}
+        onPress={onPress}
+        activeOpacity={0.72}
+      >
+        <View style={styles.villageAvatar}>
+          <Text style={styles.villageAvatarText}>{initials}</Text>
+        </View>
+        <View style={styles.villageCardBody}>
+          <Text style={styles.villageCardName}>{item.villageName}</Text>
+          <Text style={styles.villageCardMeta}>
+            {item.district} · {item.state}
+          </Text>
+        </View>
+        <View style={styles.villageCardArrow}>
+          <Text style={styles.villageCardArrowText}>›</Text>
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
+
+// ─── Main Component ────────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [recentVillages, setRecentVillages] = useState<ScannedVillage[]>([]);
-  
-  // Animation values
+
+  // Splash
   const splashOpacity = useRef(new Animated.Value(1)).current;
+  const splashScale = useRef(new Animated.Value(1)).current;
+  // Content
   const contentOpacity = useRef(new Animated.Value(0)).current;
-  const logoScale = useRef(new Animated.Value(1)).current;
-  const appNameSlide = useRef(new Animated.Value(0)).current;
-  const qrButtonScale = useRef(new Animated.Value(0.8)).current;
+  const contentSlide = useRef(new Animated.Value(24)).current;
 
   useEffect(() => {
-    // Splash animation
-    const timer = setTimeout(() => {
+    const t = setTimeout(() => {
       Animated.parallel([
-        Animated.timing(splashOpacity, {
-          toValue: 0,
-          duration: 600,
-          useNativeDriver: true,
-        }),
-        Animated.timing(contentOpacity, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.sequence([
-          Animated.timing(logoScale, {
-            toValue: 1.1,
-            duration: 300,
-            useNativeDriver: true,
-          }),
-          Animated.timing(logoScale, {
-            toValue: 0,
-            duration: 400,
-            useNativeDriver: true,
-          }),
-        ]),
-        Animated.timing(appNameSlide, {
-          toValue: -50,
-          duration: 600,
-          useNativeDriver: true,
-        }),
+        Animated.timing(splashOpacity, { toValue: 0, duration: 500, useNativeDriver: true }),
+        Animated.timing(splashScale, { toValue: 1.08, duration: 500, useNativeDriver: true }),
+        Animated.timing(contentOpacity, { toValue: 1, duration: 600, delay: 200, useNativeDriver: true }),
+        Animated.timing(contentSlide, { toValue: 0, duration: 500, delay: 200, useNativeDriver: true }),
       ]).start(() => {
         setIsLoading(false);
         loadRecentVillages();
       });
-    }, 1500);
-
-    return () => clearTimeout(timer);
+    }, 1600);
+    return () => clearTimeout(t);
   }, []);
-
-  // Animate QR button after content loads
-  useEffect(() => {
-    if (!isLoading) {
-      Animated.sequence([
-        Animated.timing(qrButtonScale, {
-          toValue: 1,
-          duration: 500,
-          useNativeDriver: true,
-        }),
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(qrButtonScale, {
-              toValue: 1.05,
-              duration: 1500,
-              useNativeDriver: true,
-            }),
-            Animated.timing(qrButtonScale, {
-              toValue: 1,
-              duration: 1500,
-              useNativeDriver: true,
-            }),
-          ])
-        ),
-      ]).start();
-    }
-  }, [isLoading]);
 
   const loadRecentVillages = async () => {
     try {
       const stored = await AsyncStorage.getItem('recentVillages');
-      if (stored) {
-        const villages = JSON.parse(stored) as ScannedVillage[];
-        setRecentVillages(villages.slice(0, 5)); // Show last 5 scanned
-      }
-    } catch (err) {
-      console.error('Error loading recent villages:', err);
-    }
+      if (stored) setRecentVillages((JSON.parse(stored) as ScannedVillage[]).slice(0, 5));
+    } catch {}
   };
 
-  const handleVillagePress = (village: ScannedVillage) => {
-    router.push(`qr-notices/${village.villageId}` as any);
-  };
+  return (
+    <View style={styles.root}>
+      <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
 
-  const handleScanQR = () => {
-    router.push('qr-scanner' as any);
-  };
-
-  // Splash Screen
-  const SplashScreen = () => (
-    <Animated.View 
-      style={[
-        styles.splashContainer,
-        {
-          opacity: splashOpacity,
-          transform: [{ scale: logoScale }]
-        }
-      ]}
-    >
-      <View style={styles.splashContent}>
-        <View style={styles.splashLogoCircle}>
+      {/* ── Splash ── */}
+      <Animated.View
+        pointerEvents={isLoading ? 'auto' : 'none'}
+        style={[
+          styles.splash,
+          { opacity: splashOpacity, transform: [{ scale: splashScale }] },
+        ]}
+      >
+        <View style={styles.splashLogoWrap}>
           <Image
-            source={require("../assets/images/gramvarthalogo.png")}
-            style={styles.splashLogoImage}
+            source={require('../assets/images/gramvarthalogo.png')}
+            style={styles.splashLogoImg}
             resizeMode="contain"
           />
         </View>
-        <Animated.Text 
-          style={[
-            styles.splashAppName,
-            {
-              transform: [{ translateY: appNameSlide }]
-            }
-          ]}
-        >
-          GramVartha
-        </Animated.Text>
+        <Text style={styles.splashName}>GramVartha</Text>
         <Text style={styles.splashTagline}>Village Notices on Demand</Text>
-      </View>
-    </Animated.View>
-  );
+      </Animated.View>
 
-  // Main Content
-  const MainContent = () => (
-    <Animated.View style={[styles.mainContainer, { opacity: contentOpacity }]}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <View style={styles.logoSection}>
-            <View style={styles.logoCircle}>
-              <Image
-                source={require("../assets/images/gramvarthalogo.png")}
-                style={styles.logoImage}
-                resizeMode="contain"
-              />
-            </View>
-            <View>
-              <Text style={styles.appName}>GramVartha</Text>
-              <Text style={styles.tagline}>Digital Village Updates</Text>
-            </View>
-          </View>
-        </View>
-      </View>
-
-      {/* Main Content */}
-      <View style={styles.content}>
-        {/* Welcome Section */}
-        <View style={styles.welcomeSection}>
-          <Text style={styles.welcomeTitle}>Scan QR to View</Text>
-          <Text style={styles.welcomeSubtitle}>Village notices from your area</Text>
-        </View>
-
-        {/* Large QR Scanner Button */}
-        <Animated.View 
-          style={[
-            styles.qrButtonContainer,
-            {
-              transform: [{ scale: qrButtonScale }]
-            }
-          ]}
+      {/* ── Main ── */}
+      <Animated.View
+        style={[
+          styles.main,
+          {
+            opacity: contentOpacity,
+            transform: [{ translateY: contentSlide }],
+          },
+        ]}
+      >
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          <TouchableOpacity 
-            style={styles.qrButton}
-            onPress={handleScanQR}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.qrButtonIcon}>���</Text>
-            <Text style={styles.qrButtonTitle}>Scan QR Code</Text>
-            <Text style={styles.qrButtonSubtitle}>Point camera at QR code</Text>
-          </TouchableOpacity>
-        </Animated.View>
-
-        {/* Info Cards */}
-        <View style={styles.infoCards}>
-          <View style={[styles.infoCard, { backgroundColor: Colors.primary[50] }]}>
-            <Text style={styles.infoIcon}>✓</Text>
-            <Text style={styles.infoText}>No login required</Text>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerLogo}>
+              <View style={styles.headerLogoCircle}>
+                <Image
+                  source={require('../assets/images/gramvarthalogo.png')}
+                  style={styles.headerLogoImg}
+                  resizeMode="contain"
+                />
+              </View>
+              <View>
+                <Text style={styles.headerAppName}>GramVartha</Text>
+                <Text style={styles.headerTagline}>Digital Village Updates</Text>
+              </View>
+            </View>
           </View>
-          <View style={[styles.infoCard, { backgroundColor: Colors.success + '15' }]}>
-            <Text style={styles.infoIcon}>���</Text>
-            <Text style={styles.infoText}>Location-based notices</Text>
-          </View>
-        </View>
 
-        {/* Recently Scanned Section */}
-        {recentVillages.length > 0 && (
-          <View style={styles.recentSection}>
-            <Text style={styles.recentTitle}>Recently Scanned</Text>
-            <FlatList
-              data={recentVillages}
-              keyExtractor={(item) => item.villageId}
-              scrollEnabled={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.recentVillageCard}
-                  onPress={() => handleVillagePress(item)}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.recentVillageContent}>
-                    <Text style={styles.recentVillageLabel}>��� {item.villageName}</Text>
-                    <Text style={styles.recentVillageSubtitle}>
-                      {item.district}, {item.state}
-                    </Text>
+          {/* Hero CTA */}
+          <View style={styles.heroSection}>
+            <Text style={styles.heroEyebrow}>VILLAGE NOTICES</Text>
+            <Text style={styles.heroTitle}>
+              Scan once.{'\n'}Stay informed.
+            </Text>
+            <Text style={styles.heroSub}>
+              Point your camera at any village QR code to instantly access local
+              notices, announcements, and updates — no sign-up needed.
+            </Text>
+
+            {/* Big scan button */}
+            <View style={styles.ctaWrapper}>
+              <PulseRing />
+              <TouchableOpacity
+                style={styles.ctaButton}
+                onPress={() => router.push('qr-scanner' as any)}
+                activeOpacity={0.88}
+              >
+                <QRIcon size={34} color="#fff" />
+                <Text style={styles.ctaLabel}>Scan QR Code</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Trust pills */}
+            <View style={styles.pillRow}>
+              <View style={styles.pill}>
+                <Text style={styles.pillDot}>✓</Text>
+                <Text style={styles.pillText}>No login</Text>
+              </View>
+              <View style={styles.pill}>
+                <Text style={styles.pillDot}>✓</Text>
+                <Text style={styles.pillText}>Instant access</Text>
+              </View>
+              <View style={styles.pill}>
+                <Text style={styles.pillDot}>✓</Text>
+                <Text style={styles.pillText}>Free forever</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Recent villages */}
+          {recentVillages.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Recently Scanned</Text>
+                <Text style={styles.sectionCount}>
+                  {recentVillages.length} village
+                  {recentVillages.length > 1 ? 's' : ''}
+                </Text>
+              </View>
+              {recentVillages.map((v, i) => (
+                <VillageCard
+                  key={v.villageId}
+                  item={v}
+                  index={i}
+                  onPress={() => router.push(`qr-notices/${v.villageId}` as any)}
+                />
+              ))}
+            </View>
+          )}
+
+          {/* How it works */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>How it works</Text>
+            <View style={styles.stepsCard}>
+              {[
+                { n: '1', label: 'Find the QR code', sub: 'Posted at the village entrance or notice board' },
+                { n: '2', label: 'Scan with the app', sub: 'Tap "Scan QR Code" and point your camera' },
+                { n: '3', label: 'Read local notices', sub: 'Announcements, events, and official updates' },
+              ].map((step, i, arr) => (
+                <View key={step.n}>
+                  <View style={styles.stepRow}>
+                    <View style={styles.stepBadge}>
+                      <Text style={styles.stepBadgeText}>{step.n}</Text>
+                    </View>
+                    <View style={styles.stepBody}>
+                      <Text style={styles.stepLabel}>{step.label}</Text>
+                      <Text style={styles.stepSub}>{step.sub}</Text>
+                    </View>
                   </View>
-                  <Text style={styles.recentVillageArrow}>→</Text>
-                </TouchableOpacity>
-              )}
-            />
+                  {i < arr.length - 1 && (
+                    <View style={styles.stepConnector} />
+                  )}
+                </View>
+              ))}
+            </View>
           </View>
-        )}
 
-        {/* How it Works */}
-        <View style={styles.howItWorks}>
-          <Text style={styles.howItWorksTitle}>How it works</Text>
-          <View style={styles.step}>
-            <Text style={styles.stepNumber}>1</Text>
-            <Text style={styles.stepText}>Scan the village QR code</Text>
-          </View>
-          <View style={styles.step}>
-            <Text style={styles.stepNumber}>2</Text>
-            <Text style={styles.stepText}>View all village notices</Text>
-          </View>
-          <View style={styles.step}>
-            <Text style={styles.stepNumber}>3</Text>
-            <Text style={styles.stepText}>Get location-based updates</Text>
-          </View>
-        </View>
-      </View>
-    </Animated.View>
-  );
-
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
-      
-      {isLoading ? <SplashScreen /> : <MainContent />}
+          <View style={{ height: 32 }} />
+        </ScrollView>
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  mainContainer: {
-    flex: 1,
-  },
+  root: { flex: 1, backgroundColor: Colors.background },
 
-  // Splash Screen Styles
-  splashContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  // ── Splash ──────────────────────────────────────────────────────────────────
+  splash: {
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.primary[600],
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    zIndex: 100,
   },
-  splashContent: {
-    alignItems: 'center',
-  },
-  splashLogoCircle: {
-    width: 120,
-    height: 120,
-    backgroundColor: Colors.surface,
-    borderRadius: 60,
+  splashLogoWrap: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: 'rgba(255,255,255,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    marginBottom: 20,
   },
-  splashLogoImage: {
-    width: 80,
-    height: 80,
-  },
-  splashAppName: {
-    fontSize: 36,
+  splashLogoImg: { width: 64, height: 64 },
+  splashName: {
+    fontSize: 32,
     fontWeight: '800',
-    color: Colors.textInverse,
-    marginBottom: 8,
-    letterSpacing: 0.5,
+    color: '#fff',
+    letterSpacing: -0.5,
+    marginBottom: 6,
   },
   splashTagline: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.75)',
     fontWeight: '500',
     letterSpacing: 0.3,
   },
 
-  // Header Styles
+  // ── Main ────────────────────────────────────────────────────────────────────
+  main: { flex: 1 },
+  scrollContent: { paddingBottom: 24 },
+
+  // Header
   header: {
-    backgroundColor: Colors.surface,
+    paddingTop: 54,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
-    paddingTop: 50,
-    paddingBottom: 16,
-    paddingHorizontal: 20,
+    backgroundColor: Colors.surface,
   },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  logoSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  logoCircle: {
-    width: 56,
-    height: 56,
+  headerLogo: { flexDirection: 'row', alignItems: 'center' },
+  headerLogoCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: Colors.primary[600],
-    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
-    shadowColor: Colors.primary[700],
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-    elevation: 4,
+    marginRight: 10,
   },
-  logoImage: {
-    width: 45,
-    height: 45,
-  },
-  appName: {
-    fontSize: 22,
+  headerLogoImg: { width: 32, height: 32 },
+  headerAppName: {
+    fontSize: 18,
     fontWeight: '800',
     color: Colors.primary[700],
-    lineHeight: 26,
+    letterSpacing: -0.3,
   },
-  tagline: {
-    fontSize: 12,
+  headerTagline: {
+    fontSize: 11,
     color: Colors.textSecondary,
-    marginTop: 2,
     fontWeight: '500',
+    marginTop: 1,
   },
 
-  // Content Styles
-  content: {
-    flex: 1,
+  // Hero
+  heroSection: {
     paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 20,
+    paddingTop: 32,
+    paddingBottom: 28,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
   },
-  welcomeSection: {
-    marginBottom: 32,
-    alignItems: 'center',
+  heroEyebrow: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.4,
+    color: Colors.primary[500],
+    marginBottom: 8,
   },
-  welcomeTitle: {
-    fontSize: 28,
+  heroTitle: {
+    fontSize: 34,
     fontWeight: '800',
     color: Colors.textPrimary,
-    marginBottom: 8,
-    letterSpacing: -0.5,
-    textAlign: 'center',
-  },
-  welcomeSubtitle: {
-    fontSize: 15,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-
-  // QR Button
-  qrButtonContainer: {
-    marginBottom: 24,
-  },
-  qrButton: {
-    backgroundColor: Colors.primary[600],
-    borderRadius: 24,
-    paddingVertical: 32,
-    paddingHorizontal: 24,
-    alignItems: 'center',
-    shadowColor: Colors.primary[700],
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  qrButtonIcon: {
-    fontSize: 48,
+    lineHeight: 40,
+    letterSpacing: -0.8,
     marginBottom: 12,
   },
-  qrButtonTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: Colors.textInverse,
-    marginBottom: 4,
-  },
-  qrButtonSubtitle: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.85)',
-    fontWeight: '500',
+  heroSub: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    lineHeight: 22,
+    marginBottom: 32,
   },
 
-  // Info Cards
-  infoCards: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 28,
+  // CTA button
+  ctaWrapper: {
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginBottom: 20,
+  width: 172,
+  height: 172,
+  alignSelf: 'center',
+},
+  pulseRing: {
+    position: 'absolute',
+    width: 172,
+    height: 172,
+    borderRadius: 86,
+    borderWidth: 2,
+    borderColor: Colors.primary[500],
   },
-  infoCard: {
-    flex: 1,
+  ctaButton: {
+    width: 148,
+    height: 148,
+    borderRadius: 74,
+    backgroundColor: Colors.primary[600],
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    shadowColor: Colors.primary[700],
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
+    elevation: 10,
+  },
+  ctaLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#fff',
+    letterSpacing: 0.2,
+    textAlign: 'center',
+  },
+
+  // Pills
+  pillRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  pill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    backgroundColor: `${Colors.primary[500]}12`,
+    gap: 4,
   },
-  infoIcon: {
-    fontSize: 18,
-    marginRight: 8,
+  pillDot: {
+    fontSize: 11,
+    color: Colors.primary[600],
+    fontWeight: '700',
   },
-  infoText: {
+  pillText: {
+    fontSize: 11,
+    color: Colors.primary[700],
+    fontWeight: '600',
+  },
+
+  // Sections
+  section: {
+    paddingHorizontal: 20,
+    paddingTop: 28,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: Colors.textPrimary,
+    letterSpacing: -0.2,
+  },
+  sectionCount: {
     fontSize: 12,
     color: Colors.textSecondary,
     fontWeight: '500',
-    flex: 1,
   },
 
-  // Recent Villages
-  recentSection: {
-    marginBottom: 24,
-  },
-  recentTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginBottom: 12,
-  },
-  recentVillageCard: {
+  // Village cards
+  villageCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.surface,
+    borderRadius: 14,
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: 13,
     marginBottom: 8,
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  recentVillageContent: {
-    flex: 1,
+  villageAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: `${Colors.primary[500]}18`,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
-  recentVillageLabel: {
+  villageAvatarText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.primary[600],
+  },
+  villageCardBody: { flex: 1 },
+  villageCardName: {
     fontSize: 14,
     fontWeight: '600',
     color: Colors.textPrimary,
     marginBottom: 2,
   },
-  recentVillageSubtitle: {
+  villageCardMeta: {
     fontSize: 12,
     color: Colors.textSecondary,
   },
-  recentVillageArrow: {
-    fontSize: 16,
-    color: Colors.primary[600],
-  },
-
-  // How It Works
-  howItWorks: {
-    backgroundColor: Colors.primary[50],
-    borderRadius: 16,
-    padding: 16,
-  },
-  howItWorksTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: Colors.textPrimary,
-    marginBottom: 12,
-  },
-  step: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  stepNumber: {
+  villageCardArrow: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: Colors.primary[600],
-    color: Colors.textInverse,
-    fontWeight: '700',
-    fontSize: 12,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    marginRight: 10,
+    backgroundColor: `${Colors.primary[500]}12`,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  stepText: {
+  villageCardArrowText: {
+    fontSize: 18,
+    color: Colors.primary[600],
+    lineHeight: 22,
+    marginLeft: 1,
+  },
+
+  // How it works
+  stepsCard: {
+    backgroundColor: Colors.surface,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    padding: 20,
+  },
+  stepRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  stepBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.primary[600],
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+    marginTop: 1,
+  },
+  stepBadgeText: {
+    color: '#fff',
     fontSize: 13,
+    fontWeight: '700',
+  },
+  stepBody: { flex: 1 },
+  stepLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: 2,
+  },
+  stepSub: {
+    fontSize: 12,
     color: Colors.textSecondary,
-    fontWeight: '500',
-    flex: 1,
+    lineHeight: 18,
+  },
+  stepConnector: {
+    width: 1,
+    height: 16,
+    backgroundColor: Colors.border,
+    marginLeft: 15,
+    marginVertical: 4,
   },
 });
