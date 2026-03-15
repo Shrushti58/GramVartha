@@ -1,14 +1,14 @@
 /**
- * QR Notices Screen
- * Improved cards · Search · Sort by date / priority
+ * QR Notices Screen — Improved Header + Notice Cards with File Preview
+ * Supports: jpg, png, pdf, doc, docx (Cloudinary-hosted)
  */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View, Text, StyleSheet, TouchableOpacity, FlatList,
   ActivityIndicator, RefreshControl, ScrollView, Alert,
-  Animated, StatusBar, TextInput, Keyboard,
-  LayoutAnimation, Platform, UIManager,
+  Animated, StatusBar, TextInput, Keyboard, Image,
+  LayoutAnimation, Platform, UIManager, Modal,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,21 +24,22 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 type SortField = 'date' | 'priority';
 type SortDir   = 'asc'  | 'desc';
 interface SortState { field: SortField; dir: SortDir }
+type FileType  = 'jpg' | 'png' | 'pdf' | 'doc' | 'docx' | 'unknown';
 
 // ─── Data maps ────────────────────────────────────────────────────────────────
 const PRIORITY_RANK: Record<string, number> = { high: 3, medium: 2, low: 1 };
 
 const CAT_MAP: Record<string, { accent: string; bg: string; fg: string }> = {
-  urgent:        { accent: '#C0392B', bg: '#FEE9E7', fg: '#922B21' },
-  development:   { accent: Colors.primary[600], bg: `${Colors.primary[500]}14`, fg: Colors.primary[700] },
-  health:        { accent: '#1976D2', bg: '#E3F2FD', fg: '#0D47A1' },
-  education:     { accent: '#7B1FA2', bg: '#F3E5F5', fg: '#4A148C' },
-  agriculture:   { accent: '#2E7D32', bg: '#E8F5E9', fg: '#1B5E20' },
-  employment:    { accent: '#00838F', bg: '#E0F7FA', fg: '#006064' },
-  social_welfare:{ accent: '#AD1457', bg: '#FCE4EC', fg: '#880E4F' },
-  tax_billing:   { accent: '#E65100', bg: '#FBE9E7', fg: '#BF360C' },
-  election:      { accent: '#283593', bg: '#E8EAF6', fg: '#1A237E' },
-  general:       { accent: '#546E7A', bg: '#ECEFF1', fg: '#37474F' },
+  urgent:         { accent: '#C0392B', bg: '#FEE9E7', fg: '#922B21' },
+  development:    { accent: Colors.primary[600], bg: `${Colors.primary[500]}14`, fg: Colors.primary[700] },
+  health:         { accent: '#1976D2', bg: '#E3F2FD', fg: '#0D47A1' },
+  education:      { accent: '#7B1FA2', bg: '#F3E5F5', fg: '#4A148C' },
+  agriculture:    { accent: '#2E7D32', bg: '#E8F5E9', fg: '#1B5E20' },
+  employment:     { accent: '#00838F', bg: '#E0F7FA', fg: '#006064' },
+  social_welfare: { accent: '#AD1457', bg: '#FCE4EC', fg: '#880E4F' },
+  tax_billing:    { accent: '#E65100', bg: '#FBE9E7', fg: '#BF360C' },
+  election:       { accent: '#283593', bg: '#E8EAF6', fg: '#1A237E' },
+  general:        { accent: '#546E7A', bg: '#ECEFF1', fg: '#37474F' },
 };
 const getCat = (c: string) => CAT_MAP[c] || CAT_MAP.general;
 
@@ -50,18 +51,67 @@ const PRI_MAP: Record<string, { bg: string; fg: string; dot: string; label: stri
 const getPri = (p: string) => PRI_MAP[p] || PRI_MAP.low;
 
 const CATEGORIES = [
-  { id: 'all',           label: 'All'           },
-  { id: 'urgent',        label: 'Urgent'        },
-  { id: 'development',   label: 'Development'   },
-  { id: 'health',        label: 'Health'        },
-  { id: 'education',     label: 'Education'     },
-  { id: 'agriculture',   label: 'Agriculture'   },
-  { id: 'employment',    label: 'Employment'    },
-  { id: 'social_welfare',label: 'Welfare'       },
-  { id: 'tax_billing',   label: 'Tax & Billing' },
-  { id: 'election',      label: 'Election'      },
-  { id: 'general',       label: 'General'       },
+  { id: 'all',            label: 'All'           },
+  { id: 'urgent',         label: 'Urgent'        },
+  { id: 'development',    label: 'Development'   },
+  { id: 'health',         label: 'Health'        },
+  { id: 'education',      label: 'Education'     },
+  { id: 'agriculture',    label: 'Agriculture'   },
+  { id: 'employment',     label: 'Employment'    },
+  { id: 'social_welfare', label: 'Welfare'       },
+  { id: 'tax_billing',    label: 'Tax & Billing' },
+  { id: 'election',       label: 'Election'      },
+  { id: 'general',        label: 'General'       },
 ];
+
+// ─── File type helpers ────────────────────────────────────────────────────────
+
+/**
+ * Detect file type from Cloudinary URL or filename.
+ * Cloudinary URLs typically end in /v1234567890/filename.ext
+ */
+const getFileType = (url: string, fileName?: string): FileType => {
+  const source = fileName || url || '';
+  const ext = source.split('.').pop()?.toLowerCase() || '';
+  if (['jpg', 'jpeg'].includes(ext)) return 'jpg';
+  if (ext === 'png') return 'png';
+  if (ext === 'pdf') return 'pdf';
+  if (ext === 'doc') return 'doc';
+  if (ext === 'docx') return 'docx';
+  return 'unknown';
+};
+
+/**
+ * Build a Cloudinary thumbnail URL for images.
+ * Transforms: /upload/ → /upload/c_fill,w_600,h_280,q_auto,f_auto/
+ */
+const buildCloudinaryThumb = (url: string, width = 600, height = 280): string => {
+  if (!url || !url.includes('cloudinary.com')) return url;
+  return url.replace(
+    '/upload/',
+    `/upload/c_fill,w_${width},h_${height},q_auto,f_auto/`
+  );
+};
+
+/**
+ * For PDFs on Cloudinary, we can render the first page as an image
+ * by changing the extension to .jpg and adding pg_1 transform.
+ */
+const buildCloudinaryPdfThumb = (url: string): string => {
+  if (!url || !url.includes('cloudinary.com')) return '';
+  const base = url.replace(/\.[^/.]+$/, '');
+  return base.replace('/upload/', '/upload/pg_1,w_600,h_280,c_fill,q_auto,f_jpg/') + '.jpg';
+};
+
+// ─── File type config ─────────────────────────────────────────────────────────
+const FILE_CONFIG: Record<FileType, { color: string; bg: string; icon: string; label: string }> = {
+  jpg:     { color: '#1976D2', bg: '#E3F2FD', icon: '🖼',  label: 'JPG'  },
+  png:     { color: '#7B1FA2', bg: '#F3E5F5', icon: '🖼',  label: 'PNG'  },
+  pdf:     { color: '#C0392B', bg: '#FEE9E7', icon: '📄',  label: 'PDF'  },
+  doc:     { color: '#1565C0', bg: '#E8EAF6', icon: '📝',  label: 'DOC'  },
+  docx:    { color: '#1565C0', bg: '#E8EAF6', icon: '📝',  label: 'DOCX' },
+  unknown: { color: '#546E7A', bg: '#ECEFF1', icon: '📎',  label: 'FILE' },
+};
 
 // ─── HText — inline search highlight ─────────────────────────────────────────
 const HText = ({
@@ -89,16 +139,82 @@ const HText = ({
   );
 };
 
-// ─── File attachment row ──────────────────────────────────────────────────────
-const FileRow = ({ fileName }: { fileName: string }) => {
-  const ext = fileName.split('.').pop()?.toUpperCase() || 'FILE';
-  return (
-    <View style={S.fileRow}>
-      <View style={S.fileIcon}>
-        <Text style={S.fileIconTxt}>↓</Text>
+// ─── File Preview Component ───────────────────────────────────────────────────
+const FilePreview = ({
+  fileUrl,
+  fileName,
+  catAccent,
+}: {
+  fileUrl: string;
+  fileName?: string;
+  catAccent: string;
+}) => {
+  const [imgError, setImgError] = useState(false);
+  const fileType = getFileType(fileUrl, fileName);
+  const cfg      = FILE_CONFIG[fileType];
+
+  // Image types → show actual thumbnail
+  if ((fileType === 'jpg' || fileType === 'png') && !imgError) {
+    const thumbUrl = buildCloudinaryThumb(fileUrl, 600, 200);
+    return (
+      <View style={S.previewContainer}>
+        <Image
+          source={{ uri: thumbUrl }}
+          style={S.previewImage}
+          resizeMode="cover"
+          onError={() => setImgError(true)}
+        />
+        <View style={[S.previewTypeBadge, { backgroundColor: cfg.bg }]}>
+          <Text style={[S.previewTypeBadgeTxt, { color: cfg.color }]}>{cfg.label}</Text>
+        </View>
       </View>
-      <Text style={S.fileName} numberOfLines={1}>{fileName}</Text>
-      <Text style={S.fileExt}>{ext}</Text>
+    );
+  }
+
+  // PDF → render first page thumbnail via Cloudinary
+  if (fileType === 'pdf' && !imgError) {
+    const pdfThumb = buildCloudinaryPdfThumb(fileUrl);
+    if (pdfThumb) {
+      return (
+        <View style={S.previewContainer}>
+          <Image
+            source={{ uri: pdfThumb }}
+            style={S.previewImage}
+            resizeMode="cover"
+            onError={() => setImgError(true)}
+          />
+          {/* PDF overlay strip */}
+          <View style={S.pdfOverlay}>
+            <View style={S.pdfOverlayLeft}>
+              <Text style={S.pdfOverlayIcon}>📄</Text>
+              <View>
+                <Text style={S.pdfOverlayLabel}>PDF Document</Text>
+                <Text style={S.pdfOverlayName} numberOfLines={1}>{fileName || 'Document.pdf'}</Text>
+              </View>
+            </View>
+            <View style={[S.pdfViewBtn, { backgroundColor: cfg.color }]}>
+              <Text style={S.pdfViewBtnTxt}>View</Text>
+            </View>
+          </View>
+        </View>
+      );
+    }
+  }
+
+  // DOC / DOCX / fallback → rich tile with icon + metadata
+  const displayName = fileName || fileUrl.split('/').pop() || 'Document';
+  return (
+    <View style={[S.docPreview, { borderLeftColor: cfg.color, backgroundColor: cfg.bg }]}>
+      <View style={[S.docIconWrap, { backgroundColor: cfg.color }]}>
+        <Text style={S.docIconTxt}>{cfg.icon}</Text>
+      </View>
+      <View style={S.docMeta}>
+        <Text style={[S.docTypeLbl, { color: cfg.color }]}>{cfg.label} Document</Text>
+        <Text style={S.docFileName} numberOfLines={1}>{displayName}</Text>
+      </View>
+      <View style={[S.docBadge, { backgroundColor: cfg.color }]}>
+        <Text style={S.docBadgeTxt}>{cfg.label}</Text>
+      </View>
     </View>
   );
 };
@@ -138,6 +254,15 @@ const NoticeCard = ({
         {/* Top accent bar */}
         <View style={[S.accentBar, { backgroundColor: cat.accent }]} />
 
+        {/* File preview (if exists) */}
+        {item.fileUrl && (
+          <FilePreview
+            fileUrl={item.fileUrl}
+            fileName={item.fileName}
+            catAccent={cat.accent}
+          />
+        )}
+
         {/* Body */}
         <View style={S.cardBody}>
 
@@ -156,7 +281,7 @@ const NoticeCard = ({
 
             {item.isPinned && (
               <View style={S.pinnedBadge}>
-                <Text style={S.pinnedBadgeTxt}>PINNED</Text>
+                <Text style={S.pinnedBadgeTxt}>📌 PINNED</Text>
               </View>
             )}
 
@@ -172,9 +297,6 @@ const NoticeCard = ({
 
           {/* Description */}
           <HText text={item.description} query={query} style={S.cardDesc} lines={2} />
-
-          {/* File */}
-          {item.fileUrl && <FileRow fileName={item.fileName || 'Attachment'} />}
         </View>
 
         {/* Footer tray */}
@@ -211,7 +333,10 @@ const PinnedStrip = ({
   if (!notices.length) return null;
   return (
     <View style={S.pinnedStrip}>
-      <Text style={S.pinnedStripLbl}>PINNED</Text>
+      <View style={S.pinnedStripHeader}>
+        <Text style={S.pinnedStripLbl}>📌 PINNED NOTICES</Text>
+        <View style={S.pinnedCount}><Text style={S.pinnedCountTxt}>{notices.length}</Text></View>
+      </View>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -273,6 +398,9 @@ export default function QRNoticesScreen() {
   const [scannedVillageInfo, setScannedVillageInfo] = useState<any>(null);
   const [searchQuery,        setSearchQuery]        = useState('');
   const [sort,               setSort]               = useState<SortState>({ field: 'date', dir: 'desc' });
+  const [searchFocused,      setSearchFocused]      = useState(false);
+
+
 
   useEffect(() => {
     loadScannedVillageInfo();
@@ -368,26 +496,42 @@ export default function QRNoticesScreen() {
 
   return (
     <View style={S.root}>
-      <StatusBar barStyle="light-content" backgroundColor={Colors.primary[700]} />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.primary[800]} />
 
-      {/* ── Header ── */}
-      <View style={S.header}>
-        <TouchableOpacity onPress={() => router.back()} style={S.backBtn} activeOpacity={0.7}>
-          <Text style={S.backBtnTxt}>←</Text>
-        </TouchableOpacity>
-        <View style={S.headerMid}>
+      {/* ══════════════════════════════════════════════════
+          HEADER — Bold & Modern
+      ══════════════════════════════════════════════════ */}
+      <View style={S.headerShell}>
+        {/* Decorative circle — top-right geometric accent */}
+        <View style={S.headerAccentCircle} />
+        <View style={S.headerAccentCircle2} />
+
+        {/* Nav row */}
+        <View style={S.headerNavRow}>
+          <TouchableOpacity onPress={() => router.back()} style={S.backBtn} activeOpacity={0.7}>
+            <Text style={S.backBtnTxt}>←</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleScanAnother} style={S.scanBtn} activeOpacity={0.75}>
+            <Text style={S.scanBtnTxt}>⬚  Scan New</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Title block */}
+        <View style={S.headerTitleBlock}>
+          <Text style={S.headerEyebrow}>VILLAGE NOTICES</Text>
           <Text style={S.headerTitle} numberOfLines={1}>
-            {village?.name || 'Village'}
+            {village?.name || 'Notice Board'}
           </Text>
           {(village?.district || village?.state) && (
-            <Text style={S.headerSub}>
-              {[village?.district, village?.state].filter(Boolean).join(', ')}
-            </Text>
+            <View style={S.headerBreadcrumb}>
+              <View style={S.headerBreadcrumbDot} />
+              <Text style={S.headerSub}>
+                {[village?.district, village?.state].filter(Boolean).join(', ')}
+              </Text>
+            </View>
           )}
         </View>
-        <TouchableOpacity onPress={handleScanAnother} style={S.scanBtn} activeOpacity={0.75}>
-          <Text style={S.scanBtnTxt}>Scan New</Text>
-        </TouchableOpacity>
       </View>
 
       {/* ── Saved banner ── */}
@@ -398,9 +542,9 @@ export default function QRNoticesScreen() {
         </View>
       )}
 
-      {/* ── Search ── */}
+      {/* ── Search — clean bar below header ── */}
       <View style={S.searchWrap}>
-        <View style={S.searchInner}>
+        <View style={[S.searchInner, searchFocused && S.searchInnerFocused]}>
           <Text style={S.searchIcon}>⌕</Text>
           <TextInput
             style={S.searchInput}
@@ -408,6 +552,8 @@ export default function QRNoticesScreen() {
             placeholderTextColor={Colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
             returnKeyType="search"
             onSubmitEditing={() => Keyboard.dismiss()}
             autoCorrect={false}
@@ -542,32 +688,127 @@ const S = StyleSheet.create({
   loadingWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.background, gap: 14 },
   loadingTxt:  { fontSize: 14, color: Colors.textSecondary, fontWeight: '500' },
 
-  // Header
-  header: {
-    flexDirection: 'row', alignItems: 'center',
+  // ── Improved Header ──────────────────────────────────────────────────────
+  // ── Bold Modern Header ────────────────────────────────────────────────────
+  headerShell: {
     backgroundColor: Colors.primary[700],
-    paddingTop: 52, paddingBottom: 14, paddingHorizontal: 16, gap: 10,
+    paddingBottom: 22,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 10,
   },
-  backBtn:    { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.13)', justifyContent: 'center', alignItems: 'center' },
-  backBtnTxt: { color: '#fff', fontSize: 22, lineHeight: 26 },
-  headerMid:  { flex: 1 },
-  headerTitle:{ fontSize: 18, fontWeight: '700', color: '#fff', letterSpacing: -0.3 },
-  headerSub:  { fontSize: 12, color: 'rgba(255,255,255,0.58)', marginTop: 2, fontWeight: '500' },
-  scanBtn:    { paddingHorizontal: 13, paddingVertical: 8, borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.14)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)' },
-  scanBtnTxt: { color: '#fff', fontSize: 12, fontWeight: '700', letterSpacing: 0.2 },
+
+  // Large decorative circles — pure geometry, no texture
+  headerAccentCircle: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: 'rgba(255,255,255,0.055)',
+    top: -80,
+    right: -50,
+  },
+  headerAccentCircle2: {
+    position: 'absolute',
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    bottom: -30,
+    left: 30,
+  },
+
+  // Back + scan row — sits at the very top
+  headerNavRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 54,
+    paddingHorizontal: 16,
+    paddingBottom: 18,
+  },
+  backBtn: {
+    width: 38, height: 38, borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.13)',
+    justifyContent: 'center', alignItems: 'center',
+  },
+  backBtnTxt: { color: '#fff', fontSize: 20, lineHeight: 24, fontWeight: '600' },
+
+  scanBtn: {
+    paddingHorizontal: 14, paddingVertical: 9,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.22)',
+  },
+  scanBtnTxt: { color: '#fff', fontSize: 12, fontWeight: '700', letterSpacing: 0.4 },
+
+  // Big title block — the visual anchor of the header
+  headerTitleBlock: {
+    paddingHorizontal: 18,
+    gap: 4,
+  },
+  headerEyebrow: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: 'rgba(255,255,255,0.50)',
+    letterSpacing: 2.5,
+    marginBottom: 2,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#fff',
+    letterSpacing: -0.8,
+    lineHeight: 32,
+  },
+  headerBreadcrumb: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    marginTop: 4,
+  },
+  headerBreadcrumbDot: {
+    width: 5, height: 5, borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.45)',
+  },
+  headerSub: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.55)',
+    fontWeight: '500',
+  },
+
+  // ── Search bar — outside header ────────────────────────────────────────────
+  searchWrap: {
+    backgroundColor: Colors.surface,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+  },
+  searchInner: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: Colors.border,
+    paddingHorizontal: 12, height: 44, gap: 8,
+  },
+  searchInnerFocused: {
+    borderColor: Colors.primary[500],
+    backgroundColor: `${Colors.primary[500]}08`,
+  },
+  searchIcon:     { fontSize: 18, color: Colors.textSecondary, lineHeight: 22 },
+  searchInput:    { flex: 1, fontSize: 14, color: Colors.textPrimary, fontWeight: '500', paddingVertical: 0 },
+  searchClear:    { width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.border, justifyContent: 'center', alignItems: 'center' },
+  searchClearTxt: { fontSize: 10, color: Colors.textSecondary, fontWeight: '700' },
 
   // Banner
   banner:    { flexDirection: 'row', alignItems: 'center', backgroundColor: '#E8F5E9', paddingHorizontal: 16, paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: '#C8E6C9', gap: 8 },
   bannerDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#2E7D32' },
   bannerTxt: { fontSize: 12, color: '#1B5E20', fontWeight: '600' },
-
-  // Search
-  searchWrap:     { backgroundColor: Colors.surface, paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: Colors.border },
-  searchInner:    { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.background, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, paddingHorizontal: 12, height: 44, gap: 8 },
-  searchIcon:     { fontSize: 18, color: Colors.textSecondary, lineHeight: 22 },
-  searchInput:    { flex: 1, fontSize: 14, color: Colors.textPrimary, fontWeight: '500', paddingVertical: 0 },
-  searchClear:    { width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.border, justifyContent: 'center', alignItems: 'center' },
-  searchClearTxt: { fontSize: 10, color: Colors.textSecondary, fontWeight: '700' },
 
   // Category chips
   filterBar:    { backgroundColor: Colors.surface, borderBottomWidth: 1, borderBottomColor: Colors.border },
@@ -584,55 +825,133 @@ const S = StyleSheet.create({
   },
   countTxt: { fontSize: 12, color: Colors.textSecondary, fontWeight: '500', flex: 1 },
   countNum: { fontSize: 12, color: Colors.textPrimary, fontWeight: '700' },
-  sortGroup:       { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  sortLbl:         { fontSize: 11, color: Colors.textSecondary, fontWeight: '600' },
-  sortBtn:         { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.background },
-  sortBtnActive:   { backgroundColor: Colors.primary[600], borderColor: Colors.primary[600] },
-  sortBtnTxt:      { fontSize: 11, fontWeight: '700', color: Colors.textSecondary },
-  sortBtnTxtActive:{ color: '#fff' },
+  sortGroup:        { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  sortLbl:          { fontSize: 11, color: Colors.textSecondary, fontWeight: '600' },
+  sortBtn:          { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, borderWidth: 1, borderColor: Colors.border, backgroundColor: Colors.background },
+  sortBtnActive:    { backgroundColor: Colors.primary[600], borderColor: Colors.primary[600] },
+  sortBtnTxt:       { fontSize: 11, fontWeight: '700', color: Colors.textSecondary },
+  sortBtnTxtActive: { color: '#fff' },
 
-  // Notice cards
-  listContent: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 32, gap: 10 },
+  // ── Improved Notice Cards ───────────────────────────────────────────────
+  listContent: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 32, gap: 12 },
 
   card: {
     backgroundColor: Colors.surface,
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
     borderColor: Colors.border,
     overflow: 'hidden',
+    // Subtle card shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
   },
-  accentBar: { height: 3, width: '100%' },
+  accentBar: { height: 4, width: '100%' },
   cardBody:  { paddingHorizontal: 14, paddingTop: 12, paddingBottom: 4, gap: 7 },
 
+  // ── File preview styles ─────────────────────────────────────────────────
+
+  // Shared preview container (images + PDF thumb)
+  previewContainer: {
+    width: '100%',
+    height: 170,
+    position: 'relative',
+    backgroundColor: Colors.border,
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+  },
+  // Small type badge top-right on image preview
+  previewTypeBadge: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  previewTypeBadgeTxt: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+
+  // PDF overlay strip at bottom of pdf thumb
+  pdfOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(0,0,0,0.60)',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    gap: 8,
+  },
+  pdfOverlayLeft:   { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
+  pdfOverlayIcon:   { fontSize: 18, lineHeight: 22 },
+  pdfOverlayLabel:  { fontSize: 10, color: 'rgba(255,255,255,0.65)', fontWeight: '600' },
+  pdfOverlayName:   { fontSize: 12, color: '#fff', fontWeight: '700' },
+  pdfViewBtn:       { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
+  pdfViewBtnTxt:    { fontSize: 11, color: '#fff', fontWeight: '800' },
+
+  // DOC / DOCX tile
+  docPreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 14,
+    marginTop: 10,
+    marginBottom: 2,
+    borderRadius: 12,
+    borderLeftWidth: 4,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    gap: 10,
+  },
+  docIconWrap: {
+    width: 40, height: 40, borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center',
+    flexShrink: 0,
+  },
+  docIconTxt:  { fontSize: 20 },
+  docMeta:     { flex: 1, gap: 2 },
+  docTypeLbl:  { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  docFileName: { fontSize: 12, color: Colors.textPrimary, fontWeight: '600' },
+  docBadge:    { paddingHorizontal: 9, paddingVertical: 4, borderRadius: 8, flexShrink: 0 },
+  docBadgeTxt: { fontSize: 10, color: '#fff', fontWeight: '800', letterSpacing: 0.4 },
+
   // Pill badges
-  pillRow:      { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
-  catBadge:     { paddingHorizontal: 9, paddingVertical: 3, borderRadius: 6 },
-  catBadgeTxt:  { fontSize: 10, fontWeight: '800', letterSpacing: 0.6 },
-  priBadge:     { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, gap: 5 },
-  priDot:       { width: 6, height: 6, borderRadius: 3 },
-  priBadgeTxt:  { fontSize: 10, fontWeight: '700' },
-  pinnedBadge:  { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: '#FFF3E0' },
+  pillRow:       { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  catBadge:      { paddingHorizontal: 9, paddingVertical: 3, borderRadius: 6 },
+  catBadgeTxt:   { fontSize: 10, fontWeight: '800', letterSpacing: 0.6 },
+  priBadge:      { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, gap: 5 },
+  priDot:        { width: 6, height: 6, borderRadius: 3 },
+  priBadgeTxt:   { fontSize: 10, fontWeight: '700' },
+  pinnedBadge:   { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: '#FFF3E0' },
   pinnedBadgeTxt:{ fontSize: 10, fontWeight: '800', color: '#E65100', letterSpacing: 0.4 },
-  draftBadge:   { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: '#ECEFF1' },
-  draftBadgeTxt:{ fontSize: 10, fontWeight: '700', color: '#546E7A', letterSpacing: 0.4 },
+  draftBadge:    { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: '#ECEFF1' },
+  draftBadgeTxt: { fontSize: 10, fontWeight: '700', color: '#546E7A', letterSpacing: 0.4 },
 
   // Card content
   cardTitle: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary, lineHeight: 21, letterSpacing: -0.3 },
   cardDesc:  { fontSize: 12, color: Colors.textSecondary, lineHeight: 18 },
 
-  // File row
-  fileRow:     { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.background, borderRadius: 8, borderWidth: 1, borderColor: Colors.border, paddingHorizontal: 10, paddingVertical: 7, gap: 7, marginTop: 2, marginBottom: 4 },
-  fileIcon:    { width: 20, height: 20, borderRadius: 5, backgroundColor: Colors.primary[600], justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
-  fileIconTxt: { color: '#fff', fontSize: 11, fontWeight: '700', lineHeight: 14 },
-  fileName:    { fontSize: 11, color: Colors.textSecondary, fontWeight: '500', flex: 1 },
-  fileExt:     { fontSize: 10, fontWeight: '700', color: Colors.primary[600], letterSpacing: 0.3 },
-
   // Card footer tray
-  cardFooter: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 14, paddingVertical: 10, borderTopWidth: 1, borderTopColor: Colors.border, backgroundColor: Colors.background, marginTop: 8 },
+  cardFooter: {
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+    paddingHorizontal: 14, paddingVertical: 10,
+    borderTopWidth: 1, borderTopColor: Colors.border,
+    backgroundColor: Colors.background, marginTop: 8,
+  },
   footerLeft: { flexDirection: 'row', alignItems: 'center', gap: 7, flex: 1 },
   footerRight:{ flexDirection: 'row', alignItems: 'center', gap: 5 },
-  avatar:     { width: 24, height: 24, borderRadius: 12, justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
-  avatarTxt:  { fontSize: 10, fontWeight: '800' },
+  avatar:     { width: 26, height: 26, borderRadius: 13, justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
+  avatarTxt:  { fontSize: 11, fontWeight: '800' },
   authorName: { fontSize: 11, color: Colors.textSecondary, fontWeight: '600', flex: 1 },
   metaTxt:    { fontSize: 11, color: Colors.textSecondary, fontWeight: '500' },
   metaSep:    { width: 3, height: 3, borderRadius: 2, backgroundColor: Colors.border },
@@ -641,13 +960,16 @@ const S = StyleSheet.create({
   highlight: { backgroundColor: '#FFF176', color: '#222', borderRadius: 2 },
 
   // Pinned strip
-  pinnedStrip:   { paddingTop: 14, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: Colors.border, marginBottom: 4 },
-  pinnedStripLbl:{ fontSize: 10, fontWeight: '800', color: Colors.textSecondary, letterSpacing: 1.2, paddingHorizontal: 16, marginBottom: 10 },
-  pinnedScroll:  { paddingHorizontal: 16, gap: 10 },
-  pinnedCard:    { width: 180, padding: 12, backgroundColor: Colors.surface, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, borderTopWidth: 3, gap: 5 },
-  pinnedCatDot:  { width: 6, height: 6, borderRadius: 3 },
-  pinnedCatTxt:  { fontSize: 9, fontWeight: '800', letterSpacing: 0.6 },
-  pinnedCardTitle:{ fontSize: 13, fontWeight: '600', color: Colors.textPrimary, lineHeight: 18 },
+  pinnedStrip:       { paddingTop: 14, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: Colors.border, marginBottom: 4 },
+  pinnedStripHeader: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, marginBottom: 10, gap: 8 },
+  pinnedStripLbl:    { fontSize: 10, fontWeight: '800', color: Colors.textSecondary, letterSpacing: 1.2 },
+  pinnedCount:       { width: 18, height: 18, borderRadius: 9, backgroundColor: Colors.primary[600], justifyContent: 'center', alignItems: 'center' },
+  pinnedCountTxt:    { fontSize: 10, color: '#fff', fontWeight: '800' },
+  pinnedScroll:      { paddingHorizontal: 16, gap: 10 },
+  pinnedCard:        { width: 180, padding: 12, backgroundColor: Colors.surface, borderRadius: 12, borderWidth: 1, borderColor: Colors.border, borderTopWidth: 3, gap: 5 },
+  pinnedCatDot:      { width: 6, height: 6, borderRadius: 3 },
+  pinnedCatTxt:      { fontSize: 9, fontWeight: '800', letterSpacing: 0.6 },
+  pinnedCardTitle:   { fontSize: 13, fontWeight: '600', color: Colors.textPrimary, lineHeight: 18 },
 
   // Empty state
   emptyWrap:   { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, gap: 10 },
@@ -657,9 +979,9 @@ const S = StyleSheet.create({
   emptyDesc:   { fontSize: 13, color: Colors.textSecondary, textAlign: 'center', lineHeight: 20 },
 
   // Pagination
-  pagination:      { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8, paddingVertical: 20 },
-  pageBtn:         { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: Colors.border, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.surface },
-  pageBtnActive:   { backgroundColor: Colors.primary[600], borderColor: Colors.primary[600] },
-  pageBtnTxt:      { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
-  pageBtnTxtActive:{ color: '#fff' },
+  pagination:       { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8, paddingVertical: 20 },
+  pageBtn:          { width: 36, height: 36, borderRadius: 18, borderWidth: 1, borderColor: Colors.border, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.surface },
+  pageBtnActive:    { backgroundColor: Colors.primary[600], borderColor: Colors.primary[600] },
+  pageBtnTxt:       { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
+  pageBtnTxtActive: { color: '#fff' },
 });
