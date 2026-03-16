@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs');
 const Admin = require('../models/Admin');
 const Officals = require('../models/Officials');
-const Citizens = require('../models/Citizen');
 const { generateToken } = require("../utlis/jwt");
 
 const registerAdmin = async (req, res) => {
@@ -84,18 +83,7 @@ const logoutAdmin = (req, res) => {
     return res.status(200).json({ message: "Logged out successfully" });
 };
 
-const deleteCitizen = async (req, res) => {
-    try {
-        const deletedCitizen = await Citizens.findByIdAndDelete(req.params.id);
-        if (!deletedCitizen) {
-            return res.status(404).json({ message: "Citizen not found" });
-        }
-        res.json({ message: "Citizen deleted successfully", deletedCitizen });
-    } catch (err) {
-        console.error("Error deleting citizen:", err);
-        res.status(500).json({ message: "Error deleting citizen" });
-    }
-};
+
 
 const deleteOfficial = async (req, res) => {
     try {
@@ -110,15 +98,7 @@ const deleteOfficial = async (req, res) => {
     }
 };
 
-const getAllCitizens = async (req, res) => {
-    try {
-        const citizens = await Citizens.find().select("-password"); 
-        res.status(200).json(citizens);
-    } catch (err) {
-        console.error("Error fetching citizens:", err);
-        res.status(500).json({ message: "Error fetching citizens" });
-    }
-};
+
 
 
 const getPendingAdmins = async (req, res) => {
@@ -176,9 +156,7 @@ module.exports = {
     registerAdmin,
     loginAdmin,
     logoutAdmin,
-    deleteCitizen,
     deleteOfficial,
-    getAllCitizens,
     getPendingAdmins,
     approveAdmin,
     rejectAdmin,

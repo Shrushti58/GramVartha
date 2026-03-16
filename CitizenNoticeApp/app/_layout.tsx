@@ -35,14 +35,14 @@ export default function RootLayout() {
           name="notice"
           options={{
             title: 'Public Notices',
-            headerShown: true,
+            headerShown: false,
           }}
         />
         <Stack.Screen
           name="notice/[id]"
           options={{
             title: 'Notice Details',
-            headerShown: true,
+            headerShown: false,
           }}
         />
       </Stack>

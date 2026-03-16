@@ -1,6 +1,6 @@
 const Notice = require("../models/Notice");
 const NoticeView = require("../models/NoticeView");
-const Citizen = require("../models/Citizen");
+
 
 const uploadNotice = async (req, res) => {
   try {
@@ -328,48 +328,7 @@ const getPopularNotices = async (req, res) => {
   }
 };
 
-const getCitizenNotices = async (req, res) => {
-  try {
-    const { 
-      category, 
-      page = 1, 
-      limit = 10
-    } = req.query;
 
-    const citizen = await Citizen.findById(req.user.id);
-    if (!citizen) {
-      return res.status(404).json({ message: "Citizen not found" });
-    }
-
-    const citizenWard = citizen.address.wardNumber;
-
-    let filter = { status: 'published' };
-
-    if (category && category !== 'all') {
-      filter.category = category;
-    }
-
-    const notices = await Notice.find(filter)
-      .populate('createdBy', 'name email')
-      .sort({ isPinned: -1, createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-
-    const total = await Notice.countDocuments(filter);
-
-    res.json({
-      notices,
-      totalPages: Math.ceil(total / limit),
-      currentPage: parseInt(page),
-      total,
-      citizenWard
-    });
-
-  } catch (error) {
-    console.error("Error fetching citizen notices:", error);
-    res.status(500).json({ message: "Error fetching notices", error: error.message });
-  }
-};
 
 const getNoticeById = async (req, res) => {
   try {
@@ -461,7 +420,6 @@ module.exports = {
   deleteNotice,
   trackNoticeView,
   getPopularNotices,
-  getCitizenNotices,
   getNoticeById,
   getNoticesByVillage
 };

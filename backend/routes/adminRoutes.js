@@ -8,8 +8,7 @@ router.post('/login', adminController.loginAdmin);
 router.post('/logout', adminController.logoutAdmin);
 router.get('/me', verifyToken, adminController.getAdminMe);
 
-router.delete('/citizen/:id', adminController.deleteCitizen);
-router.get('/all-citizens', adminController.getAllCitizens);
+
 
 router.get('/pending-admins', verifyToken, adminController.getPendingAdmins);
 router.put('/approve-admin/:id', verifyToken, adminController.approveAdmin);

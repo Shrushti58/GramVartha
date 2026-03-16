@@ -31,11 +31,22 @@ const villageDocStorage = new CloudinaryStorage({
   },
 });
 
+const issueStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "issues",
+    allowed_formats: ["jpg", "png", "jpeg"],
+    transformation: [{ width: 1200, height: 1200, crop: "limit" }],
+  },
+});
+
 const uploadNotice = multer({ storage: noticeStorage });
 const uploadProfile = multer({ storage: profileStorage });
 const uploadVillageDoc = multer({ storage: villageDocStorage });
+const uploadIssue = multer({ storage: issueStorage });
 
 module.exports = uploadNotice;
 module.exports.uploadNotice = uploadNotice;
 module.exports.uploadProfile = uploadProfile;
 module.exports.uploadVillageDoc = uploadVillageDoc;
+module.exports.uploadIssue = uploadIssue;

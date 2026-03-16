@@ -120,78 +120,91 @@ export default function QRScannerScreen() {
     if (!permission?.granted) requestPermission();
   }, [permission]);
 
-  const handleBarCodeScanned = async ({ data }: { data: string }) => {
-    if (scanned || loading) return;
-    setScanned(true);
-    setLoading(true);
+ const handleBarCodeScanned = async ({ data }: { data: string }) => {
+  if (scanned || loading) return;
 
-    try {
-      const qrCodeId = data.trim();
-      const response = await axios.get(
-        `${Config.API_BASE_URL}/villages/qr/${qrCodeId}`
-      );
-      const villageData = response.data.village;
+  setScanned(true);
+  setLoading(true);
 
-      const scannedVillageData = {
-        villageId: villageData._id,
-        villageName: villageData.name,
-        district: villageData.district,
-        state: villageData.state,
-        pincode: villageData.pincode,
-        scannedAt: new Date().toISOString(),
-        qrCodeId,
-      };
+  try {
+    const qrCodeId = data.trim();
 
-      await AsyncStorage.setItem(
-        'scannedVillage',
-        JSON.stringify(scannedVillageData)
-      );
+    const response = await axios.get(
+      `${Config.API_BASE_URL}/villages/qr/${qrCodeId}`
+    );
 
-      const recentStr = await AsyncStorage.getItem('recentVillages');
-      const recent = recentStr ? JSON.parse(recentStr) : [];
-      const filtered = recent.filter(
-        (v: any) => v.villageId !== villageData._id
-      );
-      filtered.unshift(scannedVillageData);
-      await AsyncStorage.setItem(
-        'recentVillages',
-        JSON.stringify(filtered.slice(0, 10))
-      );
+    const villageData = response.data.village;
 
-      Alert.alert(
-        '✓ Village Found',
-        `"${villageData.name}" has been scanned successfully.`,
-        [
-          {
-            text: 'View Notices',
-            onPress: () => router.push(`qr-notices/${villageData._id}` as any),
-          },
-          {
-            text: 'Scan Another',
-            style: 'cancel',
-            onPress: () => {
-              setScanned(false);
-              setLoading(false);
-            },
-          },
-        ]
-      );
-    } catch (err: unknown) {
-      const errorMessage =
-        (err as any)?.response?.data?.error ||
-        'Invalid QR code. Please try again.';
-      Alert.alert('Unrecognised Code', errorMessage, [
+    const scannedVillageData = {
+      villageId: villageData._id,
+      villageName: villageData.name,
+      district: villageData.district,
+      state: villageData.state,
+      pincode: villageData.pincode,
+      scannedAt: new Date().toISOString(),
+      qrCodeId,
+    };
+
+    // Store full village object
+    await AsyncStorage.setItem(
+      "scannedVillage",
+      JSON.stringify(scannedVillageData)
+    );
+
+    // Store villageId separately for authentication / complaints
+    await AsyncStorage.setItem("villageId", villageData._id);
+
+    // Manage recent villages list
+    const recentStr = await AsyncStorage.getItem("recentVillages");
+    const recent = recentStr ? JSON.parse(recentStr) : [];
+
+    const filtered = recent.filter(
+      (v: any) => v.villageId !== villageData._id
+    );
+
+    filtered.unshift(scannedVillageData);
+
+    await AsyncStorage.setItem(
+      "recentVillages",
+      JSON.stringify(filtered.slice(0, 10))
+    );
+
+    Alert.alert(
+      "✓ Village Found",
+      `"${villageData.name}" has been scanned successfully.`,
+      [
         {
-          text: 'Try Again',
+          text: "View Notices",
+          onPress: () =>
+            router.push(`qr-notices/${villageData._id}` as any),
+        },
+        {
+          text: "Scan Another",
+          style: "cancel",
           onPress: () => {
             setScanned(false);
             setLoading(false);
           },
         },
-      ]);
-    }
-  };
+      ]
+    );
 
+  } catch (err: unknown) {
+    const errorMessage =
+      (err as any)?.response?.data?.error ||
+      "Invalid QR code. Please try again.";
+
+    Alert.alert("Unrecognised Code", errorMessage, [
+      {
+        text: "Try Again",
+        onPress: () => {
+          setScanned(false);
+          setLoading(false);
+        },
+      },
+    ]);
+  }
+};
   const handleManualSubmit = async () => {
     if (!manualInput.trim()) {
       Alert.alert('Required', 'Please enter a QR code or village ID.');
