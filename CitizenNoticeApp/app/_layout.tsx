@@ -21,30 +21,20 @@ export default function RootLayout() {
             fontSize: 18,
           },
           headerShadowVisible: true,
-          headerShown:false,
+          headerShown: false,
         }}
       >
-        <Stack.Screen
-          name="index"
-          options={{
-            title: 'GramVartha',
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="notice"
-          options={{
-            title: 'Public Notices',
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="notice/[id]"
-          options={{
-            title: 'Notice Details',
-            headerShown: false,
-          }}
-        />
+        {/* PUBLIC SCREENS */}
+        <Stack.Screen name="index" />
+        <Stack.Screen name="notice" />
+        <Stack.Screen name="notice/[id]" />
+
+        {/* AUTH SCREENS */}
+        <Stack.Screen name="(auth)/login" />
+        <Stack.Screen name="(auth)/register" />
+
+        {/* PROTECTED SCREEN */}
+        <Stack.Screen name="complaint" />
       </Stack>
     </>
   );

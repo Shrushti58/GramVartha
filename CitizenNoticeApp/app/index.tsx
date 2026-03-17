@@ -19,6 +19,8 @@ import {
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../constants/colors';
+import { Alert } from "react-native";
+import { isLoggedIn } from "../utils/auth";
 
 const { width } = Dimensions.get('window');
 
@@ -163,6 +165,7 @@ const VillageCard = ({
   );
 };
 
+
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(true);
@@ -197,6 +200,30 @@ export default function HomeScreen() {
     } catch {}
   };
 
+  const handleCreateComplaint = async () => {
+  const loggedIn = await isLoggedIn();
+
+  if (!loggedIn) {
+    Alert.alert(
+      "Login Required",
+      "You must login to create a complaint",
+      [
+        {
+          text: "Login",
+          onPress: () => router.push({ pathname: "/auth/login" } as any),
+        },
+        {
+          text: "Register",
+          onPress: () => router.push({ pathname: "/auth/register" } as any),
+        },
+        { text: "Cancel", style: "cancel" },
+      ]
+    );
+    return;
+  }
+
+  router.push("/complaint");
+};
   return (
     <View style={styles.root}>
       <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
@@ -274,6 +301,15 @@ export default function HomeScreen() {
                 <Text style={styles.ctaLabel}>Scan QR Code</Text>
               </TouchableOpacity>
             </View>
+            <TouchableOpacity
+  style={styles.secondaryButton}
+  onPress={handleCreateComplaint}
+  activeOpacity={0.8}
+>
+  <Text style={styles.secondaryButtonText}>
+    Raise Issue / Complaint
+  </Text>
+</TouchableOpacity>
 
             {/* Trust pills */}
             <View style={styles.pillRow}>
@@ -635,4 +671,21 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginVertical: 4,
   },
+  secondaryButton: {
+  marginTop: 16,
+  alignSelf: 'center',
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  borderWidth: 1,
+  borderColor: Colors.primary[500],
+  backgroundColor: `${Colors.primary[500]}10`,
+},
+
+secondaryButtonText: {
+  color: Colors.primary[700],
+  fontSize: 13,
+  fontWeight: '600',
+},
 });
+
