@@ -11,6 +11,7 @@ function generateToken(user) {
       village: user.village   
     },
     process.env.JWT_SECRET || "supersecret",
+     
     { expiresIn: "1d" }
   );
 }
