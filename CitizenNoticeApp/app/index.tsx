@@ -21,7 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Colors } from '../constants/colors';
 import { Alert } from "react-native";
 import { isLoggedIn } from "../utils/auth";
-
+import { Button } from 'react-native';
 const { width } = Dimensions.get('window');
 
 interface ScannedVillage {
@@ -178,6 +178,9 @@ export default function HomeScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide = useRef(new Animated.Value(24)).current;
 
+  useEffect(()=>{
+    AsyncStorage.clear()
+  },[])
   useEffect(() => {
     const t = setTimeout(() => {
       Animated.parallel([
@@ -379,6 +382,7 @@ export default function HomeScreen() {
           <View style={{ height: 32 }} />
         </ScrollView>
       </Animated.View>
+      
     </View>
   );
 }

@@ -36,7 +36,7 @@ class ApiService {
       (error) => Promise.reject(error)
     );
 
-    // ❌ Response interceptor (Error handling)
+ 
     this.api.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
