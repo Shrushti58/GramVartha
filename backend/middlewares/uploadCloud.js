@@ -7,7 +7,7 @@ const noticeStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "notices",
-    allowed_formats: ["jpg", "png", "pdf", "doc", "docx","heic"],
+    allowed_formats: ["jpg", "png", "pdf", "doc", "docx"],
   },
 });
 
@@ -16,7 +16,7 @@ const profileStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "official-profiles",
-    allowed_formats: ["jpg", "png", "jpeg", "heic"],
+    allowed_formats: ["jpg", "png", "jpeg"],
     transformation: [{ width: 500, height: 500, crop: "limit" }],
   },
 });
@@ -26,7 +26,7 @@ const villageDocStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "village-documents",
-    allowed_formats: ["jpg", "png", "jpeg", "heic"],
+    allowed_formats: ["jpg", "png", "jpeg"],
     transformation: [{ width: 1000, height: 1000, crop: "limit" }],
   },
 });
@@ -35,7 +35,7 @@ const issueStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "issues",
-    allowed_formats: ["jpg", "png", "jpeg", "heic"],
+    allowed_formats: ["jpg", "png", "jpeg"],
     transformation: [{ width: 1200, height: 1200, crop: "limit" }],
   },
 });

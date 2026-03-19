@@ -42,7 +42,6 @@ frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
 
-
 # React build
 frontend/build/
 
@@ -100,5 +99,3 @@ Thumbs.db
 # Misc
 *.bak
 *.tmp
-
-backend/google-credentials.json

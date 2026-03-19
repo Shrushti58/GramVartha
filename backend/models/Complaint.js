@@ -16,7 +16,7 @@ const ComplaintSchema = new mongoose.Schema(
 
   type: {
     type: String,
-    enum: ["issue", "complaint"],
+    enum: ["issue", "complaint", "appreciation"],
     required: true
   },
 
@@ -30,22 +30,13 @@ const ComplaintSchema = new mongoose.Schema(
     required: true
   },
 
-  imageUrl: {
+  photo: {
     type: String
   },
 
   location: {
     lat: Number,
     lng: Number
-  },
-
-  imageSource: {
-    type: String,
-    enum: ["camera", "gallery"]
-  },
-
-  timestamp: {
-    type: Date
   },
 
   status: {
@@ -57,33 +48,6 @@ const ComplaintSchema = new mongoose.Schema(
   duplicateOf: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Complaint"
-  },
-
-  aiVerification: {
-    isValidIssue: {
-      type: Boolean,
-      default: true
-    },
-
-    labels: [String],
-
-    fraudScore: {
-      type: Number,
-      default: 0
-    },
-
-    remarks: {
-      type: String
-    }
-  },
-
-  resolvedImageUrl: {
-    type: String
-  },
-
-  resolutionVerification: {
-    score: Number,
-    remarks: String
   }
 
 },

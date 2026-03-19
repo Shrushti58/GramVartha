@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { uploadIssue } = require("../middlewares/uploadCloud"); 
+const upload = require("../middlewares/uploadCloud");
 const {verifyToken}  = require("../utlis/jwt");
 
 const { createComplaint } = require("../controllers/complaintController");
@@ -9,7 +9,7 @@ const { createComplaint } = require("../controllers/complaintController");
 router.post(
   "/create",
   verifyToken,
-  uploadIssue.single("image"),
+  upload.single("photo"),
   createComplaint
 );
 
