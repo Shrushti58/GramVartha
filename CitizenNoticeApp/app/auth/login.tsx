@@ -65,7 +65,7 @@ export default function Login() {
         text1: "Welcome back!",
         text2: "Logged in successfully.",
       });
-      setTimeout(() => router.replace("/"), 1200);
+      setTimeout(() => router.replace("/complaint"), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",

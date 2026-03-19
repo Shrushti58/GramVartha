@@ -178,9 +178,9 @@ export default function HomeScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide = useRef(new Animated.Value(24)).current;
 
-  useEffect(()=>{
-    AsyncStorage.clear()
-  },[])
+  //useEffect(()=>{
+  //  AsyncStorage.clear()
+  //},[])
   useEffect(() => {
     const t = setTimeout(() => {
       Animated.parallel([
