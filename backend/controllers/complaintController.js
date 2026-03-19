@@ -1,9 +1,89 @@
 const Complaint = require("../models/Complaint");
 const { analyzeImage } = require("../utlis/vision");
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-const VALID_KEYWORDS   = ["garbage", "road", "pothole", "waste", "drain", "litter", "damage"];
-const INVALID_KEYWORDS = ["selfie", "face", "person", "people", "portrait"];
+// ─── Valid status values ───────────────────────────────────────────────────────
+const VALID_STATUSES = ["pending", "in-progress", "resolved", "rejected"];
+
+// ─── AI Keyword Banks ─────────────────────────────────────────────────────────
+
+// ✅ Labels that confirm a LEGITIMATE civic issue is visible in the photo
+const VALID_KEYWORDS = [
+  // Waste & sanitation
+  "garbage", "waste", "litter", "trash", "rubbish", "debris", "dump",
+  "dumpster", "sewage", "sewer", "drainage", "drain", "filth", "dirt",
+  "compost", "bin", "landfill", "open defecation",
+
+  // Roads & infrastructure
+  "road", "pothole", "crack", "pavement", "footpath", "sidewalk", "asphalt",
+  "construction", "broken road", "damaged road", "unpaved", "gravel",
+  "speed breaker", "barricade", "bridge", "culvert", "manhole",
+
+  // Water & flooding
+  "flood", "waterlogging", "puddle", "overflow", "leakage", "pipe",
+  "water pipe", "burst pipe", "stagnant water", "sewage overflow",
+  "blocked drain", "clogged", "water logging",
+
+  // Electricity
+  "electric pole", "wire", "cable", "streetlight", "lamp post",
+  "broken light", "fallen pole", "dangling wire", "power line",
+  "transformer", "electricity",
+
+  // Public property damage
+  "wall", "fence", "broken", "damaged", "vandalism", "graffiti",
+  "collapsed", "dilapidated", "abandoned", "demolition", "rubble",
+  "debris pile", "building", "structure",
+
+  // Animals & health hazards
+  "stray", "animal", "dog", "cattle", "cow", "pig", "carcass",
+  "dead animal", "mosquito", "pest", "rat", "infestation",
+
+  // Trees & vegetation hazards
+  "fallen tree", "tree", "branch", "overgrown", "weed", "bush",
+  "blocked path", "uprooted",
+
+  // Public spaces
+  "park", "playground", "garden", "school", "hospital", "market",
+  "bus stop", "public toilet", "toilet", "urinal", "well",
+];
+
+// ❌ Labels that suggest the photo is NOT a civic issue (fraud / irrelevant)
+const INVALID_KEYWORDS = [
+  // People / selfies
+  "selfie", "face", "person", "people", "portrait", "human", "man",
+  "woman", "child", "crowd", "group", "body",
+
+  // Indoor / unrelated scenes
+  "indoor", "room", "bedroom", "kitchen", "office", "interior",
+  "furniture", "table", "chair", "sofa", "food", "meal", "plate",
+  "restaurant", "shop", "store",
+
+  // Vehicle interiors
+  "car interior", "dashboard", "steering wheel",
+
+  // Pure nature (no civic issue)
+  "sky", "cloud", "mountain", "beach", "ocean", "river", "sunset",
+  "flower", "scenery", "landscape",
+
+  // Documents / screens
+  "document", "paper", "screenshot", "screen", "phone screen", "text", "sign",
+];
+
+// 🔍 Labels that confirm the issue is STILL present in a resolution photo
+const DIRTY_KEYWORDS = [
+  // Waste still visible
+  "garbage", "waste", "litter", "trash", "rubbish", "debris", "dump", "filth",
+  "sewage", "sewage overflow", "open defecation",
+
+  // Water issue still present
+  "flood", "waterlogging", "stagnant water", "overflow", "puddle",
+  "blocked drain", "clogged",
+
+  // Road damage still visible
+  "pothole", "crack", "broken road", "damaged road",
+
+  // Health hazard still present
+  "carcass", "dead animal", "infestation", "rat", "pest",
+];
 
 const FRAUD_WEIGHTS = {
   gallerySource  : 30,
@@ -12,17 +92,8 @@ const FRAUD_WEIGHTS = {
   staleTimestamp : 20,
 };
 
-const FRAUD_THRESHOLDS = {
-  high   : 60,
-  medium : 30,
-};
+const FRAUD_THRESHOLDS = { high: 60, medium: 30 };
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-/**
- * Normalise AI labels to lowercase strings so keyword matching
- * works regardless of how Google Vision / AWS Rekognition returns them.
- */
 function normalizeLabels(raw = []) {
   return raw
     .map((l) => {
@@ -34,9 +105,7 @@ function normalizeLabels(raw = []) {
     .filter(Boolean);
 }
 
-/**
- * Returns { isValidIssue, fraudScore, remarks } for an issue complaint.
- */
+
 function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
   let fraudScore = 0;
 
@@ -44,9 +113,9 @@ function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
   const hasInvalid   = labels.some((l) => INVALID_KEYWORDS.includes(l));
   const isValidIssue = hasValid && !hasInvalid;
 
-  if (imageSource === "gallery")    fraudScore += FRAUD_WEIGHTS.gallerySource;
-  if (!isValidIssue)                fraudScore += FRAUD_WEIGHTS.invalidImage;
-  if (isNaN(lat) || isNaN(lng))     fraudScore += FRAUD_WEIGHTS.missingCoords;
+  if (imageSource === "gallery")  fraudScore += FRAUD_WEIGHTS.gallerySource;
+  if (!isValidIssue)              fraudScore += FRAUD_WEIGHTS.invalidImage;
+  if (isNaN(lat) || isNaN(lng))   fraudScore += FRAUD_WEIGHTS.missingCoords;
 
   if (timestamp) {
     const ageHours = (Date.now() - new Date(timestamp).getTime()) / (1000 * 60 * 60);
@@ -60,16 +129,116 @@ function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
   return { isValidIssue, fraudScore, remarks };
 }
 
-// ─── Controller ───────────────────────────────────────────────────────────────
-
-const createComplaint = async (req, res) => {
+const getComplaints = async (req, res) => {
   try {
-    // ── Auth guard ──────────────────────────────────────────────────────────
+    if (!req.user?.village) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const filter = { village: req.user.village };
+    if (req.query.type)   filter.type   = req.query.type;
+    if (req.query.status) filter.status = req.query.status;
+
+    const complaints = await Complaint.find(filter)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json(complaints);
+  } catch (err) {
+    console.error("[getComplaints]", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateStatus = async (req, res) => {
+  try {
     if (!req.user?.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    // ── Parse & validate base fields ────────────────────────────────────────
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+    if (!VALID_STATUSES.includes(status)) {
+      return res.status(400).json({
+        message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+      });
+    }
+
+    const complaint = await Complaint.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    return res.status(200).json(complaint);
+  } catch (err) {
+    console.error("[updateStatus]", err);
+    return res.status(500).json({ message: "Error updating status" });
+  }
+};
+
+const resolveComplaint = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Resolution photo required" });
+    }
+
+    const resolvedImageUrl = req.file.path;
+
+    const complaint = await Complaint.findById(req.params.id);
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+    if (complaint.status === "resolved") {
+      return res.status(400).json({ message: "Complaint is already resolved" });
+    }
+
+    let labels = [];
+    try {
+      const raw = await analyzeImage(resolvedImageUrl);
+      labels = normalizeLabels(raw);
+    } catch (visionErr) {
+      console.warn("[Vision API error - resolve]", visionErr.message);
+    }
+
+    const isClean = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
+    const score   = isClean ? 80 : 30;
+    const remarks = isClean ? "Looks cleaned" : "Still not clean";
+
+    const updated = await Complaint.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: "resolved",
+        resolvedImageUrl,
+        resolutionVerification: { score, remarks, labels },
+      },
+      { new: true, runValidators: true }
+    );
+
+    return res.status(200).json(updated);
+  } catch (err) {
+    console.error("[resolveComplaint]", err);
+    return res.status(500).json({ message: "Error resolving complaint" });
+  }
+};
+
+const createComplaint = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const {
       type,
       title,
@@ -81,41 +250,25 @@ const createComplaint = async (req, res) => {
     if (!type || !title?.trim() || !description?.trim()) {
       return res.status(400).json({ message: "Missing required fields: type, title, description" });
     }
-
     if (!["issue", "suggestion"].includes(type)) {
       return res.status(400).json({ message: "Invalid type. Must be 'issue' or 'suggestion'" });
     }
 
-    // ── Suggestion path ──────────────────────────────────────────────────────
     if (type === "suggestion") {
       const complaint = await Complaint.create({
-        citizen      : req.user.id,
-        village      : req.user.village,
-        type,
-        title        : title.trim(),
-        description  : description.trim(),
-        imageUrl     : null,
-        location     : null,
-        imageSource  : null,
-        timestamp    : null,
-        aiVerification: undefined,
+        citizen: req.user.id, village: req.user.village,
+        type, title: title.trim(), description: description.trim(),
+        imageUrl: null, location: null, imageSource: null,
+        timestamp: null, aiVerification: undefined,
       });
-
       return res.status(201).json({ message: "Complaint submitted successfully", complaint });
     }
 
-    // ── Issue path ───────────────────────────────────────────────────────────
-
-    // Validate photo
     if (!req.file) {
       return res.status(400).json({ message: "Issue requires a photo" });
     }
 
-    // ✅ multer-storage-cloudinary already uploaded the file during middleware.
-    //    req.file.path holds the Cloudinary secure URL — no manual upload needed.
-    const imageUrl = req.file.path;
-
-    // Validate coordinates
+    const imageUrl = req.file.path; 
     const lat = Number(req.body.lat);
     const lng = Number(req.body.lng);
 
@@ -123,65 +276,46 @@ const createComplaint = async (req, res) => {
       return res.status(400).json({ message: "Invalid or missing GPS coordinates" });
     }
 
-    // AI analysis (non-fatal)
     let rawLabels = [];
     try {
       rawLabels = await analyzeImage(imageUrl);
     } catch (visionErr) {
-      console.warn("[Vision API error]", visionErr.message);
+      console.warn("[Vision API error - create]", visionErr.message);
     }
 
     const labels = normalizeLabels(rawLabels);
-
-    // Fraud / validity check
     const { isValidIssue, fraudScore, remarks } = runFraudCheck({
-      labels,
-      imageSource,
-      lat,
-      lng,
-      timestamp,
+      labels, imageSource, lat, lng, timestamp,
     });
 
-    // Duplicate check — 0.0005 deg ≈ ~55 m radius
     const nearbyIssue = await Complaint.findOne({
-      type   : "issue",
-      status : { $ne: "resolved" },
+      type: "issue",
+      status: { $ne: "resolved" },
       "location.lat": { $gte: lat - 0.0005, $lte: lat + 0.0005 },
       "location.lng": { $gte: lng - 0.0005, $lte: lng + 0.0005 },
     });
 
     if (nearbyIssue) {
       return res.status(200).json({
-        message     : "Similar issue already reported nearby",
-        duplicateOf : nearbyIssue._id,
+        message: "Similar issue already reported nearby",
+        duplicateOf: nearbyIssue._id,
       });
     }
 
-    // Persist
     const complaint = await Complaint.create({
-      citizen      : req.user.id,
-      village      : req.user.village,
-      type,
-      title        : title.trim(),
-      description  : description.trim(),
-      imageUrl,
-      location     : { lat, lng },
-      imageSource  : imageSource ?? "camera",
-      timestamp    : timestamp ? new Date(timestamp) : new Date(),
-      aiVerification: {
-        isValidIssue,
-        labels,
-        fraudScore,
-        remarks,
-      },
+      citizen: req.user.id, village: req.user.village,
+      type, title: title.trim(), description: description.trim(),
+      imageUrl, location: { lat, lng },
+      imageSource: imageSource ?? "camera",
+      timestamp: timestamp ? new Date(timestamp) : new Date(),
+      aiVerification: { isValidIssue, labels, fraudScore, remarks },
     });
 
     return res.status(201).json({ message: "Complaint submitted successfully", complaint });
-
   } catch (err) {
     console.error("[createComplaint]", err);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
-module.exports = { createComplaint };
+module.exports = { getComplaints, updateStatus, resolveComplaint, createComplaint };

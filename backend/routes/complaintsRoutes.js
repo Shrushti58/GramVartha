@@ -1,16 +1,31 @@
 const express = require("express");
-const router = express.Router();
+const router  = express.Router();
 
-const { uploadIssue } = require("../middlewares/uploadCloud"); 
-const {verifyToken}  = require("../utlis/jwt");
+const { verifyToken } = require("../utlis/jwt");
+const { uploadIssue } = require("../middlewares/uploadCloud");
 
-const { createComplaint } = require("../controllers/complaintController");
+const {
+  createComplaint,
+  getComplaints,
+  updateStatus,
+  resolveComplaint,
+} = require("../controllers/complaintController");
+
 
 router.post(
   "/create",
   verifyToken,
-  uploadIssue.single("image"),
+  uploadIssue.single("image"), 
   createComplaint
+);
+
+router.get("/", verifyToken, getComplaints);
+router.patch("/:id/status", verifyToken, updateStatus);
+router.patch(
+  "/:id/resolve",
+  verifyToken,
+  uploadIssue.single("image"),
+  resolveComplaint
 );
 
 module.exports = router;
