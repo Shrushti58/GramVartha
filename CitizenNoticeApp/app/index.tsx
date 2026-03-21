@@ -313,6 +313,26 @@ export default function HomeScreen() {
     Raise Issue / Complaint
   </Text>
 </TouchableOpacity>
+<TouchableOpacity
+  style={styles.workGuideButton}
+  onPress={async () => {
+    if (recentVillages.length > 0) {
+      const v = recentVillages[0];
+     router.push('/qr-notices/workguide' as any);
+    } else {
+      Alert.alert(
+        'Scan a Village First',
+        'Please scan your village QR code to access the Work Guide.',
+        [
+          { text: 'Scan Now', onPress: () => router.push('qr-scanner' as any) },
+          { text: 'Cancel', style: 'cancel' },
+        ]
+      );
+    }
+  }}
+  activeOpacity={0.8}>
+  <Text style={styles.workGuideButtonText}>Work Guide</Text>
+</TouchableOpacity>
 
             {/* Trust pills */}
             <View style={styles.pillRow}>
@@ -688,6 +708,19 @@ const styles = StyleSheet.create({
 
 secondaryButtonText: {
   color: Colors.primary[700],
+  fontSize: 13,
+  fontWeight: '600',
+},
+workGuideButton: {
+  marginTop: 10,
+  alignSelf: 'center',
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 20,
+  backgroundColor: Colors.primary[600],
+},
+workGuideButtonText: {
+  color: '#fff',
   fontSize: 13,
   fontWeight: '600',
 },
