@@ -11,7 +11,7 @@ async function getApprovedOfficial(userId) {
 }
 
 const getWorkGuides = async (req, res) => {
-   console.log(">> villageId:", req.params.villageId, "| search:", req.query.search)
+  
   try {
     const { villageId } = req.params;
     const { search }    = req.query;
@@ -56,7 +56,7 @@ const getWorkGuides = async (req, res) => {
 };
 
 const getWorkGuideById = async (req, res) => {
-   console.log(">>> villageId:", req.params.villageId, "| search:", req.query.search)
+  
   try {
     const guide = await WorkGuide.findById(req.params.id).lean();
     if (!guide) {

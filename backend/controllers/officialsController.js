@@ -204,7 +204,6 @@ const deleteOfficial = async (req, res) => {
   }
 };
 
-// Profile management functions
 const getOfficialProfile = async (req, res) => {
   try {
     const official = await Officials.findById(req.user.id)

@@ -2,7 +2,6 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const multer = require("multer");
 const cloudinary = require("../config/cloudinary");
 
-// Storage for notices
 const noticeStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -11,7 +10,6 @@ const noticeStorage = new CloudinaryStorage({
   },
 });
 
-// Storage for official profiles
 const profileStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -21,7 +19,6 @@ const profileStorage = new CloudinaryStorage({
   },
 });
 
-// Storage for village registration documents (images only)
 const villageDocStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {

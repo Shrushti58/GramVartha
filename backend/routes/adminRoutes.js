@@ -9,7 +9,6 @@ router.post('/logout', adminController.logoutAdmin);
 router.get('/me', verifyToken, adminController.getAdminMe);
 
 
-
 router.get('/pending-admins', verifyToken, adminController.getPendingAdmins);
 router.put('/approve-admin/:id', verifyToken, adminController.approveAdmin);
 router.put('/reject-admin/:id', verifyToken, adminController.rejectAdmin);

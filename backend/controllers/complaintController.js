@@ -3,12 +3,8 @@ const { analyzeImage } = require("../utlis/vision");
 const Citizen = require("../models/Citizens");
 const { sendSMS } = require('../service/smsService');
 
-// ─── Valid status values ───────────────────────────────────────────────────────
 const VALID_STATUSES = ["pending", "in-progress", "resolved", "rejected"];
 
-// ─── AI Keyword Banks ─────────────────────────────────────────────────────────
-
-// ✅ Labels that confirm a LEGITIMATE civic issue is visible in the photo
 const VALID_KEYWORDS = [
   // Waste & sanitation
   "garbage", "waste", "litter", "trash", "rubbish", "debris", "dump",
@@ -48,7 +44,6 @@ const VALID_KEYWORDS = [
   "bus stop", "public toilet", "toilet", "urinal", "well",
 ];
 
-// ❌ Labels that suggest the photo is NOT a civic issue (fraud / irrelevant)
 const INVALID_KEYWORDS = [
   // People / selfies
   "selfie", "face", "person", "people", "portrait", "human", "man",
@@ -70,7 +65,6 @@ const INVALID_KEYWORDS = [
   "document", "paper", "screenshot", "screen", "phone screen", "text", "sign",
 ];
 
-// 🔍 Labels that confirm the issue is STILL present in a resolution photo
 const DIRTY_KEYWORDS = [
   // Waste still visible
   "garbage", "waste", "litter", "trash", "rubbish", "debris", "dump", "filth",
@@ -88,10 +82,10 @@ const DIRTY_KEYWORDS = [
 ];
 
 const FRAUD_WEIGHTS = {
-  gallerySource  : 30,
-  invalidImage   : 40,
-  missingCoords  : 30,
-  staleTimestamp : 20,
+  gallerySource: 30,
+  invalidImage: 40,
+  missingCoords: 30,
+  staleTimestamp: 20,
 };
 
 const FRAUD_THRESHOLDS = { high: 60, medium: 30 };
@@ -100,8 +94,8 @@ function normalizeLabels(raw = []) {
   return raw
     .map((l) => {
       if (typeof l === "string") return l.toLowerCase();
-      if (l?.description)        return l.description.toLowerCase();
-      if (l?.Name)               return l.Name.toLowerCase();
+      if (l?.description) return l.description.toLowerCase();
+      if (l?.Name) return l.Name.toLowerCase();
       return "";
     })
     .filter(Boolean);
@@ -110,13 +104,13 @@ function normalizeLabels(raw = []) {
 function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
   let fraudScore = 0;
 
-  const hasValid     = labels.some((l) => VALID_KEYWORDS.includes(l));
-  const hasInvalid   = labels.some((l) => INVALID_KEYWORDS.includes(l));
+  const hasValid = labels.some((l) => VALID_KEYWORDS.includes(l));
+  const hasInvalid = labels.some((l) => INVALID_KEYWORDS.includes(l));
   const isValidIssue = hasValid && !hasInvalid;
 
-  if (imageSource === "gallery")  fraudScore += FRAUD_WEIGHTS.gallerySource;
-  if (!isValidIssue)              fraudScore += FRAUD_WEIGHTS.invalidImage;
-  if (isNaN(lat) || isNaN(lng))   fraudScore += FRAUD_WEIGHTS.missingCoords;
+  if (imageSource === "gallery") fraudScore += FRAUD_WEIGHTS.gallerySource;
+  if (!isValidIssue) fraudScore += FRAUD_WEIGHTS.invalidImage;
+  if (isNaN(lat) || isNaN(lng)) fraudScore += FRAUD_WEIGHTS.missingCoords;
 
   if (timestamp) {
     const ageHours = (Date.now() - new Date(timestamp).getTime()) / (1000 * 60 * 60);
@@ -124,13 +118,11 @@ function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
   }
 
   let remarks = "Looks fine";
-  if (fraudScore > FRAUD_THRESHOLDS.high)        remarks = "High chance of fake issue";
+  if (fraudScore > FRAUD_THRESHOLDS.high) remarks = "High chance of fake issue";
   else if (fraudScore > FRAUD_THRESHOLDS.medium) remarks = "Needs verification";
 
   return { isValidIssue, fraudScore, remarks };
 }
-
-// ─── Controllers ──────────────────────────────────────────────────────────────
 
 const getComplaints = async (req, res) => {
   try {
@@ -139,7 +131,7 @@ const getComplaints = async (req, res) => {
     }
 
     const filter = { village: req.user.village };
-    if (req.query.type)   filter.type   = req.query.type;
+    if (req.query.type) filter.type = req.query.type;
     if (req.query.status) filter.status = req.query.status;
 
     const complaints = await Complaint.find(filter)
@@ -153,9 +145,6 @@ const getComplaints = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
-// UPDATE STATUS
-// ─────────────────────────────────────────
 const updateStatus = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -210,9 +199,6 @@ const updateStatus = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
-// RESOLVE COMPLAINT
-// ─────────────────────────────────────────
 const resolveComplaint = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -252,10 +238,10 @@ const resolveComplaint = async (req, res) => {
       });
     }
 
-    const isClean      = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
+    const isClean = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
     const matchedDirty = labels.filter((l) => DIRTY_KEYWORDS.includes(l));
-    const score        = isClean ? 80 : 30;
-    const remarks      = isClean
+    const score = isClean ? 80 : 30;
+    const remarks = isClean
       ? "Looks cleaned"
       : `Issue still visible in photo (detected: ${matchedDirty.join(", ")})`;
 
@@ -287,9 +273,6 @@ const resolveComplaint = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
-// CREATE COMPLAINT
-// ─────────────────────────────────────────
 const createComplaint = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -301,7 +284,7 @@ const createComplaint = async (req, res) => {
       title,
       description,
       imageSource = null,
-      timestamp   = null,
+      timestamp = null,
     } = req.body;
 
     if (!type || !title?.trim() || !description?.trim()) {
@@ -320,20 +303,19 @@ const createComplaint = async (req, res) => {
       });
 
       // ── SMS: confirm suggestion received ──
-      try {
-        const citizen = await Citizen.findById(req.user.id);
-        if (citizen?.phone) {
-          const message = `📝 Your suggestion "${title.trim()}" has been submitted to Gram Panchayat. We will review it shortly.`;
-          await sendSMS(citizen.phone, message);
-        }
-      } catch (smsErr) {
-        console.error("SMS error [createComplaint - suggestion]:", smsErr.message);
-      }
+      //try {
+      //  const citizen = await Citizen.findById(req.user.id);
+      //  if (citizen?.phone) {
+      //    const message = `📝 Your suggestion "${title.trim()}" has been submitted to Gram Panchayat. We will review it shortly.`;
+      //    await sendSMS(citizen.phone, message);
+      //  }
+      //} catch (smsErr) {
+      //  console.error("SMS error [createComplaint - suggestion]:", smsErr.message);
+      //}
 
       return res.status(201).json({ message: "Complaint submitted successfully", complaint });
     }
 
-    // ── Issue type ──
     if (!req.file) {
       return res.status(400).json({ message: "Issue requires a photo" });
     }
@@ -382,15 +364,15 @@ const createComplaint = async (req, res) => {
     });
 
     // ── SMS: confirm issue complaint received ──
-    try {
-      const citizen = await Citizen.findById(req.user.id);
-      if (citizen?.phone) {
-        const message = `📋 Your complaint "${title.trim()}" (#${complaint._id}) has been submitted to Gram Panchayat. We will look into it soon.`;
-        await sendSMS(citizen.phone, message);
-      }
-    } catch (smsErr) {
-      console.error("SMS error [createComplaint - issue]:", smsErr.message);
-    }
+    //try {
+    // const citizen = await Citizen.findById(req.user.id);
+    // if (citizen?.phone) {
+    // const message = `📋 Your complaint "${title.trim()}" (#${complaint._id}) has been submitted to Gram Panchayat. We will look into it soon.`;
+    //  await sendSMS(citizen.phone, message);
+    // }
+    //} catch (smsErr) {
+    //  console.error("SMS error [createComplaint - issue]:", smsErr.message);
+    // }
 
     return res.status(201).json({ message: "Complaint submitted successfully", complaint });
   } catch (err) {

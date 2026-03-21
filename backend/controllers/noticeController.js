@@ -30,7 +30,6 @@ const uploadNotice = async (req, res) => {
     let notice;
 
     if (noticeId) {
-      // ── UPDATE existing notice ──
       notice = await Notice.findById(noticeId);
       if (!notice) {
         return res.status(404).json({ message: "Notice not found" });
@@ -52,7 +51,6 @@ const uploadNotice = async (req, res) => {
       await notice.save();
 
     } else {
-      // ── CREATE new notice ──
       const noticeData = {
         title,
         description,
@@ -72,22 +70,22 @@ const uploadNotice = async (req, res) => {
       await notice.save();
 
       // ── SMS: notify all citizens of this village ──
-      try {
-        const citizens = await Citizen.find({
-          village: req.user.village,
-          phone: { $exists: true, $ne: null }
-        });
+      //try {
+      //   const citizens = await Citizen.find({
+      //     village: req.user.village,
+      //     phone: { $exists: true, $ne: null }
+      //   });
 
-        const message = `📢 Gram Panchayat Notice: "${title}" has been published. Login to the portal to read it.`;
+      // const message = `📢 Gram Panchayat Notice: "${title}" has been published. Login to the portal to read it.`;
 
-        for (const citizen of citizens) {
-          await sendSMS(citizen.phone, message);
-        }
-        console.log(`📨 SMS sent to ${citizens.length} citizens`);
-      } catch (smsErr) {
-        // SMS failure should NOT fail the main request
-        console.error("SMS notification error:", smsErr.message);
-      }
+      //  for (const citizen of citizens) {
+      //    await sendSMS(citizen.phone, message);
+      //  }
+      // console.log(`📨 SMS sent to ${citizens.length} citizens`);
+      //} catch (smsErr) {
+      // SMS failure should NOT fail the main request
+      // console.error("SMS notification error:", smsErr.message);
+      // }
     }
 
     await notice.populate('createdBy', 'name email');
@@ -106,9 +104,6 @@ const uploadNotice = async (req, res) => {
   }
 };
 
-// ─────────────────────────────────────────
-// UPDATE NOTICE (separate route)
-// ─────────────────────────────────────────
 const updateNotice = async (req, res) => {
   try {
     const {
@@ -138,11 +133,11 @@ const updateNotice = async (req, res) => {
       fileName = req.file.originalname;
     }
 
-    notice.title       = title       || notice.title;
+    notice.title = title || notice.title;
     notice.description = description || notice.description;
-    notice.category    = category    || notice.category;
-    notice.priority    = priority    || notice.priority;
-    notice.isPinned    = isPinned !== undefined
+    notice.category = category || notice.category;
+    notice.priority = priority || notice.priority;
+    notice.isPinned = isPinned !== undefined
       ? (isPinned === 'true' || isPinned === true)
       : notice.isPinned;
 
@@ -167,9 +162,9 @@ const updateNotice = async (req, res) => {
 
 const fetchNotices = async (req, res) => {
   try {
-    const { 
-      category, 
-      page = 1, 
+    const {
+      category,
+      page = 1,
       limit = 10,
       priority,
       isPinned
@@ -211,9 +206,9 @@ const fetchNotices = async (req, res) => {
 
 const fetchOfficialNotices = async (req, res) => {
   try {
-    const { 
-      category, 
-      page = 1, 
+    const {
+      category,
+      page = 1,
       limit = 10,
       priority,
       isPinned
@@ -252,8 +247,6 @@ const fetchOfficialNotices = async (req, res) => {
     res.status(500).json({ message: "Error fetching notices", error: error.message });
   }
 };
-
-
 
 const deleteNotice = async (req, res) => {
   try {
@@ -294,8 +287,8 @@ const trackNoticeView = async (req, res) => {
     });
 
     if (existingView) {
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         views: notice.views,
         alreadyViewed: true
       });
@@ -312,8 +305,8 @@ const trackNoticeView = async (req, res) => {
     notice.views += 1;
     await notice.save();
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       views: notice.views,
       firstView: true
     });
@@ -321,13 +314,13 @@ const trackNoticeView = async (req, res) => {
     console.error('Error tracking view:', error);
     if (error.code === 11000) {
       const notice = await Notice.findById(req.params.id);
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         views: notice.views,
         alreadyViewed: true
       });
     }
-    
+
     res.status(500).json({ error: 'Failed to track view' });
   }
 };
@@ -335,25 +328,23 @@ const trackNoticeView = async (req, res) => {
 const getPopularNotices = async (req, res) => {
   try {
     const { limit = 10, category } = req.query;
-    
+
     let query = { status: 'published' };
     if (category && category !== 'all') {
       query.category = category;
     }
-    
+
     const popularNotices = await Notice.find(query)
       .sort({ views: -1, createdAt: -1 })
       .limit(parseInt(limit))
       .populate('createdBy', 'name email');
-      
+
     res.json(popularNotices);
   } catch (error) {
     console.error("Error fetching popular notices:", error);
     res.status(500).json({ error: 'Failed to fetch popular notices' });
   }
 };
-
-
 
 const getNoticeById = async (req, res) => {
   try {
@@ -379,15 +370,13 @@ const getNoticeById = async (req, res) => {
   }
 };
 
-
-// Public: Get notices by village ID (for QR code scanning)
 const getNoticesByVillage = async (req, res) => {
   try {
     const { villageId } = req.params;
     const { page = 1, limit = 10, category = 'all' } = req.query;
 
     const Village = require("../models/Village");
-    
+
     // Verify village exists and is approved
     const village = await Village.findById(villageId);
     if (!village) {

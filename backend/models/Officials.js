@@ -6,7 +6,7 @@ const OfficalsSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
-    profileImage: { type: String, required: true }, // Cloudinary URL for profile photo - required for verification
+    profileImage: { type: String, required: true }, 
     status: {
         type: String,
         enum: ["pending", "approved", "rejected"],

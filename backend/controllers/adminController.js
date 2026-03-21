@@ -83,8 +83,6 @@ const logoutAdmin = (req, res) => {
     return res.status(200).json({ message: "Logged out successfully" });
 };
 
-
-
 const deleteOfficial = async (req, res) => {
     try {
         const deletedOfficial = await Officals.findByIdAndDelete(req.params.id);
@@ -97,9 +95,6 @@ const deleteOfficial = async (req, res) => {
         res.status(500).json({ message: "Error deleting official" });
     }
 };
-
-
-
 
 const getPendingAdmins = async (req, res) => {
     try {

@@ -10,7 +10,6 @@ router.post("/logout", officialsController.logoutOfficial);
 
 router.get("/me", verifyToken, officialsController.getCurrentOfficial);
 
-// Profile management routes
 router.get("/profile", verifyToken, officialsController.getOfficialProfile);
 router.post("/profile/image", verifyToken, uploadProfile.single('profileImage'), officialsController.uploadProfileImage);
 

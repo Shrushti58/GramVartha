@@ -9,13 +9,11 @@ const createVillage = async (req, res) => {
     if (!name || latitude === undefined || longitude === undefined) {
       return res.status(400).json({ message: 'Name and coordinates are required' });
     }
-    // prevent duplicates as well
     const existing = await Village.findOne({ name, district, state, pincode });
     if (existing) {
       return res.status(400).json({ message: 'Village already exists' });
     }
 
-    // Superadmin direct create - created as approved by superadmin
     const village = await Village.create({ ...req.body, status: 'approved' });
     res.json(village);
   } catch (err) {
@@ -27,33 +25,27 @@ const createVillage = async (req, res) => {
   }
 };
 
-// Public: register a village request along with requester admin details
 const registerVillage = async (req, res) => {
   try {
     const { name, district, state, pincode, latitude, longitude, requesterEmail, requesterPassword } = req.body;
 
-    // basic required fields
     if (!name || !requesterEmail || !requesterPassword || latitude === undefined || longitude === undefined) {
       return res.status(400).json({ message: 'Missing required fields: name, requesterEmail, requesterPassword, latitude and longitude are required' });
     }
 
-    // verify numeric coordinates
     if (isNaN(parseFloat(latitude)) || isNaN(parseFloat(longitude))) {
       return res.status(400).json({ message: 'Invalid coordinates provided' });
     }
 
-    // prevent duplicate village entries (same name/district/state/pincode)
     const existingVillage = await Village.findOne({ name, district, state, pincode });
     if (existingVillage) {
       return res.status(400).json({ message: 'A village with this name/address is already registered' });
     }
 
-    // Check if document was uploaded
     if (!req.file) {
       return res.status(400).json({ message: 'Document proof is required for village registration' });
     }
 
-    // check if email already exists in Admin
     const Admin = require('../models/Admin');
     const bcrypt = require('bcryptjs');
 
@@ -62,12 +54,10 @@ const registerVillage = async (req, res) => {
       return res.status(400).json({ message: 'Requester email already registered' });
     }
 
-    // create pending admin (will be approved when village is approved)
     const hashed = await bcrypt.hash(requesterPassword, 10);
     const newAdmin = new Admin({ email: requesterEmail, password: hashed, role: 'admin', status: 'pending' });
     await newAdmin.save();
 
-    // create village in pending state and link requestedBy with document URL
     const village = await Village.create({ 
       name, 
       district, 
@@ -75,12 +65,11 @@ const registerVillage = async (req, res) => {
       pincode, 
       latitude: parseFloat(latitude), 
       longitude: parseFloat(longitude), 
-      documentUrl: req.file.path, // Cloudinary URL from uploaded document
+      documentUrl: req.file.path, 
       status: 'pending', 
       requestedBy: newAdmin._id 
     });
 
-    // link admin to village (pending)
     newAdmin.village = village._id;
     await newAdmin.save();
 
@@ -88,7 +77,6 @@ const registerVillage = async (req, res) => {
   } catch (err) {
     console.error('Error registering village:', err);
     if (err.code === 11000) {
-      // duplicate key error
       return res.status(400).json({ message: 'Village registration already exists' });
     }
     res.status(500).json({ error: err.message });
@@ -126,7 +114,6 @@ const deleteVillage = async (req, res) => {
   }
 };
 
-// Superadmin: view pending villages
 const getPendingVillages = async (req, res) => {
   try {
     const pending = await Village.find({ status: 'pending' }).populate('requestedBy', 'email');
@@ -136,7 +123,6 @@ const getPendingVillages = async (req, res) => {
   }
 };
 
-// Superadmin: approve village and assign admin who requested it
 const approveVillage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -213,7 +199,6 @@ const updateVillageCoordinates = async (req, res) => {
   }
 };
 
-// Get QR code for a village (Citizens can scan this)
 const getVillageQRCode = async (req, res) => {
   try {
     const { id } = req.params;
@@ -283,7 +268,6 @@ const getVillageQRCode = async (req, res) => {
   }
 };
 
-// Get village info by QR code unique ID (used when citizen scans QR)
 const getVillageByQRCode = async (req, res) => {
   try {
     const { qrCodeId } = req.params;
@@ -319,7 +303,6 @@ const getVillageByQRCode = async (req, res) => {
   }
 };
 
-// Generate and download QR code for a village
 const generateQRCode = async (req, res) => {
   try {
     const { id } = req.params;
@@ -406,7 +389,6 @@ const generateQRCode = async (req, res) => {
   }
 };
 
-// Download QR code image for a village
 const downloadQRCode = async (req, res) => {
   try {
     const { id } = req.params;
