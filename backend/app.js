@@ -52,6 +52,7 @@ app.use("/notice", require("./routes/noticeRoutes"));
 app.use("/villages", require("./routes/villageRoutes"));
 app.use("/citizen", require("./routes/citizenAuth"));
 app.use("/complaints", require("./routes/complaintsRoutes"));
+app.use("/workguide", require("./routes/workGuideRoutes"));
 
 
 /* ========================

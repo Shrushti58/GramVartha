@@ -105,7 +105,6 @@ function normalizeLabels(raw = []) {
     .filter(Boolean);
 }
 
-
 function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
   let fraudScore = 0;
 
@@ -128,6 +127,8 @@ function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
 
   return { isValidIssue, fraudScore, remarks };
 }
+
+// ─── Controllers ──────────────────────────────────────────────────────────────
 
 const getComplaints = async (req, res) => {
   try {
@@ -204,6 +205,7 @@ const resolveComplaint = async (req, res) => {
       return res.status(400).json({ message: "Complaint is already resolved" });
     }
 
+    // ── Run AI analysis on the resolution photo ────────────────────────────────
     let labels = [];
     try {
       const raw = await analyzeImage(resolvedImageUrl);
@@ -212,9 +214,30 @@ const resolveComplaint = async (req, res) => {
       console.warn("[Vision API error - resolve]", visionErr.message);
     }
 
-    const isClean = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
+    // 1. Check if the resolution photo is a valid outdoor/civic scene
+    //    (not a selfie, indoor shot, random screenshot, etc.)
+    const hasInvalidContent = labels.some((l) => INVALID_KEYWORDS.includes(l));
+    if (hasInvalidContent) {
+      const matchedInvalid = labels.filter((l) => INVALID_KEYWORDS.includes(l));
+      return res.status(400).json({
+        message: "Resolution photo appears to be invalid or unrelated to the complaint. Please upload a photo of the actual resolved site.",
+        reason: "invalid_image",
+        detectedLabels: matchedInvalid,
+      });
+    }
+
+    // 2. Check if the issue is still present in the photo (dirty keywords)
+    const isClean         = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
+    const matchedDirty    = labels.filter((l) => DIRTY_KEYWORDS.includes(l));
+
+    // 3. Compute resolution score
+    //    - Invalid image:  blocked above (never reaches here)
+    //    - Clean scene:    score 80  — looks resolved
+    //    - Dirty scene:    score 30  — issue still visible
     const score   = isClean ? 80 : 30;
-    const remarks = isClean ? "Looks cleaned" : "Still not clean";
+    const remarks = isClean
+      ? "Looks cleaned"
+      : `Issue still visible in photo (detected: ${matchedDirty.join(", ")})`;
 
     const updated = await Complaint.findByIdAndUpdate(
       req.params.id,
@@ -268,7 +291,7 @@ const createComplaint = async (req, res) => {
       return res.status(400).json({ message: "Issue requires a photo" });
     }
 
-    const imageUrl = req.file.path; 
+    const imageUrl = req.file.path;
     const lat = Number(req.body.lat);
     const lng = Number(req.body.lng);
 
