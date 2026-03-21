@@ -21,7 +21,7 @@
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
+    "dotenv": "^17.3.1",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mime-types": "^3.0.1",
@@ -33,6 +33,7 @@
     "pdf2pic": "^3.2.0",
     "qrcode": "^1.5.4",
     "tesseract.js": "^6.0.1",
+    "twilio": "^5.13.0",
     "uuid": "^9.0.1"
   }
 }

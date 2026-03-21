@@ -1,5 +1,7 @@
 const Complaint = require("../models/Complaint");
 const { analyzeImage } = require("../utlis/vision");
+const Citizen = require("../models/Citizens");
+const { sendSMS } = require('../service/smsService');
 
 // ─── Valid status values ───────────────────────────────────────────────────────
 const VALID_STATUSES = ["pending", "in-progress", "resolved", "rejected"];
@@ -151,6 +153,9 @@ const getComplaints = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────
+// UPDATE STATUS
+// ─────────────────────────────────────────
 const updateStatus = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -178,6 +183,26 @@ const updateStatus = async (req, res) => {
       return res.status(404).json({ message: "Complaint not found" });
     }
 
+    // ── SMS: notify citizen based on status ──
+    try {
+      const citizen = await Citizen.findById(complaint.citizen);
+      if (citizen?.phone) {
+        let message = '';
+
+        if (status === 'resolved') {
+          message = `✅ Your complaint "${complaint.title}" (#${complaint._id}) has been RESOLVED by Gram Panchayat. Thank you for reporting!`;
+        } else if (status === 'rejected') {
+          message = `❌ Your complaint "${complaint.title}" (#${complaint._id}) has been REJECTED by Gram Panchayat. Visit the portal for more details.`;
+        } else if (status === 'in_progress') {
+          message = `🔧 Your complaint "${complaint.title}" (#${complaint._id}) is now IN PROGRESS. We are working on it!`;
+        }
+
+        if (message) await sendSMS(citizen.phone, message);
+      }
+    } catch (smsErr) {
+      console.error("SMS error [updateStatus]:", smsErr.message);
+    }
+
     return res.status(200).json(complaint);
   } catch (err) {
     console.error("[updateStatus]", err);
@@ -185,6 +210,9 @@ const updateStatus = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────
+// RESOLVE COMPLAINT
+// ─────────────────────────────────────────
 const resolveComplaint = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -205,7 +233,7 @@ const resolveComplaint = async (req, res) => {
       return res.status(400).json({ message: "Complaint is already resolved" });
     }
 
-    // ── Run AI analysis on the resolution photo ────────────────────────────────
+    // ── AI analysis (unchanged) ──
     let labels = [];
     try {
       const raw = await analyzeImage(resolvedImageUrl);
@@ -214,28 +242,20 @@ const resolveComplaint = async (req, res) => {
       console.warn("[Vision API error - resolve]", visionErr.message);
     }
 
-    // 1. Check if the resolution photo is a valid outdoor/civic scene
-    //    (not a selfie, indoor shot, random screenshot, etc.)
     const hasInvalidContent = labels.some((l) => INVALID_KEYWORDS.includes(l));
     if (hasInvalidContent) {
       const matchedInvalid = labels.filter((l) => INVALID_KEYWORDS.includes(l));
       return res.status(400).json({
-        message: "Resolution photo appears to be invalid or unrelated to the complaint. Please upload a photo of the actual resolved site.",
+        message: "Resolution photo appears to be invalid or unrelated to the complaint.",
         reason: "invalid_image",
         detectedLabels: matchedInvalid,
       });
     }
 
-    // 2. Check if the issue is still present in the photo (dirty keywords)
-    const isClean         = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
-    const matchedDirty    = labels.filter((l) => DIRTY_KEYWORDS.includes(l));
-
-    // 3. Compute resolution score
-    //    - Invalid image:  blocked above (never reaches here)
-    //    - Clean scene:    score 80  — looks resolved
-    //    - Dirty scene:    score 30  — issue still visible
-    const score   = isClean ? 80 : 30;
-    const remarks = isClean
+    const isClean      = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
+    const matchedDirty = labels.filter((l) => DIRTY_KEYWORDS.includes(l));
+    const score        = isClean ? 80 : 30;
+    const remarks      = isClean
       ? "Looks cleaned"
       : `Issue still visible in photo (detected: ${matchedDirty.join(", ")})`;
 
@@ -249,6 +269,17 @@ const resolveComplaint = async (req, res) => {
       { new: true, runValidators: true }
     );
 
+    // ── SMS: notify citizen of resolution with AI score ──
+    try {
+      const citizen = await Citizen.findById(complaint.citizen);
+      if (citizen?.phone) {
+        const message = `✅ Your complaint "${complaint.title}" (#${complaint._id}) has been RESOLVED by Gram Panchayat. Verification score: ${score}/100. ${remarks}`;
+        await sendSMS(citizen.phone, message);
+      }
+    } catch (smsErr) {
+      console.error("SMS error [resolveComplaint]:", smsErr.message);
+    }
+
     return res.status(200).json(updated);
   } catch (err) {
     console.error("[resolveComplaint]", err);
@@ -256,6 +287,9 @@ const resolveComplaint = async (req, res) => {
   }
 };
 
+// ─────────────────────────────────────────
+// CREATE COMPLAINT
+// ─────────────────────────────────────────
 const createComplaint = async (req, res) => {
   try {
     if (!req.user?.id) {
@@ -284,9 +318,22 @@ const createComplaint = async (req, res) => {
         imageUrl: null, location: null, imageSource: null,
         timestamp: null, aiVerification: undefined,
       });
+
+      // ── SMS: confirm suggestion received ──
+      try {
+        const citizen = await Citizen.findById(req.user.id);
+        if (citizen?.phone) {
+          const message = `📝 Your suggestion "${title.trim()}" has been submitted to Gram Panchayat. We will review it shortly.`;
+          await sendSMS(citizen.phone, message);
+        }
+      } catch (smsErr) {
+        console.error("SMS error [createComplaint - suggestion]:", smsErr.message);
+      }
+
       return res.status(201).json({ message: "Complaint submitted successfully", complaint });
     }
 
+    // ── Issue type ──
     if (!req.file) {
       return res.status(400).json({ message: "Issue requires a photo" });
     }
@@ -333,6 +380,17 @@ const createComplaint = async (req, res) => {
       timestamp: timestamp ? new Date(timestamp) : new Date(),
       aiVerification: { isValidIssue, labels, fraudScore, remarks },
     });
+
+    // ── SMS: confirm issue complaint received ──
+    try {
+      const citizen = await Citizen.findById(req.user.id);
+      if (citizen?.phone) {
+        const message = `📋 Your complaint "${title.trim()}" (#${complaint._id}) has been submitted to Gram Panchayat. We will look into it soon.`;
+        await sendSMS(citizen.phone, message);
+      }
+    } catch (smsErr) {
+      console.error("SMS error [createComplaint - issue]:", smsErr.message);
+    }
 
     return res.status(201).json({ message: "Complaint submitted successfully", complaint });
   } catch (err) {

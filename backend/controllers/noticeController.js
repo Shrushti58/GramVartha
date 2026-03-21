@@ -1,50 +1,49 @@
 const Notice = require("../models/Notice");
 const NoticeView = require("../models/NoticeView");
-
+const Citizen = require("../models/Citizens");
+const { sendSMS } = require('../service/smsService');
 
 const uploadNotice = async (req, res) => {
   try {
-    const { 
-      title, 
-      description, 
-      noticeId, 
+    const {
+      title,
+      description,
+      noticeId,
       category,
       priority = "medium",
       isPinned = false
     } = req.body;
 
     if (!title || !description || !category) {
-      return res.status(400).json({ 
-        message: "Missing required fields: title, description, and category are required" 
+      return res.status(400).json({
+        message: "Missing required fields: title, description, and category are required"
       });
     }
 
     let fileUrl = null;
     let fileName = null;
-
     if (req.file) {
-      fileUrl = req.file.path; 
+      fileUrl = req.file.path;
       fileName = req.file.originalname;
     }
 
     let notice;
 
     if (noticeId) {
+      // ── UPDATE existing notice ──
       notice = await Notice.findById(noticeId);
       if (!notice) {
         return res.status(404).json({ message: "Notice not found" });
       }
       if (notice.createdBy.toString() !== req.user.id) {
-        return res.status(403).json({ 
-          message: "Not authorized to update this notice" 
-        });
+        return res.status(403).json({ message: "Not authorized to update this notice" });
       }
+
       notice.title = title;
       notice.description = description;
       notice.category = category;
       notice.priority = priority;
       notice.isPinned = isPinned === 'true' || isPinned === true;
-      
       if (fileUrl) {
         notice.fileUrl = fileUrl;
         notice.fileName = fileName;
@@ -53,19 +52,17 @@ const uploadNotice = async (req, res) => {
       await notice.save();
 
     } else {
-    const noticeData = {
-  title,
-  description,
-  category,
-  priority,
-  isPinned: isPinned === 'true' || isPinned === true,
-  createdBy: req.user.id,
-
-  village: req.user.village, // ← ADD THIS
-
-  status: "published"
-};
-
+      // ── CREATE new notice ──
+      const noticeData = {
+        title,
+        description,
+        category,
+        priority,
+        isPinned: isPinned === 'true' || isPinned === true,
+        createdBy: req.user.id,
+        village: req.user.village,
+        status: "published"
+      };
       if (fileUrl) {
         noticeData.fileUrl = fileUrl;
         noticeData.fileName = fileName;
@@ -73,7 +70,26 @@ const uploadNotice = async (req, res) => {
 
       notice = new Notice(noticeData);
       await notice.save();
+
+      // ── SMS: notify all citizens of this village ──
+      try {
+        const citizens = await Citizen.find({
+          village: req.user.village,
+          phone: { $exists: true, $ne: null }
+        });
+
+        const message = `📢 Gram Panchayat Notice: "${title}" has been published. Login to the portal to read it.`;
+
+        for (const citizen of citizens) {
+          await sendSMS(citizen.phone, message);
+        }
+        console.log(`📨 SMS sent to ${citizens.length} citizens`);
+      } catch (smsErr) {
+        // SMS failure should NOT fail the main request
+        console.error("SMS notification error:", smsErr.message);
+      }
     }
+
     await notice.populate('createdBy', 'name email');
 
     res.status(201).json({
@@ -83,10 +99,69 @@ const uploadNotice = async (req, res) => {
 
   } catch (err) {
     console.error("Notice upload error:", err);
-    res.status(500).json({ 
-      message: "Error saving notice", 
-      error: err.message 
+    res.status(500).json({
+      message: "Error saving notice",
+      error: err.message
     });
+  }
+};
+
+// ─────────────────────────────────────────
+// UPDATE NOTICE (separate route)
+// ─────────────────────────────────────────
+const updateNotice = async (req, res) => {
+  try {
+    const {
+      title,
+      description,
+      category,
+      priority,
+      isPinned
+    } = req.body;
+
+    const notice = await Notice.findById(req.params.id);
+    if (!notice) {
+      return res.status(404).json({ message: "Notice not found" });
+    }
+
+    if (
+      notice.createdBy.toString() !== req.user.id ||
+      notice.village.toString() !== req.user.village.toString()
+    ) {
+      return res.status(403).json({ message: "Not authorized to update this notice" });
+    }
+
+    let fileUrl = null;
+    let fileName = null;
+    if (req.file) {
+      fileUrl = req.file.path;
+      fileName = req.file.originalname;
+    }
+
+    notice.title       = title       || notice.title;
+    notice.description = description || notice.description;
+    notice.category    = category    || notice.category;
+    notice.priority    = priority    || notice.priority;
+    notice.isPinned    = isPinned !== undefined
+      ? (isPinned === 'true' || isPinned === true)
+      : notice.isPinned;
+
+    if (fileUrl) {
+      notice.fileUrl = fileUrl;
+      notice.fileName = fileName;
+    }
+
+    await notice.save();
+    await notice.populate('createdBy', 'name email');
+
+    res.json({
+      message: "Notice updated successfully",
+      notice
+    });
+
+  } catch (err) {
+    console.error("Error updating notice:", err);
+    res.status(500).json({ message: "Error updating notice", error: err.message });
   }
 };
 
@@ -178,57 +253,7 @@ const fetchOfficialNotices = async (req, res) => {
   }
 };
 
-const updateNotice = async (req, res) => {
-  try {
-    const { 
-      title, 
-      description, 
-      category,
-      priority,
-      isPinned
-    } = req.body;
-    
-    const notice = await Notice.findById(req.params.id);
-    
-    if (!notice) {
-      return res.status(404).json({ message: "Notice not found" });
-    }
 
-    if (notice.createdBy.toString() !== req.user.id || notice.village.toString() !== req.user.village.toString()) {
-      return res.status(403).json({ message: "Not authorized to update this notice" });
-    }
-
-    let fileUrl = null;
-    let fileName = null;
-    if (req.file) {
-      fileUrl = req.file.path;
-      fileName = req.file.originalname;
-    }
-
-    notice.title = title || notice.title;
-    notice.description = description || notice.description;
-    notice.category = category || notice.category;
-    notice.priority = priority || notice.priority;
-    notice.isPinned = isPinned !== undefined ? (isPinned === 'true' || isPinned === true) : notice.isPinned;
-    
-    if (fileUrl) {
-      notice.fileUrl = fileUrl;
-      notice.fileName = fileName;
-    }
-
-    await notice.save();
-    
-    await notice.populate('createdBy', 'name email');
-    
-    res.json({ 
-      message: "Notice updated successfully", 
-      notice
-    });
-  } catch (err) {
-    console.error("Error updating notice:", err);
-    res.status(500).json({ message: "Error updating notice", error: err.message });
-  }
-};
 
 const deleteNotice = async (req, res) => {
   try {
