@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class", 
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -7,55 +8,78 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Elegant warm earth palette
         primary: {
-          50: '#FAF8F5',
-          100: '#F5F1EB',
-          200: '#E5DFD6',
-          300: '#C4B5A0',
-          400: '#B89968',
-          500: '#9B7E5C',
-          600: '#7D6447',
-          700: '#6B6157',
-          800: '#2D2520',
-          900: '#1A1410',
+          50: '#f0f7eb',
+          100: '#d6edc4',
+          200: '#b3d99a',
+          300: '#8ac46e',
+          400: '#6aaa4a',
+          500: '#4e8f33',
+          600: '#3a6b26',
+          700: '#2d5a1e',
+          800: '#243d18',
+          900: '#1a2e10',
         },
         accent: {
-          cream: '#F5F1EB',
-          sand: '#C4B5A0',
-          gold: '#B89968',
-          brown: '#9B7E5C',
-          'dark-brown': '#7D6447',
+          mist: '#eef6e6',
+          sage: '#d4e8c0',
+          lime: '#c8df5e',
+          green: '#6aaa4a',
+          forest: '#2d5a1e',
         },
-        // Semantic colors
-        background: '#F5F1EB',
-        surface: '#FFFFFF',
-        border: '#E5DFD6',
+
+        // ─── Light theme tokens ───
+        background: '#f8f6f0',
+        surface: '#ffffff',
+        border: '#d4e8c0',
         text: {
-          primary: '#2D2520',
-          secondary: '#6B6157',
-          muted: '#9B8B7E',
-          light: '#B8ADA1',
-        }
+          primary: '#1a2e1a',
+          secondary: '#3a5a3a',
+          muted: '#7a907a',
+          light: '#aac4aa',
+        },
+
+        // ─── Dark theme tokens ───
+        dark: {
+          background: '#0f1a0f',
+          surface: '#1a2e1a',
+          surface2: '#243d18',
+          border: '#2d5a1e',
+          text: {
+            primary: '#e8f5e0',
+            secondary: '#b3d99a',
+            muted: '#6aaa4a',
+            light: '#4e8f33',
+          },
+        },
       },
       backgroundImage: {
-        'earth-gradient': 'linear-gradient(135deg, #9B7E5C 0%, #7D6447 100%)',
-        'warm-gradient': 'linear-gradient(135deg, #B89968 0%, #9B7E5C 100%)',
-        'subtle-gradient': 'linear-gradient(135deg, #F5F1EB 0%, #E5DFD6 100%)',
-        'dark-gradient': 'linear-gradient(135deg, #7D6447 0%, #2D2520 100%)',
-        'hero-overlay': 'linear-gradient(135deg, rgba(155, 126, 92, 0.95), rgba(125, 100, 71, 0.85))',
+        'forest-gradient': 'linear-gradient(135deg, #2d5a1e 0%, #243d18 100%)',
+        'green-gradient': 'linear-gradient(135deg, #6aaa4a 0%, #3a6b26 100%)',
+        'mist-gradient': 'linear-gradient(135deg, #f8f6f0 0%, #eef6e6 100%)',
+        'dark-gradient': 'linear-gradient(135deg, #3a6b26 0%, #1a2e10 100%)',
+        'hero-overlay': 'linear-gradient(135deg, rgba(45,90,30,0.95), rgba(36,61,24,0.88))',
+        // dark mode gradients
+        'dark-surface-gradient': 'linear-gradient(135deg, #1a2e1a 0%, #0f1a0f 100%)',
+        'dark-card-gradient': 'linear-gradient(135deg, #243d18 0%, #1a2e1a 100%)',
+        'dark-hero-gradient': 'linear-gradient(135deg, #0f1a0f 0%, #1a2e1a 60%, #243d18 100%)',
       },
       boxShadow: {
-        'soft': '0 4px 15px rgba(0, 0, 0, 0.04)',
-        'medium': '0 4px 20px rgba(0, 0, 0, 0.06)',
-        'large': '0 8px 25px rgba(0, 0, 0, 0.08)',
-        'hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
-        'inner-soft': 'inset 0 2px 4px rgba(0, 0, 0, 0.05)',
+        'soft': '0 4px 15px rgba(45,90,30,0.06)',
+        'medium': '0 4px 20px rgba(45,90,30,0.09)',
+        'large': '0 8px 25px rgba(45,90,30,0.12)',
+        'hover': '0 8px 30px rgba(45,90,30,0.18)',
+        'inner-soft': 'inset 0 2px 4px rgba(45,90,30,0.06)',
+        // dark mode shadows
+        'dark-soft': '0 4px 15px rgba(0,0,0,0.3)',
+        'dark-medium': '0 4px 20px rgba(0,0,0,0.4)',
+        'dark-large': '0 8px 25px rgba(0,0,0,0.5)',
+        'dark-hover': '0 8px 30px rgba(106,170,74,0.2)',
       },
       fontFamily: {
-        sans: ['Outfit', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['Outfit', 'sans-serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['Poppins', 'system-ui', 'sans-serif'],
+        display: ['Poppins', 'sans-serif'],
+        body: ['Poppins', 'system-ui', 'sans-serif'],
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],

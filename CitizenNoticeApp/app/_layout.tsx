@@ -31,8 +31,8 @@ export default function RootLayout() {
         <Stack.Screen name="notice/[id]" />
 
         {/* AUTH SCREENS */}
-        <Stack.Screen name="(auth)/login" />
-        <Stack.Screen name="(auth)/register" />
+        <Stack.Screen name="auth/login" />
+        <Stack.Screen name="auth/register" />
 
         {/* PROTECTED SCREEN */}
         <Stack.Screen name="complaint" />

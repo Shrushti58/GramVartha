@@ -31,12 +31,7 @@ export default function Footer() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
-            <Link
-              to="/qr-scanner"
-              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-7 py-3.5 rounded-xl transition-all duration-200"
-            >
-              Scan QR
-            </Link>
+           
           </div>
         </div>
       </div>
@@ -83,12 +78,7 @@ export default function Footer() {
                 </button>
               </li>
               <li>
-                <Link
-                  to="/qr-scanner"
-                  className="text-sm text-white/50 hover:text-green-400 transition-colors duration-200"
-                >
-                  Scan QR
-                </Link>
+               
               </li>
               <li>
                 <Link
