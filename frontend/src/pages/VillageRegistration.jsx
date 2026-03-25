@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as api from '../services/api';
+import { useTheme } from '../context/ThemeContext';
 
 const STEPS = [
   { id: 1, label: 'Village Info' },
@@ -10,6 +11,7 @@ const STEPS = [
 ];
 
 export default function VillageRegistration() {
+  const { dark } = useTheme();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '', district: '', state: '', pincode: '',
@@ -120,8 +122,21 @@ export default function VillageRegistration() {
     }
   };
 
-  const inp = "w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60";
-  const lbl = "block text-sm font-medium text-gray-700 mb-1.5";
+  const inputClass =
+    "w-full px-4 py-3 rounded-xl border " +
+    "bg-white dark:bg-dark-surface2 " +
+    "border-border dark:border-dark-border " +
+    "text-text-primary dark:text-dark-text-primary " +
+    "text-sm placeholder:text-text-light dark:placeholder:text-dark-text-muted " +
+    "transition-all duration-200 " +
+    "focus:outline-none focus:border-primary-400 dark:focus:border-primary-500 " +
+    "focus:ring-4 focus:ring-primary-300/20 dark:focus:ring-primary-500/15 " +
+    "hover:border-primary-200 dark:hover:border-primary-800 " +
+    "disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const labelClass =
+    "block text-xs font-semibold uppercase tracking-wider " +
+    "text-text-secondary dark:text-dark-text-muted mb-1.5";
 
   const EyeIcon = ({ open }) => open ? (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,300 +150,493 @@ export default function VillageRegistration() {
   );
 
   return (
-    <div className="h-screen flex overflow-hidden">
-
-      {/* ── Left Panel ── */}
-      <div className="hidden lg:flex lg:w-[52%] relative flex-col justify-between overflow-hidden">
-        <img src="/illu1.png" alt="Village" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0d2218]/95 via-[#1a3a2a]/80 to-[#0d2218]/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d2218]/90 via-transparent to-transparent" />
-        <div className="absolute inset-0 opacity-[0.04]" style={{
-          backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
-          backgroundSize: "40px 40px",
-        }} />
-        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-green-500/15 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Logo */}
-        <div className="relative z-10 p-10">
-          <Link to="/" className="inline-flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center">
-              <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-lg font-bold text-white tracking-tight">GramVartha</span>
-          </Link>
-        </div>
-
-        {/* Copy */}
-        <div className="relative z-10 px-10 pb-12 space-y-5">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 backdrop-blur-sm rounded-full px-4 py-2">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-xs text-white/70 font-medium tracking-wide">Village Portal</span>
-          </div>
-          <h2 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-tight">
-            Register your<br />
-            <span className="text-green-400">village today</span>
-          </h2>
-          <p className="text-white/50 leading-relaxed max-w-sm text-sm">
-            Put your village on the map. Share notices, connect with citizens, and manage your gram panchayat digitally.
-          </p>
-
-          {/* Step indicators */}
-          <div className="pt-2 space-y-3">
-            {STEPS.map((s) => (
-              <div key={s.id} className={`flex items-center gap-3 transition-all duration-300 ${step === s.id ? 'opacity-100' : step > s.id ? 'opacity-70' : 'opacity-30'}`}>
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all duration-300 flex-shrink-0 ${
-                  step > s.id ? 'bg-green-400 border-green-400 text-white'
-                  : step === s.id ? 'bg-transparent border-green-400 text-green-400'
-                  : 'bg-transparent border-white/30 text-white/40'
-                }`}>
-                  {step > s.id ? (
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : s.id}
-                </div>
-                <span className={`text-sm font-medium ${step === s.id ? 'text-white' : 'text-white/50'}`}>{s.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
+      
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
+        
+        {/* Floating Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
+        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
+        
+        {/* Mesh Gradient Pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="mesh-village" patternUnits="userSpaceOnUse" width="40" height="40">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary-300 dark:text-primary-700" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#mesh-village)" />
+        </svg>
+        
+        {/* Radial Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
       </div>
 
-      {/* ── Right Panel ── */}
-      <div className="w-full lg:w-[48%] flex items-center justify-center bg-white px-10 py-8">
-        <div className="w-full max-w-[400px]">
-
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3 mb-6">
-            <div className="w-9 h-9 rounded-lg overflow-hidden bg-green-50 border border-green-100">
-              <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
+      {/* Decorative Elements */}
+      <div className="absolute top-10 left-10 w-24 h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow" />
+      <div className="absolute bottom-10 right-10 w-32 h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000" />
+      
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-2xl mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-3xl shadow-2xl dark:shadow-dark-2xl p-7 animate-fade-in-up">
+        
+        {/* Card Header Glow Effect */}
+        <div className="absolute -top-3 -right-3 w-20 h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 relative">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
+              <img
+                src="/gramvarthalogo.png"
+                alt="GramVartha"
+                className="w-full h-full object-contain"
+              />
             </div>
-            <span className="text-lg font-bold text-gray-900">GramVartha</span>
-          </div>
-
-          {/* Step pill + heading */}
-          <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              {STEPS.map((s, i) => (
-                <React.Fragment key={s.id}>
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
-                    step > s.id ? 'bg-green-500 text-white' : step === s.id ? 'bg-[#1a3a2a] text-white' : 'bg-gray-100 text-gray-400'
-                  }`}>
-                    {step > s.id ? '✓' : s.id}
-                  </div>
-                  {i < STEPS.length - 1 && <div className={`flex-1 h-px transition-all ${step > s.id ? 'bg-green-400' : 'bg-gray-200'}`} />}
-                </React.Fragment>
-              ))}
-            </div>
-            <p className="text-xs font-semibold text-green-600 uppercase tracking-widest mb-0.5">Step {step} of {STEPS.length}</p>
-            <h1 className="text-xl font-bold text-gray-900">
-              {step === 1 && 'Village Information'}
-              {step === 2 && 'Admin Account'}
-              {step === 3 && 'Document Proof'}
-            </h1>
-            <p className="text-xs text-gray-400 mt-1">
-              {step === 1 && 'Tell us about your village and its location'}
-              {step === 2 && 'Set up your admin credentials'}
-              {step === 3 && 'Upload proof of your village affiliation'}
-            </p>
-          </div>
-
-          {/* ── Step 1 ── */}
-          {step === 1 && (
-            <div className="space-y-4">
-              <div>
-                <label className={lbl}>Village Name <span className="text-red-400">*</span></label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Shirpur" className={inp} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className={lbl}>District</label>
-                  <input type="text" name="district" value={formData.district} onChange={handleChange} placeholder="e.g. Nashik" className={inp} />
-                </div>
-                <div>
-                  <label className={lbl}>State</label>
-                  <input type="text" name="state" value={formData.state} onChange={handleChange} placeholder="e.g. Maharashtra" className={inp} />
-                </div>
-              </div>
-              <div>
-                <label className={lbl}>Pincode</label>
-                <input type="text" name="pincode" value={formData.pincode} onChange={handleChange} placeholder="e.g. 422001" className={inp} />
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-medium text-gray-600">Coordinates <span className="text-red-400">*</span></label>
-                  <button type="button" onClick={handleDetectLocation} disabled={locating}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 border border-green-200 px-2.5 py-1 rounded-lg transition-all disabled:opacity-60">
-                    {locating ? (
-                      <>
-                        <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        Detecting...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        Auto-detect
-                      </>
-                    )}
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <input type="number" name="latitude" value={formData.latitude} onChange={handleChange} placeholder="Latitude (18.5204)" step="0.0001" className={inp} />
-                  <input type="number" name="longitude" value={formData.longitude} onChange={handleChange} placeholder="Longitude (73.8567)" step="0.0001" className={inp} />
-                </div>
-              </div>
-              <button onClick={handleNext}
-                className="w-full py-3 px-4 bg-[#1a3a2a] hover:bg-green-800 text-white text-sm font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 mt-1 shadow-sm hover:shadow-lg hover:shadow-green-900/20">
-                Continue
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          )}
-
-          {/* ── Step 2 ── */}
-          {step === 2 && (
-            <div className="space-y-4">
-              <div>
-                <label className={lbl}>Email Address <span className="text-red-400">*</span></label>
-                <input type="email" name="requesterEmail" value={formData.requesterEmail} onChange={handleChange} placeholder="admin@gramvartha.in" className={inp} />
-              </div>
-              <div>
-                <label className={lbl}>Password <span className="text-red-400">*</span></label>
-                <div className="relative">
-                  <input type={showPassword ? "text" : "password"} name="requesterPassword" value={formData.requesterPassword} onChange={handleChange} placeholder="Create a strong password" className={`${inp} pr-10`} />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" tabIndex={-1}>
-                    <EyeIcon open={showPassword} />
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className={lbl}>Confirm Password <span className="text-red-400">*</span></label>
-                <div className="relative">
-                  <input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Re-enter your password" className={`${inp} pr-10`} />
-                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors" tabIndex={-1}>
-                    <EyeIcon open={showConfirmPassword} />
-                  </button>
-                </div>
-              </div>
-              <div className="flex gap-3 mt-1">
-                <button onClick={handleBack} className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 hover:border-gray-300 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back
-                </button>
-                <button onClick={handleNext} className="flex-1 py-3 px-4 bg-[#1a3a2a] hover:bg-green-800 text-white text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-lg hover:shadow-green-900/20">
-                  Continue
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* ── Step 3 ── */}
-          {step === 3 && (
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <p className="text-xs text-gray-400 leading-relaxed">
-                Upload an image proving your village affiliation — e.g. Gram Panchayat ID, Aadhaar card, or residence proof.
+            <div>
+              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
+                GramVartha
               </p>
+              <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+                Village Registration
+              </h1>
+            </div>
+          </div>
+          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
+            <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
+            Village Portal
+          </div>
+        </div>
 
-              {documentPreview ? (
-                <div className="relative inline-block">
-                  <img src={documentPreview} alt="Preview" className="max-w-full max-h-36 rounded-xl border border-gray-200 object-contain" />
-                  <button type="button" onClick={removeDocument} disabled={loading}
-                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors">×</button>
+        {/* Divider with Gradient */}
+        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-6" />
+
+        {/* Step Indicators */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            {STEPS.map((s, i) => (
+              <React.Fragment key={s.id}>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
+                  step > s.id 
+                    ? 'bg-primary-500 text-white' 
+                    : step === s.id 
+                    ? 'bg-primary-600 dark:bg-primary-500 text-white' 
+                    : 'bg-border dark:bg-dark-border text-text-muted dark:text-dark-text-muted'
+                }`}>
+                  {step > s.id ? '✓' : s.id}
                 </div>
-              ) : (
-                <div onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-200 hover:border-green-400 bg-gray-50 hover:bg-green-50/50 rounded-xl p-6 text-center cursor-pointer transition-all duration-200">
-                  <div className="w-10 h-10 rounded-xl bg-green-50 border border-green-100 flex items-center justify-center mx-auto mb-2">
-                    <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                  </div>
-                  <p className="text-sm font-semibold text-gray-700">Click to upload</p>
-                  <p className="text-xs text-gray-400 mt-0.5">JPG, PNG only · Max 5MB</p>
-                </div>
-              )}
+                {i < STEPS.length - 1 && (
+                  <div className={`flex-1 h-px transition-all ${step > s.id ? 'bg-primary-400' : 'bg-border dark:bg-dark-border'}`} />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+          <p className="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-0.5">
+            Step {step} of {STEPS.length}
+          </p>
+          <h2 className="text-lg font-semibold text-text-primary dark:text-dark-text-primary">
+            {step === 1 && 'Village Information'}
+            {step === 2 && 'Admin Account'}
+            {step === 3 && 'Document Proof'}
+          </h2>
+          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">
+            {step === 1 && 'Tell us about your village and its location'}
+            {step === 2 && 'Set up your admin credentials'}
+            {step === 3 && 'Upload proof of your village affiliation'}
+          </p>
+        </div>
 
-              {documentFile && (
-                <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm">
-                  <span className="text-gray-700 font-medium truncate max-w-[200px] text-xs">{documentFile.name}</span>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="text-gray-400 text-xs">{(documentFile.size / 1024).toFixed(0)} KB</span>
-                    <button type="button" onClick={() => fileInputRef.current?.click()} className="text-green-600 hover:text-green-700 text-xs font-medium" disabled={loading}>Change</button>
-                  </div>
-                </div>
-              )}
-
-              <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png" onChange={handleDocumentChange} className="hidden" disabled={loading} />
-
-              <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-green-50 border border-green-100 text-xs text-green-700">
-                <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Your registration will be reviewed by the superadmin. Once approved, you'll become the admin of your village.
+        {/* Step Content */}
+        {step === 1 && (
+          <div className="space-y-4">
+            <div>
+              <label className={labelClass}>
+                Village Name <span className="text-primary-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="e.g. Shirpur"
+                className={inputClass}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={labelClass}>District</label>
+                <input
+                  type="text"
+                  name="district"
+                  value={formData.district}
+                  onChange={handleChange}
+                  placeholder="e.g. Nashik"
+                  className={inputClass}
+                />
               </div>
-
-              <div className="flex gap-3">
-                <button type="button" onClick={handleBack} disabled={loading}
-                  className="flex-1 py-3 px-4 border border-gray-200 text-gray-600 hover:border-gray-300 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back
-                </button>
-                <button type="submit" disabled={loading}
-                  className="flex-1 py-3 px-4 bg-[#1a3a2a] hover:bg-green-800 text-white text-sm font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-sm hover:shadow-lg hover:shadow-green-900/20">
-                  {loading ? (
+              <div>
+                <label className={labelClass}>State</label>
+                <input
+                  type="text"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  placeholder="e.g. Maharashtra"
+                  className={inputClass}
+                />
+              </div>
+            </div>
+            
+            <div>
+              <label className={labelClass}>Pincode</label>
+              <input
+                type="text"
+                name="pincode"
+                value={formData.pincode}
+                onChange={handleChange}
+                placeholder="e.g. 422001"
+                className={inputClass}
+              />
+            </div>
+            
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary dark:text-dark-text-muted">
+                  Coordinates <span className="text-primary-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={handleDetectLocation}
+                  disabled={locating}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 border border-primary-200 dark:border-primary-700 px-2.5 py-1 rounded-lg transition-all disabled:opacity-60"
+                >
+                  {locating ? (
                     <>
-                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Submitting...
+                      Detecting...
                     </>
                   ) : (
                     <>
-                      Submit
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
+                      Auto-detect
                     </>
                   )}
                 </button>
               </div>
-            </form>
-          )}
-
-          {/* Footer */}
-          <div className="mt-5 pt-5 border-t border-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs text-gray-300">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Secure, encrypted access
+              <div className="grid grid-cols-2 gap-3">
+                <input
+                  type="number"
+                  name="latitude"
+                  value={formData.latitude}
+                  onChange={handleChange}
+                  placeholder="Latitude (18.5204)"
+                  step="0.0001"
+                  className={inputClass}
+                />
+                <input
+                  type="number"
+                  name="longitude"
+                  value={formData.longitude}
+                  onChange={handleChange}
+                  placeholder="Longitude (73.8567)"
+                  step="0.0001"
+                  className={inputClass}
+                />
+              </div>
             </div>
-            <Link to="/" className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 transition-colors">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            
+            <button
+              onClick={handleNext}
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 mt-2 relative overflow-hidden group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              Continue
+              <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              Back to homepage
-            </Link>
+            </button>
           </div>
+        )}
 
+        {step === 2 && (
+          <div className="space-y-4">
+            <div>
+              <label className={labelClass}>
+                Email Address <span className="text-primary-500">*</span>
+              </label>
+              <input
+                type="email"
+                name="requesterEmail"
+                value={formData.requesterEmail}
+                onChange={handleChange}
+                placeholder="admin@gramvartha.in"
+                className={inputClass}
+              />
+            </div>
+            
+            <div>
+              <label className={labelClass}>
+                Password <span className="text-primary-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="requesterPassword"
+                  value={formData.requesterPassword}
+                  onChange={handleChange}
+                  placeholder="Create a strong password"
+                  className={inputClass + " pr-10"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  tabIndex={-1}
+                >
+                  <EyeIcon open={showPassword} />
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <label className={labelClass}>
+                Confirm Password <span className="text-primary-500">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Re-enter your password"
+                  className={inputClass + " pr-10"}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  tabIndex={-1}
+                >
+                  <EyeIcon open={showConfirmPassword} />
+                </button>
+              </div>
+            </div>
+            
+            <div className="flex gap-3 mt-2">
+              <button
+                onClick={handleBack}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+              <button
+                onClick={handleNext}
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                Continue
+                <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <p className="text-xs text-text-muted dark:text-dark-text-muted leading-relaxed">
+              Upload an image proving your village affiliation — e.g. Gram Panchayat ID, Aadhaar card, or residence proof.
+            </p>
+
+            {documentPreview ? (
+              <div className="relative inline-block">
+                <img
+                  src={documentPreview}
+                  alt="Preview"
+                  className="max-w-full max-h-36 rounded-xl border border-border dark:border-dark-border object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={removeDocument}
+                  disabled={loading}
+                  className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 bg-gray-50 dark:bg-dark-surface2 hover:bg-primary-50/50 dark:hover:bg-primary-900/20 rounded-xl p-6 text-center cursor-pointer transition-all duration-200"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-100 dark:border-primary-800 flex items-center justify-center mx-auto mb-2">
+                  <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">Click to upload</p>
+                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">JPG, PNG only · Max 5MB</p>
+              </div>
+            )}
+
+            {documentFile && (
+              <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-dark-surface2 border border-border dark:border-dark-border text-sm">
+                <span className="text-text-primary dark:text-dark-text-primary font-medium truncate max-w-[200px] text-xs">
+                  {documentFile.name}
+                </span>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <span className="text-text-muted dark:text-dark-text-muted text-xs">
+                    {(documentFile.size / 1024).toFixed(0)} KB
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-xs font-medium"
+                    disabled={loading}
+                  >
+                    Change
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              onChange={handleDocumentChange}
+              className="hidden"
+              disabled={loading}
+            />
+
+            <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 text-xs text-primary-700 dark:text-primary-300">
+              <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Your registration will be reviewed by the superadmin. Once approved, you'll become the admin of your village.
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={handleBack}
+                disabled={loading}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 relative overflow-hidden group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {loading ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    Submit
+                    <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Footer */}
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-border dark:border-dark-border">
+          <div className="flex items-center gap-2 text-xs text-text-light dark:text-dark-text-muted">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Secure, encrypted access
+          </div>
+          <Link
+            to="/"
+            className="flex items-center gap-1 text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to homepage
+          </Link>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes float-slow {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+        @keyframes float-medium {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-15px, 15px) scale(1.05); }
+        }
+        @keyframes float-fast {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(10px, -10px) scale(1.08); }
+        }
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.05); }
+        }
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-float-slow {
+          animation: float-slow 12s ease-in-out infinite;
+        }
+        .animate-float-medium {
+          animation: float-medium 10s ease-in-out infinite;
+        }
+        .animate-float-fast {
+          animation: float-fast 8s ease-in-out infinite;
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 4s ease-in-out infinite;
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.5s ease-out;
+        }
+        .animation-delay-1000 {
+          animation-delay: 1s;
+        }
+        .bg-gradient-radial {
+          background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
+        }
+      `}</style>
     </div>
   );
 }

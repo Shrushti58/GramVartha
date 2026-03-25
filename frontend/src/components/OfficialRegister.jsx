@@ -1,60 +1,76 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 export default function OfficialRegister() {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "", village: "", phone: "" });
+  const { dark } = useTheme();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    village: "",
+    phone: "",
+  });
   const [profileImage, setProfileImage] = useState(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [profilePreview, setProfilePreview] = useState(null);
+  const [showPw, setShowPw] = useState(false);
+  const [showCpw, setShowCpw] = useState(false);
   const [message, setMessage] = useState({ text: "", success: false });
   const [loading, setLoading] = useState(false);
+  const [villages, setVillages] = useState([]);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const [villages, setVillages] = useState([]);
-
   useEffect(() => {
-    const fetchVillages = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/villages`);
-        setVillages(res.data || []);
-      } catch (err) {
-        // ignore
-      }
-    };
-    fetchVillages();
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/villages`)
+      .then((r) => setVillages(r.data || []))
+      .catch(() => {});
   }, []);
+
+  const handleChange = (e) =>
+    setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  const handleImageChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setProfileImage(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setProfilePreview(null);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      setMessage({ text: "Passwords do not match!", success: false });
-      return;
-    }
+    if (formData.password !== formData.confirmPassword)
+      return setMessage({ text: "Passwords do not match!", success: false });
+    if (!profileImage)
+      return setMessage({
+        text: "Profile photo is required for verification.",
+        success: false,
+      });
     setLoading(true);
     setMessage({ text: "", success: false });
-    if (!profileImage) {
-      setMessage({ text: "Profile image is required for verification", success: false });
-      return;
-    }
-
     try {
-      const formDataObj = new FormData();
-      formDataObj.append('name', formData.name);
-      formDataObj.append('email', formData.email);
-      formDataObj.append('password', formData.password);
-      formDataObj.append('village', formData.village);
-      if (formData.phone) formDataObj.append('phone', formData.phone);
-      formDataObj.append('profileImage', profileImage);
-
+      const fd = new FormData();
+      ["name", "email", "password", "village"].forEach((k) =>
+        fd.append(k, formData[k])
+      );
+      if (formData.phone) fd.append("phone", formData.phone);
+      fd.append("profileImage", profileImage);
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/officials/register`,
-        formDataObj,
-        { withCredentials: true, headers: { 'Content-Type': 'multipart/form-data' } }
+        fd,
+        {
+          withCredentials: true,
+          headers: { "Content-Type": "multipart/form-data" },
+        }
       );
       setMessage({ text: res.data.message, success: true });
       if (res.data.official) navigate("/officials/dashboard");
@@ -68,279 +84,510 @@ export default function OfficialRegister() {
     }
   };
 
+  const inputClass =
+    "w-full px-3.5 py-2.5 rounded-xl border " +
+    "bg-white dark:bg-dark-surface2 " +
+    "border-border dark:border-dark-border " +
+    "text-text-primary dark:text-dark-text-primary " +
+    "text-sm placeholder:text-text-light dark:placeholder:text-dark-text-muted " +
+    "transition-all duration-200 " +
+    "focus:outline-none focus:border-primary-400 dark:focus:border-primary-500 " +
+    "focus:ring-4 focus:ring-primary-300/20 dark:focus:ring-primary-500/15 " +
+    "hover:border-primary-200 dark:hover:border-primary-800 " +
+    "disabled:opacity-50 disabled:cursor-not-allowed";
+
+  const labelClass =
+    "block text-xs font-semibold uppercase tracking-wider " +
+    "text-text-secondary dark:text-dark-text-muted mb-1.5";
+
   return (
-    <div className="min-h-screen flex">
-
-      {/* ── Left Panel ── */}
-      <div className="hidden lg:flex lg:w-[52%] relative flex-col justify-between overflow-hidden">
-        <img
-          src="/illu1.png"
-          alt="Village"
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0d2218]/95 via-[#1a3a2a]/80 to-[#0d2218]/60" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0d2218]/90 via-transparent to-transparent" />
-        <div
-          className="absolute inset-0 opacity-[0.04]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-green-500/15 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Logo */}
-        <div className="relative z-10 p-10">
-          <Link to="/" className="inline-flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-white/10 border border-white/20 backdrop-blur-sm flex items-center justify-center">
-              <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
-            </div>
-            <span className="text-lg font-bold text-white tracking-tight">GramVartha</span>
-          </Link>
-        </div>
-
-        {/* Copy */}
-        <div className="relative z-10 px-10 pb-16 space-y-5">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 backdrop-blur-sm rounded-full px-4 py-2">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span className="text-xs text-white/70 font-medium tracking-wide">Officials Portal</span>
-          </div>
-          <h2 className="text-4xl xl:text-5xl font-bold text-white leading-[1.1] tracking-tight">
-            Join as a<br />
-            <span className="text-green-400">verified official</span>
-          </h2>
-          <p className="text-white/50 leading-relaxed max-w-sm text-sm">
-            Register to publish public notices, communicate with your village community, and empower citizens with real-time updates.
-          </p>
-          <div className="flex flex-wrap gap-2 pt-2">
-            {["Publish Notices", "Manage Updates", "Community Access", "QR Tools"].map((f) => (
-              <span key={f} className="text-xs text-white/60 border border-white/10 rounded-full px-3 py-1.5">
-                {f}
-              </span>
-            ))}
-          </div>
-        </div>
+    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
+      
+      {/* Animated Gradient Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
+        
+        {/* Floating Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
+        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
+        
+        {/* Mesh Gradient Pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="mesh" patternUnits="userSpaceOnUse" width="40" height="40">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary-300 dark:text-primary-700" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#mesh)" />
+        </svg>
+        
+        {/* Radial Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
       </div>
 
-      {/* ── Right Panel ── */}
-      <div className="w-full lg:w-[48%] flex items-center justify-center bg-white px-8 py-12">
-        <div className="w-full max-w-[400px] space-y-8">
-
-          {/* Mobile logo */}
-          <div className="lg:hidden flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg overflow-hidden bg-green-50 border border-green-100">
-              <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
+      {/* Decorative Elements */}
+      <div className="absolute top-10 left-10 w-24 h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow" />
+      <div className="absolute bottom-10 right-10 w-32 h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000" />
+      
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-xl mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-3xl shadow-2xl dark:shadow-dark-2xl p-7 animate-fade-in-up">
+        
+        {/* Card Header with Glow Effect */}
+        <div className="absolute -top-3 -right-3 w-20 h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-5 relative">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
+              <img
+                src="/gramvarthalogo.png"
+                alt="GramVartha"
+                className="w-full h-full object-contain"
+              />
             </div>
-            <span className="text-lg font-bold text-gray-900">GramVartha</span>
+            <div>
+              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
+                GramVartha
+              </p>
+              <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+                Official Registration
+              </h1>
+            </div>
           </div>
-
-          {/* Heading */}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Create Official Account</h1>
-            <p className="text-sm text-gray-400 mt-1.5">Enter your details to register as a village official</p>
+          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
+            <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
+            Officials Portal
           </div>
+        </div>
 
-          {/* Status message */}
-          {message.text && (
-            <div className={`flex items-start gap-3 px-4 py-3 rounded-xl text-sm border ${
+        {/* Divider with Gradient */}
+        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-5" />
+
+        {/* Alert */}
+        {message.text && (
+          <div
+            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs border mb-4 animate-slide-down ${
               message.success
-                ? "bg-green-50 border-green-100 text-green-700"
-                : "bg-red-50 border-red-100 text-red-600"
-            }`}>
-              <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {message.success ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                )}
-              </svg>
-              {message.text}
-            </div>
-          )}
+                ? "bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300"
+                : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
+            }`}
+          >
+            <svg
+              className="w-3.5 h-3.5 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {message.success ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              )}
+            </svg>
+            {message.text}
+          </div>
+        )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
-              <input id="name" name="name" required value={formData.name} onChange={handleChange}
-                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60" />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="village" className="block text-sm font-medium text-gray-700">Village</label>
-              <select id="village" name="village" required value={formData.village} onChange={handleChange}
-                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60">
-                <option value="">Select your village</option>
-                {villages.map(v => (
-                  <option key={v._id} value={v._id}>{v.name} {v.district ? `- ${v.district}` : ''}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number <span className="text-red-500">*</span></label>
-              <input id="phone" type="tel" name="phone" required value={formData.phone} onChange={handleChange}
-                placeholder="+91 98765 43210"
-                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60" />
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="profileImage" className="block text-sm font-medium text-gray-700">
-                Profile Photo <span className="text-red-500">*</span> (for verification)
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Row 1: Name + Village */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="name" className={labelClass}>
+                Full Name
               </label>
-              <input id="profileImage" type="file" accept="image/*" required
-                onChange={(e) => setProfileImage(e.target.files?.[0] || null)}
-                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100" />
-              {profileImage && <p className="text-xs text-gray-500">✓ {profileImage.name}</p>}
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Sarpanch / Gram Sevak"
+                disabled={loading}
+                className={inputClass}
+              />
             </div>
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+            <div>
+              <label htmlFor="village" className={labelClass}>
+                Village <span className="text-primary-500 normal-case tracking-normal">*</span>
+              </label>
+              <div className="relative">
+                <select
+                  id="village"
+                  name="village"
+                  required
+                  value={formData.village}
+                  onChange={handleChange}
+                  disabled={loading}
+                  className={inputClass + " appearance-none pr-8 cursor-pointer"}
+                >
+                  <option value="">Select village</option>
+                  {villages.map((v) => (
+                    <option key={v._id} value={v._id}>
+                      {v.name}
+                      {v.district ? ` · ${v.district}` : ""}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-text-muted dark:text-dark-text-muted pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Email + Phone */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="email" className={labelClass}>
+                Email
               </label>
               <input
                 id="email"
-                type="email"
                 name="email"
+                type="email"
                 required
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="official@gramvartha.in"
                 disabled={loading}
-                className="w-full px-4 py-3.5 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60"
+                className={inputClass}
               />
             </div>
+            <div>
+              <label htmlFor="phone" className={labelClass}>
+                Phone <span className="text-primary-500 normal-case tracking-normal">*</span>
+              </label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+91 98765 43210"
+                disabled={loading}
+                className={inputClass}
+              />
+            </div>
+          </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          {/* Profile Photo - Enhanced */}
+          <div>
+            <label className={labelClass}>
+              Profile Photo <span className="text-primary-500 normal-case tracking-normal">*</span>
+              <span className="normal-case tracking-normal font-normal text-text-light dark:text-dark-text-muted ml-1">
+                (for verification)
+              </span>
+            </label>
+            <div className="flex items-start gap-4">
+              <label
+                htmlFor="profileImage"
+                className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl border cursor-pointer bg-white dark:bg-dark-surface2 border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md transition-all duration-200 group"
+              >
+                <div className="w-7 h-7 bg-primary-100 dark:bg-primary-900/60 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/60 transition-colors">
+                  <svg
+                    className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <span className="flex-1 text-sm text-text-muted dark:text-dark-text-muted truncate">
+                  {profileImage ? (
+                    <span className="text-primary-600 dark:text-primary-400 font-medium">
+                      ✓ {profileImage.name}
+                    </span>
+                  ) : (
+                    "Click to upload photo"
+                  )}
+                </span>
+                <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/40 rounded-lg px-2.5 py-1 flex-shrink-0">
+                  Browse
+                </span>
+              </label>
+              {profilePreview && (
+                <div className="flex-shrink-0 relative">
+                  <img
+                    src={profilePreview}
+                    alt="Preview"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-primary-300 dark:border-primary-600 shadow-md"
+                  />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full border-2 border-white dark:border-dark-surface animate-pulse" />
+                </div>
+              )}
+            </div>
+            <input
+              id="profileImage"
+              type="file"
+              accept="image/*"
+              required
+              onChange={handleImageChange}
+              disabled={loading}
+              className="hidden"
+            />
+          </div>
+
+          {/* Row 3: Password + Confirm */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="password" className={labelClass}>
                 Password
               </label>
               <div className="relative">
                 <input
                   id="password"
-                  type={showPassword ? "text" : "password"}
                   name="password"
+                  type={showPw ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Create a strong password"
+                  placeholder="Create password"
                   disabled={loading}
-                  className="w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60"
+                  className={inputClass + " pr-10"}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   tabIndex={-1}
+                  onClick={() => setShowPw((p) => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
-                  {showPassword ? (
-                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  ) : (
-                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
+                  <EyeIcon open={showPw} />
                 </button>
               </div>
             </div>
-
-            <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
+            <div>
+              <label htmlFor="confirmPassword" className={labelClass}>
+                Confirm
               </label>
               <div className="relative">
                 <input
                   id="confirmPassword"
-                  type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
+                  type={showCpw ? "text" : "password"}
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Re-enter your password"
+                  placeholder="Re-enter"
                   disabled={loading}
-                  className="w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-300 outline-none transition-all duration-200 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 hover:border-gray-300 disabled:opacity-60"
+                  className={inputClass + " pr-10"}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                   tabIndex={-1}
+                  onClick={() => setShowCpw((p) => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
-                  {showConfirmPassword ? (
-                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
-                  ) : (
-                    <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
+                  <EyeIcon open={showCpw} />
                 </button>
               </div>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 px-4 bg-[#1a3a2a] hover:bg-green-800 text-white text-sm font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2 shadow-sm hover:shadow-lg hover:shadow-green-900/20"
-            >
-              {loading ? (
-                <>
-                  <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Creating account...
-                </>
-              ) : (
-                <>
-                  Create Account
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-gray-100" />
-            <span className="text-xs text-gray-300 font-medium">or</span>
-            <div className="flex-1 h-px bg-gray-100" />
           </div>
 
-          <div className="text-center space-y-4">
-            <Link
-              to="/officials/login"
-              className="text-sm text-green-600 hover:text-green-700 font-medium transition-colors duration-200"
-            >
-              Already have an account? Login here
-            </Link>
-            <div className="flex items-center justify-center gap-2 text-xs text-gray-300">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Secure, encrypted official access
-            </div>
-          </div>
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-2 relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Creating account…
+              </>
+            ) : (
+              <>
+                Create Official Account
+                <svg
+                  className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </>
+            )}
+          </button>
+        </form>
 
+        {/* Footer */}
+        <div className="flex items-center justify-between mt-5 pt-4 border-t border-border dark:border-dark-border">
           <Link
             to="/"
-            className="flex items-center justify-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 transition-colors duration-200"
+            className="flex items-center gap-1 text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 group"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
-            Back to homepage
+            Back to home
           </Link>
-
+          <div className="flex items-center gap-2 text-xs text-text-light dark:text-dark-text-muted">
+            <svg
+              className="w-3 h-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            Secure & encrypted
+          </div>
+          <Link
+            to="/officials/login"
+            className="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors duration-200"
+          >
+            Login instead →
+          </Link>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes float-slow {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(20px, -20px) scale(1.1); }
+        }
+        @keyframes float-medium {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(-15px, 15px) scale(1.05); }
+        }
+        @keyframes float-fast {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          50% { transform: translate(10px, -10px) scale(1.08); }
+        }
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.05); }
+        }
+        @keyframes slide-down {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-float-slow {
+          animation: float-slow 12s ease-in-out infinite;
+        }
+        .animate-float-medium {
+          animation: float-medium 10s ease-in-out infinite;
+        }
+        .animate-float-fast {
+          animation: float-fast 8s ease-in-out infinite;
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 4s ease-in-out infinite;
+        }
+        .animate-slide-down {
+          animation: slide-down 0.3s ease-out;
+        }
+        .animation-delay-1000 {
+          animation-delay: 1s;
+        }
+        .bg-gradient-radial {
+          background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
+        }
+      `}</style>
     </div>
+  );
+}
+
+function EyeIcon({ open }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      {open ? (
+        <>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+          />
+        </>
+      ) : (
+        <>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+          />
+        </>
+      )}
+    </svg>
   );
 }
