@@ -10,6 +10,7 @@ const TABS = [
   { key: 'all-villages', label: 'All Villages',      countKey: null              },
 ];
 
+// Skeleton Components
 function Spinner() {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-3">
@@ -29,6 +30,89 @@ function Empty() {
       </div>
       <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">All clear</p>
       <p className="text-xs text-text-muted dark:text-dark-text-muted">Nothing pending here</p>
+    </div>
+  );
+}
+
+// Skeleton Card Components
+function VillageCardSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
+      <div className="p-6">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 bg-gray-200 dark:bg-gray-700 rounded-xl flex-shrink-0" />
+            <div className="space-y-2">
+              <div className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div className="h-3 w-36 bg-gray-200 dark:bg-gray-700 rounded" />
+            </div>
+          </div>
+          <div className="h-8 w-28 bg-gray-200 dark:bg-gray-700 rounded-full" />
+        </div>
+        <div className="flex items-center gap-2 mt-5 pt-5 border-t border-border dark:border-dark-border">
+          <div className="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          <div className="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded-xl ml-auto" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AdminCardSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 animate-pulse">
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-11 h-11 bg-gray-200 dark:bg-gray-700 rounded-xl flex-shrink-0" />
+          <div className="space-y-2">
+            <div className="h-5 w-64 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          </div>
+        </div>
+        <div className="h-10 w-24 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
+function VillageRowSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 animate-pulse">
+      <div className="flex items-start justify-between gap-4 mb-5">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          <div className="space-y-2">
+            <div className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+          </div>
+        </div>
+        <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded-full" />
+      </div>
+      <div className="border-t border-border dark:border-dark-border mb-5" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3">
+            <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StatsCardSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 animate-pulse">
+      <div className="flex items-center justify-between mb-4">
+        <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+      </div>
+      <div className="h-12 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+      <div className="h-3 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
     </div>
   );
 }
@@ -289,6 +373,7 @@ export default function SuperadminDashboard() {
   const [villages, setVillages]               = useState([]);
   const [activeTab, setActiveTab]             = useState('villages');
   const [loading, setLoading]                 = useState(false);
+  const [initialLoading, setInitialLoading]   = useState(true);
 
   useEffect(function() {
     checkAdminRole();
@@ -320,6 +405,7 @@ export default function SuperadminDashboard() {
       toast.error('Failed to load data');
     } finally {
       setLoading(false);
+      setInitialLoading(false);
     }
   }
 
@@ -372,6 +458,48 @@ export default function SuperadminDashboard() {
   }
 
   const totalPending = pendingVillages.length + pendingAdmins.length;
+  const isInitialLoading = initialLoading;
+
+  // Render skeleton for stats cards
+  const renderStatsSkeleton = () => (
+    <>
+      <StatsCardSkeleton />
+      <StatsCardSkeleton />
+      <StatsCardSkeleton />
+    </>
+  );
+
+  // Render skeleton for tab content based on active tab
+  const renderContentSkeleton = () => {
+    if (activeTab === 'villages') {
+      return (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <VillageCardSkeleton key={i} />
+          ))}
+        </div>
+      );
+    }
+    if (activeTab === 'admins') {
+      return (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <AdminCardSkeleton key={i} />
+          ))}
+        </div>
+      );
+    }
+    if (activeTab === 'all-villages') {
+      return (
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <VillageRowSkeleton key={i} />
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300">
@@ -465,46 +593,52 @@ export default function SuperadminDashboard() {
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-primary-800 dark:bg-primary-900 rounded-2xl p-6 shadow-large">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-primary-300">Total Villages</p>
-              <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-            </div>
-            <p className="text-5xl font-bold text-white">{villages.length}</p>
-            <p className="text-primary-300 text-xs mt-2">Registered on platform</p>
+        {/* Stats with Skeleton */}
+        {isInitialLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {renderStatsSkeleton()}
           </div>
-          <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 shadow-soft">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">Pending Villages</p>
-              <div className="w-9 h-9 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
-                <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div className="bg-primary-800 dark:bg-primary-900 rounded-2xl p-6 shadow-large">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary-300">Total Villages</p>
+                <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
               </div>
+              <p className="text-5xl font-bold text-white">{villages.length}</p>
+              <p className="text-primary-300 text-xs mt-2">Registered on platform</p>
             </div>
-            <p className="text-5xl font-bold text-amber-500 dark:text-amber-400">{pendingVillages.length}</p>
-            <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">Awaiting approval</p>
-          </div>
-          <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 shadow-soft">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">Pending Admins</p>
-              <div className="w-9 h-9 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center">
-                <svg className="w-4 h-4 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">Pending Villages</p>
+                <div className="w-9 h-9 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
+                  <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
               </div>
+              <p className="text-5xl font-bold text-amber-500 dark:text-amber-400">{pendingVillages.length}</p>
+              <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">Awaiting approval</p>
             </div>
-            <p className="text-5xl font-bold text-sky-500 dark:text-sky-400">{pendingAdmins.length}</p>
-            <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">Awaiting verification</p>
+            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 shadow-soft">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">Pending Admins</p>
+                <div className="w-9 h-9 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center">
+                  <svg className="w-4 h-4 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </div>
+              </div>
+              <p className="text-5xl font-bold text-sky-500 dark:text-sky-400">{pendingAdmins.length}</p>
+              <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">Awaiting verification</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tab Pills */}
         <div className="flex items-center gap-2 mb-6 flex-wrap">
@@ -539,53 +673,57 @@ export default function SuperadminDashboard() {
           })}
         </div>
 
-        {/* Content */}
+        {/* Content with Skeleton */}
         <div>
-          {loading && <Spinner />}
+          {loading ? (
+            renderContentSkeleton()
+          ) : (
+            <>
+              {activeTab === 'villages' && (
+                <div className="space-y-4">
+                  {pendingVillages.length === 0 && <Empty />}
+                  {pendingVillages.map(function(village) {
+                    return (
+                      <VillageCard
+                        key={village._id}
+                        village={village}
+                        onApprove={handleApproveVillage}
+                        onReject={handleRejectVillage}
+                      />
+                    );
+                  })}
+                </div>
+              )}
 
-          {!loading && activeTab === 'villages' && (
-            <div className="space-y-4">
-              {pendingVillages.length === 0 && <Empty />}
-              {pendingVillages.map(function(village) {
-                return (
-                  <VillageCard
-                    key={village._id}
-                    village={village}
-                    onApprove={handleApproveVillage}
-                    onReject={handleRejectVillage}
-                  />
-                );
-              })}
-            </div>
-          )}
+              {activeTab === 'admins' && (
+                <div className="space-y-4">
+                  {pendingAdmins.length === 0 && <Empty />}
+                  {pendingAdmins.map(function(admin) {
+                    return (
+                      <AdminCard
+                        key={admin._id}
+                        admin={admin}
+                        onApprove={handleApproveAdmin}
+                      />
+                    );
+                  })}
+                </div>
+              )}
 
-          {!loading && activeTab === 'admins' && (
-            <div className="space-y-4">
-              {pendingAdmins.length === 0 && <Empty />}
-              {pendingAdmins.map(function(admin) {
-                return (
-                  <AdminCard
-                    key={admin._id}
-                    admin={admin}
-                    onApprove={handleApproveAdmin}
-                  />
-                );
-              })}
-            </div>
-          )}
-
-          {!loading && activeTab === 'all-villages' && (
-            <div className="space-y-3">
-              {villages.length === 0 && <Empty />}
-              {villages.map(function(village) {
-                return (
-                  <VillageRow
-                    key={village._id}
-                    village={village}
-                  />
-                );
-              })}
-            </div>
+              {activeTab === 'all-villages' && (
+                <div className="space-y-3">
+                  {villages.length === 0 && <Empty />}
+                  {villages.map(function(village) {
+                    return (
+                      <VillageRow
+                        key={village._id}
+                        village={village}
+                      />
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>

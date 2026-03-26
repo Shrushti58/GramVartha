@@ -5,6 +5,133 @@ import { toast } from "react-toastify";
 import ComplaintsDashboard from "../pages/Complaintsdashboard";
 import { useTheme } from "../context/ThemeContext";
 
+// ─── Enhanced Skeleton Components ────────────────────────────────────────────────
+
+function SkeletonStats() {
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft">
+          <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800 animate-pulse mb-4" />
+          <div className="w-16 h-8 bg-primary-200 dark:bg-primary-800 rounded-lg animate-pulse mb-1.5" />
+          <div className="w-20 h-3 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SkeletonFilterTabs() {
+  return (
+    <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+      <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="w-20 h-8 bg-primary-200 dark:bg-primary-800 rounded-lg animate-pulse" />
+        ))}
+      </div>
+      <div className="w-32 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl animate-pulse" />
+    </div>
+  );
+}
+
+function SkeletonNoticeCard() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 animate-pulse">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-16 h-5 bg-primary-200 dark:bg-primary-800 rounded-full" />
+            <div className="w-12 h-5 bg-primary-200 dark:bg-primary-800 rounded-full" />
+          </div>
+          <div className="w-3/4 h-5 bg-primary-200 dark:bg-primary-800 rounded-lg mb-2" />
+          <div className="w-full h-8 bg-primary-100 dark:bg-primary-800/50 rounded-lg mb-2" />
+          <div className="w-32 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="w-16 h-7 bg-primary-200 dark:bg-primary-800 rounded-xl" />
+          <div className="w-16 h-7 bg-primary-200 dark:bg-primary-800 rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SkeletonNoticeList() {
+  return (
+    <div className="space-y-3">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <SkeletonNoticeCard key={i} />
+      ))}
+    </div>
+  );
+}
+
+function SkeletonDashboard() {
+  const { dark } = useTheme();
+  
+  return (
+    <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
+      {/* Navbar skeleton */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-primary-900 shadow-large">
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-white/20 animate-pulse" />
+              <div className="hidden sm:block space-y-1">
+                <div className="w-24 h-3 bg-white/20 rounded animate-pulse" />
+                <div className="w-16 h-2 bg-white/10 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
+              <div className="w-20 h-8 bg-white/20 rounded-lg animate-pulse" />
+              <div className="w-20 h-8 bg-white/20 rounded-lg animate-pulse" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
+            <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
+            <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
+          </div>
+        </div>
+      </nav>
+
+      <div className="h-16 flex-shrink-0" />
+
+      <main className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-8 py-8">
+        {/* Page header skeleton */}
+        <div className="mb-8">
+          <div className="w-64 h-8 bg-primary-200 dark:bg-primary-800 rounded-lg animate-pulse mb-2" />
+          <div className="w-96 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
+        </div>
+
+        <SkeletonStats />
+        <SkeletonFilterTabs />
+        <SkeletonNoticeList />
+      </main>
+
+      {/* Footer skeleton */}
+      <footer className="w-full mt-auto">
+        <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" className="w-full block -mb-1">
+          <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1380,20 1440,40 L1440,80 L0,80 Z" className="fill-primary-800 dark:fill-primary-900" />
+        </svg>
+        <div className="bg-primary-800 dark:bg-primary-900">
+          <div className="max-w-7xl mx-auto px-6 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 animate-pulse" />
+              <div>
+                <div className="w-24 h-4 bg-white/20 rounded animate-pulse mb-1" />
+                <div className="w-16 h-3 bg-white/10 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="w-32 h-8 bg-white/10 rounded-full animate-pulse" />
+            <div className="w-48 h-3 bg-white/10 rounded animate-pulse" />
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const categories = [
@@ -138,11 +265,11 @@ function QRSection({ village, onDownload, loading, onClose }) {
               </p>
             </div>
             <button
-              onClick={function() { onDownload(village); }}
+              onClick={() => onDownload(village)}
               disabled={loading}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex-shrink-0"
             >
-              {loading ? <IcoSpinner /> : null}
+              {loading && <IcoSpinner />}
               {loading ? 'Please wait...' : 'Download QR'}
             </button>
           </div>
@@ -227,26 +354,26 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
       <form onSubmit={handleSubmit} className="p-6 space-y-4">
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Title *</label>
-          <input type="text" value={title} onChange={function(e) { setTitle(e.target.value); }} placeholder="Notice title" required className={inp} />
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Notice title" required className={inp} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Category</label>
-            <select value={category} onChange={function(e) { setCategory(e.target.value); }} className={inp}>
-              {categories.map(function(c) { return <option key={c.value} value={c.value}>{c.label}</option>; })}
+            <select value={category} onChange={(e) => setCategory(e.target.value)} className={inp}>
+              {categories.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
             </select>
           </div>
           <div>
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Priority</label>
-            <select value={priority} onChange={function(e) { setPriority(e.target.value); }} className={inp}>
-              {priorities.map(function(p) { return <option key={p.value} value={p.value}>{p.label}</option>; })}
+            <select value={priority} onChange={(e) => setPriority(e.target.value)} className={inp}>
+              {priorities.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
           </div>
         </div>
 
         <div
-          onClick={function() { setIsPinned(function(p) { return !p; }); }}
+          onClick={() => setIsPinned(!isPinned)}
           className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${isPinned ? 'bg-accent-mist dark:bg-dark-surface2 border-primary-200 dark:border-primary-700' : 'bg-accent-mist/50 dark:bg-dark-surface2/50 border-border dark:border-dark-border'}`}
         >
           <div className={`w-10 h-[22px] rounded-full relative flex-shrink-0 transition-all ${isPinned ? 'bg-primary-600 dark:bg-primary-500' : 'bg-border dark:bg-dark-border'}`}>
@@ -260,7 +387,7 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
 
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Description *</label>
-          <textarea value={description} onChange={function(e) { setDescription(e.target.value); }} placeholder="Write the notice details here..." rows={4} required className={`${inp} resize-none`} />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Write the notice details here..." rows={4} required className={`${inp} resize-none`} />
         </div>
 
         <div>
@@ -273,7 +400,7 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
             <span className={`text-sm ${file ? 'text-text-primary dark:text-dark-text-primary font-medium' : 'text-text-muted dark:text-dark-text-muted'}`}>
               {file ? file.name : 'PDF or Image, max 5MB'}
             </span>
-            <input id="notice-file" type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={function(e) { setFile(e.target.files[0]); }} />
+            <input id="notice-file" type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={(e) => setFile(e.target.files[0])} />
           </label>
         </div>
 
@@ -282,7 +409,7 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
             Cancel
           </button>
           <button type="submit" disabled={saving || !title.trim() || !description.trim()} className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex items-center justify-center gap-2">
-            {saving ? <IcoSpinner /> : null}
+            {saving && <IcoSpinner />}
             {saving ? 'Saving...' : initial ? 'Update Notice' : 'Publish Notice'}
           </button>
         </div>
@@ -304,7 +431,7 @@ function NoticeCard({ notice, onEdit, onDelete, onView }) {
   const isUrgent = notice.priority === 'high' || notice.category === 'urgent';
   const isActive = notice.status === 'published';
   const catCls = catColor[notice.category] || catColor.general;
-  const catLabel = categories.find(function(c) { return c.value === notice.category; });
+  const catLabel = categories.find((c) => c.value === notice.category);
   const label = catLabel ? catLabel.label : 'General';
 
   return (
@@ -333,17 +460,17 @@ function NoticeCard({ notice, onEdit, onDelete, onView }) {
           </p>
         </div>
         <div className="flex flex-col gap-2 flex-shrink-0">
-          <button onClick={function() { onEdit(notice); }}
+          <button onClick={() => onEdit(notice)}
             className="px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-xl border border-border dark:border-dark-border hover:border-primary-200 dark:hover:border-primary-700 transition-all">
             Edit
           </button>
           {notice.fileUrl && (
-            <button onClick={function() { onView(notice); }}
+            <button onClick={() => onView(notice)}
               className="px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 text-text-secondary dark:text-dark-text-secondary rounded-xl border border-border dark:border-dark-border hover:border-primary-200 transition-all">
               View
             </button>
           )}
-          <button onClick={function() { onDelete(notice._id); }}
+          <button onClick={() => onDelete(notice._id)}
             className="px-3 py-1.5 text-xs font-semibold bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-800 hover:bg-red-100 transition-all">
             Delete
           </button>
@@ -416,7 +543,10 @@ export default function OfficialsDashboard() {
   const [showQr, setShowQr]                 = useState(false);
   const [qrLoading, setQrLoading]           = useState(false);
 
-  useEffect(function() { fetchNotices(); }, []);
+  useEffect(() => { 
+    fetchNotices(); 
+    fetchOfficialProfile();
+  }, []);
 
   async function fetchNotices() {
     try {
@@ -425,12 +555,20 @@ export default function OfficialsDashboard() {
       const villageId = profileRes.data && profileRes.data.village
         ? (profileRes.data.village._id || profileRes.data.village)
         : null;
-      if (!villageId) { toast.error('No village linked to your account'); setNotices([]); return; }
+      if (!villageId) { 
+        toast.error('No village linked to your account'); 
+        setNotices([]); 
+        return; 
+      }
       setOfficialVillageId(villageId);
       const noticesRes = await axios.get(`http://localhost:3000/notice/village/${villageId}`, { withCredentials: true });
       setNotices(Array.isArray(noticesRes.data && noticesRes.data.notices) ? noticesRes.data.notices : []);
-    } catch(e) { toast.error('Failed to load notices'); setNotices([]); }
-    finally { setLoading(false); }
+    } catch(e) { 
+      toast.error('Failed to load notices'); 
+      setNotices([]); 
+    } finally { 
+      setLoading(false); 
+    }
   }
 
   async function fetchOfficialProfile() {
@@ -442,7 +580,7 @@ export default function OfficialsDashboard() {
         try {
           const qrRes = await axios.get(`http://localhost:3000/villages/${vid}/qrcode`, { withCredentials: true });
           if (qrRes.data && qrRes.data.village) {
-            setOfficialVillage(function(prev) { return Object.assign({}, prev, { qrCode: qrRes.data.village.qrCode }); });
+            setOfficialVillage(prev => ({ ...prev, qrCode: qrRes.data.village.qrCode }));
           }
         } catch(e) {}
       }
@@ -457,13 +595,18 @@ export default function OfficialsDashboard() {
       if (officialVillageId) fd.append('village', officialVillageId);
     }
     try {
-      await axios.post('http://localhost:3000/notice/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' }, withCredentials: true });
+      await axios.post('http://localhost:3000/notice/upload', fd, { 
+        headers: { 'Content-Type': 'multipart/form-data' }, 
+        withCredentials: true 
+      });
       toast.success(noticeForm && noticeForm !== 'new' ? 'Notice updated!' : 'Notice published!');
       setNoticeForm(null);
       fetchNotices();
     } catch(err) {
       toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : 'Failed to save notice');
-    } finally { setSaving(false); }
+    } finally { 
+      setSaving(false); 
+    }
   }
 
   async function handleDelete(id) {
@@ -473,7 +616,9 @@ export default function OfficialsDashboard() {
       setDeleteTarget(null);
       setNoticeForm(null);
       fetchNotices();
-    } catch(e) { toast.error('Failed to delete notice'); }
+    } catch(e) { 
+      toast.error('Failed to delete notice'); 
+    }
   }
 
   async function generateAndShareQr(village) {
@@ -488,35 +633,48 @@ export default function OfficialsDashboard() {
         try {
           const blob = await (await fetch(imageUrl)).blob();
           const f = new File([blob], `${(village.name || 'village').replace(/\s+/g, '_')}.png`, { type: blob.type });
-          if (navigator.canShare({ files: [f] })) { await navigator.share({ files: [f], title: village.name, text: qrUrl }); toast.success('Shared!'); return; }
+          if (navigator.canShare({ files: [f] })) { 
+            await navigator.share({ files: [f], title: village.name, text: qrUrl }); 
+            toast.success('Shared!'); 
+            return; 
+          }
         } catch(e) {}
       }
       const finalUrl = imageUrl ? imageUrl : await (await import('qrcode')).default.toDataURL(qrUrl, { margin: 1, width: 400 });
-      const a = document.createElement('a'); a.href = finalUrl; a.download = `${(village.name || 'village').replace(/\s+/g, '_')}.png`;
-      document.body.appendChild(a); a.click(); a.remove();
+      const a = document.createElement('a'); 
+      a.href = finalUrl; 
+      a.download = `${(village.name || 'village').replace(/\s+/g, '_')}.png`;
+      document.body.appendChild(a); 
+      a.click(); 
+      a.remove();
       toast.success('QR downloaded!');
     } catch(err) {
       toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : 'Failed to generate QR');
-    } finally { setQrLoading(false); }
+    } finally { 
+      setQrLoading(false); 
+    }
   }
 
   async function handleLogout() {
     try {
       await axios.post('http://localhost:3000/officials/logout', {}, { withCredentials: true });
-      toast.info('Logged out'); navigate('/');
-    } catch(e) { toast.error('Error logging out'); }
+      toast.info('Logged out'); 
+      navigate('/');
+    } catch(e) { 
+      toast.error('Error logging out'); 
+    }
   }
 
-  const isActive = function(n) { return n && n.status === 'published'; };
+  const isActive = (n) => n && n.status === 'published';
 
   const stats = {
     total:  notices.length,
     active: notices.filter(isActive).length,
-    pinned: notices.filter(function(n) { return n && n.isPinned; }).length,
-    urgent: notices.filter(function(n) { return n && (n.priority === 'high' || n.category === 'urgent'); }).length,
+    pinned: notices.filter(n => n && n.isPinned).length,
+    urgent: notices.filter(n => n && (n.priority === 'high' || n.category === 'urgent')).length,
   };
 
-  const filtered = notices.filter(function(n) {
+  const filtered = notices.filter(n => {
     if (activeTab === 'active') return isActive(n);
     if (activeTab === 'pinned') return n && n.isPinned;
     if (activeTab === 'urgent') return n && (n.priority === 'high' || n.category === 'urgent');
@@ -533,6 +691,11 @@ export default function OfficialsDashboard() {
     { label: 'Urgent',        value: stats.urgent, iconCls: 'text-red-600 dark:text-red-400',         bgCls: 'bg-red-100 dark:bg-red-900/30',
       icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
   ];
+
+  // Show skeleton while loading
+  if (loading) {
+    return <SkeletonDashboard />;
+  }
 
   return (
     <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
@@ -554,27 +717,25 @@ export default function OfficialsDashboard() {
 
             {/* Page tabs */}
             <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
-              {PAGE_TABS.map(function(t) {
-                return (
-                  <button key={t.key} onClick={function() { setActivePage(t.key); }}
-                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
-                      activePage === t.key ? 'bg-white text-primary-900 shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d={t.icon} />
-                    </svg>
-                    {t.label}
-                  </button>
-                );
-              })}
+              {PAGE_TABS.map((t) => (
+                <button key={t.key} onClick={() => setActivePage(t.key)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
+                    activePage === t.key ? 'bg-white text-primary-900 shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={t.icon} />
+                  </svg>
+                  {t.label}
+                </button>
+              ))}
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <button
-              onClick={async function() { await fetchOfficialProfile(); setShowQr(true); }}
+              onClick={async () => { await fetchOfficialProfile(); setShowQr(true); }}
               className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition-all"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -584,7 +745,7 @@ export default function OfficialsDashboard() {
               Village QR
             </button>
             <button
-              onClick={function() { navigate('/officials/profile'); }}
+              onClick={() => navigate('/officials/profile')}
               className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition-all"
             >
               Profile
@@ -628,21 +789,21 @@ export default function OfficialsDashboard() {
               village={officialVillage}
               onDownload={generateAndShareQr}
               loading={qrLoading}
-              onClose={function() { setShowQr(false); }}
+              onClose={() => setShowQr(false)}
             />
           )}
 
           {deleteTarget && (
             <DeleteConfirm
-              onConfirm={function() { handleDelete(deleteTarget); }}
-              onCancel={function() { setDeleteTarget(null); }}
+              onConfirm={() => handleDelete(deleteTarget)}
+              onCancel={() => setDeleteTarget(null)}
             />
           )}
 
           {viewNotice && (
             <FileViewer
               notice={viewNotice}
-              onClose={function() { setViewNotice(null); }}
+              onClose={() => setViewNotice(null)}
             />
           )}
 
@@ -650,36 +811,34 @@ export default function OfficialsDashboard() {
             <NoticeForm
               initial={noticeForm === 'new' ? null : noticeForm}
               onSave={handleSave}
-              onCancel={function() { setNoticeForm(null); }}
+              onCancel={() => setNoticeForm(null)}
               saving={saving}
-              onDelete={noticeForm !== 'new' ? function() { setDeleteTarget(noticeForm._id); setNoticeForm(null); } : null}
+              onDelete={noticeForm !== 'new' ? () => { setDeleteTarget(noticeForm._id); setNoticeForm(null); } : null}
             />
           )}
 
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {statCards.map(function(s) {
-              return (
-                <div key={s.label} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft">
-                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${s.bgCls}`}>
-                    <svg className={`w-4 h-4 ${s.iconCls}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
-                    </svg>
-                  </div>
-                  <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">{s.value}</p>
-                  <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">{s.label}</p>
+            {statCards.map((s) => (
+              <div key={s.label} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${s.bgCls}`}>
+                  <svg className={`w-4 h-4 ${s.iconCls}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
+                  </svg>
                 </div>
-              );
-            })}
+                <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">{s.value}</p>
+                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">{s.label}</p>
+              </div>
+            ))}
           </div>
 
           {/* Filter tabs + New button */}
           <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
             <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
-              {FILTER_TABS.map(function(t) {
+              {FILTER_TABS.map((t) => {
                 const count = t.key === 'all' ? stats.total : t.key === 'active' ? stats.active : t.key === 'pinned' ? stats.pinned : stats.urgent;
                 return (
-                  <button key={t.key} onClick={function() { setActiveTab(t.key); }}
+                  <button key={t.key} onClick={() => setActiveTab(t.key)}
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
                       activeTab === t.key
                         ? 'bg-primary-600 dark:bg-primary-700 text-white shadow-soft'
@@ -695,7 +854,7 @@ export default function OfficialsDashboard() {
               })}
             </div>
             {noticeForm === null && (
-              <button onClick={function() { setNoticeForm('new'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              <button onClick={() => { setNoticeForm('new'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                 className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
@@ -706,12 +865,7 @@ export default function OfficialsDashboard() {
           </div>
 
           {/* Notice list */}
-          {loading ? (
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex items-center justify-center py-20 gap-3">
-              <IcoSpinner />
-              <p className="text-sm text-text-muted dark:text-dark-text-muted">Loading notices...</p>
-            </div>
-          ) : filtered.length === 0 ? (
+          {filtered.length === 0 ? (
             <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex flex-col items-center justify-center py-16 gap-3 text-center">
               <div className="w-12 h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-1">
                 <svg className="w-5 h-5 text-primary-500 dark:text-primary-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -720,24 +874,22 @@ export default function OfficialsDashboard() {
               </div>
               <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">No notices yet</p>
               <p className="text-xs text-text-muted dark:text-dark-text-muted">Create the first notice for your village</p>
-              <button onClick={function() { setNoticeForm('new'); }}
+              <button onClick={() => setNoticeForm('new')}
                 className="mt-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
                 Publish First Notice
               </button>
             </div>
           ) : (
             <div className="space-y-3">
-              {filtered.map(function(notice) {
-                return (
-                  <NoticeCard
-                    key={notice._id}
-                    notice={notice}
-                    onEdit={function(n) { setNoticeForm(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    onDelete={function(id) { setDeleteTarget(id); }}
-                    onView={function(n) { setViewNotice(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  />
-                );
-              })}
+              {filtered.map((notice) => (
+                <NoticeCard
+                  key={notice._id}
+                  notice={notice}
+                  onEdit={(n) => { setNoticeForm(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                  onDelete={(id) => setDeleteTarget(id)}
+                  onView={(n) => { setViewNotice(n); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                />
+              ))}
             </div>
           )}
         </main>
