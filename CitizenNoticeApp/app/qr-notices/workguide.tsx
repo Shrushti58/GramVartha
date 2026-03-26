@@ -1,9 +1,4 @@
-/**
- * Work Guide Screen
- * Helps citizens find the right official, when to visit, and what documents to bring
- * Route: app/qr-notices/workguide.tsx
- */
-
+// app/qr-notices/workguide.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
@@ -20,7 +15,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../../constants/colors';
+import { useTheme } from '../../context/ThemeContext';
 import { Config } from '../../constants/config';
 const { width } = Dimensions.get('window');
 
@@ -63,7 +58,7 @@ const QUICK_ACTIONS = [
 ];
 
 // ── Next Visit Calculator ──────────────────────────────────────────────────────
-function getNextAvailable(availableDays: string[], timing: string): {
+function getNextAvailable(availableDays: string[], timing: string, colors: any): {
   dayLabel: string;
   date: string;
   timing: string;
@@ -123,25 +118,25 @@ function getNextAvailable(availableDays: string[], timing: string): {
 const checklistKey = (guideId: string, docIdx: number) =>
   `workguide_checklist_${guideId}_${docIdx}`;
 
-// ── Icons ──────────────────────────────────────────────────────────────────────
-const BackArrow = () => (
+// ── Icons with theme support ──────────────────────────────────────────────────
+const BackArrow = ({ colors }: { colors: any }) => (
   <View style={{ width: 20, height: 20, justifyContent: 'center', alignItems: 'center' }}>
-    <View style={{ width: 10, height: 10, borderLeftWidth: 2, borderBottomWidth: 2, borderColor: Colors.textPrimary, transform: [{ rotate: '45deg' }], marginLeft: 4 }} />
+    <View style={{ width: 10, height: 10, borderLeftWidth: 2, borderBottomWidth: 2, borderColor: colors.text.primary, transform: [{ rotate: '45deg' }], marginLeft: 4 }} />
   </View>
 );
 
-const SearchIcon = () => (
+const SearchIcon = ({ colors }: { colors: any }) => (
   <View style={{ width: 16, height: 16 }}>
-    <View style={{ width: 11, height: 11, borderRadius: 6, borderWidth: 1.5, borderColor: Colors.textSecondary, position: 'absolute', top: 0, left: 0 }} />
-    <View style={{ width: 5, height: 1.5, backgroundColor: Colors.textSecondary, position: 'absolute', bottom: 0, right: 0, transform: [{ rotate: '-45deg' }], borderRadius: 1 }} />
+    <View style={{ width: 11, height: 11, borderRadius: 6, borderWidth: 1.5, borderColor: colors.text.secondary, position: 'absolute', top: 0, left: 0 }} />
+    <View style={{ width: 5, height: 1.5, backgroundColor: colors.text.secondary, position: 'absolute', bottom: 0, right: 0, transform: [{ rotate: '-45deg' }], borderRadius: 1 }} />
   </View>
 );
 
-const CalendarIcon = () => (
+const CalendarIcon = ({ colors }: { colors: any }) => (
   <View style={{ width: 12, height: 12 }}>
-    <View style={{ width: 12, height: 10, borderWidth: 1, borderColor: Colors.primary[600], borderRadius: 2, position: 'absolute', bottom: 0 }} />
-    <View style={{ width: 3, height: 3, borderLeftWidth: 1, borderColor: Colors.primary[600], position: 'absolute', top: 0, left: 2 }} />
-    <View style={{ width: 3, height: 3, borderLeftWidth: 1, borderColor: Colors.primary[600], position: 'absolute', top: 0, right: 2 }} />
+    <View style={{ width: 12, height: 10, borderWidth: 1, borderColor: colors.primary[600], borderRadius: 2, position: 'absolute', bottom: 0 }} />
+    <View style={{ width: 3, height: 3, borderLeftWidth: 1, borderColor: colors.primary[600], position: 'absolute', top: 0, left: 2 }} />
+    <View style={{ width: 3, height: 3, borderLeftWidth: 1, borderColor: colors.primary[600], position: 'absolute', top: 0, right: 2 }} />
   </View>
 );
 
@@ -152,25 +147,39 @@ const DocItem = ({
   index,
   checked,
   onToggle,
+  colors,
 }: {
   doc: string;
   guideId: string;
   index: number;
   checked: boolean;
   onToggle: () => void;
+  colors: any;
 }) => (
   <TouchableOpacity
-    style={[styles.docRow, checked && styles.docRowChecked]}
+    style={[
+      styles.docRow,
+      { backgroundColor: colors.neutral[50], borderColor: colors.border },
+      checked && [styles.docRowChecked, { backgroundColor: `${colors.primary[500]}08`, borderColor: colors.primary[200] }]
+    ]}
     onPress={onToggle}
     activeOpacity={0.7}>
-    <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
+    <View style={[
+      styles.checkbox,
+      { borderColor: colors.neutral[300], backgroundColor: '#fff' },
+      checked && [styles.checkboxChecked, { backgroundColor: colors.primary[600], borderColor: colors.primary[600] }]
+    ]}>
       {checked && (
         <View style={styles.checkmark}>
           <View style={styles.checkmarkInner} />
         </View>
       )}
     </View>
-    <Text style={[styles.docText, checked && styles.docTextChecked]}>{doc}</Text>
+    <Text style={[
+      styles.docText,
+      { color: colors.text.primary },
+      checked && [styles.docTextChecked, { color: colors.text.muted }]
+    ]}>{doc}</Text>
   </TouchableOpacity>
 );
 
@@ -181,12 +190,14 @@ const WorkGuideCard = ({
   onToggleDoc,
   onResetChecklist,
   index,
+  colors,
 }: {
   item: WorkGuideItem;
   checkedDocs: Record<string, boolean>;
   onToggleDoc: (guideId: string, docIdx: number) => void;
   onResetChecklist: (guideId: string, docCount: number) => void;
   index: number;
+  colors: any;
 }) => {
   const [expanded, setExpanded] = useState(false);
   const fadeAnim  = useRef(new Animated.Value(0)).current;
@@ -199,46 +210,58 @@ const WorkGuideCard = ({
     ]).start();
   }, []);
 
-  const nextVisit    = getNextAvailable(item.availableDays, item.timing);
+  const nextVisit    = getNextAvailable(item.availableDays, item.timing, colors);
   const checkedCount = item.documents.filter((_, i) => checkedDocs[checklistKey(item._id, i)]).length;
   const allReady     = item.documents.length > 0 && checkedCount === item.documents.length;
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
       <TouchableOpacity
-        style={[styles.card, expanded && styles.cardExpanded]}
+        style={[
+          styles.card,
+          { backgroundColor: colors.surface, borderColor: colors.border },
+          expanded && [styles.cardExpanded, { borderColor: colors.primary[300] }]
+        ]}
         onPress={() => setExpanded(p => !p)}
         activeOpacity={0.85}>
 
         <View style={styles.cardHeader}>
           <View style={styles.cardHeaderLeft}>
-            <Text style={styles.cardWorkName}>{item.workName}</Text>
-            <Text style={styles.cardOfficer}>{item.officerName} — {item.designation}</Text>
-            <View style={[styles.nextVisitPill, nextVisit.isToday && styles.nextVisitPillToday]}>
-              <CalendarIcon />
-              <Text style={[styles.nextVisitText, nextVisit.isToday && styles.nextVisitTextToday]}>
+            <Text style={[styles.cardWorkName, { color: colors.text.primary }]}>{item.workName}</Text>
+            <Text style={[styles.cardOfficer, { color: colors.text.secondary }]}>{item.officerName} — {item.designation}</Text>
+            <View style={[
+              styles.nextVisitPill,
+              { backgroundColor: colors.neutral[100], borderColor: colors.border },
+              nextVisit.isToday && [styles.nextVisitPillToday, { backgroundColor: `${colors.primary[500]}15`, borderColor: colors.primary[300] }]
+            ]}>
+              <CalendarIcon colors={colors} />
+              <Text style={[
+                styles.nextVisitText,
+                { color: colors.text.secondary },
+                nextVisit.isToday && [styles.nextVisitTextToday, { color: colors.primary[700] }]
+              ]}>
                 Next visit: {nextVisit.dayLabel}{nextVisit.timing ? `, ${nextVisit.timing.split('–')[0].trim()}` : ''}
               </Text>
             </View>
           </View>
           <View style={styles.chevron}>
-            <View style={[styles.chevronLine1, expanded && styles.chevronLine1Exp]} />
-            <View style={[styles.chevronLine2, expanded && styles.chevronLine2Exp]} />
+            <View style={[styles.chevronLine1, { backgroundColor: colors.text.secondary }, expanded && styles.chevronLine1Exp]} />
+            <View style={[styles.chevronLine2, { backgroundColor: colors.text.secondary }, expanded && styles.chevronLine2Exp]} />
           </View>
         </View>
 
         {expanded && (
           <View style={styles.cardBody}>
-            <View style={styles.divider} />
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
             <View style={styles.detailsGrid}>
               {item.availableDays.length > 0 && (
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Available Days</Text>
+                  <Text style={[styles.detailLabel, { color: colors.text.secondary }]}>Available Days</Text>
                   <View style={styles.dayPills}>
                     {item.availableDays.map(d => (
-                      <View key={d} style={styles.dayPill}>
-                        <Text style={styles.dayPillText}>{d.slice(0, 3)}</Text>
+                      <View key={d} style={[styles.dayPill, { backgroundColor: `${colors.primary[500]}15`, borderColor: colors.primary[200] }]}>
+                        <Text style={[styles.dayPillText, { color: colors.primary[700] }]}>{d.slice(0, 3)}</Text>
                       </View>
                     ))}
                   </View>
@@ -247,25 +270,33 @@ const WorkGuideCard = ({
 
               {item.timing ? (
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Timing</Text>
-                  <Text style={styles.detailValue}>{item.timing}</Text>
+                  <Text style={[styles.detailLabel, { color: colors.text.secondary }]}>Timing</Text>
+                  <Text style={[styles.detailValue, { color: colors.text.primary }]}>{item.timing}</Text>
                 </View>
               ) : null}
 
               {item.location ? (
                 <View style={styles.detailRow}>
-                  <Text style={styles.detailLabel}>Where to go</Text>
-                  <Text style={styles.detailValue}>{item.location}</Text>
+                  <Text style={[styles.detailLabel, { color: colors.text.secondary }]}>Where to go</Text>
+                  <Text style={[styles.detailValue, { color: colors.text.primary }]}>{item.location}</Text>
                 </View>
               ) : null}
 
-              <View style={[styles.nextVisitBox, nextVisit.isToday && styles.nextVisitBoxToday]}>
-                <Text style={styles.nextVisitBoxLabel}>Next Available Visit</Text>
-                <Text style={[styles.nextVisitBoxDay, nextVisit.isToday && styles.nextVisitBoxDayToday]}>
+              <View style={[
+                styles.nextVisitBox,
+                { backgroundColor: colors.neutral[50], borderColor: colors.border },
+                nextVisit.isToday && [styles.nextVisitBoxToday, { backgroundColor: `${colors.primary[500]}10`, borderColor: colors.primary[200] }]
+              ]}>
+                <Text style={[styles.nextVisitBoxLabel, { color: colors.text.muted }]}>Next Available Visit</Text>
+                <Text style={[
+                  styles.nextVisitBoxDay,
+                  { color: colors.text.primary },
+                  nextVisit.isToday && [styles.nextVisitBoxDayToday, { color: colors.primary[700] }]
+                ]}>
                   {nextVisit.dayLabel}{nextVisit.date ? ` — ${nextVisit.date}` : ''}
                 </Text>
                 {nextVisit.timing ? (
-                  <Text style={styles.nextVisitBoxTime}>{nextVisit.timing}</Text>
+                  <Text style={[styles.nextVisitBoxTime, { color: colors.text.secondary }]}>{nextVisit.timing}</Text>
                 ) : null}
               </View>
             </View>
@@ -273,15 +304,19 @@ const WorkGuideCard = ({
             {item.documents.length > 0 && (
               <View style={styles.checklistSection}>
                 <View style={styles.checklistHeader}>
-                  <Text style={styles.checklistTitle}>Documents to Bring</Text>
-                  <Text style={[styles.checklistProgress, allReady && styles.checklistProgressDone]}>
+                  <Text style={[styles.checklistTitle, { color: colors.text.primary }]}>Documents to Bring</Text>
+                  <Text style={[
+                    styles.checklistProgress,
+                    { color: colors.text.secondary },
+                    allReady && [styles.checklistProgressDone, { color: colors.success }]
+                  ]}>
                     {checkedCount} of {item.documents.length} ready
                   </Text>
                 </View>
 
                 {allReady && (
-                  <View style={styles.allReadyBanner}>
-                    <Text style={styles.allReadyText}>All documents ready — you can visit now</Text>
+                  <View style={[styles.allReadyBanner, { backgroundColor: '#dcfce7', borderColor: '#86efac' }]}>
+                    <Text style={[styles.allReadyText, { color: '#15803d' }]}>All documents ready — you can visit now</Text>
                   </View>
                 )}
 
@@ -293,19 +328,23 @@ const WorkGuideCard = ({
                     index={i}
                     checked={!!checkedDocs[checklistKey(item._id, i)]}
                     onToggle={() => onToggleDoc(item._id, i)}
+                    colors={colors}
                   />
                 ))}
 
                 <TouchableOpacity onPress={() => onResetChecklist(item._id, item.documents.length)} style={styles.resetBtn}>
-                  <Text style={styles.resetBtnText}>Reset checklist</Text>
+                  <Text style={[styles.resetBtnText, { color: colors.text.muted }]}>Reset checklist</Text>
                 </TouchableOpacity>
               </View>
             )}
 
             {item.note ? (
-              <View style={styles.noteBox}>
-                <Text style={styles.noteLabel}>Note</Text>
-                <Text style={styles.noteText}>{item.note}</Text>
+              <View style={[
+                styles.noteBox,
+                { backgroundColor: colors.neutral[50], borderColor: colors.border, borderLeftColor: colors.primary[400] }
+              ]}>
+                <Text style={[styles.noteLabel, { color: colors.text.muted }]}>Note</Text>
+                <Text style={[styles.noteText, { color: colors.text.secondary }]}>{item.note}</Text>
               </View>
             ) : null}
           </View>
@@ -317,11 +356,12 @@ const WorkGuideCard = ({
 
 // ── Main Screen ────────────────────────────────────────────────────────────────
 export default function WorkGuideScreen() {
+  const { colors, isDark } = useTheme();
   const [villageId,   setVillageId]   = useState<string>('');
   const [villageName, setVillageName] = useState<string>('');
 
   const [grouped,           setGrouped]           = useState<GroupedGuide[]>([]);
-  const [loading,           setLoading]           = useState(false);   // ← false, not true
+  const [loading,           setLoading]           = useState(false);
   const [searchTerm,        setSearchTerm]        = useState('');
   const [activeQuickAction, setActiveQuickAction] = useState<string | null>(null);
   const [checkedDocs,       setCheckedDocs]       = useState<Record<string, boolean>>({});
@@ -332,7 +372,6 @@ export default function WorkGuideScreen() {
   useEffect(() => {
     const loadVillageAndInit = async () => {
       try {
-        // Primary: scannedVillage (single object written right after QR scan)
         const primary = await AsyncStorage.getItem('scannedVillage');
         if (primary) {
           const v = JSON.parse(primary);
@@ -343,7 +382,6 @@ export default function WorkGuideScreen() {
           }
         }
 
-        // Fallback: recentVillages array
         const recent = await AsyncStorage.getItem('recentVillages');
         if (recent) {
           const arr = JSON.parse(recent);
@@ -384,24 +422,21 @@ export default function WorkGuideScreen() {
   };
 
   // ── Fetch guides ─────────────────────────────────────────────────────────────
- const fetchGuides = async (search?: string) => {
-  if (!villageId) {
-    console.log('fetchGuides: villageId is empty, skipping');
-    return;
-  }
-  try {
-    setLoading(true);
-    const base =`${Config.API_BASE_URL}/workguide/village/${villageId}`;
-    const url  = search ? `${base}?search=${encodeURIComponent(search)}` : base;
-    const res  = await fetch(url);
-    const data = await res.json();
-    setGrouped(Array.isArray(data) ? data : []);
-  } catch (e) {
-    setGrouped([]);
-  } finally {
-    setLoading(false);
-  }
-};
+  const fetchGuides = async (search?: string) => {
+    if (!villageId) return;
+    try {
+      setLoading(true);
+      const base =`${Config.API_BASE_URL}/workguide/village/${villageId}`;
+      const url  = search ? `${base}?search=${encodeURIComponent(search)}` : base;
+      const res  = await fetch(url);
+      const data = await res.json();
+      setGrouped(Array.isArray(data) ? data : []);
+    } catch (e) {
+      setGrouped([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // ── Search ───────────────────────────────────────────────────────────────────
   const handleSearch = (text: string) => {
@@ -449,16 +484,16 @@ export default function WorkGuideScreen() {
 
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
-    <View style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
+    <View style={[styles.root, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.background} />
 
-      <Animated.View style={[styles.header, { opacity: headerAnim }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <BackArrow />
+      <Animated.View style={[styles.header, { opacity: headerAnim, backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+        <TouchableOpacity style={[styles.backBtn, { backgroundColor: colors.neutral[100] }]} onPress={() => router.back()} activeOpacity={0.7}>
+          <BackArrow colors={colors} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>Work Guide</Text>
-          {villageName ? <Text style={styles.headerSub}>{villageName}</Text> : null}
+          <Text style={[styles.headerTitle, { color: colors.text.primary }]}>Work Guide</Text>
+          {villageName ? <Text style={[styles.headerSub, { color: colors.text.secondary }]}>{villageName}</Text> : null}
         </View>
         <View style={{ width: 36 }} />
       </Animated.View>
@@ -469,16 +504,24 @@ export default function WorkGuideScreen() {
         keyboardShouldPersistTaps="handled">
 
         {/* Quick actions */}
-        <View style={styles.quickSection}>
-          <Text style={styles.quickHeading}>What do you want to do today?</Text>
+        <View style={[styles.quickSection, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+          <Text style={[styles.quickHeading, { color: colors.text.primary }]}>What do you want to do today?</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickRow}>
             {QUICK_ACTIONS.map(action => (
               <TouchableOpacity
                 key={action.search}
-                style={[styles.quickChip, activeQuickAction === action.search && styles.quickChipActive]}
+                style={[
+                  styles.quickChip,
+                  { backgroundColor: colors.neutral[100], borderColor: colors.border },
+                  activeQuickAction === action.search && [styles.quickChipActive, { backgroundColor: colors.primary[600], borderColor: colors.primary[600] }]
+                ]}
                 onPress={() => handleQuickAction(action)}
                 activeOpacity={0.75}>
-                <Text style={[styles.quickChipText, activeQuickAction === action.search && styles.quickChipTextActive]}>
+                <Text style={[
+                  styles.quickChipText,
+                  { color: colors.text.primary },
+                  activeQuickAction === action.search && [styles.quickChipTextActive, { color: '#fff' }]
+                ]}>
                   {action.label}
                 </Text>
               </TouchableOpacity>
@@ -488,24 +531,27 @@ export default function WorkGuideScreen() {
 
         {/* Search bar */}
         <View style={styles.searchSection}>
-          <View style={styles.searchBar}>
-            <SearchIcon />
+          <View style={[
+            styles.searchBar,
+            { backgroundColor: colors.surface, borderColor: colors.border }
+          ]}>
+            <SearchIcon colors={colors} />
             <TextInput
-              style={styles.searchInput}
+              style={[styles.searchInput, { color: colors.text.primary }]}
               value={searchTerm}
               onChangeText={handleSearch}
               placeholder="Search by work type, officer, document..."
-              placeholderTextColor={Colors.textMuted}
+              placeholderTextColor={colors.text.muted}
               returnKeyType="search"
             />
             {searchTerm.length > 0 && (
-              <TouchableOpacity onPress={clearSearch} style={styles.clearBtn} activeOpacity={0.7}>
-                <Text style={styles.clearBtnText}>✕</Text>
+              <TouchableOpacity onPress={clearSearch} style={[styles.clearBtn, { backgroundColor: colors.neutral[200] }]} activeOpacity={0.7}>
+                <Text style={[styles.clearBtnText, { color: colors.text.secondary }]}>✕</Text>
               </TouchableOpacity>
             )}
           </View>
           {searchTerm.length > 0 && !loading && (
-            <Text style={styles.searchResultsLabel}>
+            <Text style={[styles.searchResultsLabel, { color: colors.text.muted }]}>
               {totalResults > 0
                 ? `Showing ${totalResults} result${totalResults !== 1 ? 's' : ''} for "${searchTerm}"`
                 : `No results found for "${searchTerm}"`}
@@ -516,32 +562,32 @@ export default function WorkGuideScreen() {
         {/* Content */}
         {loading ? (
           <View style={styles.loadingBox}>
-            <ActivityIndicator size="small" color={Colors.primary[600]} />
-            <Text style={styles.loadingText}>Loading work guide...</Text>
+            <ActivityIndicator size="small" color={colors.primary[600]} />
+            <Text style={[styles.loadingText, { color: colors.text.secondary }]}>Loading work guide...</Text>
           </View>
         ) : !villageId ? (
           <View style={styles.emptyBox}>
-            <View style={styles.emptyIconBox}>
-              <View style={styles.emptyIconInner} />
+            <View style={[styles.emptyIconBox, { backgroundColor: `${colors.primary[500]}15`, borderColor: colors.border }]}>
+              <View style={[styles.emptyIconInner, { borderColor: colors.primary[400] }]} />
             </View>
-            <Text style={styles.emptyTitle}>No Village Scanned</Text>
-            <Text style={styles.emptySub}>Please scan your village QR code first to view the work guide.</Text>
+            <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>No Village Scanned</Text>
+            <Text style={[styles.emptySub, { color: colors.text.secondary }]}>Please scan your village QR code first to view the work guide.</Text>
           </View>
         ) : totalResults === 0 ? (
           <View style={styles.emptyBox}>
-            <View style={styles.emptyIconBox}>
-              <View style={styles.emptyIconInner} />
+            <View style={[styles.emptyIconBox, { backgroundColor: `${colors.primary[500]}15`, borderColor: colors.border }]}>
+              <View style={[styles.emptyIconInner, { borderColor: colors.primary[400] }]} />
             </View>
-            <Text style={styles.emptyTitle}>
+            <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
               {searchTerm ? `No results for "${searchTerm}"` : 'No entries yet'}
             </Text>
-            <Text style={styles.emptySub}>
+            <Text style={[styles.emptySub, { color: colors.text.secondary }]}>
               {searchTerm
                 ? 'Try different words or browse by tapping a quick action above'
                 : 'The village admin has not added any work guide entries yet'}
             </Text>
             {searchTerm ? (
-              <TouchableOpacity style={styles.clearSearchBtn} onPress={clearSearch} activeOpacity={0.8}>
+              <TouchableOpacity style={[styles.clearSearchBtn, { backgroundColor: colors.primary[600] }]} onPress={clearSearch} activeOpacity={0.8}>
                 <Text style={styles.clearSearchBtnText}>Clear Search</Text>
               </TouchableOpacity>
             ) : null}
@@ -551,8 +597,8 @@ export default function WorkGuideScreen() {
             {grouped.map(group => (
               <View key={group.category} style={styles.categoryGroup}>
                 <View style={styles.categoryHeader}>
-                  <Text style={styles.categoryTitle}>{group.category}</Text>
-                  <Text style={styles.categoryCount}>{group.items.length}</Text>
+                  <Text style={[styles.categoryTitle, { color: colors.text.secondary }]}>{group.category}</Text>
+                  <Text style={[styles.categoryCount, { color: colors.primary[600], backgroundColor: `${colors.primary[500]}15` }]}>{group.items.length}</Text>
                 </View>
                 {group.items.map((item, idx) => (
                   <WorkGuideCard
@@ -562,6 +608,7 @@ export default function WorkGuideScreen() {
                     checkedDocs={checkedDocs}
                     onToggleDoc={toggleDoc}
                     onResetChecklist={resetChecklist}
+                    colors={colors}
                   />
                 ))}
               </View>
@@ -575,131 +622,126 @@ export default function WorkGuideScreen() {
   );
 }
 
-// ── Styles ─────────────────────────────────────────────────────────────────────
+// ─── Styles ─────────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.background },
+  root: { flex: 1 },
 
   header: {
     paddingTop: Platform.OS === 'ios' ? 54 : 40,
     paddingBottom: 12,
     paddingHorizontal: 16,
-    backgroundColor: Colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   backBtn: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: Colors.neutral[100],
     justifyContent: 'center', alignItems: 'center',
   },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle: { fontSize: 17, fontWeight: '700', color: Colors.textPrimary, letterSpacing: -0.2 },
-  headerSub:   { fontSize: 11, color: Colors.textSecondary, marginTop: 1 },
+  headerTitle: { fontSize: 17, fontWeight: '700', letterSpacing: -0.2 },
+  headerSub:   { fontSize: 11, marginTop: 1 },
 
   scrollContent: { paddingBottom: 24 },
 
   quickSection: {
     paddingTop: 20, paddingBottom: 4,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1,
   },
-  quickHeading: { fontSize: 14, fontWeight: '700', color: Colors.textPrimary, paddingHorizontal: 16, marginBottom: 12 },
+  quickHeading: { fontSize: 14, fontWeight: '700', paddingHorizontal: 16, marginBottom: 12 },
   quickRow:     { paddingHorizontal: 16, paddingBottom: 16, gap: 8 },
   quickChip: {
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: 50,
-    backgroundColor: Colors.neutral[100], borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1,
   },
-  quickChipActive:     { backgroundColor: Colors.primary[600], borderColor: Colors.primary[600] },
-  quickChipText:       { fontSize: 13, fontWeight: '600', color: Colors.textPrimary },
-  quickChipTextActive: { color: '#fff' },
+  quickChipActive:     {},
+  quickChipText:       { fontSize: 13, fontWeight: '600' },
+  quickChipTextActive: {},
 
   searchSection: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 4 },
   searchBar: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.surface, borderWidth: 1.5, borderColor: Colors.border,
-    borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, gap: 10,
+    borderWidth: 1.5, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, gap: 10,
   },
-  searchInput:        { flex: 1, fontSize: 14, color: Colors.textPrimary, paddingVertical: 0 },
-  clearBtn:           { width: 20, height: 20, borderRadius: 10, backgroundColor: Colors.neutral[200], justifyContent: 'center', alignItems: 'center' },
-  clearBtnText:       { fontSize: 10, color: Colors.textSecondary, fontWeight: '700' },
-  searchResultsLabel: { fontSize: 12, color: Colors.textMuted, marginTop: 8, paddingHorizontal: 2 },
+  searchInput:        { flex: 1, fontSize: 14, paddingVertical: 0 },
+  clearBtn:           { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
+  clearBtnText:       { fontSize: 10, fontWeight: '700' },
+  searchResultsLabel: { fontSize: 12, marginTop: 8, paddingHorizontal: 2 },
 
   loadingBox:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 60, gap: 10 },
-  loadingText: { fontSize: 14, color: Colors.textSecondary },
+  loadingText: { fontSize: 14 },
 
   emptyBox:      { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 32 },
-  emptyIconBox:  { width: 56, height: 56, borderRadius: 16, backgroundColor: `${Colors.primary[500]}15`, borderWidth: 1, borderColor: Colors.border, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  emptyIconInner:{ width: 24, height: 28, borderWidth: 1.5, borderColor: Colors.primary[400], borderRadius: 4 },
-  emptyTitle:    { fontSize: 16, fontWeight: '700', color: Colors.textPrimary, marginBottom: 6, textAlign: 'center' },
-  emptySub:      { fontSize: 13, color: Colors.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: 16 },
-  clearSearchBtn:     { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20, backgroundColor: Colors.primary[600] },
+  emptyIconBox:  { width: 56, height: 56, borderRadius: 16, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  emptyIconInner:{ width: 24, height: 28, borderWidth: 1.5, borderRadius: 4 },
+  emptyTitle:    { fontSize: 16, fontWeight: '700', marginBottom: 6, textAlign: 'center' },
+  emptySub:      { fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 16 },
+  clearSearchBtn:     { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 20 },
   clearSearchBtnText: { fontSize: 13, fontWeight: '600', color: '#fff' },
 
   listSection:    { paddingHorizontal: 16, paddingTop: 16, gap: 20 },
   categoryGroup:  { gap: 8 },
   categoryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
-  categoryTitle:  { fontSize: 13, fontWeight: '700', color: Colors.textSecondary, textTransform: 'uppercase', letterSpacing: 0.6 },
-  categoryCount:  { fontSize: 11, fontWeight: '700', color: Colors.primary[600], backgroundColor: `${Colors.primary[500]}15`, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
+  categoryTitle:  { fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6 },
+  categoryCount:  { fontSize: 11, fontWeight: '700', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
 
-  card:        { backgroundColor: Colors.surface, borderRadius: 14, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden', marginBottom: 2 },
-  cardExpanded:{ borderColor: Colors.primary[300] },
+  card:        { borderRadius: 14, borderWidth: 1, overflow: 'hidden', marginBottom: 2 },
+  cardExpanded:{},
   cardHeader:  { flexDirection: 'row', alignItems: 'flex-start', padding: 14, gap: 10 },
   cardHeaderLeft: { flex: 1 },
-  cardWorkName: { fontSize: 15, fontWeight: '700', color: Colors.textPrimary, marginBottom: 3, letterSpacing: -0.1 },
-  cardOfficer:  { fontSize: 12, color: Colors.textSecondary, marginBottom: 8 },
+  cardWorkName: { fontSize: 15, fontWeight: '700', marginBottom: 3, letterSpacing: -0.1 },
+  cardOfficer:  { fontSize: 12, marginBottom: 8 },
 
-  nextVisitPill:     { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: Colors.neutral[100], borderWidth: 1, borderColor: Colors.border },
-  nextVisitPillToday:{ backgroundColor: `${Colors.primary[500]}15`, borderColor: Colors.primary[300] },
-  nextVisitText:     { fontSize: 11, fontWeight: '600', color: Colors.textSecondary },
-  nextVisitTextToday:{ color: Colors.primary[700] },
+  nextVisitPill:     { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
+  nextVisitPillToday:{},
+  nextVisitText:     { fontSize: 11, fontWeight: '600' },
+  nextVisitTextToday:{},
 
   chevron:      { width: 24, height: 24, justifyContent: 'center', alignItems: 'center', marginTop: 2 },
-  chevronLine1: { width: 8, height: 1.5, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '45deg'  }, { translateX:  3 }] },
-  chevronLine2: { width: 8, height: 1.5, backgroundColor: Colors.textSecondary, borderRadius: 1, transform: [{ rotate: '-45deg' }, { translateX: -3 }] },
+  chevronLine1: { width: 8, height: 1.5, borderRadius: 1, transform: [{ rotate: '45deg'  }, { translateX:  3 }] },
+  chevronLine2: { width: 8, height: 1.5, borderRadius: 1, transform: [{ rotate: '-45deg' }, { translateX: -3 }] },
   chevronLine1Exp: { transform: [{ rotate: '-45deg' }, { translateX:  3 }] },
   chevronLine2Exp: { transform: [{ rotate:  '45deg' }, { translateX: -3 }] },
 
   cardBody: { paddingHorizontal: 14, paddingBottom: 14 },
-  divider:  { height: 1, backgroundColor: Colors.border, marginBottom: 14 },
+  divider:  { height: 1, marginBottom: 14 },
 
   detailsGrid: { gap: 10, marginBottom: 14 },
   detailRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  detailLabel: { fontSize: 12, fontWeight: '600', color: Colors.textSecondary, width: 100, flexShrink: 0 },
-  detailValue: { fontSize: 13, color: Colors.textPrimary, flex: 1, fontWeight: '500' },
+  detailLabel: { fontSize: 12, fontWeight: '600', width: 100, flexShrink: 0 },
+  detailValue: { fontSize: 13, flex: 1, fontWeight: '500' },
   dayPills:    { flexDirection: 'row', flexWrap: 'wrap', gap: 4, flex: 1 },
-  dayPill:     { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, backgroundColor: `${Colors.primary[500]}15`, borderWidth: 1, borderColor: Colors.primary[200] },
-  dayPillText: { fontSize: 11, fontWeight: '700', color: Colors.primary[700] },
+  dayPill:     { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6, borderWidth: 1 },
+  dayPillText: { fontSize: 11, fontWeight: '700' },
 
-  nextVisitBox:        { backgroundColor: Colors.neutral[50], borderRadius: 10, borderWidth: 1, borderColor: Colors.border, padding: 12 },
-  nextVisitBoxToday:   { backgroundColor: `${Colors.primary[500]}10`, borderColor: Colors.primary[200] },
-  nextVisitBoxLabel:   { fontSize: 11, fontWeight: '600', color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
-  nextVisitBoxDay:     { fontSize: 15, fontWeight: '700', color: Colors.textPrimary },
-  nextVisitBoxDayToday:{ color: Colors.primary[700] },
-  nextVisitBoxTime:    { fontSize: 12, color: Colors.textSecondary, marginTop: 2 },
+  nextVisitBox:        { borderRadius: 10, borderWidth: 1, padding: 12 },
+  nextVisitBoxToday:   {},
+  nextVisitBoxLabel:   { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
+  nextVisitBoxDay:     { fontSize: 15, fontWeight: '700' },
+  nextVisitBoxDayToday:{},
+  nextVisitBoxTime:    { fontSize: 12, marginTop: 2 },
 
   checklistSection: { marginTop: 4 },
   checklistHeader:  { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  checklistTitle:   { fontSize: 13, fontWeight: '700', color: Colors.textPrimary },
-  checklistProgress:    { fontSize: 12, fontWeight: '600', color: Colors.textSecondary },
-  checklistProgressDone:{ color: Colors.success },
-  allReadyBanner: { backgroundColor: '#dcfce7', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 8, borderWidth: 1, borderColor: '#86efac' },
-  allReadyText:   { fontSize: 12, fontWeight: '600', color: '#15803d', textAlign: 'center' },
+  checklistTitle:   { fontSize: 13, fontWeight: '700' },
+  checklistProgress:{ fontSize: 12, fontWeight: '600' },
+  checklistProgressDone:{},
+  allReadyBanner: { borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 8, borderWidth: 1 },
+  allReadyText:   { fontSize: 12, fontWeight: '600', textAlign: 'center' },
 
-  docRow:       { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10, borderRadius: 8, marginBottom: 4, backgroundColor: Colors.neutral[50], borderWidth: 1, borderColor: Colors.border, gap: 10 },
-  docRowChecked:{ backgroundColor: `${Colors.primary[500]}08`, borderColor: Colors.primary[200] },
-  checkbox:        { width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, borderColor: Colors.neutral[300], backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
-  checkboxChecked: { backgroundColor: Colors.primary[600], borderColor: Colors.primary[600] },
+  docRow:       { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10, borderRadius: 8, marginBottom: 4, borderWidth: 1, gap: 10 },
+  docRowChecked:{},
+  checkbox:        { width: 18, height: 18, borderRadius: 4, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
+  checkboxChecked: {},
   checkmark:       { width: 10, height: 10, justifyContent: 'center', alignItems: 'center' },
   checkmarkInner:  { width: 6, height: 4, borderLeftWidth: 1.5, borderBottomWidth: 1.5, borderColor: '#fff', transform: [{ rotate: '-45deg' }, { translateY: -1 }] },
-  docText:        { fontSize: 13, color: Colors.textPrimary, flex: 1, fontWeight: '500' },
-  docTextChecked: { textDecorationLine: 'line-through', color: Colors.textMuted },
+  docText:        { fontSize: 13, flex: 1, fontWeight: '500' },
+  docTextChecked: { textDecorationLine: 'line-through' },
   resetBtn:     { alignSelf: 'flex-start', paddingTop: 4 },
-  resetBtnText: { fontSize: 11, color: Colors.textMuted, textDecorationLine: 'underline' },
+  resetBtnText: { fontSize: 11, textDecorationLine: 'underline' },
 
-  noteBox:   { marginTop: 10, backgroundColor: Colors.neutral[50], borderRadius: 8, borderWidth: 1, borderColor: Colors.border, borderLeftWidth: 3, borderLeftColor: Colors.primary[400], padding: 10 },
-  noteLabel: { fontSize: 10, fontWeight: '700', color: Colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 },
-  noteText:  { fontSize: 12, color: Colors.textSecondary, lineHeight: 18 },
+  noteBox:   { marginTop: 10, borderRadius: 8, borderWidth: 1, borderLeftWidth: 3, padding: 10 },
+  noteLabel: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 },
+  noteText:  { fontSize: 12, lineHeight: 18 },
 });

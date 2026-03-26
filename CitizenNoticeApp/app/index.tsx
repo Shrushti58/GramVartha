@@ -1,6 +1,7 @@
+// app/index.tsx
 /**
  * Home Screen - QR-First Landing Page
- * Restyled: production-ready civic-tech aesthetic
+ * Restyled with theme support
  */
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -18,10 +19,15 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../constants/colors';
 import { Alert } from "react-native";
 import { isLoggedIn } from "../utils/auth";
-import { Button } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
+import { ThemedView } from '../components/ThemedView';
+import { ThemedText } from '../components/ThemedText';
+import { ThemedCard } from '../components/ThemedCard';
+import { ThemeToggle } from '../components/ThemeToggle';
+import { Ionicons } from '@expo/vector-icons';
+
 const { width } = Dimensions.get('window');
 
 interface ScannedVillage {
@@ -35,7 +41,7 @@ interface ScannedVillage {
 }
 
 // ─── Animated scan-ring around CTA ────────────────────────────────────────────
-const PulseRing = () => {
+const PulseRing = ({ color }: { color: string }) => {
   const scale = useRef(new Animated.Value(1)).current;
   const opacity = useRef(new Animated.Value(0.45)).current;
 
@@ -59,7 +65,11 @@ const PulseRing = () => {
       pointerEvents="none"
       style={[
         styles.pulseRing,
-        { transform: [{ scale }], opacity },
+        { 
+          transform: [{ scale }], 
+          opacity,
+          borderColor: color,
+        },
       ]}
     />
   );
@@ -87,13 +97,37 @@ const QRIcon = ({ size = 36, color = '#fff' }: { size?: number; color?: string }
     <View style={{ width: size, height: size }}>
       {/* Top-left finder */}
       {dot(0, 0, 3, 3)}
-      <View style={{ position: 'absolute', left: cell, top: cell, width: cell, height: cell, backgroundColor: color === '#fff' ? Colors.primary[600] : '#fff', borderRadius: 1 }} />
+      <View style={{ 
+        position: 'absolute', 
+        left: cell, 
+        top: cell, 
+        width: cell, 
+        height: cell, 
+        backgroundColor: color === '#fff' ? '#6D4C41' : '#fff', 
+        borderRadius: 1 
+      }} />
       {/* Top-right finder */}
       {dot(4, 0, 3, 3)}
-      <View style={{ position: 'absolute', left: 5 * cell, top: cell, width: cell, height: cell, backgroundColor: color === '#fff' ? Colors.primary[600] : '#fff', borderRadius: 1 }} />
+      <View style={{ 
+        position: 'absolute', 
+        left: 5 * cell, 
+        top: cell, 
+        width: cell, 
+        height: cell, 
+        backgroundColor: color === '#fff' ? '#6D4C41' : '#fff', 
+        borderRadius: 1 
+      }} />
       {/* Bottom-left finder */}
       {dot(0, 4, 3, 3)}
-      <View style={{ position: 'absolute', left: cell, top: 5 * cell, width: cell, height: cell, backgroundColor: color === '#fff' ? Colors.primary[600] : '#fff', borderRadius: 1 }} />
+      <View style={{ 
+        position: 'absolute', 
+        left: cell, 
+        top: 5 * cell, 
+        width: cell, 
+        height: cell, 
+        backgroundColor: color === '#fff' ? '#6D4C41' : '#fff', 
+        borderRadius: 1 
+      }} />
       {/* Data dots */}
       {dot(4, 3, 1, 1)}{dot(5, 4, 1, 1)}{dot(6, 3, 1, 1)}
       {dot(4, 5, 1, 1)}{dot(6, 5, 1, 1)}{dot(5, 6, 1, 1)}{dot(6, 6, 1, 1)}
@@ -102,15 +136,17 @@ const QRIcon = ({ size = 36, color = '#fff' }: { size?: number; color?: string }
   );
 };
 
-// ─── Village card ──────────────────────────────────────────────────────────────
+// ─── Village card with theme support ──────────────────────────────────────────────
 const VillageCard = ({
   item,
   onPress,
   index,
+  colors,
 }: {
   item: ScannedVillage;
   onPress: () => void;
   index: number;
+  colors: any;
 }) => {
   const slideAnim = useRef(new Animated.Value(20)).current;
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -144,30 +180,48 @@ const VillageCard = ({
       style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}
     >
       <TouchableOpacity
-        style={styles.villageCard}
+        style={[
+          styles.villageCard,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }
+        ]}
         onPress={onPress}
         activeOpacity={0.72}
       >
-        <View style={styles.villageAvatar}>
-          <Text style={styles.villageAvatarText}>{initials}</Text>
+        <View style={[
+          styles.villageAvatar,
+          { backgroundColor: `${colors.primary.DEFAULT}18` }
+        ]}>
+          <Text style={[styles.villageAvatarText, { color: colors.primary.DEFAULT }]}>
+            {initials}
+          </Text>
         </View>
         <View style={styles.villageCardBody}>
-          <Text style={styles.villageCardName}>{item.villageName}</Text>
-          <Text style={styles.villageCardMeta}>
+          <Text style={[styles.villageCardName, { color: colors.text.primary }]}>
+            {item.villageName}
+          </Text>
+          <Text style={[styles.villageCardMeta, { color: colors.text.secondary }]}>
             {item.district} · {item.state}
           </Text>
         </View>
-        <View style={styles.villageCardArrow}>
-          <Text style={styles.villageCardArrowText}>›</Text>
+        <View style={[
+          styles.villageCardArrow,
+          { backgroundColor: `${colors.primary.DEFAULT}12` }
+        ]}>
+          <Text style={[styles.villageCardArrowText, { color: colors.primary.DEFAULT }]}>
+            ›
+          </Text>
         </View>
       </TouchableOpacity>
     </Animated.View>
   );
 };
 
-
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function HomeScreen() {
+  const { colors, isDark, theme } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [recentVillages, setRecentVillages] = useState<ScannedVillage[]>([]);
 
@@ -178,9 +232,6 @@ export default function HomeScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide = useRef(new Animated.Value(24)).current;
 
-  //useEffect(()=>{
-  //  AsyncStorage.clear()
-  //},[])
   useEffect(() => {
     const t = setTimeout(() => {
       Animated.parallel([
@@ -204,39 +255,44 @@ export default function HomeScreen() {
   };
 
   const handleCreateComplaint = async () => {
-  const loggedIn = await isLoggedIn();
+    const loggedIn = await isLoggedIn();
 
-  if (!loggedIn) {
-    Alert.alert(
-      "Login Required",
-      "You must login to create a complaint",
-      [
-        {
-          text: "Login",
-          onPress: () => router.push({ pathname: "/auth/login" } as any),
-        },
-        {
-          text: "Register",
-          onPress: () => router.push({ pathname: "/auth/register" } as any),
-        },
-        { text: "Cancel", style: "cancel" },
-      ]
-    );
-    return;
-  }
+    if (!loggedIn) {
+      Alert.alert(
+        "Login Required",
+        "You must login to create a complaint",
+        [
+          {
+            text: "Login",
+            onPress: () => router.push({ pathname: "/auth/login" } as any),
+          },
+          {
+            text: "Register",
+            onPress: () => router.push({ pathname: "/auth/register" } as any),
+          },
+          { text: "Cancel", style: "cancel" },
+        ]
+      );
+      return;
+    }
 
-  router.push("/complaint");
-};
+    router.push("/complaint" as any);
+  };
+
   return (
-    <View style={styles.root}>
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.background} />
+    <ThemedView style={styles.root}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.background} />
 
       {/* ── Splash ── */}
       <Animated.View
         pointerEvents={isLoading ? 'auto' : 'none'}
         style={[
           styles.splash,
-          { opacity: splashOpacity, transform: [{ scale: splashScale }] },
+          { 
+            opacity: splashOpacity, 
+            transform: [{ scale: splashScale }],
+            backgroundColor: colors.primary.DEFAULT,
+          },
         ]}
       >
         <View style={styles.splashLogoWrap}>
@@ -264,89 +320,125 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Header */}
-          <View style={styles.header}>
+          {/* Header with Theme Toggle */}
+          <View style={[
+            styles.header,
+            {
+              backgroundColor: colors.surface,
+              borderBottomColor: colors.border,
+            }
+          ]}>
             <View style={styles.headerLogo}>
-              <View style={styles.headerLogoCircle}>
+              <View style={[
+                styles.headerLogoCircle,
+                { backgroundColor: colors.primary.DEFAULT }
+              ]}>
                 <Image
                   source={require('../assets/images/gramvarthalogo.png')}
                   style={styles.headerLogoImg}
                   resizeMode="contain"
                 />
               </View>
-              <View>
-                <Text style={styles.headerAppName}>GramVartha</Text>
-                <Text style={styles.headerTagline}>Digital Village Updates</Text>
+              <View style={styles.headerTextContainer}>
+                <Text style={[styles.headerAppName, { color: colors.primary[700] }]}>
+                  GramVartha
+                </Text>
+                <Text style={[styles.headerTagline, { color: colors.text.secondary }]}>
+                  Digital Village Updates
+                </Text>
               </View>
             </View>
+            <ThemeToggle variant="icon" />
           </View>
 
           {/* Hero CTA */}
           <View style={styles.heroSection}>
-            <Text style={styles.heroEyebrow}>VILLAGE NOTICES</Text>
-            <Text style={styles.heroTitle}>
+            <Text style={[styles.heroEyebrow, { color: colors.primary[500] }]}>
+              VILLAGE NOTICES
+            </Text>
+            <Text style={[styles.heroTitle, { color: colors.text.primary }]}>
               Scan once.{'\n'}Stay informed.
             </Text>
-            <Text style={styles.heroSub}>
+            <Text style={[styles.heroSub, { color: colors.text.secondary }]}>
               Point your camera at any village QR code to instantly access local
               notices, announcements, and updates — no sign-up needed.
             </Text>
 
             {/* Big scan button */}
             <View style={styles.ctaWrapper}>
-              <PulseRing />
+              <PulseRing color={colors.primary[500]} />
               <TouchableOpacity
-                style={styles.ctaButton}
-                onPress={() => router.push('qr-scanner' as any)}
+                style={[styles.ctaButton, { backgroundColor: colors.primary.DEFAULT }]}
+                onPress={() => router.push('/qr-notices/qr-scanner' as any)}
                 activeOpacity={0.88}
               >
                 <QRIcon size={34} color="#fff" />
                 <Text style={styles.ctaLabel}>Scan QR Code</Text>
               </TouchableOpacity>
             </View>
+            
             <TouchableOpacity
-  style={styles.secondaryButton}
-  onPress={handleCreateComplaint}
-  activeOpacity={0.8}
->
-  <Text style={styles.secondaryButtonText}>
-    Raise Issue / Complaint
-  </Text>
-</TouchableOpacity>
-<TouchableOpacity
-  style={styles.workGuideButton}
-  onPress={async () => {
-    if (recentVillages.length > 0) {
-      const v = recentVillages[0];
-     router.push('/qr-notices/workguide' as any);
-    } else {
-      Alert.alert(
-        'Scan a Village First',
-        'Please scan your village QR code to access the Work Guide.',
-        [
-          { text: 'Scan Now', onPress: () => router.push('qr-scanner' as any) },
-          { text: 'Cancel', style: 'cancel' },
-        ]
-      );
-    }
-  }}
-  activeOpacity={0.8}>
-  <Text style={styles.workGuideButtonText}>Work Guide</Text>
-</TouchableOpacity>
+              style={[
+                styles.secondaryButton,
+                {
+                  borderColor: colors.primary[500],
+                  backgroundColor: `${colors.primary[500]}10`,
+                }
+              ]}
+              onPress={handleCreateComplaint}
+              activeOpacity={0.8}
+            >
+              <Text style={[styles.secondaryButtonText, { color: colors.primary[700] }]}>
+                Raise Issue / Complaint
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[
+                styles.workGuideButton,
+                { backgroundColor: colors.primary.DEFAULT }
+              ]}
+              onPress={async () => {
+                if (recentVillages.length > 0) {
+                  router.push('/qr-notices/workguide' as any);
+                } else {
+                  Alert.alert(
+                    'Scan a Village First',
+                    'Please scan your village QR code to access the Work Guide.',
+                    [
+                      { text: 'Scan Now', onPress: () => router.push('/qr-notices/qr-scanner' as any) },
+                      { text: 'Cancel', style: 'cancel' },
+                    ]
+                  );
+                }
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.workGuideButtonText}>Work Guide</Text>
+            </TouchableOpacity>
 
             {/* Trust pills */}
             <View style={styles.pillRow}>
-              <View style={styles.pill}>
-                <Text style={styles.pillDot}>✓</Text>
-                <Text style={styles.pillText}>No login</Text>
+              <View style={[
+                styles.pill,
+                { backgroundColor: `${colors.primary[500]}12` }
+              ]}>
+                <Text style={[styles.pillDot, { color: colors.primary.DEFAULT }]}>✓</Text>
+                <Text style={[styles.pillText, { color: colors.primary[700] }]}>No login</Text>
               </View>
-              <View style={styles.pill}>
-                <Text style={styles.pillDot}>✓</Text>
-                <Text style={styles.pillText}>Instant access</Text>
+              <View style={[
+                styles.pill,
+                { backgroundColor: `${colors.primary[500]}12` }
+              ]}>
+                <Text style={[styles.pillDot, { color: colors.primary.DEFAULT }]}>✓</Text>
+                <Text style={[styles.pillText, { color: colors.primary[700] }]}>Instant access</Text>
               </View>
-              <View style={styles.pill}>
-                <Text style={styles.pillDot}>✓</Text>
-                <Text style={styles.pillText}>Free forever</Text>
+              <View style={[
+                styles.pill,
+                { backgroundColor: `${colors.primary[500]}12` }
+              ]}>
+                <Text style={[styles.pillDot, { color: colors.primary.DEFAULT }]}>✓</Text>
+                <Text style={[styles.pillText, { color: colors.primary[700] }]}>Free forever</Text>
               </View>
             </View>
           </View>
@@ -355,8 +447,10 @@ export default function HomeScreen() {
           {recentVillages.length > 0 && (
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Recently Scanned</Text>
-                <Text style={styles.sectionCount}>
+                <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+                  Recently Scanned
+                </Text>
+                <Text style={[styles.sectionCount, { color: colors.text.secondary }]}>
                   {recentVillages.length} village
                   {recentVillages.length > 1 ? 's' : ''}
                 </Text>
@@ -366,7 +460,8 @@ export default function HomeScreen() {
                   key={v.villageId}
                   item={v}
                   index={i}
-                  onPress={() => router.push(`qr-notices/${v.villageId}` as any)}
+                  colors={colors}
+                  onPress={() => router.push(`/qr-notices/${v.villageId}` as any)}
                 />
               ))}
             </View>
@@ -374,8 +469,10 @@ export default function HomeScreen() {
 
           {/* How it works */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>How it works</Text>
-            <View style={styles.stepsCard}>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+              How it works
+            </Text>
+            <ThemedCard variant="elevated" style={styles.stepsCard}>
               {[
                 { n: '1', label: 'Find the QR code', sub: 'Posted at the village entrance or notice board' },
                 { n: '2', label: 'Scan with the app', sub: 'Tap "Scan QR Code" and point your camera' },
@@ -383,37 +480,42 @@ export default function HomeScreen() {
               ].map((step, i, arr) => (
                 <View key={step.n}>
                   <View style={styles.stepRow}>
-                    <View style={styles.stepBadge}>
+                    <View style={[
+                      styles.stepBadge,
+                      { backgroundColor: colors.primary.DEFAULT }
+                    ]}>
                       <Text style={styles.stepBadgeText}>{step.n}</Text>
                     </View>
                     <View style={styles.stepBody}>
-                      <Text style={styles.stepLabel}>{step.label}</Text>
-                      <Text style={styles.stepSub}>{step.sub}</Text>
+                      <Text style={[styles.stepLabel, { color: colors.text.primary }]}>
+                        {step.label}
+                      </Text>
+                      <Text style={[styles.stepSub, { color: colors.text.secondary }]}>
+                        {step.sub}
+                      </Text>
                     </View>
                   </View>
                   {i < arr.length - 1 && (
-                    <View style={styles.stepConnector} />
+                    <View style={[styles.stepConnector, { backgroundColor: colors.border }]} />
                   )}
                 </View>
               ))}
-            </View>
+            </ThemedCard>
           </View>
 
           <View style={{ height: 32 }} />
         </ScrollView>
       </Animated.View>
-      
-    </View>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.background },
+  root: { flex: 1 },
 
   // ── Splash ──────────────────────────────────────────────────────────────────
   splash: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.primary[600],
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 100,
@@ -452,15 +554,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor: Colors.surface,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  headerLogo: { flexDirection: 'row', alignItems: 'center' },
+  headerLogo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  headerTextContainer: {
+    flex: 1,
+  },
   headerLogoCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: Colors.primary[600],
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -469,12 +574,10 @@ const styles = StyleSheet.create({
   headerAppName: {
     fontSize: 18,
     fontWeight: '800',
-    color: Colors.primary[700],
     letterSpacing: -0.3,
   },
   headerTagline: {
     fontSize: 11,
-    color: Colors.textSecondary,
     fontWeight: '500',
     marginTop: 1,
   },
@@ -485,56 +588,51 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     paddingBottom: 28,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: 'transparent',
   },
   heroEyebrow: {
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1.4,
-    color: Colors.primary[500],
     marginBottom: 8,
   },
   heroTitle: {
     fontSize: 34,
     fontWeight: '800',
-    color: Colors.textPrimary,
     lineHeight: 40,
     letterSpacing: -0.8,
     marginBottom: 12,
   },
   heroSub: {
     fontSize: 14,
-    color: Colors.textSecondary,
     lineHeight: 22,
     marginBottom: 32,
   },
 
   // CTA button
   ctaWrapper: {
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginBottom: 20,
-  width: 172,
-  height: 172,
-  alignSelf: 'center',
-},
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    width: 172,
+    height: 172,
+    alignSelf: 'center',
+  },
   pulseRing: {
     position: 'absolute',
     width: 172,
     height: 172,
     borderRadius: 86,
     borderWidth: 2,
-    borderColor: Colors.primary[500],
   },
   ctaButton: {
     width: 148,
     height: 148,
     borderRadius: 74,
-    backgroundColor: Colors.primary[600],
     justifyContent: 'center',
     alignItems: 'center',
     gap: 10,
-    shadowColor: Colors.primary[700],
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.35,
     shadowRadius: 18,
@@ -553,6 +651,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 8,
+    marginTop: 16,
   },
   pill: {
     flexDirection: 'row',
@@ -560,17 +659,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 20,
-    backgroundColor: `${Colors.primary[500]}12`,
     gap: 4,
   },
   pillDot: {
     fontSize: 11,
-    color: Colors.primary[600],
     fontWeight: '700',
   },
   pillText: {
     fontSize: 11,
-    color: Colors.primary[700],
     fontWeight: '600',
   },
 
@@ -588,12 +684,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: Colors.textPrimary,
     letterSpacing: -0.2,
   },
   sectionCount: {
     fontSize: 12,
-    color: Colors.textSecondary,
     fontWeight: '500',
   },
 
@@ -601,19 +695,16 @@ const styles = StyleSheet.create({
   villageCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 13,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: Colors.border,
   },
   villageAvatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: `${Colors.primary[500]}18`,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -621,40 +712,32 @@ const styles = StyleSheet.create({
   villageAvatarText: {
     fontSize: 13,
     fontWeight: '700',
-    color: Colors.primary[600],
   },
   villageCardBody: { flex: 1 },
   villageCardName: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.textPrimary,
     marginBottom: 2,
   },
   villageCardMeta: {
     fontSize: 12,
-    color: Colors.textSecondary,
   },
   villageCardArrow: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: `${Colors.primary[500]}12`,
     justifyContent: 'center',
     alignItems: 'center',
   },
   villageCardArrowText: {
     fontSize: 18,
-    color: Colors.primary[600],
     lineHeight: 22,
     marginLeft: 1,
   },
 
   // How it works
   stepsCard: {
-    backgroundColor: Colors.surface,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: Colors.border,
     padding: 20,
   },
   stepRow: {
@@ -665,7 +748,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: Colors.primary[600],
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
@@ -680,49 +762,40 @@ const styles = StyleSheet.create({
   stepLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.textPrimary,
     marginBottom: 2,
   },
   stepSub: {
     fontSize: 12,
-    color: Colors.textSecondary,
     lineHeight: 18,
   },
   stepConnector: {
     width: 1,
     height: 16,
-    backgroundColor: Colors.border,
     marginLeft: 15,
     marginVertical: 4,
   },
   secondaryButton: {
-  marginTop: 16,
-  alignSelf: 'center',
-  paddingVertical: 10,
-  paddingHorizontal: 20,
-  borderRadius: 20,
-  borderWidth: 1,
-  borderColor: Colors.primary[500],
-  backgroundColor: `${Colors.primary[500]}10`,
-},
-
-secondaryButtonText: {
-  color: Colors.primary[700],
-  fontSize: 13,
-  fontWeight: '600',
-},
-workGuideButton: {
-  marginTop: 10,
-  alignSelf: 'center',
-  paddingVertical: 10,
-  paddingHorizontal: 20,
-  borderRadius: 20,
-  backgroundColor: Colors.primary[600],
-},
-workGuideButtonText: {
-  color: '#fff',
-  fontSize: 13,
-  fontWeight: '600',
-},
+    marginTop: 16,
+    alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  secondaryButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  workGuideButton: {
+    marginTop: 10,
+    alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  workGuideButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+  },
 });
-

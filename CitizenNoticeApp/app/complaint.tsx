@@ -1,3 +1,4 @@
+// app/complaint.tsx
 import {
   View,
   Text,
@@ -17,7 +18,7 @@ import * as Location from "expo-location";
 import Toast from "react-native-toast-message";
 import apiService from "../services/api";
 import { router } from "expo-router";
-import Colors from "../constants/colors";
+import { useTheme } from "../context/ThemeContext";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ComplaintType = "issue" | "suggestion";
@@ -35,7 +36,7 @@ interface GpsLocation {
 }
 
 // ─── Helper: build warning messages ──────────────────────────────────────────
-function buildWarnings(imageSource: ImageSource, location: GpsLocation | null): string[] {
+function buildWarnings(imageSource: ImageSource, location: GpsLocation | null, colors: any): string[] {
   const warnings: string[] = [];
   if (imageSource === "gallery") {
     warnings.push("Gallery images are less reliable — camera photos are preferred for verification.");
@@ -48,20 +49,21 @@ function buildWarnings(imageSource: ImageSource, location: GpsLocation | null): 
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Complaint() {
-  const [type, setType]               = useState<ComplaintType>("issue");
-  const [title, setTitle]             = useState("");
+  const { colors, isDark } = useTheme();
+  const [type, setType] = useState<ComplaintType>("issue");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [photo, setPhoto]             = useState<string | null>(null);
-  const [photoFile, setPhotoFile]     = useState<PhotoFile | null>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [photoFile, setPhotoFile] = useState<PhotoFile | null>(null);
   const [imageSource, setImageSource] = useState<ImageSource>(null);
-  const [location, setLocation]       = useState<GpsLocation | null>(null);
-  const [locLoading, setLocLoading]   = useState(false);
-  const [loading, setLoading]         = useState(false);
-  const [focused, setFocused]         = useState<string | null>(null);
-  const [timestamp, setTimestamp]     = useState<string | null>(null);
+  const [location, setLocation] = useState<GpsLocation | null>(null);
+  const [locLoading, setLocLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState<string | null>(null);
+  const [timestamp, setTimestamp] = useState<string | null>(null);
 
   // Derived warning list — recomputed on every render (cheap)
-  const aiWarnings = buildWarnings(imageSource, location);
+  const aiWarnings = buildWarnings(imageSource, location, colors);
 
   // ── Auto-capture location after image is selected ─────────────────────────
   const autoCapureLocation = useCallback(async () => {
@@ -115,9 +117,9 @@ export default function Complaint() {
     }
     const result = await ImagePicker.launchCameraAsync({
       quality: 0.8,
-      allowsEditing: false, // disabled per requirement
+      allowsEditing: false,
       aspect: [4, 3],
-      exif: true,           // capture EXIF data
+      exif: true,
     });
     if (!result.canceled && result.assets[0]) {
       applyAsset(result.assets[0], "camera");
@@ -139,7 +141,7 @@ export default function Complaint() {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.8,
       allowsEditing: false,
-      exif: true, // capture EXIF data
+      exif: true,
     });
     if (!result.canceled && result.assets[0]) {
       applyAsset(result.assets[0], "gallery");
@@ -206,7 +208,7 @@ export default function Complaint() {
       formData.append("description", description.trim());
 
       if (type === "issue") {
-        formData.append("image", photoFile as any);         // renamed from "photo"
+        formData.append("image", photoFile as any);
         formData.append("lat", String(location!.lat));
         formData.append("lng", String(location!.lng));
         formData.append("timestamp", timestamp ?? new Date().toISOString());
@@ -241,45 +243,58 @@ export default function Complaint() {
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <KeyboardAvoidingView
-      style={S.root}
+      style={[styles.root, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <StatusBar barStyle="light-content" backgroundColor={Colors.primary[800]} />
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.primary[700]} />
 
       {/* ── Header ── */}
-      <View style={S.headerShell}>
-        <View style={S.accentCircle1} />
-        <View style={S.accentCircle2} />
-        <View style={S.headerNavRow}>
-          <TouchableOpacity onPress={() => router.back()} style={S.backBtn} activeOpacity={0.7}>
-            <Text style={S.backBtnTxt}>←</Text>
+      <View style={[styles.headerShell, { backgroundColor: colors.primary[700] }]}>
+        <View style={[styles.accentCircle1, { backgroundColor: "rgba(255,255,255,0.06)" }]} />
+        <View style={[styles.accentCircle2, { backgroundColor: "rgba(255,255,255,0.04)" }]} />
+        <View style={styles.headerNavRow}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
+            <Text style={styles.backBtnTxt}>←</Text>
           </TouchableOpacity>
         </View>
-        <View style={S.headerTitleBlock}>
-          <Text style={S.headerEyebrow}>CITIZEN PORTAL</Text>
-          <Text style={S.headerTitle}>New Complaint 📋</Text>
-          <View style={S.headerBreadcrumb}>
-            <View style={S.headerBreadcrumbDot} />
-            <Text style={S.headerSub}>Report an issue or share a suggestion</Text>
+        <View style={styles.headerTitleBlock}>
+          <Text style={styles.headerEyebrow}>CITIZEN PORTAL</Text>
+          <Text style={styles.headerTitle}>New Complaint 📋</Text>
+          <View style={styles.headerBreadcrumb}>
+            <View style={[styles.headerBreadcrumbDot, { backgroundColor: "rgba(255,255,255,0.45)" }]} />
+            <Text style={styles.headerSub}>Report an issue or share a suggestion</Text>
           </View>
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={S.scrollContent}
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
         {/* ── Type toggle ── */}
-        <View style={S.toggleWrap}>
+        <View style={[
+          styles.toggleWrap,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          }
+        ]}>
           {(["issue", "suggestion"] as ComplaintType[]).map((t) => (
             <TouchableOpacity
               key={t}
-              style={[S.toggleBtn, type === t && S.toggleBtnActive]}
+              style={[
+                styles.toggleBtn,
+                type === t && [styles.toggleBtnActive, { backgroundColor: colors.primary[700], shadowColor: colors.primary[900] }]
+              ]}
               onPress={() => setType(t)}
               activeOpacity={0.8}
             >
-              <Text style={[S.toggleBtnTxt, type === t && S.toggleBtnTxtActive]}>
+              <Text style={[
+                styles.toggleBtnTxt,
+                { color: colors.text.secondary },
+                type === t && [styles.toggleBtnTxtActive, { color: "#fff" }]
+              ]}>
                 {t === "issue" ? "🔧  Issue" : "💡  Suggestion"}
               </Text>
             </TouchableOpacity>
@@ -287,8 +302,14 @@ export default function Complaint() {
         </View>
 
         {/* ── Type hint ── */}
-        <View style={S.hintBox}>
-          <Text style={S.hintText}>
+        <View style={[
+          styles.hintBox,
+          {
+            backgroundColor: colors.primary[100] || "#f5efe9",
+            borderLeftColor: colors.primary[500] || "#a88560",
+          }
+        ]}>
+          <Text style={[styles.hintText, { color: colors.text.secondary }]}>
             {type === "issue"
               ? "Issues require a photo and your GPS location to verify and locate the problem."
               : "Suggestions are text-only. Share your ideas to improve the village."}
@@ -296,15 +317,32 @@ export default function Complaint() {
         </View>
 
         {/* ── Main form card ── */}
-        <View style={S.card}>
+        <View style={[
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            shadowColor: colors.primary[900],
+          }
+        ]}>
           {/* Title */}
-          <View style={[S.fieldWrap, S.fieldBorder]}>
-            <Text style={S.fieldLabel}>Title</Text>
-            <View style={[S.inputRow, focused === "title" && S.inputRowFocused]}>
+          <View style={[styles.fieldWrap, styles.fieldBorder, { borderBottomColor: colors.border }]}>
+            <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>Title</Text>
+            <View style={[
+              styles.inputRow,
+              {
+                backgroundColor: colors.background,
+                borderColor: colors.border,
+              },
+              focused === "title" && {
+                borderColor: colors.primary[500] || "#a88560",
+                backgroundColor: colors.primary[100] || "#f5efe9",
+              }
+            ]}>
               <TextInput
-                style={S.input}
+                style={[styles.input, { color: colors.text.primary }]}
                 placeholder="Brief title of your complaint"
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={colors.text.muted}
                 value={title}
                 onChangeText={setTitle}
                 onFocus={() => setFocused("title")}
@@ -316,13 +354,23 @@ export default function Complaint() {
           </View>
 
           {/* Description */}
-          <View style={S.fieldWrap}>
-            <Text style={S.fieldLabel}>Description</Text>
-            <View style={[S.textAreaRow, focused === "desc" && S.inputRowFocused]}>
+          <View style={styles.fieldWrap}>
+            <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>Description</Text>
+            <View style={[
+              styles.textAreaRow,
+              {
+                backgroundColor: colors.background,
+                borderColor: colors.border,
+              },
+              focused === "desc" && {
+                borderColor: colors.primary[500] || "#a88560",
+                backgroundColor: colors.primary[100] || "#f5efe9",
+              }
+            ]}>
               <TextInput
-                style={S.textArea}
+                style={[styles.textArea, { color: colors.text.primary }]}
                 placeholder="Describe the issue or suggestion in detail…"
-                placeholderTextColor={Colors.textMuted}
+                placeholderTextColor={colors.text.muted}
                 value={description}
                 onChangeText={setDescription}
                 onFocus={() => setFocused("desc")}
@@ -338,68 +386,93 @@ export default function Complaint() {
 
         {/* ── Issue-only: Photo ── */}
         {type === "issue" && (
-          <View style={S.card}>
-            <View style={S.fieldWrap}>
-              <Text style={S.fieldLabel}>
-                Photo  <Text style={S.requiredBadge}>REQUIRED</Text>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              shadowColor: colors.primary[900],
+            }
+          ]}>
+            <View style={styles.fieldWrap}>
+              <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>
+                Photo  <Text style={styles.requiredBadge}>REQUIRED</Text>
               </Text>
 
               {photo ? (
                 /* ── Preview + retake ── */
-                <View style={S.photoPreviewWrap}>
-                  <Image source={{ uri: photo }} style={S.photoPreview} resizeMode="cover" />
+                <View style={styles.photoPreviewWrap}>
+                  <Image source={{ uri: photo }} style={styles.photoPreview} resizeMode="cover" />
 
                   {/* Source badge */}
-                  <View style={[S.sourceBadge, imageSource === "gallery" && S.sourceBadgeGallery]}>
-                    <Text style={S.sourceBadgeTxt}>
+                  <View style={[
+                    styles.sourceBadge,
+                    imageSource === "gallery" && styles.sourceBadgeGallery,
+                    imageSource === "gallery" ? { backgroundColor: "#fff3e0" } : { backgroundColor: colors.primary[200] || "#e8d8c8" }
+                  ]}>
+                    <Text style={[styles.sourceBadgeTxt, { color: colors.primary[700] || "#6D4C41" }]}>
                       {imageSource === "camera" ? "📸 Camera" : "🖼️ Gallery"}
                     </Text>
                   </View>
 
                   <TouchableOpacity
-                    style={S.photoRemoveBtn}
+                    style={styles.photoRemoveBtn}
                     onPress={handleRemovePhoto}
                     activeOpacity={0.8}
                   >
-                    <Text style={S.photoRemoveTxt}>✕  Remove / Retake</Text>
+                    <Text style={styles.photoRemoveTxt}>✕  Remove / Retake</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
                 /* ── Dual picker buttons ── */
-                <View style={S.pickerButtonsWrap}>
+                <View style={styles.pickerButtonsWrap}>
                   <TouchableOpacity
-                    style={[S.pickerBtn, S.pickerBtnCamera]}
+                    style={[
+                      styles.pickerBtn,
+                      styles.pickerBtnCamera,
+                      {
+                        backgroundColor: colors.primary[100] || "#f5efe9",
+                        borderColor: colors.primary[400] || "#b89a70",
+                      }
+                    ]}
                     onPress={handleTakePhoto}
                     activeOpacity={0.8}
                   >
-                    <Text style={S.pickerBtnIcon}>📸</Text>
-                    <Text style={[S.pickerBtnTxt, S.pickerBtnTxtCamera]}>
+                    <Text style={styles.pickerBtnIcon}>📸</Text>
+                    <Text style={[styles.pickerBtnTxt, styles.pickerBtnTxtCamera, { color: colors.primary[700] || "#6D4C41" }]}>
                       Take Photo
                     </Text>
-                    <Text style={S.pickerBtnSub}>Recommended</Text>
+                    <Text style={[styles.pickerBtnSub, { color: colors.text.muted }]}>Recommended</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    style={[S.pickerBtn, S.pickerBtnGallery]}
+                    style={[
+                      styles.pickerBtn,
+                      styles.pickerBtnGallery,
+                      {
+                        backgroundColor: colors.background,
+                        borderColor: colors.border,
+                      }
+                    ]}
                     onPress={handlePickFromGallery}
                     activeOpacity={0.8}
                   >
-                    <Text style={S.pickerBtnIcon}>🖼️</Text>
-                    <Text style={[S.pickerBtnTxt, S.pickerBtnTxtGallery]}>
+                    <Text style={styles.pickerBtnIcon}>🖼️</Text>
+                    <Text style={[styles.pickerBtnTxt, styles.pickerBtnTxtGallery, { color: colors.text.secondary }]}>
                       Upload from Gallery
                     </Text>
-                    <Text style={S.pickerBtnSub}>Less reliable</Text>
+                    <Text style={[styles.pickerBtnSub, { color: colors.text.muted }]}>Less reliable</Text>
                   </TouchableOpacity>
                 </View>
               )}
 
               {/* ── AI Warning messages ── */}
               {aiWarnings.length > 0 && (
-                <View style={S.warningWrap}>
+                <View style={styles.warningWrap}>
                   {aiWarnings.map((w, i) => (
-                    <View key={i} style={S.warningRow}>
-                      <Text style={S.warningIcon}>⚠️</Text>
-                      <Text style={S.warningText}>{w}</Text>
+                    <View key={i} style={styles.warningRow}>
+                      <Text style={styles.warningIcon}>⚠️</Text>
+                      <Text style={styles.warningText}>{w}</Text>
                     </View>
                   ))}
                 </View>
@@ -410,47 +483,64 @@ export default function Complaint() {
 
         {/* ── Issue-only: Location ── */}
         {type === "issue" && (
-          <View style={S.card}>
-            <View style={S.fieldWrap}>
-              <Text style={S.fieldLabel}>
-                Location  <Text style={S.requiredBadge}>REQUIRED</Text>
+          <View style={[
+            styles.card,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              shadowColor: colors.primary[900],
+            }
+          ]}>
+            <View style={styles.fieldWrap}>
+              <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>
+                Location  <Text style={styles.requiredBadge}>REQUIRED</Text>
               </Text>
 
               {location ? (
-                <View style={S.locRow}>
-                  <View style={S.locIconWrap}>
-                    <Text style={S.locIcon}>📍</Text>
+                <View style={[styles.locRow, { backgroundColor: colors.primary[100] || "#f5efe9" }]}>
+                  <View style={[styles.locIconWrap, { backgroundColor: colors.primary[200] || "#e8d8c8" }]}>
+                    <Text style={styles.locIcon}>📍</Text>
                   </View>
-                  <View style={S.locTextBlock}>
-                    <Text style={S.locCoords}>
+                  <View style={styles.locTextBlock}>
+                    <Text style={[styles.locCoords, { color: colors.text.primary }]}>
                       {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
                     </Text>
-                    <Text style={S.locCaptured}>GPS captured</Text>
+                    <Text style={[styles.locCaptured, { color: colors.primary[600] || "#8B6B61" }]}>
+                      GPS captured
+                    </Text>
                   </View>
                   <TouchableOpacity
                     onPress={handleGetLocation}
-                    style={S.locRefreshBtn}
+                    style={[styles.locRefreshBtn, { backgroundColor: colors.primary[200] || "#e8d8c8" }]}
                     activeOpacity={0.8}
                     disabled={locLoading}
                   >
                     {locLoading ? (
-                      <ActivityIndicator color={Colors.primary[600] ?? "#8B6B61"} size="small" />
+                      <ActivityIndicator color={colors.primary[600] || "#8B6B61"} size="small" />
                     ) : (
-                      <Text style={S.locRefreshTxt}>Refresh</Text>
+                      <Text style={[styles.locRefreshTxt, { color: colors.primary[700] || "#6D4C41" }]}>Refresh</Text>
                     )}
                   </TouchableOpacity>
                 </View>
               ) : (
                 <TouchableOpacity
-                  style={S.locCaptureBtn}
+                  style={[
+                    styles.locCaptureBtn,
+                    {
+                      backgroundColor: colors.background,
+                      borderColor: colors.border,
+                    }
+                  ]}
                   onPress={handleGetLocation}
                   activeOpacity={0.8}
                   disabled={locLoading}
                 >
                   {locLoading ? (
-                    <ActivityIndicator color={Colors.primary[600] ?? "#8B6B61"} size="small" />
+                    <ActivityIndicator color={colors.primary[600] || "#8B6B61"} size="small" />
                   ) : (
-                    <Text style={S.locCaptureTxt}>📍  Capture My Location</Text>
+                    <Text style={[styles.locCaptureTxt, { color: colors.primary[600] || "#8B6B61" }]}>
+                      📍  Capture My Location
+                    </Text>
                   )}
                 </TouchableOpacity>
               )}
@@ -460,7 +550,11 @@ export default function Complaint() {
 
         {/* ── Submit ── */}
         <TouchableOpacity
-          style={[S.submitBtn, loading && S.submitBtnDisabled]}
+          style={[
+            styles.submitBtn,
+            { backgroundColor: colors.button?.primary || colors.primary.DEFAULT },
+            loading && styles.submitBtnDisabled
+          ]}
           onPress={handleSubmit}
           activeOpacity={0.82}
           disabled={loading}
@@ -468,7 +562,7 @@ export default function Complaint() {
           {loading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
-            <Text style={S.submitBtnTxt}>Submit Complaint</Text>
+            <Text style={[styles.submitBtnTxt, { color: colors.text.inverse }]}>Submit Complaint</Text>
           )}
         </TouchableOpacity>
       </ScrollView>
@@ -479,15 +573,14 @@ export default function Complaint() {
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
-const S = StyleSheet.create({
-  root: { flex: 1, backgroundColor: Colors.background },
+const styles = StyleSheet.create({
+  root: { flex: 1 },
 
   // ── Header ────────────────────────────────────────────────────────────────
   headerShell: {
-    backgroundColor: Colors.primary[700],
     paddingBottom: 28,
     overflow: "hidden",
-    shadowColor: Colors.primary[900],
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.22,
     shadowRadius: 12,
@@ -496,13 +589,11 @@ const S = StyleSheet.create({
   accentCircle1: {
     position: "absolute",
     width: 220, height: 220, borderRadius: 110,
-    backgroundColor: "rgba(255,255,255,0.06)",
     top: -80, right: -50,
   },
   accentCircle2: {
     position: "absolute",
     width: 130, height: 130, borderRadius: 65,
-    backgroundColor: "rgba(255,255,255,0.04)",
     bottom: -30, left: 30,
   },
   headerNavRow: { paddingTop: 54, paddingHorizontal: 16, paddingBottom: 18 },
@@ -525,7 +616,6 @@ const S = StyleSheet.create({
   headerBreadcrumb: { flexDirection: "row", alignItems: "center", gap: 7, marginTop: 4 },
   headerBreadcrumbDot: {
     width: 5, height: 5, borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.45)",
   },
   headerSub: { fontSize: 12, color: "rgba(255,255,255,0.55)", fontWeight: "500" },
 
@@ -540,10 +630,8 @@ const S = StyleSheet.create({
   // ── Type toggle ───────────────────────────────────────────────────────────
   toggleWrap: {
     flexDirection: "row",
-    backgroundColor: Colors.surface,
     borderRadius: 14,
     borderWidth: 1,
-    borderColor: Colors.border,
     padding: 4,
     gap: 4,
   },
@@ -553,8 +641,6 @@ const S = StyleSheet.create({
     alignItems: "center",
   },
   toggleBtnActive: {
-    backgroundColor: Colors.primary[700],
-    shadowColor: Colors.primary[900],
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -562,42 +648,35 @@ const S = StyleSheet.create({
   },
   toggleBtnTxt: {
     fontSize: 13, fontWeight: "700",
-    color: Colors.textSecondary,
   },
-  toggleBtnTxtActive: { color: "#fff" },
+  toggleBtnTxtActive: {},
 
   // ── Hint box ──────────────────────────────────────────────────────────────
   hintBox: {
-    backgroundColor: Colors.primary[100] ?? "#f5efe9",
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderLeftWidth: 3,
-    borderLeftColor: Colors.primary[500] ?? "#a88560",
   },
   hintText: {
-    fontSize: 12, color: Colors.textSecondary,
+    fontSize: 12,
     lineHeight: 18, fontWeight: "500",
   },
 
   // ── Card ──────────────────────────────────────────────────────────────────
   card: {
-    backgroundColor: Colors.surface,
     borderRadius: 18,
     borderWidth: 1,
-    borderColor: Colors.border,
     overflow: "hidden",
-    shadowColor: Colors.primary[900],
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.07,
     shadowRadius: 8,
     elevation: 2,
   },
   fieldWrap: { paddingHorizontal: 14, paddingVertical: 14 },
-  fieldBorder: { borderBottomWidth: 1, borderBottomColor: Colors.border },
+  fieldBorder: { borderBottomWidth: 1 },
   fieldLabel: {
     fontSize: 11, fontWeight: "800",
-    color: Colors.textSecondary,
     letterSpacing: 0.8,
     marginBottom: 8,
     textTransform: "uppercase",
@@ -611,35 +690,25 @@ const S = StyleSheet.create({
   // ── Inputs ────────────────────────────────────────────────────────────────
   inputRow: {
     flexDirection: "row", alignItems: "center",
-    backgroundColor: Colors.background,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     paddingHorizontal: 12,
     height: 48,
   },
-  inputRowFocused: {
-    borderColor: Colors.primary[500] ?? "#a88560",
-    backgroundColor: Colors.primary[100] ?? "#f5efe9",
-  },
   input: {
     flex: 1, fontSize: 14,
-    color: Colors.textPrimary,
     fontWeight: "500",
     paddingVertical: 0,
   },
   textAreaRow: {
-    backgroundColor: Colors.background,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     paddingHorizontal: 12,
     paddingVertical: 10,
     minHeight: 100,
   },
   textArea: {
     fontSize: 14,
-    color: Colors.textPrimary,
     fontWeight: "500",
     lineHeight: 22,
   },
@@ -658,28 +727,17 @@ const S = StyleSheet.create({
     alignItems: "center",
     gap: 4,
   },
-  pickerBtnCamera: {
-    backgroundColor: Colors.primary[100] ?? "#f5efe9",
-    borderColor: Colors.primary[400] ?? "#b89a70",
-  },
-  pickerBtnGallery: {
-    backgroundColor: Colors.background,
-    borderColor: Colors.border,
-  },
+  pickerBtnCamera: {},
+  pickerBtnGallery: {},
   pickerBtnIcon: { fontSize: 22 },
   pickerBtnTxt: {
     fontSize: 12, fontWeight: "700",
     textAlign: "center",
   },
-  pickerBtnTxtCamera: {
-    color: Colors.primary[700] ?? "#6D4C41",
-  },
-  pickerBtnTxtGallery: {
-    color: Colors.textSecondary,
-  },
+  pickerBtnTxtCamera: {},
+  pickerBtnTxtGallery: {},
   pickerBtnSub: {
     fontSize: 10, fontWeight: "500",
-    color: Colors.textMuted,
   },
 
   // ── Photo preview ─────────────────────────────────────────────────────────
@@ -687,21 +745,16 @@ const S = StyleSheet.create({
   photoPreview: {
     width: "100%", height: 180,
     borderRadius: 12,
-    backgroundColor: Colors.border,
   },
   sourceBadge: {
     alignSelf: "flex-start",
-    backgroundColor: Colors.primary[200] ?? "#e8d8c8",
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
   },
-  sourceBadgeGallery: {
-    backgroundColor: "#fff3e0",
-  },
+  sourceBadgeGallery: {},
   sourceBadgeTxt: {
     fontSize: 10, fontWeight: "700",
-    color: Colors.primary[700] ?? "#6D4C41",
   },
   photoRemoveBtn: {
     alignSelf: "flex-start",
@@ -738,44 +791,36 @@ const S = StyleSheet.create({
 
   // ── Location ──────────────────────────────────────────────────────────────
   locCaptureBtn: {
-    backgroundColor: Colors.background,
     borderRadius: 12,
     borderWidth: 1.5,
-    borderColor: Colors.border,
     borderStyle: "dashed",
     paddingVertical: 16,
     alignItems: "center",
   },
   locCaptureTxt: {
     fontSize: 13, fontWeight: "700",
-    color: Colors.primary[600] ?? "#8B6B61",
   },
   locRow: {
     flexDirection: "row", alignItems: "center",
-    backgroundColor: Colors.primary[100] ?? "#f5efe9",
     borderRadius: 12,
     padding: 12,
     gap: 10,
   },
   locIconWrap: {
     width: 36, height: 36, borderRadius: 10,
-    backgroundColor: Colors.primary[200] ?? "#e8d8c8",
     justifyContent: "center", alignItems: "center",
   },
   locIcon: { fontSize: 16 },
   locTextBlock: { flex: 1 },
   locCoords: {
     fontSize: 13, fontWeight: "700",
-    color: Colors.textPrimary,
     fontVariant: ["tabular-nums"],
   },
   locCaptured: {
     fontSize: 11, fontWeight: "500",
-    color: Colors.primary[600] ?? "#8B6B61",
     marginTop: 1,
   },
   locRefreshBtn: {
-    backgroundColor: Colors.primary[200] ?? "#e8d8c8",
     borderRadius: 8,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -784,17 +829,15 @@ const S = StyleSheet.create({
   },
   locRefreshTxt: {
     fontSize: 11, fontWeight: "700",
-    color: Colors.primary[700] ?? "#6D4C41",
   },
 
   // ── Submit ────────────────────────────────────────────────────────────────
   submitBtn: {
-    backgroundColor: Colors.button.primary,
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: Colors.primary[900],
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
@@ -802,7 +845,6 @@ const S = StyleSheet.create({
   },
   submitBtnDisabled: { opacity: 0.62 },
   submitBtnTxt: {
-    color: Colors.textInverse,
     fontSize: 15, fontWeight: "800",
     letterSpacing: 0.3,
   },

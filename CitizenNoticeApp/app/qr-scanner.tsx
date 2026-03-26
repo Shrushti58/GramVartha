@@ -1,8 +1,4 @@
-/**
- * QR Scanner Screen - Scan village QR codes
- * Restyled: production-ready, clean civic-tech aesthetic
- */
-
+// app/qr-scanner.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
@@ -20,7 +16,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Colors } from '../constants/colors';
+import { useTheme } from '../context/ThemeContext';
 import { Config } from '../constants/config';
 import axios from 'axios';
 
@@ -28,11 +24,7 @@ const { width, height } = Dimensions.get('window');
 const FRAME_SIZE = width * 0.72;
 
 // ─── Corner bracket component for scanner frame ───────────────────────────────
-const CornerBracket = ({
-  position,
-}: {
-  position: 'tl' | 'tr' | 'bl' | 'br';
-}) => {
+const CornerBracket = ({ position, colors }: { position: 'tl' | 'tr' | 'bl' | 'br'; colors: any }) => {
   const isTop = position.startsWith('t');
   const isLeft = position.endsWith('l');
   return (
@@ -46,6 +38,7 @@ const CornerBracket = ({
       <View
         style={[
           scannerStyles.cornerH,
+          { backgroundColor: colors.primary[500] },
           isLeft ? { left: 0 } : { right: 0 },
           isTop ? { top: 0 } : { bottom: 0 },
         ]}
@@ -53,6 +46,7 @@ const CornerBracket = ({
       <View
         style={[
           scannerStyles.cornerV,
+          { backgroundColor: colors.primary[500] },
           isLeft ? { left: 0 } : { right: 0 },
           isTop ? { top: 0 } : { bottom: 0 },
         ]}
@@ -62,7 +56,7 @@ const CornerBracket = ({
 };
 
 // ─── Animated scan line ────────────────────────────────────────────────────────
-const ScanLine = ({ isActive }: { isActive: boolean }) => {
+const ScanLine = ({ isActive, colors }: { isActive: boolean; colors: any }) => {
   const anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -92,13 +86,17 @@ const ScanLine = ({ isActive }: { isActive: boolean }) => {
 
   return (
     <Animated.View
-      style={[scannerStyles.scanLine, { transform: [{ translateY }] }]}
+      style={[
+        scannerStyles.scanLine,
+        { backgroundColor: colors.primary[500], transform: [{ translateY }] }
+      ]}
     />
   );
 };
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function QRScannerScreen() {
+  const { colors, isDark } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -120,91 +118,84 @@ export default function QRScannerScreen() {
     if (!permission?.granted) requestPermission();
   }, [permission]);
 
- const handleBarCodeScanned = async ({ data }: { data: string }) => {
-  if (scanned || loading) return;
+  const handleBarCodeScanned = async ({ data }: { data: string }) => {
+    if (scanned || loading) return;
 
-  setScanned(true);
-  setLoading(true);
+    setScanned(true);
+    setLoading(true);
 
-  try {
-    const qrCodeId = data.trim();
+    try {
+      const qrCodeId = data.trim();
 
-    const response = await axios.get(
-      `${Config.API_BASE_URL}/villages/qr/${qrCodeId}`
-    );
+      const response = await axios.get(
+        `${Config.API_BASE_URL}/villages/qr/${qrCodeId}`
+      );
 
-    const villageData = response.data.village;
+      const villageData = response.data.village;
 
-    const scannedVillageData = {
-      villageId: villageData._id,
-      villageName: villageData.name,
-      district: villageData.district,
-      state: villageData.state,
-      pincode: villageData.pincode,
-      scannedAt: new Date().toISOString(),
-      qrCodeId,
-    };
+      const scannedVillageData = {
+        villageId: villageData._id,
+        villageName: villageData.name,
+        district: villageData.district,
+        state: villageData.state,
+        pincode: villageData.pincode,
+        scannedAt: new Date().toISOString(),
+        qrCodeId,
+      };
 
-    // Store full village object
-    await AsyncStorage.setItem(
-      "scannedVillage",
-      JSON.stringify(scannedVillageData)
-    );
+      await AsyncStorage.setItem(
+        "scannedVillage",
+        JSON.stringify(scannedVillageData)
+      );
+      await AsyncStorage.setItem("villageId", villageData._id);
 
-    // Store villageId separately for authentication / complaints
-    await AsyncStorage.setItem("villageId", villageData._id);
+      const recentStr = await AsyncStorage.getItem("recentVillages");
+      const recent = recentStr ? JSON.parse(recentStr) : [];
 
-    // Manage recent villages list
-    const recentStr = await AsyncStorage.getItem("recentVillages");
-    const recent = recentStr ? JSON.parse(recentStr) : [];
+      const filtered = recent.filter(
+        (v: any) => v.villageId !== villageData._id
+      );
+      filtered.unshift(scannedVillageData);
+      await AsyncStorage.setItem(
+        "recentVillages",
+        JSON.stringify(filtered.slice(0, 10))
+      );
 
-    const filtered = recent.filter(
-      (v: any) => v.villageId !== villageData._id
-    );
+      Alert.alert(
+        "✓ Village Found",
+        `"${villageData.name}" has been scanned successfully.`,
+        [
+          {
+            text: "View Notices",
+            onPress: () => router.push(`qr-notices/${villageData._id}` as any),
+          },
+          {
+            text: "Scan Another",
+            style: "cancel",
+            onPress: () => {
+              setScanned(false);
+              setLoading(false);
+            },
+          },
+        ]
+      );
+    } catch (err: unknown) {
+      const errorMessage =
+        (err as any)?.response?.data?.error ||
+        "Invalid QR code. Please try again.";
 
-    filtered.unshift(scannedVillageData);
-
-    await AsyncStorage.setItem(
-      "recentVillages",
-      JSON.stringify(filtered.slice(0, 10))
-    );
-
-    Alert.alert(
-      "✓ Village Found",
-      `"${villageData.name}" has been scanned successfully.`,
-      [
+      Alert.alert("Unrecognised Code", errorMessage, [
         {
-          text: "View Notices",
-          onPress: () =>
-            router.push(`qr-notices/${villageData._id}` as any),
-        },
-        {
-          text: "Scan Another",
-          style: "cancel",
+          text: "Try Again",
           onPress: () => {
             setScanned(false);
             setLoading(false);
           },
         },
-      ]
-    );
+      ]);
+    }
+  };
 
-  } catch (err: unknown) {
-    const errorMessage =
-      (err as any)?.response?.data?.error ||
-      "Invalid QR code. Please try again.";
-
-    Alert.alert("Unrecognised Code", errorMessage, [
-      {
-        text: "Try Again",
-        onPress: () => {
-          setScanned(false);
-          setLoading(false);
-        },
-      },
-    ]);
-  }
-};
   const handleManualSubmit = async () => {
     if (!manualInput.trim()) {
       Alert.alert('Required', 'Please enter a QR code or village ID.');
@@ -217,9 +208,9 @@ export default function QRScannerScreen() {
   // ── Permission screens ─────────────────────────────────────────────────────
   if (!permission) {
     return (
-      <View style={styles.permissionContainer}>
-        <ActivityIndicator color={Colors.primary[500]} />
-        <Text style={styles.permissionSubtext}>
+      <View style={[styles.permissionContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator color={colors.primary[500]} />
+        <Text style={[styles.permissionSubtext, { color: colors.text.secondary }]}>
           Checking camera permissions…
         </Text>
       </View>
@@ -228,29 +219,30 @@ export default function QRScannerScreen() {
 
   if (!permission.granted) {
     return (
-      <View style={styles.permissionContainer}>
-        <StatusBar barStyle="dark-content" />
-        <View style={styles.iconCircle}>
+      <View style={[styles.permissionContainer, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+        <View style={[styles.iconCircle, { backgroundColor: `${colors.primary[500]}18` }]}>
           <Text style={styles.iconEmoji}>📷</Text>
         </View>
-        <Text style={styles.permissionTitle}>Camera Access Needed</Text>
-        <Text style={styles.permissionBody}>
-          Allow camera access so you can scan village QR codes and view local
-          notices.
+        <Text style={[styles.permissionTitle, { color: colors.text.primary }]}>
+          Camera Access Needed
+        </Text>
+        <Text style={[styles.permissionBody, { color: colors.text.secondary }]}>
+          Allow camera access so you can scan village QR codes and view local notices.
         </Text>
         <TouchableOpacity
-          style={styles.primaryBtn}
+          style={[styles.primaryBtn, { backgroundColor: colors.primary[500] }]}
           onPress={requestPermission}
           activeOpacity={0.85}
         >
           <Text style={styles.primaryBtnText}>Allow Camera</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={styles.ghostBtn}
+          style={[styles.ghostBtn, { borderColor: colors.border }]}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Text style={styles.ghostBtnText}>Go Back</Text>
+          <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>Go Back</Text>
         </TouchableOpacity>
       </View>
     );
@@ -259,11 +251,11 @@ export default function QRScannerScreen() {
   // ── Manual entry screen ────────────────────────────────────────────────────
   if (showManualInput) {
     return (
-      <Animated.View style={[styles.flex, { opacity: fadeAnim }]}>
-        <StatusBar barStyle="dark-content" />
+      <Animated.View style={[styles.flex, { backgroundColor: colors.background, opacity: fadeAnim }]}>
+        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
         <ScrollView
           style={styles.flex}
-          contentContainerStyle={styles.manualScroll}
+          contentContainerStyle={[styles.manualScroll, { backgroundColor: colors.background }]}
           keyboardShouldPersistTaps="handled"
         >
           {/* Header row */}
@@ -274,25 +266,32 @@ export default function QRScannerScreen() {
                 setManualInput('');
               }}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={styles.backChip}
+              style={[styles.backChip, { backgroundColor: `${colors.primary[500]}14` }]}
             >
-              <Text style={styles.backChipText}>← Scanner</Text>
+              <Text style={[styles.backChipText, { color: colors.primary[500] }]}>← Scanner</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.manualBody}>
-            <Text style={styles.manualLabel}>Manual Entry</Text>
-            <Text style={styles.manualTitle}>Enter Village Code</Text>
-            <Text style={styles.manualDesc}>
+            <Text style={[styles.manualLabel, { color: colors.primary[500] }]}>Manual Entry</Text>
+            <Text style={[styles.manualTitle, { color: colors.text.primary }]}>Enter Village Code</Text>
+            <Text style={[styles.manualDesc, { color: colors.text.secondary }]}>
               Type or paste the QR code value or village ID below.
             </Text>
 
             <View style={styles.inputWrapper}>
-              <Text style={styles.inputLabel}>QR CODE / VILLAGE ID</Text>
+              <Text style={[styles.inputLabel, { color: colors.text.secondary }]}>QR CODE / VILLAGE ID</Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    borderColor: colors.border,
+                    color: colors.text.primary,
+                    backgroundColor: colors.surface,
+                  }
+                ]}
                 placeholder="e.g. VLG-MH-2024-0041"
-                placeholderTextColor={Colors.textSecondary}
+                placeholderTextColor={colors.text.muted}
                 value={manualInput}
                 onChangeText={setManualInput}
                 editable={!loading}
@@ -303,7 +302,11 @@ export default function QRScannerScreen() {
             </View>
 
             <TouchableOpacity
-              style={[styles.primaryBtn, loading && styles.btnDisabled]}
+              style={[
+                styles.primaryBtn,
+                { backgroundColor: colors.primary[500] },
+                loading && styles.btnDisabled
+              ]}
               onPress={handleManualSubmit}
               disabled={loading}
               activeOpacity={0.85}
@@ -316,13 +319,13 @@ export default function QRScannerScreen() {
             </TouchableOpacity>
 
             <View style={styles.dividerRow}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>or</Text>
-              <View style={styles.dividerLine} />
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
+              <Text style={[styles.dividerText, { color: colors.text.secondary }]}>or</Text>
+              <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
             </View>
 
             <TouchableOpacity
-              style={styles.ghostBtn}
+              style={[styles.ghostBtn, { borderColor: colors.border }]}
               onPress={() => {
                 setShowManualInput(false);
                 setManualInput('');
@@ -330,7 +333,7 @@ export default function QRScannerScreen() {
               disabled={loading}
               activeOpacity={0.7}
             >
-              <Text style={styles.ghostBtnText}>Back to Scanner</Text>
+              <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>Back to Scanner</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -368,11 +371,11 @@ export default function QRScannerScreen() {
           />
           {/* Scanner frame */}
           <View style={{ width: FRAME_SIZE, height: FRAME_SIZE }}>
-            <CornerBracket position="tl" />
-            <CornerBracket position="tr" />
-            <CornerBracket position="bl" />
-            <CornerBracket position="br" />
-            <ScanLine isActive={!scanned && !loading} />
+            <CornerBracket position="tl" colors={colors} />
+            <CornerBracket position="tr" colors={colors} />
+            <CornerBracket position="bl" colors={colors} />
+            <CornerBracket position="br" colors={colors} />
+            <ScanLine isActive={!scanned && !loading} colors={colors} />
           </View>
           <View
             style={[
@@ -388,7 +391,7 @@ export default function QRScannerScreen() {
       {/* Close button */}
       <View style={styles.topBar} pointerEvents="box-none">
         <TouchableOpacity
-          style={styles.closeBtn}
+          style={[styles.closeBtn, { backgroundColor: 'rgba(0,0,0,0.45)' }]}
           onPress={() => router.back()}
           activeOpacity={0.8}
         >
@@ -408,21 +411,28 @@ export default function QRScannerScreen() {
       </View>
 
       {/* Bottom panel */}
-      <View style={styles.bottomPanel}>
+      <View style={[
+        styles.bottomPanel,
+        {
+          backgroundColor: colors.surface,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+        }
+      ]}>
         {loading ? (
           <View style={styles.loadingRow}>
             <ActivityIndicator
               size="small"
-              color={Colors.primary[500]}
+              color={colors.primary[500]}
               style={{ marginRight: 10 }}
             />
-            <Text style={styles.loadingText}>Verifying QR code…</Text>
+            <Text style={[styles.loadingText, { color: colors.text.secondary }]}>Verifying QR code…</Text>
           </View>
         ) : (
           <>
             {scanned && (
               <TouchableOpacity
-                style={styles.primaryBtnSolid}
+                style={[styles.primaryBtnSolid, { backgroundColor: colors.primary[500] }]}
                 onPress={() => {
                   setScanned(false);
                   setLoading(false);
@@ -437,7 +447,9 @@ export default function QRScannerScreen() {
               onPress={() => setShowManualInput(true)}
               activeOpacity={0.7}
             >
-              <Text style={styles.manualEntryText}>Enter code manually</Text>
+              <Text style={[styles.manualEntryText, { color: colors.primary[500] }]}>
+                Enter code manually
+              </Text>
             </TouchableOpacity>
           </>
         )}
@@ -448,21 +460,19 @@ export default function QRScannerScreen() {
 
 // ─── Shared styles ─────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  flex: { flex: 1, backgroundColor: Colors.background },
+  flex: { flex: 1 },
 
   // Permission / loading screens
   permissionContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Colors.background,
     paddingHorizontal: 32,
   },
   iconCircle: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: `${Colors.primary[500]}18`,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
@@ -471,27 +481,23 @@ const styles = StyleSheet.create({
   permissionTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: Colors.textPrimary,
     marginBottom: 10,
     textAlign: 'center',
     letterSpacing: -0.3,
   },
   permissionBody: {
     fontSize: 15,
-    color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
     marginBottom: 32,
   },
   permissionSubtext: {
     fontSize: 14,
-    color: Colors.textSecondary,
     marginTop: 12,
   },
 
   // Buttons
   primaryBtn: {
-    backgroundColor: Colors.primary[500],
     paddingVertical: 15,
     paddingHorizontal: 24,
     borderRadius: 12,
@@ -500,7 +506,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   primaryBtnSolid: {
-    backgroundColor: Colors.primary[500],
     paddingVertical: 15,
     paddingHorizontal: 24,
     borderRadius: 12,
@@ -521,11 +526,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1.5,
-    borderColor: Colors.border,
     width: '100%',
   },
   ghostBtnText: {
-    color: Colors.textPrimary,
     fontSize: 15,
     fontWeight: '500',
   },
@@ -557,7 +560,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(0,0,0,0.45)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -587,7 +589,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 20,
     paddingBottom: 40,
-    backgroundColor: 'rgba(255,255,255,0.97)',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
   },
@@ -598,7 +599,6 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
   },
   loadingText: {
-    color: Colors.textSecondary,
     fontSize: 14,
     fontWeight: '500',
   },
@@ -607,13 +607,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   manualEntryText: {
-    color: Colors.primary[500],
     fontSize: 14,
     fontWeight: '600',
   },
 
   // Manual entry screen
-  manualScroll: { flexGrow: 1, backgroundColor: Colors.background },
+  manualScroll: { flexGrow: 1 },
   manualHeader: {
     paddingTop: 56,
     paddingHorizontal: 20,
@@ -624,10 +623,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 14,
     borderRadius: 20,
-    backgroundColor: `${Colors.primary[500]}14`,
   },
   backChipText: {
-    color: Colors.primary[500],
     fontSize: 13,
     fontWeight: '600',
   },
@@ -640,20 +637,17 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1.2,
-    color: Colors.primary[500],
     textTransform: 'uppercase',
     marginBottom: 6,
   },
   manualTitle: {
     fontSize: 26,
     fontWeight: '800',
-    color: Colors.textPrimary,
     marginBottom: 8,
     letterSpacing: -0.5,
   },
   manualDesc: {
     fontSize: 14,
-    color: Colors.textSecondary,
     lineHeight: 21,
     marginBottom: 32,
   },
@@ -662,18 +656,14 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 1,
-    color: Colors.textSecondary,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1.5,
-    borderColor: Colors.border,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
-    color: Colors.textPrimary,
-    backgroundColor: Colors.surface,
     letterSpacing: 0.5,
   },
 
@@ -683,9 +673,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
   },
-  dividerLine: { flex: 1, height: 1, backgroundColor: Colors.border },
+  dividerLine: { flex: 1, height: 1 },
   dividerText: {
-    color: Colors.textSecondary,
     fontSize: 13,
     marginHorizontal: 12,
   },
@@ -700,14 +689,12 @@ const scannerStyles = StyleSheet.create({
     position: 'absolute',
     width: BRACKET,
     height: THICK,
-    backgroundColor: Colors.primary[500],
     borderRadius: 2,
   },
   cornerV: {
     position: 'absolute',
     width: THICK,
     height: BRACKET,
-    backgroundColor: Colors.primary[500],
     borderRadius: 2,
   },
   scanLine: {
@@ -716,7 +703,6 @@ const scannerStyles = StyleSheet.create({
     right: 8,
     height: 2,
     borderRadius: 1,
-    backgroundColor: Colors.primary[500],
     opacity: 0.75,
   },
 });

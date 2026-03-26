@@ -1,43 +1,48 @@
-/**
- * Root Layout
- * Defines the navigation structure using Expo Router
- */
-
+// app/_layout.tsx
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Toast from "react-native-toast-message";
+import { ThemeProvider, useTheme } from '../context/ThemeContext';
 
-export default function RootLayout() {
+function RootLayoutContent() {
+  const { colors, isDark } = useTheme();
+
   return (
     <>
-      <StatusBar style="dark" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <Stack
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#ffffff',
+            backgroundColor: colors.surface,
           },
-          headerTintColor: '#1e293b',
+          headerTintColor: colors.text.primary,
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 18,
+            color: colors.text.primary,
           },
           headerShadowVisible: true,
-          headerShown: false,
+          contentStyle: {
+            backgroundColor: colors.background,
+          },
         }}
       >
-        {/* PUBLIC SCREENS */}
-        <Stack.Screen name="index" />
-        <Stack.Screen name="notice" />
-        <Stack.Screen name="notice/[id]" />
-
-        {/* AUTH SCREENS */}
-        <Stack.Screen name="auth/login" />
-        <Stack.Screen name="auth/register" />
-
-        {/* PROTECTED SCREEN */}
-        <Stack.Screen name="complaint" />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="complaint" options={{ title: "File Complaint", headerShown: true }} />
+        <Stack.Screen name="qr-scanner" options={{ title: "QR Scanner", headerShown: true }} />
+        <Stack.Screen name="notice" options={{ headerShown: false }} />
+        <Stack.Screen name="auth" options={{ headerShown: false }} />
+        <Stack.Screen name="qr-notices" options={{ headerShown: false }} />
       </Stack>
       <Toast />
     </>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <RootLayoutContent />
+    </ThemeProvider>
   );
 }
