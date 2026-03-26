@@ -42,6 +42,271 @@ function fmt(d) {
   return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+// ─── Skeleton Components ──────────────────────────────────────────────────────
+
+function SkeletonHeroCard() {
+  return (
+    <div className="relative rounded-2xl overflow-hidden bg-primary-800 dark:bg-primary-900 p-8 animate-pulse">
+      <div className="absolute top-0 right-0 w-72 h-72 bg-primary-600/20 rounded-full blur-3xl" />
+      <div className="relative z-10 flex items-start justify-between gap-6">
+        <div className="space-y-4 flex-1">
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 mb-2">
+            <div className="w-1.5 h-1.5 bg-primary-400 rounded-full" />
+            <div className="w-24 h-3 bg-white/20 rounded" />
+          </div>
+          <div className="w-32 h-4 bg-white/20 rounded" />
+          <div className="w-48 h-8 bg-white/20 rounded" />
+          <div className="flex items-center gap-1.5">
+            <div className="w-3.5 h-3.5 bg-white/20 rounded" />
+            <div className="w-40 h-3 bg-white/20 rounded" />
+          </div>
+        </div>
+        <div className="w-20 h-20 bg-amber-400/30 rounded-2xl animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
+function SkeletonStatCard() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 animate-pulse">
+      <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800 mb-4" />
+      <div className="w-16 h-8 bg-primary-200 dark:bg-primary-800 rounded mb-1.5" />
+      <div className="w-20 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+    </div>
+  );
+}
+
+function SkeletonStatsGrid() {
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {[1, 2, 3, 4].map((i) => (
+        <SkeletonStatCard key={i} />
+      ))}
+    </div>
+  );
+}
+
+function SkeletonPendingCard() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-amber-200 dark:border-amber-800 rounded-2xl overflow-hidden animate-pulse">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-amber-100 dark:border-amber-900/30 bg-amber-50/60 dark:bg-amber-900/10">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-amber-400 rounded-full" />
+          <div className="w-32 h-4 bg-amber-200 dark:bg-amber-800/50 rounded" />
+        </div>
+        <div className="w-12 h-4 bg-amber-200 dark:bg-amber-800/50 rounded" />
+      </div>
+      <div className="divide-y divide-border dark:divide-dark-border">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex items-center gap-4 px-6 py-4">
+            <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800" />
+            <div className="flex-1 space-y-2">
+              <div className="w-32 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+              <div className="w-48 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+            </div>
+            <div className="flex gap-2">
+              <div className="w-20 h-8 bg-primary-200 dark:bg-primary-800 rounded-xl" />
+              <div className="w-8 h-8 bg-primary-200 dark:bg-primary-800 rounded-xl" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonRecentNotices() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border">
+        <div className="w-32 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+        <div className="flex gap-3">
+          <div className="w-16 h-7 bg-primary-200 dark:bg-primary-800 rounded-xl" />
+          <div className="w-8 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+        </div>
+      </div>
+      <div className="divide-y divide-border dark:divide-dark-border">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center gap-4 px-6 py-4">
+            <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800" />
+            <div className="flex-1 space-y-1">
+              <div className="w-48 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+              <div className="w-24 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+            </div>
+            <div className="w-4 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonOfficialCard() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
+      <div className="flex items-center gap-4 p-5">
+        <div className="w-11 h-11 rounded-xl bg-primary-200 dark:bg-primary-800" />
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-32 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+            <div className="w-16 h-5 bg-primary-200 dark:bg-primary-800 rounded-full" />
+          </div>
+          <div className="w-48 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+        </div>
+        <div className="w-4 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function SkeletonNoticeCard() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
+      <div className="flex items-center gap-4 p-5">
+        <div className="w-10 h-10 rounded-xl bg-primary-200 dark:bg-primary-800" />
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-48 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+            <div className="w-12 h-4 bg-primary-200 dark:bg-primary-800 rounded-full" />
+          </div>
+          <div className="w-24 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+        </div>
+        <div className="w-4 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function SkeletonQRCard() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
+      <div className="p-6 border-b border-border dark:border-dark-border flex items-center justify-between">
+        <div className="space-y-2">
+          <div className="w-32 h-5 bg-primary-200 dark:bg-primary-800 rounded" />
+          <div className="w-48 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+        </div>
+        <div className="w-10 h-10 rounded-xl bg-primary-200 dark:bg-primary-800" />
+      </div>
+      <div className="p-6 flex flex-col sm:flex-row items-center gap-8">
+        <div className="w-40 h-40 rounded-2xl bg-primary-200 dark:bg-primary-800" />
+        <div className="flex-1 space-y-4 w-full">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-2">
+              <div className="w-12 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+              <div className="w-24 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+            </div>
+            <div className="space-y-2">
+              <div className="w-12 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
+              <div className="w-24 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <div className="flex-1 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl" />
+            <div className="flex-1 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SkeletonOverview() {
+  return (
+    <div className="space-y-6">
+      <SkeletonHeroCard />
+      <SkeletonStatsGrid />
+      <SkeletonPendingCard />
+      <SkeletonRecentNotices />
+    </div>
+  );
+}
+
+function SkeletonPendingList() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
+        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
+      </div>
+      <div className="space-y-3">
+        {[1, 2, 3, 4].map((i) => (
+          <SkeletonOfficialCard key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonOfficialsList() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
+        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
+      </div>
+      <div className="space-y-3">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <SkeletonOfficialCard key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonNoticesList() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <div className="space-y-2">
+          <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
+          <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
+        </div>
+        <div className="w-32 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl animate-pulse" />
+      </div>
+      <div className="space-y-3">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <SkeletonNoticeCard key={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function SkeletonQR() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
+        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
+      </div>
+      <SkeletonQRCard />
+    </div>
+  );
+}
+
+function SkeletonWorkGuide() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
+        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
+      </div>
+      <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 space-y-4">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex gap-4">
+            <div className="w-8 h-8 rounded-lg bg-primary-200 dark:bg-primary-800 animate-pulse" />
+            <div className="flex-1 space-y-2">
+              <div className="w-48 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
+              <div className="w-full h-16 bg-primary-100 dark:bg-primary-800/50 rounded" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── Status Badge ─────────────────────────────────────────────────────────────
 
 function StatusBadge({ status }) {
@@ -511,18 +776,81 @@ export default function VillageAdminDashboard() {
     try { await api.adminLogout(); navigate('/'); } catch(e) {}
   }
 
+  // Render skeleton based on current tab
+  const renderSkeleton = () => {
+    switch(tab) {
+      case 'overview':
+        return <SkeletonOverview />;
+      case 'pending':
+        return <SkeletonPendingList />;
+      case 'officials':
+        return <SkeletonOfficialsList />;
+      case 'notices':
+        return <SkeletonNoticesList />;
+      case 'qr':
+        return <SkeletonQR />;
+      case 'workguide':
+        return <SkeletonWorkGuide />;
+      default:
+        return <SkeletonOverview />;
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background dark:bg-dark-background font-sans">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-primary-800 flex items-center justify-center shadow-large">
-            <svg className="animate-spin w-6 h-6 text-white" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
+      <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
+        {/* Navbar skeleton */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-primary-900 transition-colors duration-300 shadow-large">
+          <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-white/20 animate-pulse" />
+              <div className="hidden sm:block space-y-1">
+                <div className="w-24 h-3 bg-white/20 rounded animate-pulse" />
+                <div className="w-16 h-2 bg-white/10 rounded animate-pulse" />
+              </div>
+            </div>
+            <div className="hidden md:flex items-center gap-1 bg-white/5 rounded-xl p-1">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="w-16 h-8 bg-white/20 rounded-lg animate-pulse" />
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
+              <div className="w-16 h-8 bg-white/20 rounded-xl animate-pulse" />
+            </div>
           </div>
-          <p className="text-sm text-text-muted dark:text-dark-text-muted font-medium">Loading dashboard...</p>
-        </div>
+          <div className="md:hidden border-t border-white/10 flex overflow-x-auto gap-2 p-2">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="w-16 h-10 bg-white/20 rounded-lg animate-pulse flex-shrink-0" />
+            ))}
+          </div>
+        </nav>
+
+        <div className="h-[116px] md:h-16 flex-shrink-0" />
+
+        <main className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 py-8">
+          {renderSkeleton()}
+        </main>
+
+        {/* Footer skeleton */}
+        <footer className="w-full mt-auto">
+          <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" className="w-full block -mb-1">
+            <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1380,20 1440,40 L1440,80 L0,80 Z" className="fill-primary-800 dark:fill-primary-900" />
+          </svg>
+          <div className="bg-primary-800 dark:bg-primary-900">
+            <div className="max-w-7xl mx-auto px-6 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-white/10 animate-pulse" />
+                <div>
+                  <div className="w-24 h-4 bg-white/20 rounded animate-pulse mb-1" />
+                  <div className="w-32 h-3 bg-white/10 rounded animate-pulse" />
+                </div>
+              </div>
+              <div className="w-48 h-8 bg-white/10 rounded-full animate-pulse" />
+              <div className="w-36 h-3 bg-white/10 rounded animate-pulse" />
+            </div>
+          </div>
+        </footer>
       </div>
     );
   }

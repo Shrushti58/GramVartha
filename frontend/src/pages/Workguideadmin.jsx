@@ -126,6 +126,94 @@ function IcoSpinner() {
   );
 }
 
+// ─── Skeleton Components ──────────────────────────────────────────────────────
+
+function WorkGuideFormSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden mb-4 animate-pulse">
+      <div className="px-6 py-4 border-b border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2">
+        <div className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+      </div>
+      <div className="p-6 space-y-5">
+        <div>
+          <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+          <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+        </div>
+        <div>
+          <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+          <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+            <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          </div>
+          <div>
+            <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+            <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          </div>
+        </div>
+        <div>
+          <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-9 w-14 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+            ))}
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+            <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          </div>
+          <div>
+            <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+            <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          </div>
+        </div>
+        <div className="flex gap-3 pt-2">
+          <div className="flex-1 h-11 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+          <div className="flex-1 h-11 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CategoryHeaderSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
+      <div className="px-5 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="h-5 w-40 bg-gray-200 dark:bg-gray-700 rounded" />
+          <div className="h-6 w-8 bg-gray-200 dark:bg-gray-700 rounded-full" />
+        </div>
+        <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function WorkGuideItemSkeleton() {
+  return (
+    <div className="flex items-start gap-4 px-5 py-4 animate-pulse">
+      <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl flex-shrink-0 mt-0.5" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+        </div>
+        <div className="h-4 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+        <div className="h-4 w-56 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+      </div>
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+      </div>
+    </div>
+  );
+}
+
 // ─── Notice Form (inline) — matches VillageAdminDashboard style ───────────────
 
 function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
@@ -452,6 +540,7 @@ function DeleteConfirm({ onConfirm, onCancel }) {
 export default function WorkGuideAdmin({ villageId }) {
   const [grouped, setGrouped]         = useState([]);
   const [loading, setLoading]         = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [saving, setSaving]           = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [editingId, setEditingId]     = useState(null);
@@ -471,7 +560,10 @@ export default function WorkGuideAdmin({ villageId }) {
       setGrouped(data);
       if (data.length > 0 && !expandedCat) setExpandedCat(data[0].category);
     } catch(e) { toast.error('Failed to load work guide'); }
-    finally { setLoading(false); }
+    finally { 
+      setLoading(false);
+      setInitialLoading(false);
+    }
   }
 
   async function handleSave(form) {
@@ -551,6 +643,28 @@ export default function WorkGuideAdmin({ villageId }) {
   }
 
   const totalEntries = grouped.reduce(function(sum, g) { return sum + g.items.length; }, 0);
+  const isInitialLoading = initialLoading;
+
+  // Render skeleton for content
+  const renderContentSkeleton = () => {
+    if (showForm) {
+      return <WorkGuideFormSkeleton />;
+    }
+    return (
+      <div className="space-y-3">
+        {[1, 2, 3].map((i) => (
+          <div key={i}>
+            <CategoryHeaderSkeleton />
+            <div className="divide-y divide-border dark:divide-dark-border">
+              {[1, 2].map((j) => (
+                <WorkGuideItemSkeleton key={j} />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-4">
@@ -560,10 +674,14 @@ export default function WorkGuideAdmin({ villageId }) {
         <div>
           <h2 className="text-2xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">Work Guide</h2>
           <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
-            {totalEntries} {totalEntries === 1 ? 'entry' : 'entries'} across {grouped.length} {grouped.length === 1 ? 'category' : 'categories'}
+            {isInitialLoading ? (
+              <span className="inline-block h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+            ) : (
+              `${totalEntries} ${totalEntries === 1 ? 'entry' : 'entries'} across ${grouped.length} ${grouped.length === 1 ? 'category' : 'categories'}`
+            )}
           </p>
         </div>
-        {!showForm && (
+        {!showForm && !isInitialLoading && (
           <button onClick={openNew}
             className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft flex-shrink-0">
             <IcoPlus /> Add Entry
@@ -592,10 +710,7 @@ export default function WorkGuideAdmin({ villageId }) {
 
       {/* Content */}
       {loading ? (
-        <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex items-center justify-center py-16 gap-3">
-          <IcoSpinner />
-          <span className="text-sm text-text-muted dark:text-dark-text-muted">Loading...</span>
-        </div>
+        renderContentSkeleton()
       ) : grouped.length === 0 ? (
         <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex flex-col items-center justify-center py-16 gap-3 text-center">
           <div className="w-12 h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-1">

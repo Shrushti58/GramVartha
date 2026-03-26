@@ -17,21 +17,33 @@ const STATUS_CFG = {
     label: "Pending",
     bg: "bg-amber-100 dark:bg-amber-900/30",
     text: "text-amber-700 dark:text-amber-400",
+    border: "border-l-amber-500",
+    dot: "bg-amber-500",
+    accent: "from-amber-50/20 dark:from-amber-950/10",
   },
   "in-progress": {
     label: "In Progress",
     bg: "bg-blue-100 dark:bg-blue-900/30",
     text: "text-blue-700 dark:text-blue-400",
+    border: "border-l-blue-500",
+    dot: "bg-blue-500",
+    accent: "from-blue-50/20 dark:from-blue-950/10",
   },
   resolved: {
     label: "Resolved",
     bg: "bg-green-100 dark:bg-green-900/30",
     text: "text-green-700 dark:text-green-400",
+    border: "border-l-green-500",
+    dot: "bg-green-500",
+    accent: "from-green-50/20 dark:from-green-950/10",
   },
   rejected: {
     label: "Rejected",
     bg: "bg-red-100 dark:bg-red-900/30",
     text: "text-red-700 dark:text-red-400",
+    border: "border-l-red-500",
+    dot: "bg-red-500",
+    accent: "from-red-50/20 dark:from-red-950/10",
   },
 };
 
@@ -40,11 +52,13 @@ const TYPE_CFG = {
     label: "Issue",
     bg: "bg-red-100 dark:bg-red-900/30",
     text: "text-red-700 dark:text-red-400",
+    icon: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z",
   },
   suggestion: {
     label: "Suggestion",
     bg: "bg-purple-100 dark:bg-purple-900/30",
     text: "text-purple-700 dark:text-purple-400",
+    icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
   },
 };
 
@@ -96,6 +110,67 @@ function IcoSpinner({ size = 18 }) {
   );
 }
 
+// ─── Skeleton Components ──────────────────────────────────────────────────────
+
+function StatCardSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft animate-pulse">
+      <div className="w-9 h-9 rounded-xl bg-gray-200 dark:bg-gray-700 mb-4" />
+      <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+      <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
+    </div>
+  );
+}
+
+function FilterTabSkeleton() {
+  return (
+    <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+      ))}
+    </div>
+  );
+}
+
+function TypeFilterSkeleton() {
+  return (
+    <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+      ))}
+    </div>
+  );
+}
+
+function ComplaintCardSkeleton() {
+  return (
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
+      <div className="flex items-stretch gap-0 min-h-[96px]">
+        {/* Thumbnail skeleton */}
+        <div className="w-28 sm:w-36 flex-shrink-0 bg-gray-200 dark:bg-gray-700" />
+        
+        {/* Content skeleton */}
+        <div className="flex-1 px-4 py-3.5">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5">
+              <div className="h-5 w-12 bg-gray-200 dark:bg-gray-700 rounded-md" />
+              <div className="h-5 w-16 bg-gray-200 dark:bg-gray-700 rounded-md" />
+            </div>
+            <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+          </div>
+          <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+          <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+          <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mb-2.5" />
+          <div className="flex items-center justify-between gap-2">
+            <div className="h-3 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Image Lightbox (in-page, no redirect) ────────────────────────────────────
 
 function Lightbox({ src, alt, onClose }) {
@@ -120,7 +195,6 @@ function Lightbox({ src, alt, onClose }) {
         className="relative max-w-4xl w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute -top-10 right-0 text-white/80 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium"
@@ -171,9 +245,7 @@ function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
         />
-        {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-        {/* Expand button */}
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -410,11 +482,9 @@ function InlineDetail({
               {complaint.location.lat.toFixed(6)},{" "}
               {complaint.location.lng.toFixed(6)}
             </span>
-            {/* Inline map embed instead of redirect */}
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                // Open map in a sandboxed iframe modal within the page
                 window.dispatchEvent(
                   new CustomEvent("open-map", {
                     detail: {
@@ -554,6 +624,7 @@ function InlineDetail({
     </div>
   );
 }
+
 // ─── Pill badge ───────────────────────────────────────────────────────────────
 
 function Pill({ bg, text, icon, children }) {
@@ -576,6 +647,7 @@ function Pill({ bg, text, icon, children }) {
     </span>
   );
 }
+
 // ─── Fraud gauge ──────────────────────────────────────────────────────────────
 
 function FraudGauge({ score }) {
@@ -617,8 +689,6 @@ function FraudGauge({ score }) {
   );
 }
 
-// ─── Complaint card ───────────────────────────────────────────────────────────
-
 // ─── Complaint Card ───────────────────────────────────────────────────────────
 
 function ComplaintCard({
@@ -651,15 +721,12 @@ function ComplaintCard({
         }
       `}
     >
-      {/* Subtle status-tinted background wash */}
       <div
         className={`absolute inset-0 bg-gradient-to-r ${statusCfg.accent} to-transparent pointer-events-none`}
       />
 
-      {/* ── Collapsed layout: side-by-side ─────────────────────────────────── */}
       {!expanded && (
         <div className="relative flex items-stretch gap-0 min-h-[96px]">
-          {/* Thumbnail */}
           {hasImage && (
             <div className="w-28 sm:w-36 flex-shrink-0 overflow-hidden">
               <img
@@ -672,11 +739,9 @@ function ComplaintCard({
             </div>
           )}
 
-          {/* Content */}
           <div
             className={`flex-1 flex flex-col justify-between px-4 py-3.5 min-w-0 ${!hasImage ? "pl-5" : ""}`}
           >
-            {/* Top row: badges + chevron */}
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <Pill bg={typeCfg.bg} text={typeCfg.text} icon={typeCfg.icon}>
@@ -712,20 +777,16 @@ function ComplaintCard({
               </svg>
             </div>
 
-            {/* Title */}
             <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary leading-snug mb-1 line-clamp-1">
               {complaint.title}
             </p>
 
-            {/* Description */}
             <p className="text-[13px] text-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-2 mb-2.5">
               {complaint.description}
             </p>
 
-            {/* Bottom row: date + location + fraud */}
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <div className="flex items-center gap-1.5 text-[11px] text-text-muted dark:text-dark-text-muted">
-                {/* Calendar icon */}
                 <svg
                   className="w-3 h-3 flex-shrink-0"
                   fill="none"
@@ -775,10 +836,8 @@ function ComplaintCard({
         </div>
       )}
 
-      {/* ── Expanded layout ─────────────────────────────────────────────────── */}
       {expanded && (
         <div className="relative" onClick={(e) => e.stopPropagation()}>
-          {/* Hero image when expanded */}
           {hasImage && (
             <ComplaintImageExpanded
               src={complaint.imageUrl}
@@ -787,7 +846,6 @@ function ComplaintCard({
           )}
 
           <div className="px-5 py-5">
-            {/* Header row */}
             <div className="flex items-start justify-between gap-3 mb-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap mb-2">
@@ -813,7 +871,6 @@ function ComplaintCard({
                   {complaint.title}
                 </h3>
               </div>
-              {/* Collapse chevron */}
               <button
                 onClick={onToggle}
                 className="mt-1 w-7 h-7 rounded-lg bg-accent-mist dark:bg-dark-surface2 flex items-center justify-center flex-shrink-0 hover:bg-border dark:hover:bg-dark-border transition-colors"
@@ -834,12 +891,10 @@ function ComplaintCard({
               </button>
             </div>
 
-            {/* Description */}
             <p className="text-sm text-text-secondary dark:text-dark-text-secondary leading-relaxed mb-4">
               {complaint.description}
             </p>
 
-            {/* Meta strip */}
             <div className="flex items-center gap-3 flex-wrap mb-5 pb-5 border-b border-border dark:border-dark-border">
               <div className="flex items-center gap-1.5 text-[11px] text-text-muted dark:text-dark-text-muted">
                 <svg
@@ -864,7 +919,6 @@ function ComplaintCard({
               {complaint.aiVerification && <FraudGauge score={fraudScore} />}
             </div>
 
-            {/* Inline Detail sections (AI verification, actions, etc.) */}
             <InlineDetail
               complaint={complaint}
               onStatusUpdate={onStatusUpdate}
@@ -931,6 +985,7 @@ function ComplaintImageExpanded({ src, alt }) {
 export default function ComplaintsDashboard() {
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
   const [expandedId, setExpandedId] = useState(null);
@@ -953,6 +1008,7 @@ export default function ComplaintsDashboard() {
       setComplaints([]);
     } finally {
       setLoading(false);
+      setInitialLoading(false);
     }
   };
 
@@ -1081,6 +1137,8 @@ export default function ComplaintsDashboard() {
     },
   ];
 
+  const isInitialLoading = initialLoading;
+
   return (
     <main className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-8 py-8">
       {/* Page header */}
@@ -1093,87 +1151,106 @@ export default function ComplaintsDashboard() {
         </p>
       </div>
 
-      {/* Stat cards */}
+      {/* Stat cards with skeleton */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-        {STAT_CARDS.map((s) => (
-          <div
-            key={s.label}
-            className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft"
-          >
+        {isInitialLoading ? (
+          <>
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </>
+        ) : (
+          STAT_CARDS.map((s) => (
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${s.bgCls}`}
+              key={s.label}
+              className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft"
             >
-              <svg
-                className={`w-4 h-4 ${s.iconCls}`}
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+              <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${s.bgCls}`}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
-              </svg>
+                <svg
+                  className={`w-4 h-4 ${s.iconCls}`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
+                </svg>
+              </div>
+              <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">
+                {s.value}
+              </p>
+              <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">
+                {s.label}
+              </p>
             </div>
-            <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">
-              {s.value}
-            </p>
-            <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">
-              {s.label}
-            </p>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* Filter tabs + type filter */}
+      {/* Filter tabs with skeleton */}
       <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
-        <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
-          {FILTER_TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setActiveTab(t.key)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
-                activeTab === t.key
-                  ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
-                  : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
-              }`}
-            >
-              {t.label}
-              <span
-                className={`text-[10px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full ${
+        {isInitialLoading ? (
+          <FilterTabSkeleton />
+        ) : (
+          <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+            {FILTER_TABS.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
                   activeTab === t.key
-                    ? "bg-white/20 text-white"
-                    : "bg-accent-mist dark:bg-dark-surface2 text-text-muted dark:text-dark-text-muted"
+                    ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
+                    : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
                 }`}
               >
-                {tabCount(t.key)}
-              </span>
-            </button>
-          ))}
-        </div>
+                {t.label}
+                <span
+                  className={`text-[10px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full ${
+                    activeTab === t.key
+                      ? "bg-white/20 text-white"
+                      : "bg-accent-mist dark:bg-dark-surface2 text-text-muted dark:text-dark-text-muted"
+                  }`}
+                >
+                  {tabCount(t.key)}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
 
-        <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
-          {["all", "issue", "suggestion"].map((t) => (
-            <button
-              key={t}
-              onClick={() => setTypeFilter(t)}
-              className={`px-4 py-2 rounded-lg text-xs font-semibold capitalize transition-all duration-150 ${
-                typeFilter === t
-                  ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
-                  : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
-              }`}
-            >
-              {t === "all" ? "All Types" : t}
-            </button>
-          ))}
-        </div>
+        {isInitialLoading ? (
+          <TypeFilterSkeleton />
+        ) : (
+          <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+            {["all", "issue", "suggestion"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTypeFilter(t)}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold capitalize transition-all duration-150 ${
+                  typeFilter === t
+                    ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
+                    : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
+                }`}
+              >
+                {t === "all" ? "All Types" : t}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Cards list */}
+      {/* Cards list with skeleton */}
       {loading ? (
-        <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex items-center justify-center py-20 gap-3">
-          <IcoSpinner />
-          <p className="text-sm text-text-muted dark:text-dark-text-muted">
-            Loading complaints...
-          </p>
+        <div className="space-y-3">
+          <ComplaintCardSkeleton />
+          <ComplaintCardSkeleton />
+          <ComplaintCardSkeleton />
+          <ComplaintCardSkeleton />
+          <ComplaintCardSkeleton />
         </div>
       ) : filtered.length === 0 ? (
         <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex flex-col items-center justify-center py-16 gap-3 text-center">
