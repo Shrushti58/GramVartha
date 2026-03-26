@@ -12,6 +12,7 @@ import {
   ScrollView,
   Animated,
   StatusBar,
+  Vibration,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
@@ -19,6 +20,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
 import { Config } from '../constants/config';
 import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 const FRAME_SIZE = width * 0.72;
@@ -94,12 +97,64 @@ const ScanLine = ({ isActive, colors }: { isActive: boolean; colors: any }) => {
   );
 };
 
+// ─── Success Animation ─────────────────────────────────────────────────────────
+const SuccessCheck = ({ visible, colors }: { visible: boolean; colors: any }) => {
+  const scale = useRef(new Animated.Value(0)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.parallel([
+        Animated.spring(scale, {
+          toValue: 1,
+          useNativeDriver: true,
+          friction: 3,
+        }),
+        Animated.timing(opacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+      
+      setTimeout(() => {
+        Animated.timing(opacity, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }).start();
+      }, 1500);
+    } else {
+      scale.setValue(0);
+      opacity.setValue(0);
+    }
+  }, [visible]);
+
+  if (!visible) return null;
+
+  return (
+    <Animated.View
+      style={[
+        styles.successOverlay,
+        {
+          opacity,
+          transform: [{ scale }],
+          backgroundColor: colors.success,
+        }
+      ]}
+    >
+      <Ionicons name="checkmark" size={48} color="#fff" />
+    </Animated.View>
+  );
+};
+
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function QRScannerScreen() {
   const { colors, isDark } = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [manualInput, setManualInput] = useState('');
   const [showManualInput, setShowManualInput] = useState(false);
   const cameraRef = useRef(null);
@@ -123,6 +178,9 @@ export default function QRScannerScreen() {
 
     setScanned(true);
     setLoading(true);
+    
+    // Vibrate on scan
+    Vibration.vibrate(100);
 
     try {
       const qrCodeId = data.trim();
@@ -161,30 +219,36 @@ export default function QRScannerScreen() {
         JSON.stringify(filtered.slice(0, 10))
       );
 
-      Alert.alert(
-        "✓ Village Found",
-        `"${villageData.name}" has been scanned successfully.`,
-        [
-          {
-            text: "View Notices",
-            onPress: () => router.push(`qr-notices/${villageData._id}` as any),
-          },
-          {
-            text: "Scan Another",
-            style: "cancel",
-            onPress: () => {
-              setScanned(false);
-              setLoading(false);
+      // Show success animation
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        Alert.alert(
+          "✓ Village Found!",
+          `"${villageData.name}" has been scanned successfully.`,
+          [
+            {
+              text: "View Notices",
+              onPress: () => router.push(`qr-notices/${villageData._id}` as any),
             },
-          },
-        ]
-      );
+            {
+              text: "Scan Another",
+              style: "cancel",
+              onPress: () => {
+                setScanned(false);
+                setLoading(false);
+              },
+            },
+          ]
+        );
+      }, 500);
+      
     } catch (err: unknown) {
       const errorMessage =
         (err as any)?.response?.data?.error ||
         "Invalid QR code. Please try again.";
 
-      Alert.alert("Unrecognised Code", errorMessage, [
+      Alert.alert("Not Recognized", errorMessage, [
         {
           text: "Try Again",
           onPress: () => {
@@ -209,8 +273,8 @@ export default function QRScannerScreen() {
   if (!permission) {
     return (
       <View style={[styles.permissionContainer, { backgroundColor: colors.background }]}>
-        <ActivityIndicator color={colors.primary[500]} />
-        <Text style={[styles.permissionSubtext, { color: colors.text.secondary }]}>
+        <ActivityIndicator size="large" color={colors.primary[500]} />
+        <Text style={[styles.permissionSubtext, { color: colors.text.secondary, marginTop: 16 }]}>
           Checking camera permissions…
         </Text>
       </View>
@@ -222,20 +286,20 @@ export default function QRScannerScreen() {
       <View style={[styles.permissionContainer, { backgroundColor: colors.background }]}>
         <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
         <View style={[styles.iconCircle, { backgroundColor: `${colors.primary[500]}18` }]}>
-          <Text style={styles.iconEmoji}>📷</Text>
+          <Ionicons name="camera-outline" size={48} color={colors.primary[500]} />
         </View>
         <Text style={[styles.permissionTitle, { color: colors.text.primary }]}>
           Camera Access Needed
         </Text>
         <Text style={[styles.permissionBody, { color: colors.text.secondary }]}>
-          Allow camera access so you can scan village QR codes and view local notices.
+          We need camera access to scan village QR codes. This helps you quickly access village notices and updates.
         </Text>
         <TouchableOpacity
           style={[styles.primaryBtn, { backgroundColor: colors.primary[500] }]}
           onPress={requestPermission}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryBtnText}>Allow Camera</Text>
+          <Text style={styles.primaryBtnText}>Allow Camera Access</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.ghostBtn, { borderColor: colors.border }]}
@@ -257,8 +321,9 @@ export default function QRScannerScreen() {
           style={styles.flex}
           contentContainerStyle={[styles.manualScroll, { backgroundColor: colors.background }]}
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {/* Header row */}
+          {/* Header */}
           <View style={styles.manualHeader}>
             <TouchableOpacity
               onPress={() => {
@@ -266,21 +331,28 @@ export default function QRScannerScreen() {
                 setManualInput('');
               }}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={[styles.backChip, { backgroundColor: `${colors.primary[500]}14` }]}
+              style={[styles.backButton, { backgroundColor: `${colors.primary[500]}12` }]}
             >
-              <Text style={[styles.backChipText, { color: colors.primary[500] }]}>← Scanner</Text>
+              <Ionicons name="arrow-back" size={20} color={colors.primary[500]} />
+              <Text style={[styles.backButtonText, { color: colors.primary[500] }]}>Back to Scanner</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.manualBody}>
-            <Text style={[styles.manualLabel, { color: colors.primary[500] }]}>Manual Entry</Text>
-            <Text style={[styles.manualTitle, { color: colors.text.primary }]}>Enter Village Code</Text>
+            <View style={[styles.manualIcon, { backgroundColor: `${colors.primary[500]}12` }]}>
+              <Ionicons name="keypad-outline" size={40} color={colors.primary[500]} />
+            </View>
+            <Text style={[styles.manualTitle, { color: colors.text.primary }]}>
+              Enter Village Code
+            </Text>
             <Text style={[styles.manualDesc, { color: colors.text.secondary }]}>
-              Type or paste the QR code value or village ID below.
+              Type or paste the QR code value or village ID from your village notice board
             </Text>
 
             <View style={styles.inputWrapper}>
-              <Text style={[styles.inputLabel, { color: colors.text.secondary }]}>QR CODE / VILLAGE ID</Text>
+              <Text style={[styles.inputLabel, { color: colors.text.secondary }]}>
+                QR CODE / VILLAGE ID
+              </Text>
               <TextInput
                 style={[
                   styles.input,
@@ -314,13 +386,16 @@ export default function QRScannerScreen() {
               {loading ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <Text style={styles.primaryBtnText}>Look Up Village</Text>
+                <>
+                  <Ionicons name="search-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
+                  <Text style={styles.primaryBtnText}>Find Village</Text>
+                </>
               )}
             </TouchableOpacity>
 
             <View style={styles.dividerRow}>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.text.secondary }]}>or</Text>
+              <Text style={[styles.dividerText, { color: colors.text.muted }]}>or</Text>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
             </View>
 
@@ -333,7 +408,8 @@ export default function QRScannerScreen() {
               disabled={loading}
               activeOpacity={0.7}
             >
-              <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>Back to Scanner</Text>
+              <Ionicons name="qr-code-outline" size={18} color={colors.text.primary} style={{ marginRight: 8 }} />
+              <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>Use Camera Scanner</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -352,22 +428,21 @@ export default function QRScannerScreen() {
         barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
       />
 
-      {/* Dark vignette overlay with a clear centre window */}
+      {/* Success Animation */}
+      <SuccessCheck visible={showSuccess} colors={colors} />
+
+      {/* Dark vignette overlay with clear centre window */}
       <View style={StyleSheet.absoluteFill} pointerEvents="none">
         {/* Top dark band */}
-        <View
-          style={[
-            styles.overlayBand,
-            { height: (height - FRAME_SIZE) / 2 - 10 },
-          ]}
+        <LinearGradient
+          colors={['rgba(0,0,0,0.8)', 'rgba(0,0,0,0.6)']}
+          style={[styles.overlayBand, { height: (height - FRAME_SIZE) / 2 - 10 }]}
         />
         {/* Middle row */}
         <View style={styles.overlayMiddleRow}>
-          <View
-            style={[
-              styles.overlaySide,
-              { width: (width - FRAME_SIZE) / 2 },
-            ]}
+          <LinearGradient
+            colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.3)']}
+            style={[styles.overlaySide, { width: (width - FRAME_SIZE) / 2 }]}
           />
           {/* Scanner frame */}
           <View style={{ width: FRAME_SIZE, height: FRAME_SIZE }}>
@@ -377,36 +452,33 @@ export default function QRScannerScreen() {
             <CornerBracket position="br" colors={colors} />
             <ScanLine isActive={!scanned && !loading} colors={colors} />
           </View>
-          <View
-            style={[
-              styles.overlaySide,
-              { width: (width - FRAME_SIZE) / 2 },
-            ]}
+          <LinearGradient
+            colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.3)']}
+            style={[styles.overlaySide, { width: (width - FRAME_SIZE) / 2 }]}
           />
         </View>
         {/* Bottom dark band */}
-        <View style={[styles.overlayBand, { flex: 1 }]} />
+        <LinearGradient
+          colors={['rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)']}
+          style={[styles.overlayBand, { flex: 1 }]}
+        />
       </View>
 
       {/* Close button */}
       <View style={styles.topBar} pointerEvents="box-none">
         <TouchableOpacity
-          style={[styles.closeBtn, { backgroundColor: 'rgba(0,0,0,0.45)' }]}
+          style={[styles.closeBtn, { backgroundColor: 'rgba(0,0,0,0.5)' }]}
           onPress={() => router.back()}
           activeOpacity={0.8}
         >
-          <Text style={styles.closeBtnText}>✕</Text>
+          <Ionicons name="close" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
 
       {/* Centre instruction text */}
       <View style={styles.frameLabelContainer} pointerEvents="none">
         <Text style={styles.frameLabelText}>
-          {loading
-            ? 'Verifying…'
-            : scanned
-            ? 'Code captured'
-            : 'Align QR code within frame'}
+          {loading ? 'Verifying...' : scanned ? 'Code captured!' : 'Align QR code within frame'}
         </Text>
       </View>
 
@@ -415,18 +487,16 @@ export default function QRScannerScreen() {
         styles.bottomPanel,
         {
           backgroundColor: colors.surface,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
+          borderTopLeftRadius: 28,
+          borderTopRightRadius: 28,
         }
       ]}>
         {loading ? (
           <View style={styles.loadingRow}>
-            <ActivityIndicator
-              size="small"
-              color={colors.primary[500]}
-              style={{ marginRight: 10 }}
-            />
-            <Text style={[styles.loadingText, { color: colors.text.secondary }]}>Verifying QR code…</Text>
+            <ActivityIndicator size="small" color={colors.primary[500]} />
+            <Text style={[styles.loadingText, { color: colors.text.secondary, marginLeft: 12 }]}>
+              Checking village...
+            </Text>
           </View>
         ) : (
           <>
@@ -439,6 +509,7 @@ export default function QRScannerScreen() {
                 }}
                 activeOpacity={0.85}
               >
+                <Ionicons name="refresh-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={styles.primaryBtnText}>Scan Again</Text>
               </TouchableOpacity>
             )}
@@ -447,7 +518,8 @@ export default function QRScannerScreen() {
               onPress={() => setShowManualInput(true)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.manualEntryText, { color: colors.primary[500] }]}>
+              <Ionicons name="keypad-outline" size={18} color={colors.primary[500]} />
+              <Text style={[styles.manualEntryText, { color: colors.primary[500], marginLeft: 8 }]}>
                 Enter code manually
               </Text>
             </TouchableOpacity>
@@ -470,16 +542,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   iconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
   },
-  iconEmoji: { fontSize: 36 },
   permissionTitle: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: '700',
     marginBottom: 10,
     textAlign: 'center',
@@ -493,23 +564,26 @@ const styles = StyleSheet.create({
   },
   permissionSubtext: {
     fontSize: 14,
-    marginTop: 12,
   },
 
   // Buttons
   primaryBtn: {
+    flexDirection: 'row',
     paddingVertical: 15,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     marginBottom: 12,
   },
   primaryBtnSolid: {
+    flexDirection: 'row',
     paddingVertical: 15,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
     width: '100%',
     marginBottom: 10,
   },
@@ -518,13 +592,14 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 15,
     fontWeight: '600',
-    letterSpacing: 0.1,
   },
   ghostBtn: {
+    flexDirection: 'row',
     paddingVertical: 15,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 14,
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1.5,
     width: '100%',
   },
@@ -536,14 +611,13 @@ const styles = StyleSheet.create({
   // Camera overlay
   overlayBand: {
     width: '100%',
-    backgroundColor: 'rgba(0,0,0,0.62)',
   },
   overlayMiddleRow: {
     flexDirection: 'row',
     height: FRAME_SIZE,
   },
   overlaySide: {
-    backgroundColor: 'rgba(0,0,0,0.62)',
+    height: FRAME_SIZE,
   },
 
   // Top bar
@@ -557,27 +631,31 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   closeBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
+    backdropFilter: 'blur(10px)',
   },
-  closeBtnText: { color: '#fff', fontSize: 18, lineHeight: 20 },
 
   // Frame label
   frameLabelContainer: {
     position: 'absolute',
-    top: (height - FRAME_SIZE) / 2 + FRAME_SIZE + 16,
+    top: (height - FRAME_SIZE) / 2 + FRAME_SIZE + 20,
     left: 0,
     right: 0,
     alignItems: 'center',
   },
   frameLabelText: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 13,
-    letterSpacing: 0.3,
+    color: '#fff',
+    fontSize: 14,
     fontWeight: '500',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
 
   // Bottom panel
@@ -588,23 +666,25 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: 24,
     paddingTop: 20,
-    paddingBottom: 40,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    paddingBottom: 34,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
   },
   loadingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 18,
+    paddingVertical: 15,
   },
   loadingText: {
     fontSize: 14,
     fontWeight: '500',
   },
   manualEntryBtn: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    justifyContent: 'center',
+    paddingVertical: 12,
   },
   manualEntryText: {
     fontSize: 14,
@@ -618,40 +698,52 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 8,
   },
-  backChip: {
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     alignSelf: 'flex-start',
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 24,
   },
-  backChipText: {
-    fontSize: 13,
+  backButtonText: {
+    fontSize: 14,
     fontWeight: '600',
+    marginLeft: 6,
   },
   manualBody: {
     flex: 1,
     paddingHorizontal: 24,
-    paddingTop: 28,
+    paddingTop: 20,
+    paddingBottom: 40,
+    alignItems: 'center',
   },
-  manualLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    marginBottom: 6,
+  manualIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
   },
   manualTitle: {
     fontSize: 26,
     fontWeight: '800',
     marginBottom: 8,
+    textAlign: 'center',
     letterSpacing: -0.5,
   },
   manualDesc: {
     fontSize: 14,
     lineHeight: 21,
+    textAlign: 'center',
     marginBottom: 32,
+    paddingHorizontal: 16,
   },
-  inputWrapper: { marginBottom: 20 },
+  inputWrapper: {
+    width: '100%',
+    marginBottom: 24,
+  },
   inputLabel: {
     fontSize: 11,
     fontWeight: '700',
@@ -660,7 +752,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1.5,
-    borderRadius: 12,
+    borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 16,
@@ -671,17 +763,36 @@ const styles = StyleSheet.create({
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
+    width: '100%',
+    marginVertical: 24,
   },
   dividerLine: { flex: 1, height: 1 },
   dividerText: {
     fontSize: 13,
     marginHorizontal: 12,
   },
+
+  // Success animation
+  successOverlay: {
+    position: 'absolute',
+    top: height / 2 - 40,
+    left: width / 2 - 40,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
 });
 
 // ─── Scanner frame corner styles ───────────────────────────────────────────────
-const BRACKET = 24;
+const BRACKET = 28;
 const THICK = 3;
 const scannerStyles = StyleSheet.create({
   corner: { position: 'absolute', width: BRACKET, height: BRACKET },
@@ -699,10 +810,10 @@ const scannerStyles = StyleSheet.create({
   },
   scanLine: {
     position: 'absolute',
-    left: 8,
-    right: 8,
-    height: 2,
-    borderRadius: 1,
-    opacity: 0.75,
+    left: 12,
+    right: 12,
+    height: 3,
+    borderRadius: 2,
+    opacity: 0.85,
   },
 });

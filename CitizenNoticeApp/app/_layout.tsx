@@ -28,8 +28,8 @@ function RootLayoutContent() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="complaint" options={{ title: "File Complaint", headerShown: true }} />
-        <Stack.Screen name="qr-scanner" options={{ title: "QR Scanner", headerShown: true }} />
+        <Stack.Screen name="complaint" options={{ title: "File Complaint", headerShown: false }} />
+        <Stack.Screen name="qr-scanner" options={{ title: "QR Scanner", headerShown: false }} />
         <Stack.Screen name="notice" options={{ headerShown: false }} />
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="qr-notices" options={{ headerShown: false }} />
