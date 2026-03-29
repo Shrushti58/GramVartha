@@ -9,146 +9,166 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 import { apiService } from '../../services/api';
 import { formatDate } from '../../utils/format';
+import { LinearGradient } from 'expo-linear-gradient';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type ComplaintType = 'issue' | 'complaint';
+type ComplaintType   = 'issue' | 'complaint';
 type ComplaintStatus = 'pending' | 'in-progress' | 'resolved' | 'rejected';
 
-// ─── Helper functions ─────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 const getTypeStyles = (type: string) => {
-  const typeStyles: Record<string, any> = {
-    issue: { bg: '#FEE9E7', fg: '#C0392B', label: 'Issue', icon: '⚠️' },
-    complaint: { bg: '#E8F5E9', fg: '#2E7D32', label: 'Complaint', icon: '📋' },
+  const map: Record<string, any> = {
+    issue:      { bg: '#FEE9E7', bgDark: '#3D1A17', fg: '#C0392B', label: 'Issue',      icon: '⚠️' },
+    complaint:  { bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', label: 'Complaint',  icon: '📋' },
+    suggestion: { bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', label: 'Suggestion', icon: '💡' },
   };
-  return typeStyles[type] || typeStyles.issue;
+  return map[type] || map.issue;
 };
 
-const getStatusStyles = (status: string) => {
-  const statusStyles: Record<string, any> = {
-    pending: { bg: '#FEF9E7', fg: '#B7950B', dot: '#F1C40F', label: 'Pending' },
-    'in-progress': { bg: '#E3F2FD', fg: '#1976D2', dot: '#2196F3', label: 'In Progress' },
-    resolved: { bg: '#E8F5E9', fg: '#2E7D32', dot: '#4CAF50', label: 'Resolved' },
-    rejected: { bg: '#FFEBEE', fg: '#C0392B', dot: '#F44336', label: 'Rejected' },
+const getStatusConfig = (status: string) => {
+  const map: Record<string, any> = {
+    pending:      { bg: '#FEF9E7', bgDark: '#342A05', fg: '#B7950B', dot: '#F1C40F', label: 'Pending',     icon: '⏳' },
+    'in-progress':{ bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', dot: '#2196F3', label: 'In Progress', icon: '🔧' },
+    resolved:     { bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', dot: '#4CAF50', label: 'Resolved',    icon: '✅' },
+    rejected:     { bg: '#FFEBEE', bgDark: '#3D1A1A', fg: '#C0392B', dot: '#F44336', label: 'Rejected',    icon: '❌' },
   };
-  return statusStyles[status] || statusStyles.pending;
+  return map[status] || map.pending;
 };
 
 const COMPLAINT_FILTERS = [
-  { id: 'all', label: 'All Complaints', type: undefined, status: undefined },
-  { id: 'pending', label: 'Pending', type: undefined, status: 'pending' },
+  { id: 'all',         label: 'All',         type: undefined, status: undefined },
+  { id: 'pending',     label: 'Pending',     type: undefined, status: 'pending' },
   { id: 'in-progress', label: 'In Progress', type: undefined, status: 'in-progress' },
-  { id: 'resolved', label: 'Resolved', type: undefined, status: 'resolved' },
+  { id: 'resolved',    label: 'Resolved',    type: undefined, status: 'resolved' },
 ];
 
 // ─── Highlighted text ─────────────────────────────────────────────────────────
 const HText = ({ text = '', query, style, lines }: any) => {
   if (!query.trim()) return <Text style={style} numberOfLines={lines}>{text}</Text>;
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const parts = text.split(new RegExp(`(${escaped})`, 'gi'));
+  const parts   = text.split(new RegExp(`(${escaped})`, 'gi'));
   return (
     <Text style={style} numberOfLines={lines}>
       {parts.map((p: string, i: number) =>
         p.toLowerCase() === query.toLowerCase()
-          ? <Text key={i} style={[styles.highlight, { backgroundColor: '#FFF176', color: '#222' }]}>{p}</Text>
+          ? <Text key={i} style={styles.highlight}>{p}</Text>
           : p
       )}
     </Text>
   );
 };
 
-// ─── Search bar ───────────────────────────────────────────────────────────────
-const SearchBar = ({ value, onChange, onClear, colors }: any) => (
-  <View style={[styles.searchWrap, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-    <View style={[styles.searchInner, { backgroundColor: colors.background, borderColor: colors.border }]}>
-      <Text style={[styles.searchIcon, { color: colors.text.secondary }]}>⌕</Text>
-      <TextInput
-        style={[styles.searchInput, { color: colors.text.primary }]}
-        placeholder="Search complaints…"
-        placeholderTextColor={colors.text.secondary}
-        value={value}
-        onChangeText={onChange}
-        returnKeyType="search"
-        onSubmitEditing={() => Keyboard.dismiss()}
-        autoCorrect={false}
-        autoCapitalize="none"
-      />
-      {value.length > 0 && (
-        <TouchableOpacity onPress={onClear} style={[styles.searchClear, { backgroundColor: colors.border }]} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text style={[styles.searchClearText, { color: colors.text.secondary }]}>✕</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  </View>
-);
-
 // ─── Complaint Card ───────────────────────────────────────────────────────────
-const ComplaintCard = ({ item, onPress, index, query, colors }: any) => {
-  const fade = useRef(new Animated.Value(0)).current;
-  const slide = useRef(new Animated.Value(16)).current;
-  
+const ComplaintCard = ({ item, onPress, index, query, colors, isDark }: any) => {
+  const fade  = useRef(new Animated.Value(0)).current;
+  const slide = useRef(new Animated.Value(18)).current;
+
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fade, { toValue: 1, duration: 260, delay: index * 40, useNativeDriver: true }),
-      Animated.timing(slide, { toValue: 0, duration: 240, delay: index * 40, useNativeDriver: true }),
+      Animated.timing(fade,  { toValue: 1, duration: 280, delay: index * 45, useNativeDriver: true }),
+      Animated.timing(slide, { toValue: 0, duration: 260, delay: index * 45, useNativeDriver: true }),
     ]).start();
   }, []);
 
   const typ = getTypeStyles(item.type);
-  const sta = getStatusStyles(item.status);
+  const sta = getStatusConfig(item.status);
+
+  // Avatar initial + colour
+  const initials  = (item.citizen?.name || 'C')[0].toUpperCase();
+  const avatarBg  = isDark ? '#0D2137' : '#E3F2FD';
+  const avatarFg  = isDark ? '#90CAF9' : '#1976D2';
 
   return (
     <Animated.View style={{ opacity: fade, transform: [{ translateY: slide }] }}>
       <TouchableOpacity
-        style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            shadowColor: isDark ? '#000' : sta.dot,
+          },
+        ]}
         onPress={onPress}
-        activeOpacity={0.74}
+        activeOpacity={0.78}
       >
+        {/* Status-coloured left strip */}
         <View style={[styles.cardStrip, { backgroundColor: sta.dot }]} />
-        <View style={styles.cardBody}>
 
-          {/* Pills row */}
+        <View style={styles.cardBody}>
+          {/* Type + status pills */}
           <View style={styles.pillRow}>
-            <View style={[styles.pill, { backgroundColor: typ.bg }]}>
-              <Text style={[styles.pillTxt, { color: typ.fg }]}>{typ.icon} {typ.label}</Text>
+            <View style={[styles.pill, { backgroundColor: isDark ? typ.bgDark : typ.bg }]}>
+              <Text style={[styles.pillTxt, { color: typ.fg }]}>
+                {typ.icon}  {typ.label}
+              </Text>
             </View>
-            <View style={[styles.statusPill, { backgroundColor: sta.bg }]}>
+            <View style={[styles.statusPill, { backgroundColor: isDark ? sta.bgDark : sta.bg }]}>
               <View style={[styles.statusDot, { backgroundColor: sta.dot }]} />
               <Text style={[styles.pillTxt, { color: sta.fg }]}>{sta.label}</Text>
             </View>
           </View>
 
-          <HText text={item.title} query={query} style={[styles.cardTitle, { color: colors.text.primary }]} lines={2} />
-          <HText text={item.description} query={query} style={[styles.cardDesc, { color: colors.text.secondary }]} lines={2} />
+          {/* Title + description */}
+          <HText
+            text={item.title}
+            query={query}
+            style={[styles.cardTitle, { color: colors.text.primary }]}
+            lines={2}
+          />
+          <HText
+            text={item.description}
+            query={query}
+            style={[styles.cardDesc, { color: colors.text.secondary }]}
+            lines={2}
+          />
 
+          {/* Image evidence chip */}
           {item.imageUrl && (
-            <View style={[styles.fileChip, { backgroundColor: colors.background, borderColor: colors.border }]}>
-              <View style={[styles.fileChipIcon, { backgroundColor: colors.primary[600] }]}>
-                <Text style={styles.fileChipIconText}>📸</Text>
-              </View>
-              <Text style={[styles.fileChipText, { color: colors.text.secondary }]} numberOfLines={1}>Image attached</Text>
+            <View
+              style={[
+                styles.evidenceChip,
+                {
+                  backgroundColor: isDark
+                    ? `${colors.primary[500]}15`
+                    : colors.primary[50],
+                  borderColor: isDark
+                    ? `${colors.primary[500]}30`
+                    : colors.primary[200],
+                },
+              ]}
+            >
+              <Text style={styles.evidenceIcon}>📸</Text>
+              <Text style={[styles.evidenceText, { color: colors.primary[isDark ? 300 : 700] }]}>
+                Image attached
+              </Text>
             </View>
           )}
 
+          {/* Footer: citizen avatar + date */}
           <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
             <View style={styles.cardFooterL}>
-              <View style={[styles.avatar, { backgroundColor: '#E3F2FD' }]}>
-                <Text style={[styles.avatarTxt, { color: '#1976D2' }]}>
-                  {(item.citizen?.name || 'C')[0].toUpperCase()}
-                </Text>
+              <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
+                <Text style={[styles.avatarTxt, { color: avatarFg }]}>{initials}</Text>
               </View>
-              <Text style={[styles.metaTxt, { color: colors.text.secondary }]} numberOfLines={1}>
+              <Text
+                style={[styles.metaTxt, { color: colors.text.muted }]}
+                numberOfLines={1}
+              >
                 {item.citizen?.name || 'Citizen'}
               </Text>
             </View>
-            <View style={styles.cardFooterR}>
-              <Text style={[styles.metaTxt, { color: colors.text.secondary }]}>{formatDate(item.createdAt)}</Text>
-            </View>
+            <Text style={[styles.metaTxt, { color: colors.text.muted }]}>
+              {formatDate(item.createdAt)}
+            </Text>
           </View>
         </View>
+
+        {/* Chevron */}
         <View style={styles.chevronWrap}>
           <Text style={[styles.chevron, { color: sta.dot }]}>›</Text>
         </View>
@@ -158,41 +178,113 @@ const ComplaintCard = ({ item, onPress, index, query, colors }: any) => {
 };
 
 // ─── Empty state ──────────────────────────────────────────────────────────────
-const EmptyState = ({ query, filter, colors }: any) => (
+const EmptyState = ({ query, filter, colors, isDark }: any) => (
   <View style={styles.emptyWrap}>
-    <View style={[styles.emptyCircle, { backgroundColor: `${colors.primary[500]}12` }]}>
-      <Text style={[styles.emptyGlyph, { color: colors.primary[500] }]}>{query ? '⌕' : '○'}</Text>
+    <View
+      style={[
+        styles.emptyIconBox,
+        {
+          backgroundColor: isDark
+            ? `${colors.primary[500]}15`
+            : colors.primary[50],
+          borderColor: isDark
+            ? `${colors.primary[500]}30`
+            : colors.primary[200],
+        },
+      ]}
+    >
+      <Text style={styles.emptyGlyph}>{query ? '🔍' : '📭'}</Text>
     </View>
-    <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>{query ? 'No results found' : 'No complaints found'}</Text>
+    <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
+      {query ? 'No results found' : 'No complaints found'}
+    </Text>
     <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
       {query
         ? `Nothing matched "${query}". Try different keywords.`
         : filter === 'all'
-          ? 'No complaints have been reported in this village yet.'
-          : `No ${filter} complaints in this village.`}
+        ? 'No complaints have been reported in this village yet.'
+        : `No ${filter} complaints in this village.`}
     </Text>
+  </View>
+);
+
+// ─── Pagination ───────────────────────────────────────────────────────────────
+const Pagination = ({ page, totalPages, onPress, colors, isDark }: any) => (
+  <View style={styles.pagination}>
+    {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => {
+      const active = page === p;
+      return (
+        <TouchableOpacity
+          key={p}
+          onPress={() => onPress(p)}
+          style={[
+            styles.pageBtn,
+            {
+              backgroundColor: active
+                ? colors.primary[700]
+                : isDark
+                ? `${colors.primary[500]}10`
+                : colors.primary[50],
+              borderColor: active
+                ? colors.primary[600]
+                : isDark
+                ? `${colors.primary[500]}25`
+                : colors.primary[200],
+            },
+            active && {
+              shadowColor: colors.primary[900],
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 3,
+            },
+          ]}
+          activeOpacity={0.75}
+        >
+          <Text
+            style={[
+              styles.pageBtnTxt,
+              {
+                color: active
+                  ? '#fff'
+                  : isDark
+                  ? colors.primary[300]
+                  : colors.primary[700],
+                fontWeight: active ? '800' : '600',
+              },
+            ]}
+          >
+            {p}
+          </Text>
+        </TouchableOpacity>
+      );
+    })}
   </View>
 );
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function AllComplaintsScreen() {
-  const { colors, isDark } = useTheme();
-  const searchParams = useLocalSearchParams();
-  const villageId = (searchParams.villageId as string) || '';
+  const { colors, isDark }  = useTheme();
+  const searchParams        = useLocalSearchParams();
+  const villageId           = (searchParams.villageId as string) || '';
 
-  const [allComplaints, setAllComplaints] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [allComplaints,  setAllComplaints]  = useState<any[]>([]);
+  const [loading,        setLoading]        = useState(true);
+  const [refreshing,     setRefreshing]     = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [page,           setPage]           = useState(1);
+  const [totalPages,     setTotalPages]     = useState(1);
+  const [searchQuery,    setSearchQuery]    = useState('');
+  const [searchFocused,  setSearchFocused]  = useState(false);
 
-  useEffect(() => { 
-    if (villageId) {
-      fetchComplaints(); 
-    }
-  }, [villageId, selectedFilter, page]);
+  // ── Derived header colours — same pattern across all screens ───────────────
+  const headerBg           = isDark ? colors.primary[900]  : colors.primary[700];
+  const headerTextColor    = isDark ? colors.primary[100]  : '#fff';
+  const headerSubColor     = isDark ? colors.primary[200]  : 'rgba(255,255,255,0.8)';
+  const headerEyebrowColor = isDark ? colors.primary[300]  : 'rgba(255,255,255,0.6)';
+  const backBtnBg          = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
+
+  useEffect(() => { if (villageId) fetchComplaints(); }, [villageId, selectedFilter, page]);
   useEffect(() => { setSearchQuery(''); }, [selectedFilter]);
 
   const fetchComplaints = async () => {
@@ -200,14 +292,13 @@ export default function AllComplaintsScreen() {
     try {
       setLoading(true);
       const filterObj = COMPLAINT_FILTERS.find(f => f.id === selectedFilter);
-      const response = await apiService.getComplaintsByVillage(villageId, page, 10, {
-        type: filterObj?.type,
+      const response  = await apiService.getComplaintsByVillage(villageId, page, 10, {
+        type:   filterObj?.type,
         status: filterObj?.status,
       });
       setAllComplaints(response.complaints || response);
       setTotalPages(response.pages || 1);
-    } catch (err) {
-      console.error('Fetch complaints error:', err);
+    } catch {
       Alert.alert('Error', 'Failed to load complaints. Please try again.');
     } finally {
       setLoading(false);
@@ -229,7 +320,7 @@ export default function AllComplaintsScreen() {
   const processed = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return q
-      ? allComplaints.filter((c) =>
+      ? allComplaints.filter(c =>
           c.title?.toLowerCase().includes(q) ||
           c.description?.toLowerCase().includes(q) ||
           c.citizen?.name?.toLowerCase().includes(q)
@@ -237,127 +328,296 @@ export default function AllComplaintsScreen() {
       : [...allComplaints];
   }, [allComplaints, searchQuery]);
 
+  // ── No village selected ───────────────────────────────────────────────────
   if (!villageId) {
     return (
       <View style={[styles.root, { backgroundColor: colors.background }]}>
-        <View style={[styles.header, { backgroundColor: colors.primary[700] }]}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-            <Text style={styles.backBtnTxt}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Village Issues</Text>
-        </View>
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={headerBg} />
+        <LinearGradient
+          colors={isDark ? [colors.primary[800], colors.primary[900]] : [colors.primary[600], colors.primary[700]]}
+          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+          style={styles.headerShell}
+        >
+          <View style={[styles.accentCircle1, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)' }]} />
+          <View style={[styles.accentCircle2, { backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)' }]} />
+          <View style={styles.headerNavRow}>
+            <TouchableOpacity onPress={() => router.back()} style={[styles.backBtn, { backgroundColor: backBtnBg }]} activeOpacity={0.7}>
+              <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.headerTitleBlock}>
+            <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>VILLAGE SERVICES</Text>
+            <Text style={[styles.headerTitle, { color: headerTextColor }]}>Village Issues 📋</Text>
+          </View>
+        </LinearGradient>
         <View style={styles.emptyWrap}>
+          <View style={[styles.emptyIconBox, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50], borderColor: isDark ? `${colors.primary[500]}30` : colors.primary[200] }]}>
+            <Text style={styles.emptyGlyph}>🔍</Text>
+          </View>
           <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>No Village Selected</Text>
-          <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>Please scan a QR code first to view village complaints.</Text>
+          <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
+            Please scan a QR code first to view village complaints.
+          </Text>
+          <TouchableOpacity
+            style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
+            onPress={() => router.push('/qr-scanner' as any)}
+            activeOpacity={0.82}
+          >
+            <Text style={styles.emptyBtnText}>Scan QR Code</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
   }
 
+  // ── Loading ───────────────────────────────────────────────────────────────
   if (loading && allComplaints.length === 0) {
     return (
       <View style={[styles.loadingWrap, { backgroundColor: colors.background }]}>
-        <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <ActivityIndicator size="large" color={colors.primary[600]} />
-        <Text style={[styles.loadingText, { color: colors.text.secondary }]}>Loading complaints…</Text>
+        <Text style={[styles.loadingText, { color: colors.text.secondary }]}>
+          Loading complaints…
+        </Text>
       </View>
     );
   }
 
+  // ─── Main render ─────────────────────────────────────────────────────────
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle="light-content" backgroundColor={colors.primary[700]} />
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={headerBg}
+      />
 
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: colors.primary[700] }]}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-          <Text style={styles.backBtnTxt}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.headerMid}>
-          <Text style={styles.headerTitle} numberOfLines={1}>Village Issues</Text>
-          <Text style={styles.headerSub}>All reported complaints & issues</Text>
+      {/* ── Header with Gradient — same structure as all other screens ── */}
+      <LinearGradient
+        colors={
+          isDark
+            ? [colors.primary[800], colors.primary[900]]
+            : [colors.primary[600], colors.primary[700]]
+        }
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerShell}
+      >
+        <View
+          style={[
+            styles.accentCircle1,
+            { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)' },
+          ]}
+        />
+        <View
+          style={[
+            styles.accentCircle2,
+            { backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)' },
+          ]}
+        />
+
+        <View style={styles.headerNavRow}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={[styles.backBtn, { backgroundColor: backBtnBg }]}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.headerTitleBlock}>
+          <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
+            VILLAGE SERVICES
+          </Text>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>
+            Village Issues 📋
+          </Text>
+          <View style={styles.headerBreadcrumb}>
+            <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
+            <Text style={[styles.headerSub, { color: headerSubColor }]}>
+              All reported complaints & issues
+            </Text>
+          </View>
+        </View>
+      </LinearGradient>
+
+      {/* ── Search bar — matches complaint input style ── */}
+      <View
+        style={[
+          styles.searchSection,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
+        <View
+          style={[
+            styles.searchBar,
+            {
+              backgroundColor: searchFocused
+                ? isDark
+                  ? `${colors.primary[500]}12`
+                  : colors.primary[50]
+                : colors.background,
+              borderColor: searchFocused ? colors.primary[500] : colors.border,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.searchIcon,
+              { color: searchFocused ? colors.primary[500] : colors.text.muted },
+            ]}
+          >
+            ⌕
+          </Text>
+          <TextInput
+            style={[styles.searchInput, { color: colors.text.primary }]}
+            placeholder="Search complaints…"
+            placeholderTextColor={colors.text.muted}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onFocus={() => setSearchFocused(true)}
+            onBlur={() => setSearchFocused(false)}
+            returnKeyType="search"
+            onSubmitEditing={() => Keyboard.dismiss()}
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity
+              onPress={() => setSearchQuery('')}
+              style={[
+                styles.clearBtn,
+                { backgroundColor: isDark ? colors.neutral[700] : colors.neutral[200] },
+              ]}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Text style={[styles.clearBtnTxt, { color: colors.text.secondary }]}>✕</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
-      {/* Search */}
-      <SearchBar value={searchQuery} onChange={setSearchQuery} onClear={() => setSearchQuery('')} colors={colors} />
-
-      {/* Filter chips */}
-      <View style={[styles.filterBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        {COMPLAINT_FILTERS.map((f) => {
+      {/* ── Filter chips — matches complaint toggle style ── */}
+      <View
+        style={[
+          styles.filterBar,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
+        {COMPLAINT_FILTERS.map(f => {
           const active = selectedFilter === f.id;
           return (
             <TouchableOpacity
               key={f.id}
               onPress={() => handleFilterChange(f.id)}
               style={[
-                styles.chip,
-                { borderColor: colors.border, backgroundColor: colors.background },
-                active && { backgroundColor: colors.primary[600], borderColor: colors.primary[600] }
+                styles.filterChip,
+                {
+                  backgroundColor: active
+                    ? colors.primary[700]
+                    : isDark
+                    ? `${colors.primary[500]}10`
+                    : colors.primary[50],
+                  borderColor: active
+                    ? colors.primary[600]
+                    : isDark
+                    ? `${colors.primary[500]}25`
+                    : colors.primary[100],
+                },
+                active && {
+                  shadowColor: colors.primary[900],
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.2,
+                  shadowRadius: 4,
+                  elevation: 3,
+                },
               ]}
-              activeOpacity={0.72}
+              activeOpacity={0.75}
             >
-              <Text style={[
-                styles.chipTxt,
-                { color: colors.text.secondary },
-                active && { color: '#fff' }
-              ]}>{f.label}</Text>
+              <Text
+                style={[
+                  styles.filterChipTxt,
+                  {
+                    color: active
+                      ? '#fff'
+                      : isDark
+                      ? colors.primary[300]
+                      : colors.primary[700],
+                    fontWeight: active ? '700' : '600',
+                  },
+                ]}
+              >
+                {f.label}
+              </Text>
             </TouchableOpacity>
           );
         })}
       </View>
 
-      {/* Count row */}
-      <View style={[styles.countRow, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-        <Text style={[styles.countTxt, { color: colors.text.secondary }]} numberOfLines={1}>
-          <Text style={[styles.countNum, { color: colors.text.primary }]}>{processed.length}</Text>
-          {' '}{processed.length !== 1 ? 'complaints' : 'complaint'}
-          {searchQuery.trim() ? ` · "${searchQuery.trim()}"` : ''}
+      {/* ── Count row ── */}
+      <View
+        style={[
+          styles.countRow,
+          {
+            backgroundColor: isDark
+              ? `${colors.primary[500]}08`
+              : colors.primary[50],
+            borderBottomColor: isDark
+              ? `${colors.primary[500]}20`
+              : colors.primary[100],
+          },
+        ]}
+      >
+        <Text style={[styles.countNum, { color: colors.primary[isDark ? 300 : 700] }]}>
+          {processed.length}
+        </Text>
+        <Text style={[styles.countLabel, { color: colors.text.muted }]}>
+          {processed.length !== 1 ? 'complaints' : 'complaint'}
+          {searchQuery.trim() ? `  ·  "${searchQuery.trim()}"` : ''}
         </Text>
       </View>
 
-      {/* List */}
+      {/* ── List / Empty ── */}
       {processed.length === 0 ? (
-        <EmptyState query={searchQuery} filter={selectedFilter} colors={colors} />
+        <EmptyState
+          query={searchQuery}
+          filter={selectedFilter}
+          colors={colors}
+          isDark={isDark}
+        />
       ) : (
         <FlatList
           data={processed}
-          keyExtractor={(item) => item._id}
+          keyExtractor={item => item._id}
           renderItem={({ item, index }) => (
             <ComplaintCard
               item={item}
               index={index}
               query={searchQuery}
               colors={colors}
+              isDark={isDark}
               onPress={() => router.push(`/complaints/${item._id}` as any)}
             />
           )}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary[600]} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary[600]}
+            />
+          }
           ListFooterComponent={
             totalPages > 1 && !searchQuery.trim() ? (
-              <View style={styles.pagination}>
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                  <TouchableOpacity
-                    key={p}
-                    onPress={() => setPage(p)}
-                    style={[
-                      styles.pageBtn,
-                      { borderColor: colors.border, backgroundColor: colors.surface },
-                      page === p && { backgroundColor: colors.primary[600], borderColor: colors.primary[600] }
-                    ]}
-                    activeOpacity={0.75}
-                  >
-                    <Text style={[
-                      styles.pageBtnTxt,
-                      { color: colors.text.primary },
-                      page === p && { color: '#fff' }
-                    ]}>{p}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPress={setPage}
+                colors={colors}
+                isDark={isDark}
+              />
             ) : null
           }
         />
@@ -373,73 +633,171 @@ const styles = StyleSheet.create({
   loadingWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 14 },
   loadingText: { fontSize: 14, fontWeight: '500' },
 
-  header: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingTop: 52, paddingBottom: 14, paddingHorizontal: 16, gap: 10,
+  // ── Header — identical structure across all screens ────────────────────────
+  headerShell: {
+    paddingBottom: 28,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    elevation: 10,
   },
-  backBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: 'rgba(255,255,255,0.13)', justifyContent: 'center', alignItems: 'center' },
-  backBtnTxt: { color: '#fff', fontSize: 22, lineHeight: 26 },
-  headerMid: { flex: 1 },
-  headerTitle: { fontSize: 18, fontWeight: '700', color: '#fff', letterSpacing: -0.3 },
-  headerSub: { fontSize: 12, color: 'rgba(255,255,255,0.58)', marginTop: 2, fontWeight: '500' },
+  accentCircle1: {
+    position: 'absolute',
+    width: 220, height: 220, borderRadius: 110,
+    top: -80, right: -50,
+  },
+  accentCircle2: {
+    position: 'absolute',
+    width: 130, height: 130, borderRadius: 65,
+    bottom: -30, left: 30,
+  },
+  headerNavRow: {
+    paddingTop: 54, paddingHorizontal: 16, paddingBottom: 18,
+    flexDirection: 'row', alignItems: 'center',
+  },
+  backBtn: {
+    width: 38, height: 38, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  backBtnTxt: { fontSize: 20, lineHeight: 24, fontWeight: '600' },
+  headerTitleBlock: { paddingHorizontal: 18, gap: 4 },
+  headerEyebrow: {
+    fontSize: 10, fontWeight: '800',
+    letterSpacing: 2.5, marginBottom: 2,
+  },
+  headerTitle: {
+    fontSize: 28, fontWeight: '800',
+    letterSpacing: -0.8, lineHeight: 34,
+  },
+  headerBreadcrumb: {
+    flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 4,
+  },
+  headerBreadcrumbDot: { width: 5, height: 5, borderRadius: 3 },
+  headerSub: { fontSize: 12, fontWeight: '500' },
 
-  // Search
-  searchWrap: { paddingHorizontal: 14, paddingVertical: 10, borderBottomWidth: 1 },
-  searchInner: { flexDirection: 'row', alignItems: 'center', borderRadius: 12, borderWidth: 1, paddingHorizontal: 12, height: 44, gap: 8 },
-  searchIcon: { fontSize: 18, lineHeight: 22 },
+  // ── Search ────────────────────────────────────────────────────────────────
+  searchSection: {
+    paddingHorizontal: 16, paddingVertical: 12, borderBottomWidth: 1,
+  },
+  searchBar: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 14, borderWidth: 1.5,
+    paddingHorizontal: 14, height: 50, gap: 10,
+  },
+  searchIcon: { fontSize: 19, lineHeight: 22 },
   searchInput: { flex: 1, fontSize: 14, fontWeight: '500', paddingVertical: 0 },
-  searchClear: { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  searchClearText: { fontSize: 10, fontWeight: '700' },
+  clearBtn: {
+    width: 20, height: 20, borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  clearBtnTxt: { fontSize: 10, fontWeight: '700' },
 
-  // Filter
-  filterBar: { borderBottomWidth: 1, paddingHorizontal: 8, paddingVertical: 8 },
-  chip: { paddingHorizontal: 13, paddingVertical: 7, borderRadius: 20, borderWidth: 1, marginHorizontal: 4 },
-  chipTxt: { fontSize: 12, fontWeight: '600' },
+  // ── Filter chips ──────────────────────────────────────────────────────────
+  filterBar: {
+    flexDirection: 'row', flexWrap: 'wrap',
+    paddingHorizontal: 16, paddingVertical: 10, gap: 8,
+    borderBottomWidth: 1,
+  },
+  filterChip: {
+    paddingHorizontal: 14, paddingVertical: 8,
+    borderRadius: 10, borderWidth: 1.5,
+  },
+  filterChipTxt: { fontSize: 12 },
 
-  // Count row
-  countRow: { paddingHorizontal: 16, paddingVertical: 8, borderBottomWidth: 1 },
-  countTxt: { fontSize: 12, fontWeight: '500' },
-  countNum: { fontSize: 12, fontWeight: '700' },
+  // ── Count row ────────────────────────────────────────────────────────────
+  countRow: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 16, paddingVertical: 9, gap: 5,
+    borderBottomWidth: 1,
+  },
+  countNum:   { fontSize: 13, fontWeight: '800' },
+  countLabel: { fontSize: 12, fontWeight: '500' },
 
-  // Highlight
-  highlight: { borderRadius: 2 },
+  // ── Highlight ────────────────────────────────────────────────────────────
+  highlight: { backgroundColor: '#FFF176', color: '#222', borderRadius: 2 },
 
-  // Cards
-  listContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 32, gap: 10 },
-  card: { flexDirection: 'row', borderRadius: 14, borderWidth: 1, overflow: 'hidden' },
+  // ── Cards ─────────────────────────────────────────────────────────────────
+  listContent: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 36, gap: 10 },
+  card: {
+    flexDirection: 'row',
+    borderRadius: 18, borderWidth: 1,
+    overflow: 'hidden',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1, shadowRadius: 8, elevation: 2,
+  },
   cardStrip: { width: 4 },
-  cardBody: { flex: 1, padding: 13, gap: 6 },
+  cardBody: { flex: 1, padding: 14, gap: 7 },
 
   pillRow: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
-  pill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 5 },
+  pill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 7 },
+  statusPill: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 8, paddingVertical: 4,
+    borderRadius: 7, gap: 5,
+  },
+  statusDot: { width: 6, height: 6, borderRadius: 3 },
   pillTxt: { fontSize: 9, fontWeight: '800', letterSpacing: 0.5 },
-  statusPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 5, gap: 4 },
-  statusDot: { width: 5, height: 5, borderRadius: 3 },
 
-  cardTitle: { fontSize: 15, fontWeight: '700', lineHeight: 21, letterSpacing: -0.2 },
-  cardDesc: { fontSize: 12, lineHeight: 18 },
+  cardTitle: { fontSize: 15, fontWeight: '800', lineHeight: 21, letterSpacing: -0.2 },
+  cardDesc:  { fontSize: 12, lineHeight: 18, fontWeight: '500' },
 
-  fileChip: { flexDirection: 'row', alignItems: 'center', alignSelf: 'flex-start', borderRadius: 6, borderWidth: 1, paddingHorizontal: 8, paddingVertical: 4, gap: 5, maxWidth: '80%' },
-  fileChipIcon: { width: 16, height: 16, borderRadius: 4, justifyContent: 'center', alignItems: 'center' },
-  fileChipIconText: { color: '#fff', fontSize: 10, fontWeight: '700' },
-  fileChipText: { fontSize: 11, fontWeight: '500', flex: 1 },
+  evidenceChip: {
+    flexDirection: 'row', alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderRadius: 8, borderWidth: 1,
+    paddingHorizontal: 10, paddingVertical: 5, gap: 6,
+  },
+  evidenceIcon: { fontSize: 12 },
+  evidenceText: { fontSize: 11, fontWeight: '700' },
 
-  cardFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4, paddingTop: 8, borderTopWidth: 1 },
-  cardFooterL: { flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1 },
-  cardFooterR: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  avatar: { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  avatarTxt: { fontSize: 10, fontWeight: '700' },
+  cardFooter: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    marginTop: 2, paddingTop: 9, borderTopWidth: 1,
+  },
+  cardFooterL: { flexDirection: 'row', alignItems: 'center', gap: 7, flex: 1 },
+  avatar: {
+    width: 22, height: 22, borderRadius: 11,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  avatarTxt: { fontSize: 10, fontWeight: '800' },
   metaTxt: { fontSize: 11, fontWeight: '500' },
+
   chevronWrap: { width: 30, justifyContent: 'center', alignItems: 'center' },
   chevron: { fontSize: 22 },
 
-  emptyWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 40, gap: 10 },
-  emptyCircle: { width: 64, height: 64, borderRadius: 32, justifyContent: 'center', alignItems: 'center', marginBottom: 4 },
-  emptyGlyph: { fontSize: 28 },
-  emptyTitle: { fontSize: 17, fontWeight: '700', letterSpacing: -0.2 },
-  emptyDesc: { fontSize: 13, textAlign: 'center', lineHeight: 20 },
+  // ── Empty state ───────────────────────────────────────────────────────────
+  emptyWrap: {
+    flex: 1, justifyContent: 'center', alignItems: 'center',
+    paddingHorizontal: 36, gap: 10,
+  },
+  emptyIconBox: {
+    width: 72, height: 72, borderRadius: 20,
+    borderWidth: 1,
+    justifyContent: 'center', alignItems: 'center', marginBottom: 8,
+  },
+  emptyGlyph: { fontSize: 30 },
+  emptyTitle: { fontSize: 18, fontWeight: '800', letterSpacing: -0.3, textAlign: 'center' },
+  emptyDesc:  { fontSize: 13, textAlign: 'center', lineHeight: 20, fontWeight: '500' },
+  emptyBtn: {
+    marginTop: 8, borderRadius: 12,
+    paddingHorizontal: 24, paddingVertical: 13,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
+  },
+  emptyBtnText: { fontSize: 14, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
 
-  pagination: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', gap: 8, paddingVertical: 20 },
-  pageBtn: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, justifyContent: 'center', alignItems: 'center' },
-  pageBtnTxt: { fontSize: 13, fontWeight: '600' },
+  // ── Pagination ────────────────────────────────────────────────────────────
+  pagination: {
+    flexDirection: 'row', justifyContent: 'center',
+    flexWrap: 'wrap', gap: 8, paddingVertical: 24,
+  },
+  pageBtn: {
+    width: 38, height: 38, borderRadius: 10,
+    borderWidth: 1.5,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  pageBtnTxt: { fontSize: 13 },
 });
