@@ -19,10 +19,10 @@ import Toast from "react-native-toast-message";
 import apiService from "../services/api";
 import { router } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
+import { LinearGradient } from "expo-linear-gradient";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ComplaintType = "issue" | "suggestion";
-type ImageSource = "camera" | "gallery" | null;
 
 interface PhotoFile {
   uri: string;
@@ -36,12 +36,9 @@ interface GpsLocation {
 }
 
 // ─── Helper: build warning messages ──────────────────────────────────────────
-function buildWarnings(imageSource: ImageSource, location: GpsLocation | null, colors: any): string[] {
+function buildWarnings(location: GpsLocation | null): string[] {
   const warnings: string[] = [];
-  if (imageSource === "gallery") {
-    warnings.push("Gallery images are less reliable — camera photos are preferred for verification.");
-  }
-  if (imageSource !== null && !location) {
+  if (!location) {
     warnings.push("Location required for verification. Capturing automatically…");
   }
   return warnings;
@@ -55,27 +52,33 @@ export default function Complaint() {
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<PhotoFile | null>(null);
-  const [imageSource, setImageSource] = useState<ImageSource>(null);
   const [location, setLocation] = useState<GpsLocation | null>(null);
   const [locLoading, setLocLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
   const [timestamp, setTimestamp] = useState<string | null>(null);
 
-  // Derived warning list — recomputed on every render (cheap)
-  const aiWarnings = buildWarnings(imageSource, location, colors);
+  // Derived warning list
+  const warnings = buildWarnings(location);
+
+  // Dynamic colors based on dark mode
+  const headerBg = isDark ? colors.primary[900] : colors.primary[700];
+  const headerTextColor = isDark ? colors.primary[100] : "#fff";
+  const headerSubColor = isDark ? colors.primary[200] : "rgba(255,255,255,0.8)";
+  const headerEyebrowColor = isDark ? colors.primary[300] : "rgba(255,255,255,0.6)";
+  const backBtnBg = isDark ? `${colors.primary[500]}40` : "rgba(255,255,255,0.15)";
 
   // ── Auto-capture location after image is selected ─────────────────────────
-  const autoCapureLocation = useCallback(async () => {
-    if (location) return; // already have one
+  const autoCaptureLocation = useCallback(async () => {
+    if (location) return;
     setLocLoading(true);
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         Toast.show({
           type: "error",
-          text1: "Permission denied",
-          text2: "Allow location access to tag this issue.",
+          text1: "Permission needed",
+          text2: "Please allow location access to submit issue.",
         });
         return;
       }
@@ -91,27 +94,14 @@ export default function Complaint() {
     }
   }, [location]);
 
-  // ── Apply picked asset to state ───────────────────────────────────────────
-  const applyAsset = useCallback(
-    (asset: ImagePicker.ImagePickerAsset, source: ImageSource) => {
-      setPhoto(asset.uri);
-      setPhotoFile({ uri: asset.uri, name: "photo.jpg", type: "image/jpeg" });
-      setImageSource(source);
-      setTimestamp(new Date().toISOString());
-      // Auto-trigger location after image selection
-      autoCapureLocation();
-    },
-    [autoCapureLocation]
-  );
-
   // ── Take photo from camera ────────────────────────────────────────────────
   const handleTakePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
       Toast.show({
         type: "error",
-        text1: "Permission denied",
-        text2: "Allow camera access to take a photo.",
+        text1: "Camera access needed",
+        text2: "Please allow camera access to take a photo.",
       });
       return;
     }
@@ -122,29 +112,11 @@ export default function Complaint() {
       exif: true,
     });
     if (!result.canceled && result.assets[0]) {
-      applyAsset(result.assets[0], "camera");
-    }
-  };
-
-  // ── Pick from gallery ─────────────────────────────────────────────────────
-  const handlePickFromGallery = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      Toast.show({
-        type: "error",
-        text1: "Permission denied",
-        text2: "Allow library access to upload a photo.",
-      });
-      return;
-    }
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.8,
-      allowsEditing: false,
-      exif: true,
-    });
-    if (!result.canceled && result.assets[0]) {
-      applyAsset(result.assets[0], "gallery");
+      setPhoto(result.assets[0].uri);
+      setPhotoFile({ uri: result.assets[0].uri, name: "photo.jpg", type: "image/jpeg" });
+      setTimestamp(new Date().toISOString());
+      // Auto-trigger location after taking photo
+      autoCaptureLocation();
     }
   };
 
@@ -152,7 +124,6 @@ export default function Complaint() {
   const handleRemovePhoto = () => {
     setPhoto(null);
     setPhotoFile(null);
-    setImageSource(null);
     setTimestamp(null);
   };
 
@@ -164,8 +135,8 @@ export default function Complaint() {
       if (status !== "granted") {
         Toast.show({
           type: "error",
-          text1: "Permission denied",
-          text2: "Allow location access to tag this issue.",
+          text1: "Permission needed",
+          text2: "Please allow location access to submit issue.",
         });
         return;
       }
@@ -190,7 +161,7 @@ export default function Complaint() {
 
     if (type === "issue") {
       if (!photoFile) {
-        Toast.show({ type: "error", text1: "Photo required", text2: "Please attach a photo for issues." });
+        Toast.show({ type: "error", text1: "Photo required", text2: "Please take a photo of the issue." });
         return;
       }
       if (!location) {
@@ -212,7 +183,7 @@ export default function Complaint() {
         formData.append("lat", String(location!.lat));
         formData.append("lng", String(location!.lng));
         formData.append("timestamp", timestamp ?? new Date().toISOString());
-        formData.append("imageSource", imageSource ?? "camera");
+        formData.append("imageSource", "camera");
       }
 
       const res = await apiService.createComplaint(formData);
@@ -246,26 +217,39 @@ export default function Complaint() {
       style={[styles.root, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.primary[700]} />
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      {/* ── Header ── */}
-      <View style={[styles.headerShell, { backgroundColor: colors.primary[700] }]}>
-        <View style={[styles.accentCircle1, { backgroundColor: "rgba(255,255,255,0.06)" }]} />
-        <View style={[styles.accentCircle2, { backgroundColor: "rgba(255,255,255,0.04)" }]} />
+      {/* ── Header with Gradient ── */}
+      <LinearGradient
+        colors={isDark 
+          ? [colors.primary[800], colors.primary[900]] 
+          : [colors.primary[600], colors.primary[700]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerShell}
+      >
+        <View style={[styles.accentCircle1, { backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.06)" }]} />
+        <View style={[styles.accentCircle2, { backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)" }]} />
+        
         <View style={styles.headerNavRow}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-            <Text style={styles.backBtnTxt}>←</Text>
+          <TouchableOpacity 
+            onPress={() => router.back()} 
+            style={[styles.backBtn, { backgroundColor: backBtnBg }]} 
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
           </TouchableOpacity>
         </View>
+        
         <View style={styles.headerTitleBlock}>
-          <Text style={styles.headerEyebrow}>CITIZEN PORTAL</Text>
-          <Text style={styles.headerTitle}>New Complaint 📋</Text>
+          <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>CITIZEN PORTAL</Text>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>New Complaint 📋</Text>
           <View style={styles.headerBreadcrumb}>
-            <View style={[styles.headerBreadcrumbDot, { backgroundColor: "rgba(255,255,255,0.45)" }]} />
-            <Text style={styles.headerSub}>Report an issue or share a suggestion</Text>
+            <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
+            <Text style={[styles.headerSub, { color: headerSubColor }]}>Report an issue or share a suggestion</Text>
           </View>
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -285,7 +269,7 @@ export default function Complaint() {
               key={t}
               style={[
                 styles.toggleBtn,
-                type === t && [styles.toggleBtnActive, { backgroundColor: colors.primary[700], shadowColor: colors.primary[900] }]
+                type === t && [styles.toggleBtnActive, { backgroundColor: colors.primary[700] }]
               ]}
               onPress={() => setType(t)}
               activeOpacity={0.8}
@@ -305,8 +289,8 @@ export default function Complaint() {
         <View style={[
           styles.hintBox,
           {
-            backgroundColor: colors.primary[100] || "#f5efe9",
-            borderLeftColor: colors.primary[500] || "#a88560",
+            backgroundColor: isDark ? `${colors.primary[500]}12` : colors.primary[100],
+            borderLeftColor: colors.primary[500],
           }
         ]}>
           <Text style={[styles.hintText, { color: colors.text.secondary }]}>
@@ -322,7 +306,6 @@ export default function Complaint() {
           {
             backgroundColor: colors.surface,
             borderColor: colors.border,
-            shadowColor: colors.primary[900],
           }
         ]}>
           {/* Title */}
@@ -335,8 +318,8 @@ export default function Complaint() {
                 borderColor: colors.border,
               },
               focused === "title" && {
-                borderColor: colors.primary[500] || "#a88560",
-                backgroundColor: colors.primary[100] || "#f5efe9",
+                borderColor: colors.primary[500],
+                backgroundColor: isDark ? `${colors.primary[500]}12` : colors.primary[50],
               }
             ]}>
               <TextInput
@@ -363,8 +346,8 @@ export default function Complaint() {
                 borderColor: colors.border,
               },
               focused === "desc" && {
-                borderColor: colors.primary[500] || "#a88560",
-                backgroundColor: colors.primary[100] || "#f5efe9",
+                borderColor: colors.primary[500],
+                backgroundColor: isDark ? `${colors.primary[500]}12` : colors.primary[50],
               }
             ]}>
               <TextInput
@@ -384,14 +367,13 @@ export default function Complaint() {
           </View>
         </View>
 
-        {/* ── Issue-only: Photo ── */}
+        {/* ── Issue-only: Photo (Camera only) ── */}
         {type === "issue" && (
           <View style={[
             styles.card,
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              shadowColor: colors.primary[900],
             }
           ]}>
             <View style={styles.fieldWrap}>
@@ -403,76 +385,57 @@ export default function Complaint() {
                 /* ── Preview + retake ── */
                 <View style={styles.photoPreviewWrap}>
                   <Image source={{ uri: photo }} style={styles.photoPreview} resizeMode="cover" />
-
-                  {/* Source badge */}
                   <View style={[
                     styles.sourceBadge,
-                    imageSource === "gallery" && styles.sourceBadgeGallery,
-                    imageSource === "gallery" ? { backgroundColor: "#fff3e0" } : { backgroundColor: colors.primary[200] || "#e8d8c8" }
+                    { backgroundColor: isDark ? `${colors.primary[500]}20` : colors.primary[100] }
                   ]}>
-                    <Text style={[styles.sourceBadgeTxt, { color: colors.primary[700] || "#6D4C41" }]}>
-                      {imageSource === "camera" ? "📸 Camera" : "🖼️ Gallery"}
+                    <Text style={[styles.sourceBadgeTxt, { color: colors.primary[700] }]}>
+                      📸 Camera Photo
                     </Text>
                   </View>
-
                   <TouchableOpacity
-                    style={styles.photoRemoveBtn}
+                    style={[styles.photoRemoveBtn, { backgroundColor: isDark ? `${colors.error}20` : "#fce8e8" }]}
                     onPress={handleRemovePhoto}
                     activeOpacity={0.8}
                   >
-                    <Text style={styles.photoRemoveTxt}>✕  Remove / Retake</Text>
+                    <Text style={[styles.photoRemoveTxt, { color: colors.error || "#e05252" }]}>
+                      ✕  Take New Photo
+                    </Text>
                   </TouchableOpacity>
                 </View>
               ) : (
-                /* ── Dual picker buttons ── */
-                <View style={styles.pickerButtonsWrap}>
-                  <TouchableOpacity
-                    style={[
-                      styles.pickerBtn,
-                      styles.pickerBtnCamera,
-                      {
-                        backgroundColor: colors.primary[100] || "#f5efe9",
-                        borderColor: colors.primary[400] || "#b89a70",
-                      }
-                    ]}
-                    onPress={handleTakePhoto}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.pickerBtnIcon}>📸</Text>
-                    <Text style={[styles.pickerBtnTxt, styles.pickerBtnTxtCamera, { color: colors.primary[700] || "#6D4C41" }]}>
-                      Take Photo
-                    </Text>
-                    <Text style={[styles.pickerBtnSub, { color: colors.text.muted }]}>Recommended</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.pickerBtn,
-                      styles.pickerBtnGallery,
-                      {
-                        backgroundColor: colors.background,
-                        borderColor: colors.border,
-                      }
-                    ]}
-                    onPress={handlePickFromGallery}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.pickerBtnIcon}>🖼️</Text>
-                    <Text style={[styles.pickerBtnTxt, styles.pickerBtnTxtGallery, { color: colors.text.secondary }]}>
-                      Upload from Gallery
-                    </Text>
-                    <Text style={[styles.pickerBtnSub, { color: colors.text.muted }]}>Less reliable</Text>
-                  </TouchableOpacity>
-                </View>
+                /* ── Camera button only ── */
+                <TouchableOpacity
+                  style={[
+                    styles.cameraBtn,
+                    {
+                      backgroundColor: isDark ? `${colors.primary[500]}12` : colors.primary[100],
+                      borderColor: colors.primary[500],
+                    }
+                  ]}
+                  onPress={handleTakePhoto}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.cameraIcon}>📸</Text>
+                  <Text style={[styles.cameraBtnTxt, { color: colors.primary[700] }]}>
+                    Take Photo
+                  </Text>
+                  <Text style={[styles.cameraBtnSub, { color: colors.text.muted }]}>
+                    Required for issue reports
+                  </Text>
+                </TouchableOpacity>
               )}
 
-              {/* ── AI Warning messages ── */}
-              {aiWarnings.length > 0 && (
+              {/* ── Warning messages ── */}
+              {warnings.length > 0 && (
                 <View style={styles.warningWrap}>
-                  {aiWarnings.map((w, i) => (
-                    <View key={i} style={styles.warningRow}>
+                  {warnings.map((w, i) => (
+                    <View key={i} style={[
+                      styles.warningRow,
+                      { backgroundColor: isDark ? `${colors.warning}10` : "#fff8ec" }
+                    ]}>
                       <Text style={styles.warningIcon}>⚠️</Text>
-                      <Text style={styles.warningText}>{w}</Text>
+                      <Text style={[styles.warningText, { color: colors.warning || "#b45309" }]}>{w}</Text>
                     </View>
                   ))}
                 </View>
@@ -488,7 +451,6 @@ export default function Complaint() {
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              shadowColor: colors.primary[900],
             }
           ]}>
             <View style={styles.fieldWrap}>
@@ -497,28 +459,31 @@ export default function Complaint() {
               </Text>
 
               {location ? (
-                <View style={[styles.locRow, { backgroundColor: colors.primary[100] || "#f5efe9" }]}>
-                  <View style={[styles.locIconWrap, { backgroundColor: colors.primary[200] || "#e8d8c8" }]}>
+                <View style={[
+                  styles.locRow,
+                  { backgroundColor: isDark ? `${colors.primary[500]}12` : colors.primary[100] }
+                ]}>
+                  <View style={[styles.locIconWrap, { backgroundColor: isDark ? `${colors.primary[500]}20` : colors.primary[200] }]}>
                     <Text style={styles.locIcon}>📍</Text>
                   </View>
                   <View style={styles.locTextBlock}>
                     <Text style={[styles.locCoords, { color: colors.text.primary }]}>
                       {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
                     </Text>
-                    <Text style={[styles.locCaptured, { color: colors.primary[600] || "#8B6B61" }]}>
-                      GPS captured
+                    <Text style={[styles.locCaptured, { color: colors.primary[500] }]}>
+                      ✓ GPS captured
                     </Text>
                   </View>
                   <TouchableOpacity
                     onPress={handleGetLocation}
-                    style={[styles.locRefreshBtn, { backgroundColor: colors.primary[200] || "#e8d8c8" }]}
+                    style={[styles.locRefreshBtn, { backgroundColor: isDark ? `${colors.primary[500]}20` : colors.primary[200] }]}
                     activeOpacity={0.8}
                     disabled={locLoading}
                   >
                     {locLoading ? (
-                      <ActivityIndicator color={colors.primary[600] || "#8B6B61"} size="small" />
+                      <ActivityIndicator color={colors.primary[500]} size="small" />
                     ) : (
-                      <Text style={[styles.locRefreshTxt, { color: colors.primary[700] || "#6D4C41" }]}>Refresh</Text>
+                      <Text style={[styles.locRefreshTxt, { color: colors.primary[700] }]}>Refresh</Text>
                     )}
                   </TouchableOpacity>
                 </View>
@@ -536,9 +501,9 @@ export default function Complaint() {
                   disabled={locLoading}
                 >
                   {locLoading ? (
-                    <ActivityIndicator color={colors.primary[600] || "#8B6B61"} size="small" />
+                    <ActivityIndicator color={colors.primary[500]} size="small" />
                   ) : (
-                    <Text style={[styles.locCaptureTxt, { color: colors.primary[600] || "#8B6B61" }]}>
+                    <Text style={[styles.locCaptureTxt, { color: colors.primary[500] }]}>
                       📍  Capture My Location
                     </Text>
                   )}
@@ -562,7 +527,9 @@ export default function Complaint() {
           {loading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
-            <Text style={[styles.submitBtnTxt, { color: colors.text.inverse }]}>Submit Complaint</Text>
+            <Text style={[styles.submitBtnTxt, { color: "#fff" }]}>
+              {type === "issue" ? "Submit Complaint" : "Submit Suggestion"}
+            </Text>
           )}
         </TouchableOpacity>
       </ScrollView>
@@ -599,25 +566,23 @@ const styles = StyleSheet.create({
   headerNavRow: { paddingTop: 54, paddingHorizontal: 16, paddingBottom: 18 },
   backBtn: {
     width: 38, height: 38, borderRadius: 12,
-    backgroundColor: "rgba(255,255,255,0.13)",
     justifyContent: "center", alignItems: "center",
   },
-  backBtnTxt: { color: "#fff", fontSize: 20, lineHeight: 24, fontWeight: "600" },
+  backBtnTxt: { fontSize: 20, lineHeight: 24, fontWeight: "600" },
   headerTitleBlock: { paddingHorizontal: 18, gap: 4 },
   headerEyebrow: {
     fontSize: 10, fontWeight: "800",
-    color: "rgba(255,255,255,0.50)",
     letterSpacing: 2.5, marginBottom: 2,
   },
   headerTitle: {
     fontSize: 28, fontWeight: "800",
-    color: "#fff", letterSpacing: -0.8, lineHeight: 34,
+    letterSpacing: -0.8, lineHeight: 34,
   },
   headerBreadcrumb: { flexDirection: "row", alignItems: "center", gap: 7, marginTop: 4 },
   headerBreadcrumbDot: {
     width: 5, height: 5, borderRadius: 3,
   },
-  headerSub: { fontSize: 12, color: "rgba(255,255,255,0.55)", fontWeight: "500" },
+  headerSub: { fontSize: 12, fontWeight: "500" },
 
   // ── Scroll ────────────────────────────────────────────────────────────────
   scrollContent: {
@@ -713,59 +678,47 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // ── Dual picker buttons ───────────────────────────────────────────────────
-  pickerButtonsWrap: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  pickerBtn: {
-    flex: 1,
+  // ── Camera button ─────────────────────────────────────────────────────────
+  cameraBtn: {
     borderRadius: 12,
     borderWidth: 1.5,
     borderStyle: "dashed",
-    paddingVertical: 16,
+    paddingVertical: 20,
     alignItems: "center",
-    gap: 4,
+    gap: 6,
   },
-  pickerBtnCamera: {},
-  pickerBtnGallery: {},
-  pickerBtnIcon: { fontSize: 22 },
-  pickerBtnTxt: {
-    fontSize: 12, fontWeight: "700",
-    textAlign: "center",
+  cameraIcon: { fontSize: 32 },
+  cameraBtnTxt: {
+    fontSize: 14, fontWeight: "700",
   },
-  pickerBtnTxtCamera: {},
-  pickerBtnTxtGallery: {},
-  pickerBtnSub: {
-    fontSize: 10, fontWeight: "500",
+  cameraBtnSub: {
+    fontSize: 11, fontWeight: "500",
   },
 
   // ── Photo preview ─────────────────────────────────────────────────────────
   photoPreviewWrap: { gap: 8 },
   photoPreview: {
-    width: "100%", height: 180,
+    width: "100%", height: 200,
     borderRadius: 12,
   },
   sourceBadge: {
     alignSelf: "flex-start",
     borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
   },
-  sourceBadgeGallery: {},
   sourceBadgeTxt: {
-    fontSize: 10, fontWeight: "700",
+    fontSize: 11, fontWeight: "700",
   },
   photoRemoveBtn: {
     alignSelf: "flex-start",
-    backgroundColor: "#fce8e8",
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
   },
-  photoRemoveTxt: { fontSize: 12, fontWeight: "700", color: "#e05252" },
+  photoRemoveTxt: { fontSize: 12, fontWeight: "700" },
 
-  // ── AI Warning ────────────────────────────────────────────────────────────
+  // ── Warning ────────────────────────────────────────────────────────────────
   warningWrap: {
     marginTop: 10,
     gap: 6,
@@ -774,7 +727,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     gap: 6,
-    backgroundColor: "#fff8ec",
     borderRadius: 8,
     borderLeftWidth: 3,
     borderLeftColor: "#f59e0b",
@@ -785,7 +737,6 @@ const styles = StyleSheet.create({
   warningText: {
     flex: 1,
     fontSize: 12, fontWeight: "600",
-    color: "#b45309",
     lineHeight: 18,
   },
 

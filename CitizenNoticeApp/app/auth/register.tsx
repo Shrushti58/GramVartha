@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
@@ -16,6 +17,7 @@ import apiService from "../../services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Register() {
   const { colors, isDark } = useTheme();
@@ -86,6 +88,13 @@ export default function Register() {
     }
   };
 
+  const formatPhoneNumber = (text: string) => {
+    const cleaned = text.replace(/[^0-9]/g, '');
+    if (cleaned.length <= 10) {
+      setPhone(cleaned);
+    }
+  };
+
   const fields = [
     {
       key: "name",
@@ -100,12 +109,13 @@ export default function Register() {
     {
       key: "phone",
       label: "Phone Number",
-      placeholder: "Enter your phone number",
+      placeholder: "Enter 10-digit mobile number",
       secure: false,
       value: phone,
-      onChange: setPhone,
+      onChange: formatPhoneNumber,
       keyType: "phone-pad" as const,
       autoCapitalize: "none" as const,
+      maxLength: 10,
     },
     {
       key: "password",
@@ -119,33 +129,55 @@ export default function Register() {
     },
   ];
 
+  // Dynamic colors based on dark mode
+  const headerBg = isDark ? colors.primary[900] : colors.primary[700];
+  const headerTextColor = isDark ? colors.primary[100] : "#fff";
+  const headerSubColor = isDark ? colors.primary[200] : "rgba(255,255,255,0.8)";
+  const headerEyebrowColor = isDark ? colors.primary[300] : "rgba(255,255,255,0.6)";
+  const backBtnBg = isDark ? `${colors.primary[500]}40` : "rgba(255,255,255,0.15)";
+
   return (
     <KeyboardAvoidingView
       style={[styles.root, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={colors.primary[700]} />
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
 
-      {/* ── Header ── */}
-      <View style={[styles.headerShell, { backgroundColor: colors.primary[700] }]}>
-        <View style={[styles.accentCircle1, { backgroundColor: "rgba(255,255,255,0.06)" }]} />
-        <View style={[styles.accentCircle2, { backgroundColor: "rgba(255,255,255,0.04)" }]} />
+      {/* ── Header with Gradient ── */}
+      <LinearGradient
+        colors={isDark 
+          ? [colors.primary[800], colors.primary[900]] 
+          : [colors.primary[600], colors.primary[700]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerShell}
+      >
+        <View style={[styles.accentCircle1, { backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.06)" }]} />
+        <View style={[styles.accentCircle2, { backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)" }]} />
 
         <View style={styles.headerNavRow}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-            <Text style={styles.backBtnTxt}>←</Text>
+          <TouchableOpacity 
+            onPress={() => router.back()} 
+            style={[styles.backBtn, { backgroundColor: backBtnBg }]} 
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.headerTitleBlock}>
-          <Text style={styles.headerEyebrow}>CITIZEN PORTAL</Text>
-          <Text style={styles.headerTitle}>Create Account 📝</Text>
+          <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
+            CITIZEN PORTAL
+          </Text>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>Create Account 📝</Text>
           <View style={styles.headerBreadcrumb}>
-            <View style={[styles.headerBreadcrumbDot, { backgroundColor: "rgba(255,255,255,0.45)" }]} />
-            <Text style={styles.headerSub}>Register to access your village services</Text>
+            <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
+            <Text style={[styles.headerSub, { color: headerSubColor }]}>
+              Register to access your village services
+            </Text>
           </View>
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -157,17 +189,17 @@ export default function Register() {
           styles.villageBox,
           {
             backgroundColor: colors.surface,
-            borderColor: colors.primary[300] || "#c9a882",
+            borderColor: isDark ? colors.primary[600] : colors.primary[300],
             shadowColor: colors.primary[900],
           }
         ]}>
-          <View style={[styles.villageIconWrap, { backgroundColor: colors.primary[100] || "#f5efe9" }]}>
+          <View style={[styles.villageIconWrap, { backgroundColor: isDark ? `${colors.primary[500]}20` : colors.primary[100] }]}>
             <Text style={styles.villageIcon}>🏘️</Text>
           </View>
           <View style={styles.villageTextBlock}>
             <Text style={[styles.villageLabel, { color: colors.text.muted }]}>VILLAGE</Text>
             <Text style={[styles.villageName, { color: colors.text.primary }]}>{villageName}</Text>
-            <Text style={[styles.villageVerified, { color: colors.primary[600] || "#8B6B61" }]}>
+            <Text style={[styles.villageVerified, { color: colors.primary[500] }]}>
               ✓ Verified via QR Code
             </Text>
           </View>
@@ -200,8 +232,8 @@ export default function Register() {
                   borderColor: colors.border,
                 },
                 focused === f.key && {
-                  borderColor: colors.primary[500] || "#a88560",
-                  backgroundColor: colors.primary[100] || "#f5efe9",
+                  borderColor: colors.primary[500],
+                  backgroundColor: isDark ? `${colors.primary[500]}12` : colors.primary[50],
                 }
               ]}>
                 <TextInput
@@ -213,6 +245,7 @@ export default function Register() {
                   secureTextEntry={f.secure}
                   keyboardType={f.keyType}
                   autoCapitalize={f.autoCapitalize}
+                  maxLength={f.maxLength}
                   onFocus={() => setFocused(f.key)}
                   onBlur={() => setFocused(null)}
                   autoCorrect={false}
@@ -233,9 +266,13 @@ export default function Register() {
           activeOpacity={0.82}
           disabled={loading}
         >
-          <Text style={[styles.registerBtnTxt, { color: colors.text.inverse }]}>
-            {loading ? "Creating account…" : "Register"}
-          </Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Text style={[styles.registerBtnTxt, { color: "#fff" }]}>
+              Register
+            </Text>
+          )}
         </TouchableOpacity>
 
         {/* ── Login redirect ── */}
@@ -247,7 +284,7 @@ export default function Register() {
             onPress={() => router.replace({ pathname: "/auth/login" } as any)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.loginLink, { color: colors.primary[600] || "#8B6B61" }]}>
+            <Text style={[styles.loginLink, { color: colors.primary[500] }]}>
               {" "}Login
             </Text>
           </TouchableOpacity>
@@ -303,12 +340,10 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 12,
-    backgroundColor: "rgba(255,255,255,0.13)",
     justifyContent: "center",
     alignItems: "center",
   },
   backBtnTxt: {
-    color: "#fff",
     fontSize: 20,
     lineHeight: 24,
     fontWeight: "600",
@@ -320,14 +355,12 @@ const styles = StyleSheet.create({
   headerEyebrow: {
     fontSize: 10,
     fontWeight: "800",
-    color: "rgba(255,255,255,0.50)",
     letterSpacing: 2.5,
     marginBottom: 2,
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: "800",
-    color: "#fff",
     letterSpacing: -0.8,
     lineHeight: 34,
   },
@@ -344,7 +377,6 @@ const styles = StyleSheet.create({
   },
   headerSub: {
     fontSize: 12,
-    color: "rgba(255,255,255,0.55)",
     fontWeight: "500",
   },
 

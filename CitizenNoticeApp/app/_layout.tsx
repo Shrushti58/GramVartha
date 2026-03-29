@@ -1,8 +1,8 @@
 // app/_layout.tsx
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import Toast from "react-native-toast-message";
-import { ThemeProvider, useTheme } from '../context/ThemeContext';
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
@@ -17,7 +17,7 @@ function RootLayoutContent() {
           },
           headerTintColor: colors.text.primary,
           headerTitleStyle: {
-            fontWeight: 'bold',
+            fontWeight: "bold",
             fontSize: 18,
             color: colors.text.primary,
           },
@@ -28,10 +28,26 @@ function RootLayoutContent() {
         }}
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="complaint" options={{ title: "File Complaint", headerShown: false }} />
-        <Stack.Screen name="qr-scanner" options={{ title: "QR Scanner", headerShown: false }} />
+        <Stack.Screen
+          name="complaint"
+          options={{ title: "File Complaint", headerShown: false }}
+        />
+        <Stack.Screen
+          name="qr-scanner"
+          options={{ title: "QR Scanner", headerShown: false }}
+        />
         <Stack.Screen name="notice" options={{ headerShown: false }} />
-        <Stack.Screen name="auth" options={{ headerShown: false }} />
+        <Stack.Screen name="auth/login" options={{ headerShown: false }} />
+        <Stack.Screen name="auth/register" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="qr-notices/workguide"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="qr-notices/[villageId]"
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="qr-notices" options={{ headerShown: false }} />
       </Stack>
       <Toast />
