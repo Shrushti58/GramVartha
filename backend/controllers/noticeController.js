@@ -114,6 +114,13 @@ const updateNotice = async (req, res) => {
       isPinned
     } = req.body;
 
+    // Validate if id is a valid ObjectId
+    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        message: "Invalid notice ID format"
+      });
+    }
+
     const notice = await Notice.findById(req.params.id);
     if (!notice) {
       return res.status(404).json({ message: "Notice not found" });
@@ -250,6 +257,13 @@ const fetchOfficialNotices = async (req, res) => {
 
 const deleteNotice = async (req, res) => {
   try {
+    // Validate if id is a valid ObjectId
+    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        message: "Invalid notice ID format"
+      });
+    }
+
     const notice = await Notice.findById(req.params.id);
     if (!notice) {
       return res.status(404).json({ message: "Notice not found" });
@@ -271,6 +285,13 @@ const trackNoticeView = async (req, res) => {
   try {
     const { visitorId } = req.body;
     const noticeId = req.params.id;
+
+    // Validate if noticeId is a valid ObjectId
+    if (!noticeId || !noticeId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        error: "Invalid notice ID format"
+      });
+    }
 
     if (!visitorId) {
       return res.status(400).json({ error: 'Visitor ID is required' });
@@ -349,6 +370,14 @@ const getPopularNotices = async (req, res) => {
 const getNoticeById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Validate if id is a valid ObjectId
+    if (!id || !id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid notice ID format"
+      });
+    }
 
     const notice = await Notice.findById(id).populate("createdBy", "name email");
 

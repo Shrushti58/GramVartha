@@ -201,6 +201,13 @@ const updateStatus = async (req, res) => {
 
 const resolveComplaint = async (req, res) => {
   try {
+    // Validate if id is a valid ObjectId
+    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        message: "Invalid complaint ID format"
+      });
+    }
+
     if (!req.user?.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -414,6 +421,13 @@ const getMyComplaints = async (req, res) => {
 
 const getComplaintById = async (req, res) => {
   try {
+    // Validate if id is a valid ObjectId
+    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        message: "Invalid complaint ID format"
+      });
+    }
+
     const complaint = await Complaint.findById(req.params.id)
       .populate("citizen", "name phone")
       .populate("village", "name district state")

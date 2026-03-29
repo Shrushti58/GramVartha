@@ -3,6 +3,9 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Toast from "react-native-toast-message";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
+import "../i18n"; // Initialize i18n
+import { I18nextProvider } from "react-i18next";
+import i18n from "../i18n";
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
@@ -61,8 +64,10 @@ function RootLayoutContent() {
 
 export default function RootLayout() {
   return (
-    <ThemeProvider>
-      <RootLayoutContent />
-    </ThemeProvider>
+    <I18nextProvider i18n={i18n}>
+      <ThemeProvider>
+        <RootLayoutContent />
+      </ThemeProvider>
+    </I18nextProvider>
   );
 }
