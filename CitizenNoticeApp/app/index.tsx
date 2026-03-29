@@ -972,6 +972,50 @@ export default function HomeScreen() {
             </ThemedCard>
           </View>
 
+          {/* Quick Access to Complaints */}
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>
+              View Complaints
+            </Text>
+            <View style={styles.complaintsQuickAccess}>
+              <TouchableOpacity
+                style={[styles.quickAccessButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => {
+                  if (!recentVillages.length) {
+                    Alert.alert('No Village', 'Please scan a village QR code first to view village complaints.');
+                    return;
+                  }
+                  router.push(`/complaints/all-complaints?villageId=${recentVillages[0].villageId}` as any);
+                }}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.accent.orange}15` }]}>
+                  <Ionicons name="list-outline" size={24} color={colors.accent.orange} />
+                </View>
+                <View style={styles.quickAccessContent}>
+                  <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>All Village Issues</Text>
+                  <Text style={[styles.quickAccessDesc, { color: colors.text.muted }]}>See all complaints & issues reported in your village</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.quickAccessButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => router.push('/complaints/my-complaints' as any)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.primary[500]}15` }]}>
+                  <Ionicons name="checkmark-done-outline" size={24} color={colors.primary[500]} />
+                </View>
+                <View style={styles.quickAccessContent}>
+                  <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>My Complaints</Text>
+                  <Text style={[styles.quickAccessDesc, { color: colors.text.muted }]}>Track the status of your reported complaints</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <View style={{ height: 32 }} />
         </ScrollView>
       </Animated.View>
@@ -1435,5 +1479,37 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
     lineHeight: 18,
+  },
+
+  // Quick access buttons
+  complaintsQuickAccess: {
+    gap: 10,
+  },
+  quickAccessButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 12,
+  },
+  quickAccessIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickAccessContent: {
+    flex: 1,
+  },
+  quickAccessTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  quickAccessDesc: {
+    fontSize: 12,
+    lineHeight: 16,
   },
 });

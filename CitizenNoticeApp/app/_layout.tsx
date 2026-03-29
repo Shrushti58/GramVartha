@@ -48,6 +48,10 @@ function RootLayoutContent() {
           options={{ headerShown: false }}
         />
         <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="complaints" options={{ headerShown: false }} />
+        <Stack.Screen name="complaints/all-complaints" options={{ headerShown: false }} />
+        <Stack.Screen name="complaints/my-complaints" options={{ headerShown: false }} />
+        <Stack.Screen name="complaints/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="qr-notices" options={{ headerShown: false }} />
       </Stack>
       <Toast />

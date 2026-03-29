@@ -381,4 +381,85 @@ const createComplaint = async (req, res) => {
   }
 };
 
-module.exports = { getComplaints, updateStatus, resolveComplaint, createComplaint };
+const getMyComplaints = async (req, res) => {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const complaints = await Complaint.find({ citizen: req.user.id })
+      .populate("village", "name district state")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await Complaint.countDocuments({ citizen: req.user.id });
+
+    return res.status(200).json({
+      complaints,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    console.error("[getMyComplaints]", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getComplaintById = async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id)
+      .populate("citizen", "name phone")
+      .populate("village", "name district state")
+      .lean();
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    return res.status(200).json(complaint);
+  } catch (err) {
+    console.error("[getComplaintById]", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const getComplaintsByVillage = async (req, res) => {
+  try {
+    const { villageId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const filter = { village: villageId };
+    if (req.query.type) filter.type = req.query.type;
+    if (req.query.status) filter.status = req.query.status;
+
+    const complaints = await Complaint.find(filter)
+      .populate("citizen", "name")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await Complaint.countDocuments(filter);
+
+    return res.status(200).json({
+      complaints,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    console.error("[getComplaintsByVillage]", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { getComplaints, updateStatus, resolveComplaint, createComplaint, getMyComplaints, getComplaintById, getComplaintsByVillage };

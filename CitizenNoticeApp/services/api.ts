@@ -121,6 +121,30 @@ class ApiService {
     }
   }
 
+  async getComplaintsByVillage(villageId: string, page: number = 1, limit: number = 10, filters?: any) {
+    try {
+      const params: any = { page, limit };
+      if (filters?.type) params.type = filters.type;
+      if (filters?.status) params.status = filters.status;
+      
+      const response = await this.api.get(`/complaints/village/${villageId}`, { params });
+      return response.data;
+    } catch (error) {
+      console.error("Fetch village complaints error:", error);
+      throw error;
+    }
+  }
+
+  async getComplaintDetails(complaintId: string) {
+    try {
+      const response = await this.api.get(`/complaints/${complaintId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Fetch complaint details error:", error);
+      throw error;
+    }
+  }
+
   // ==============================
   // 📄 NOTICE APIs (Existing)
   // ==============================

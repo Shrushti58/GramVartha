@@ -61,18 +61,16 @@ const QUICK_ACTIONS = [
 ];
 
 // ── Next Visit Calculator ──────────────────────────────────────────────────────
-function getNextAvailable(availableDays: string[], timing: string, colors: any): {
-  dayLabel: string;
-  date: string;
-  timing: string;
-  isToday: boolean;
-} {
+function getNextAvailable(
+  availableDays: string[],
+  timing: string,
+): { dayLabel: string; date: string; timing: string; isToday: boolean } {
   if (!availableDays || availableDays.length === 0) {
     return { dayLabel: '—', date: '', timing: timing || '', isToday: false };
   }
 
   const now = new Date();
-  const dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   let endHour = 24;
   try {
@@ -142,29 +140,41 @@ const DocItem = ({
   <TouchableOpacity
     style={[
       styles.docRow,
-      { 
-        backgroundColor: checked 
-          ? (isDark ? `${colors.primary[500]}10` : `${colors.primary[500]}8`) 
-          : (isDark ? colors.neutral[800] : colors.neutral[50]), 
+      {
+        backgroundColor: checked
+          ? isDark
+            ? `${colors.primary[500]}18`
+            : `${colors.primary[500]}0E`
+          : isDark
+          ? colors.background
+          : colors.neutral[50],
         borderColor: checked ? colors.primary[300] : colors.border,
-      }
+      },
     ]}
     onPress={onToggle}
-    activeOpacity={0.7}>
-    <View style={[
-      styles.checkbox,
-      { borderColor: colors.neutral[400], backgroundColor: colors.surface },
-      checked && [styles.checkboxChecked, { backgroundColor: colors.primary[600], borderColor: colors.primary[600] }]
-    ]}>
-      {checked && (
-        <Ionicons name="checkmark" size={12} color="#fff" />
-      )}
+    activeOpacity={0.7}
+  >
+    <View
+      style={[
+        styles.checkbox,
+        { borderColor: colors.neutral[400], backgroundColor: colors.surface },
+        checked && {
+          backgroundColor: colors.primary[600],
+          borderColor: colors.primary[600],
+        },
+      ]}
+    >
+      {checked && <Ionicons name="checkmark" size={12} color="#fff" />}
     </View>
-    <Text style={[
-      styles.docText,
-      { color: colors.text.primary },
-      checked && [styles.docTextChecked, { color: colors.text.muted }]
-    ]}>{doc}</Text>
+    <Text
+      style={[
+        styles.docText,
+        { color: colors.text.primary },
+        checked && { textDecorationLine: 'line-through', color: colors.text.muted },
+      ]}
+    >
+      {doc}
+    </Text>
   </TouchableOpacity>
 );
 
@@ -189,124 +199,310 @@ const WorkGuideCard = ({
   const [expanded, setExpanded] = useState(false);
   const fadeAnim  = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(16)).current;
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fadeAnim,  { toValue: 1, duration: 280, delay: index * 50, useNativeDriver: true }),
-      Animated.timing(slideAnim, { toValue: 0, duration: 280, delay: index * 50, useNativeDriver: true }),
+      Animated.timing(fadeAnim,  { toValue: 1, duration: 300, delay: index * 55, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 300, delay: index * 55, useNativeDriver: true }),
     ]).start();
   }, []);
 
-  const nextVisit    = getNextAvailable(item.availableDays, item.timing, colors);
+  useEffect(() => {
+    Animated.timing(rotateAnim, {
+      toValue: expanded ? 1 : 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start();
+  }, [expanded]);
+
+  const chevronRotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
+
+  const nextVisit    = getNextAvailable(item.availableDays, item.timing);
   const checkedCount = item.documents.filter((_, i) => checkedDocs[checklistKey(item._id, i)]).length;
   const allReady     = item.documents.length > 0 && checkedCount === item.documents.length;
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
-      <TouchableOpacity
+      <View
         style={[
           styles.card,
-          { backgroundColor: colors.surface, borderColor: colors.border },
-          expanded && [styles.cardExpanded, { borderColor: colors.primary[400] }]
+          {
+            backgroundColor: colors.surface,
+            borderColor: expanded ? colors.primary[400] : colors.border,
+          },
+          expanded && {
+            shadowColor: colors.primary[500],
+            shadowOpacity: isDark ? 0.18 : 0.12,
+            shadowRadius: 12,
+            elevation: 4,
+          },
         ]}
-        onPress={() => setExpanded(p => !p)}
-        activeOpacity={0.85}>
-
-        <View style={styles.cardHeader}>
+      >
+        {/* Card Header — always visible */}
+        <TouchableOpacity
+          style={styles.cardHeader}
+          onPress={() => setExpanded(p => !p)}
+          activeOpacity={0.82}
+        >
           <View style={styles.cardHeaderLeft}>
-            <Text style={[styles.cardWorkName, { color: colors.text.primary }]}>{item.workName}</Text>
-            <Text style={[styles.cardOfficer, { color: colors.text.secondary }]}>{item.officerName}</Text>
-            <Text style={[styles.cardDesignation, { color: colors.text.muted }]}>{item.designation}</Text>
-            <View style={[
-              styles.nextVisitPill,
-              { backgroundColor: isDark ? colors.neutral[800] : colors.neutral[100], borderColor: colors.border },
-              nextVisit.isToday && [styles.nextVisitPillToday, { backgroundColor: `${colors.primary[500]}20`, borderColor: colors.primary[400] }]
-            ]}>
-              <Ionicons name="calendar-outline" size={12} color={nextVisit.isToday ? colors.primary[500] : colors.text.muted} />
-              <Text style={[
-                styles.nextVisitText,
-                { color: nextVisit.isToday ? colors.primary[600] : colors.text.secondary },
-              ]}>
-                Next: {nextVisit.dayLabel}{nextVisit.timing ? `, ${nextVisit.timing.split('–')[0].trim()}` : ''}
+            <Text style={[styles.cardWorkName, { color: colors.text.primary }]}>
+              {item.workName}
+            </Text>
+            <Text style={[styles.cardOfficer, { color: colors.text.secondary }]}>
+              {item.officerName}
+            </Text>
+            <Text style={[styles.cardDesignation, { color: colors.text.muted }]}>
+              {item.designation}
+            </Text>
+
+            {/* Next visit pill */}
+            <View
+              style={[
+                styles.nextVisitPill,
+                {
+                  backgroundColor: isDark ? colors.neutral[700] : colors.primary[50],
+                  borderColor: isDark ? colors.primary[700] : colors.primary[200],
+                },
+                nextVisit.isToday && {
+                  backgroundColor: isDark
+                    ? `${colors.primary[500]}35`
+                    : colors.primary[100],
+                  borderColor: colors.primary[400],
+                },
+              ]}
+            >
+              <Ionicons
+                name="calendar-outline"
+                size={11}
+                color={nextVisit.isToday ? colors.primary[500] : colors.primary[400]}
+              />
+              <Text
+                style={[
+                  styles.nextVisitText,
+                  {
+                    color: nextVisit.isToday
+                      ? colors.primary[600]
+                      : isDark
+                      ? colors.primary[300]
+                      : colors.primary[700],
+                  },
+                ]}
+              >
+                Next: {nextVisit.dayLabel}
+                {nextVisit.timing ? `, ${nextVisit.timing.split('–')[0].trim()}` : ''}
               </Text>
             </View>
           </View>
-          <View style={[styles.chevron, expanded && styles.chevronExpanded]}>
-            <Ionicons name="chevron-down" size={20} color={colors.text.muted} />
-          </View>
-        </View>
 
+          {/* Chevron */}
+          <Animated.View style={{ transform: [{ rotate: chevronRotate }] }}>
+            <View
+              style={[
+                styles.chevronWrap,
+                {
+                  backgroundColor: isDark
+                    ? `${colors.primary[500]}15`
+                    : colors.primary[50],
+                  borderColor: expanded ? colors.primary[300] : colors.border,
+                },
+              ]}
+            >
+              <Ionicons
+                name="chevron-down"
+                size={16}
+                color={expanded ? colors.primary[500] : colors.text.muted}
+              />
+            </View>
+          </Animated.View>
+        </TouchableOpacity>
+
+        {/* Card Body — expanded */}
         {expanded && (
           <View style={styles.cardBody}>
+            {/* Divider */}
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
+            {/* Details grid */}
             <View style={styles.detailsGrid}>
               {item.availableDays.length > 0 && (
                 <View style={styles.detailRow}>
-                  <Ionicons name="calendar" size={14} color={colors.primary[500]} style={styles.detailIcon} />
-                  <Text style={[styles.detailLabel, { color: colors.text.secondary }]}>Available Days:</Text>
-                  <View style={styles.dayPills}>
-                    {item.availableDays.map(d => (
-                      <View key={d} style={[styles.dayPill, { backgroundColor: `${colors.primary[500]}15`, borderColor: colors.primary[300] }]}>
-                        <Text style={[styles.dayPillText, { color: colors.primary[600] }]}>{d.slice(0, 3)}</Text>
-                      </View>
-                    ))}
+                  <View
+                    style={[
+                      styles.detailIconWrap,
+                      {
+                        backgroundColor: isDark
+                          ? `${colors.primary[500]}20`
+                          : colors.primary[50],
+                      },
+                    ]}
+                  >
+                    <Ionicons name="calendar" size={13} color={colors.primary[500]} />
+                  </View>
+                  <View style={styles.detailContent}>
+                    <Text style={[styles.detailLabel, { color: colors.text.muted }]}>
+                      AVAILABLE DAYS
+                    </Text>
+                    <View style={styles.dayPills}>
+                      {item.availableDays.map(d => (
+                        <View
+                          key={d}
+                          style={[
+                            styles.dayPill,
+                            {
+                              backgroundColor: isDark
+                                ? `${colors.primary[500]}18`
+                                : colors.primary[50],
+                              borderColor: colors.primary[300],
+                            },
+                          ]}
+                        >
+                          <Text style={[styles.dayPillText, { color: colors.primary[600] }]}>
+                            {d.slice(0, 3)}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
                   </View>
                 </View>
               )}
 
               {item.timing ? (
                 <View style={styles.detailRow}>
-                  <Ionicons name="time-outline" size={14} color={colors.primary[500]} style={styles.detailIcon} />
-                  <Text style={[styles.detailLabel, { color: colors.text.secondary }]}>Timing:</Text>
-                  <Text style={[styles.detailValue, { color: colors.text.primary, fontWeight: '600' }]}>{item.timing}</Text>
+                  <View
+                    style={[
+                      styles.detailIconWrap,
+                      {
+                        backgroundColor: isDark
+                          ? `${colors.primary[500]}20`
+                          : colors.primary[50],
+                      },
+                    ]}
+                  >
+                    <Ionicons name="time-outline" size={13} color={colors.primary[500]} />
+                  </View>
+                  <View style={styles.detailContent}>
+                    <Text style={[styles.detailLabel, { color: colors.text.muted }]}>
+                      TIMING
+                    </Text>
+                    <Text style={[styles.detailValue, { color: colors.text.primary }]}>
+                      {item.timing}
+                    </Text>
+                  </View>
                 </View>
               ) : null}
 
               {item.location ? (
                 <View style={styles.detailRow}>
-                  <Ionicons name="location-outline" size={14} color={colors.primary[500]} style={styles.detailIcon} />
-                  <Text style={[styles.detailLabel, { color: colors.text.secondary }]}>Location:</Text>
-                  <Text style={[styles.detailValue, { color: colors.text.primary, fontWeight: '500' }]}>{item.location}</Text>
+                  <View
+                    style={[
+                      styles.detailIconWrap,
+                      {
+                        backgroundColor: isDark
+                          ? `${colors.primary[500]}20`
+                          : colors.primary[50],
+                      },
+                    ]}
+                  >
+                    <Ionicons name="location-outline" size={13} color={colors.primary[500]} />
+                  </View>
+                  <View style={styles.detailContent}>
+                    <Text style={[styles.detailLabel, { color: colors.text.muted }]}>
+                      LOCATION
+                    </Text>
+                    <Text style={[styles.detailValue, { color: colors.text.primary }]}>
+                      {item.location}
+                    </Text>
+                  </View>
                 </View>
               ) : null}
-
-              <View style={[
-                styles.nextVisitBox,
-                { backgroundColor: isDark ? colors.neutral[800] : colors.neutral[50], borderColor: colors.border },
-                nextVisit.isToday && [styles.nextVisitBoxToday, { backgroundColor: `${colors.primary[500]}12`, borderColor: colors.primary[300] }]
-              ]}>
-                <Text style={[styles.nextVisitBoxLabel, { color: colors.text.muted }]}>Next Available Visit</Text>
-                <Text style={[
-                  styles.nextVisitBoxDay,
-                  { color: colors.text.primary },
-                  nextVisit.isToday && [styles.nextVisitBoxDayToday, { color: colors.primary[600] }]
-                ]}>
-                  {nextVisit.dayLabel}{nextVisit.date ? ` — ${nextVisit.date}` : ''}
-                </Text>
-                {nextVisit.timing ? (
-                  <Text style={[styles.nextVisitBoxTime, { color: colors.text.secondary }]}>{nextVisit.timing}</Text>
-                ) : null}
-              </View>
             </View>
 
+            {/* Next visit box */}
+            <View
+              style={[
+                styles.nextVisitBox,
+                {
+                  backgroundColor: isDark ? colors.neutral[700] : colors.primary[50],
+                  borderColor: isDark ? colors.primary[700] : colors.primary[200],
+                },
+                nextVisit.isToday && {
+                  backgroundColor: isDark
+                    ? `${colors.primary[500]}30`
+                    : colors.primary[100],
+                  borderColor: colors.primary[400],
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.nextVisitBoxLabel,
+                  { color: isDark ? colors.primary[300] : colors.primary[600] },
+                ]}
+              >
+                Next Available Visit
+              </Text>
+              <Text
+                style={[
+                  styles.nextVisitBoxDay,
+                  { color: colors.text.primary[300] },
+                  nextVisit.isToday && {
+                    color: isDark ? colors.primary[300] : colors.primary[700],
+                  },
+                ]}
+              >
+                {nextVisit.dayLabel}
+                {nextVisit.date ? ` — ${nextVisit.date}` : ''}
+              </Text>
+              {nextVisit.timing ? (
+                <Text
+                  style={[
+                    styles.nextVisitBoxTime,
+                    { color: isDark ? colors.primary[200] : colors.primary[700] },
+                  ]}
+                >
+                  {nextVisit.timing}
+                </Text>
+              ) : null}
+            </View>
+
+            {/* Documents checklist */}
             {item.documents.length > 0 && (
               <View style={styles.checklistSection}>
                 <View style={styles.checklistHeader}>
-                  <Text style={[styles.checklistTitle, { color: colors.text.primary }]}>Documents to Bring</Text>
-                  <Text style={[
-                    styles.checklistProgress,
-                    { color: colors.text.secondary },
-                    allReady && [styles.checklistProgressDone, { color: colors.success }]
-                  ]}>
-                    {checkedCount} of {item.documents.length}
+                  <Text style={[styles.checklistTitle, { color: colors.text.primary }]}>
+                    Documents to Bring
+                  </Text>
+                  <Text
+                    style={[
+                      styles.checklistProgress,
+                      { color: colors.text.secondary },
+                      allReady && { color: colors.success },
+                    ]}
+                  >
+                    {checkedCount}/{item.documents.length}
                   </Text>
                 </View>
 
                 {allReady && (
-                  <View style={[styles.allReadyBanner, { backgroundColor: `${colors.success}15`, borderColor: colors.success }]}>
+                  <View
+                    style={[
+                      styles.allReadyBanner,
+                      {
+                        backgroundColor: isDark
+                          ? `${colors.success}18`
+                          : `${colors.success}12`,
+                        borderColor: colors.success,
+                      },
+                    ]}
+                  >
                     <Ionicons name="checkmark-circle" size={14} color={colors.success} />
-                    <Text style={[styles.allReadyText, { color: colors.success }]}>✓ All documents ready — you can visit now</Text>
+                    <Text style={[styles.allReadyText, { color: colors.success }]}>
+                      All documents ready — you can visit now
+                    </Text>
                   </View>
                 )}
 
@@ -323,24 +519,45 @@ const WorkGuideCard = ({
                   />
                 ))}
 
-                <TouchableOpacity onPress={() => onResetChecklist(item._id, item.documents.length)} style={styles.resetBtn}>
-                  <Text style={[styles.resetBtnText, { color: colors.text.muted }]}>Reset checklist</Text>
+                <TouchableOpacity
+                  onPress={() => onResetChecklist(item._id, item.documents.length)}
+                  style={styles.resetBtn}
+                >
+                  <Text style={[styles.resetBtnText, { color: colors.text.muted }]}>
+                    Reset checklist
+                  </Text>
                 </TouchableOpacity>
               </View>
             )}
 
+            {/* Note */}
             {item.note ? (
-              <View style={[
-                styles.noteBox,
-                { backgroundColor: isDark ? colors.neutral[800] : colors.neutral[50], borderColor: colors.border, borderLeftColor: colors.primary[500] }
-              ]}>
-                <Text style={[styles.noteLabel, { color: colors.text.muted }]}>Important Note</Text>
-                <Text style={[styles.noteText, { color: colors.text.secondary }]}>{item.note}</Text>
+              <View
+                style={[
+                  styles.noteBox,
+                  {
+                    backgroundColor: isDark
+                      ? `${colors.warning}10`
+                      : '#fff8ec',
+                    borderColor: isDark ? `${colors.warning}30` : '#f59e0b40',
+                    borderLeftColor: '#f59e0b',
+                  },
+                ]}
+              >
+                <View style={styles.noteHeaderRow}>
+                  <Text style={styles.noteIcon}>⚠️</Text>
+                  <Text style={[styles.noteLabel, { color: colors.warning || '#b45309' }]}>
+                    IMPORTANT NOTE
+                  </Text>
+                </View>
+                <Text style={[styles.noteText, { color: colors.text.secondary }]}>
+                  {item.note}
+                </Text>
               </View>
             ) : null}
           </View>
         )}
-      </TouchableOpacity>
+      </View>
     </Animated.View>
   );
 };
@@ -348,16 +565,21 @@ const WorkGuideCard = ({
 // ── Main Screen ────────────────────────────────────────────────────────────────
 export default function WorkGuideScreen() {
   const { colors, isDark } = useTheme();
-  const [villageId,   setVillageId]   = useState<string>('');
-  const [villageName, setVillageName] = useState<string>('');
-
+  const [villageId,         setVillageId]         = useState<string>('');
+  const [villageName,       setVillageName]       = useState<string>('');
   const [grouped,           setGrouped]           = useState<GroupedGuide[]>([]);
   const [loading,           setLoading]           = useState(false);
   const [searchTerm,        setSearchTerm]        = useState('');
   const [activeQuickAction, setActiveQuickAction] = useState<string | null>(null);
   const [checkedDocs,       setCheckedDocs]       = useState<Record<string, boolean>>({});
+  const [focused,           setFocused]           = useState(false);
 
-  const headerAnim = useRef(new Animated.Value(0)).current;
+  // Dynamic header colors — mirrors complaint.tsx exactly
+  const headerBg         = isDark ? colors.primary[900] : colors.primary[700];
+  const headerTextColor  = isDark ? colors.primary[100]  : '#fff';
+  const headerSubColor   = isDark ? colors.primary[200]  : 'rgba(255,255,255,0.8)';
+  const headerEyebrowColor = isDark ? colors.primary[300] : 'rgba(255,255,255,0.6)';
+  const backBtnBg        = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
 
   // ── Load village from AsyncStorage on mount ──────────────────────────────────
   useEffect(() => {
@@ -372,7 +594,6 @@ export default function WorkGuideScreen() {
             return;
           }
         }
-
         const recent = await AsyncStorage.getItem('recentVillages');
         if (recent) {
           const arr = JSON.parse(recent);
@@ -386,18 +607,15 @@ export default function WorkGuideScreen() {
         }
       } catch {}
     };
-
     loadVillageAndInit();
     loadChecklist();
-    Animated.timing(headerAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
   }, []);
 
-  // ── Fetch guides once villageId is available ─────────────────────────────────
   useEffect(() => {
     if (villageId) fetchGuides();
   }, [villageId]);
 
-  // ── Load checklist from AsyncStorage ────────────────────────────────────────
+  // ── Load checklist ────────────────────────────────────────────────────────────
   const loadChecklist = async () => {
     try {
       const keys   = await AsyncStorage.getAllKeys();
@@ -412,24 +630,24 @@ export default function WorkGuideScreen() {
     } catch {}
   };
 
-  // ── Fetch guides ─────────────────────────────────────────────────────────────
+  // ── Fetch guides ──────────────────────────────────────────────────────────────
   const fetchGuides = async (search?: string) => {
     if (!villageId) return;
     try {
       setLoading(true);
-      const base =`${Config.API_BASE_URL}/workguide/village/${villageId}`;
+      const base = `${Config.API_BASE_URL}/workguide/village/${villageId}`;
       const url  = search ? `${base}?search=${encodeURIComponent(search)}` : base;
       const res  = await fetch(url);
       const data = await res.json();
       setGrouped(Array.isArray(data) ? data : []);
-    } catch (e) {
+    } catch {
       setGrouped([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // ── Search ───────────────────────────────────────────────────────────────────
+  // ── Search ────────────────────────────────────────────────────────────────────
   const handleSearch = (text: string) => {
     setSearchTerm(text);
     setActiveQuickAction(null);
@@ -448,7 +666,7 @@ export default function WorkGuideScreen() {
     fetchGuides();
   };
 
-  // ── Checklist ────────────────────────────────────────────────────────────────
+  // ── Checklist ─────────────────────────────────────────────────────────────────
   const toggleDoc = async (guideId: string, docIdx: number) => {
     const key    = checklistKey(guideId, docIdx);
     const newVal = !checkedDocs[key];
@@ -473,44 +691,70 @@ export default function WorkGuideScreen() {
 
   const totalResults = grouped.reduce((sum, g) => sum + g.items.length, 0);
 
-  // Dynamic header colors
-  const headerBg = isDark ? colors.primary[900] : colors.primary[700];
-  const headerTextColor = isDark ? colors.primary[100] : "#fff";
-  const headerSubColor = isDark ? colors.primary[200] : "rgba(255,255,255,0.8)";
-  const headerEyebrowColor = isDark ? colors.primary[300] : "rgba(255,255,255,0.6)";
-
+  // ─── Render ───────────────────────────────────────────────────────────────────
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
+      <StatusBar
+        barStyle={isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={headerBg}
+      />
 
-      {/* Header */}
+      {/* ── Header with Gradient — matches complaint.tsx ── */}
       <LinearGradient
-        colors={isDark 
-          ? [colors.primary[800], colors.primary[900]] 
-          : [colors.primary[600], colors.primary[700]]}
+        colors={
+          isDark
+            ? [colors.primary[800], colors.primary[900]]
+            : [colors.primary[600], colors.primary[700]]
+        }
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.headerShell}
       >
-        <View style={[styles.accentCircle1, { backgroundColor: isDark ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.06)" }]} />
-        <View style={[styles.accentCircle2, { backgroundColor: isDark ? "rgba(255,255,255,0.02)" : "rgba(255,255,255,0.04)" }]} />
-        
+        <View
+          style={[
+            styles.accentCircle1,
+            {
+              backgroundColor: isDark
+                ? 'rgba(255,255,255,0.03)'
+                : 'rgba(255,255,255,0.06)',
+            },
+          ]}
+        />
+        <View
+          style={[
+            styles.accentCircle2,
+            {
+              backgroundColor: isDark
+                ? 'rgba(255,255,255,0.02)'
+                : 'rgba(255,255,255,0.04)',
+            },
+          ]}
+        />
+
         <View style={styles.headerNavRow}>
-          <TouchableOpacity 
-            onPress={() => router.back()} 
-            style={[styles.backBtn, { backgroundColor: isDark ? `${colors.primary[500]}40` : "rgba(255,255,255,0.15)" }]} 
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={[styles.backBtn, { backgroundColor: backBtnBg }]}
             activeOpacity={0.7}
           >
             <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
           </TouchableOpacity>
         </View>
-        
+
         <View style={styles.headerTitleBlock}>
-          <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>VILLAGE SERVICES</Text>
-          <Text style={[styles.headerTitle, { color: headerTextColor }]}>Work Guide 📘</Text>
+          <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
+            VILLAGE SERVICES
+          </Text>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>
+            Work Guide 📘
+          </Text>
           <View style={styles.headerBreadcrumb}>
-            <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
-            <Text style={[styles.headerSub, { color: headerSubColor }]}>{villageName || 'Your Village'}</Text>
+            <View
+              style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]}
+            />
+            <Text style={[styles.headerSub, { color: headerSubColor }]}>
+              {villageName || 'Your Village'}
+            </Text>
           </View>
         </View>
       </LinearGradient>
@@ -518,12 +762,18 @@ export default function WorkGuideScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled">
-
-        {/* Quick actions */}
-        <View style={[styles.quickSection, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
-          <Text style={[styles.quickHeading, { color: colors.text.primary }]}>What do you need?</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.quickRow}>
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* ── Quick Actions ── */}
+        <View style={styles.quickSection}>
+          <Text style={[styles.quickHeading, { color: colors.text.primary }]}>
+            What do you need?
+          </Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.quickRow}
+          >
             {QUICK_ACTIONS.map(action => {
               const isActive = activeQuickAction === action.search;
               return (
@@ -532,25 +782,41 @@ export default function WorkGuideScreen() {
                   style={[
                     styles.quickChip,
                     {
-                      backgroundColor: isActive ? colors.primary[600] : (isDark ? colors.neutral[700] : colors.neutral[100]),
-                      borderColor: isActive ? colors.primary[500] : (isDark ? colors.neutral[500] : colors.neutral[300]),
-                      borderWidth: 1.5,
-                      shadowColor: isActive ? colors.primary[900] : 'transparent',
+                      backgroundColor: isActive
+                        ? colors.primary[700]
+                        : isDark
+                        ? `${colors.primary[500]}15`
+                        : colors.primary[50],
+                      borderColor: isActive
+                        ? colors.primary[500]
+                        : isDark
+                        ? `${colors.primary[500]}30`
+                        : colors.primary[200],
+                    },
+                    isActive && {
+                      shadowColor: colors.primary[900],
                       shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: isActive ? 0.25 : 0,
+                      shadowOpacity: 0.25,
                       shadowRadius: 4,
-                      elevation: isActive ? 3 : 0,
-                    }
+                      elevation: 3,
+                    },
                   ]}
                   onPress={() => handleQuickAction(action)}
-                  activeOpacity={0.75}>
-                  <Text style={[
-                    styles.quickChipText,
-                    { 
-                      color: isActive ? '#FFFFFF' : (isDark ? colors.neutral[200] : colors.neutral[800]),
-                      fontWeight: isActive ? '700' : '600',
-                    }
-                  ]}>
+                  activeOpacity={0.75}
+                >
+                  <Text
+                    style={[
+                      styles.quickChipText,
+                      {
+                        color: isActive
+                          ? '#fff'
+                          : isDark
+                          ? colors.primary[300]
+                          : colors.primary[700],
+                        fontWeight: isActive ? '700' : '600',
+                      },
+                    ]}
+                  >
                     {action.label}
                   </Text>
                 </TouchableOpacity>
@@ -559,59 +825,148 @@ export default function WorkGuideScreen() {
           </ScrollView>
         </View>
 
-        {/* Search bar */}
+        {/* ── Search Bar — card-style matching complaint inputs ── */}
         <View style={styles.searchSection}>
-          <View style={[
-            styles.searchBar,
-            { backgroundColor: colors.surface, borderColor: colors.border }
-          ]}>
-            <Ionicons name="search-outline" size={18} color={colors.text.muted} />
+          <View
+            style={[
+              styles.searchBar,
+              {
+                borderColor: focused ? colors.primary[500] : colors.border,
+                backgroundColor: focused
+                  ? isDark
+                    ? `${colors.primary[500]}12`
+                    : colors.primary[50]
+                  : colors.surface,
+              },
+            ]}
+          >
+            <Ionicons
+              name="search-outline"
+              size={17}
+              color={focused ? colors.primary[500] : colors.text.muted}
+            />
             <TextInput
               style={[styles.searchInput, { color: colors.text.primary }]}
               value={searchTerm}
               onChangeText={handleSearch}
-              placeholder="Search work, officer, document..."
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              placeholder="Search work, officer, document…"
               placeholderTextColor={colors.text.muted}
               returnKeyType="search"
             />
             {searchTerm.length > 0 && (
-              <TouchableOpacity onPress={clearSearch} style={[styles.clearBtn, { backgroundColor: isDark ? colors.neutral[700] : colors.neutral[200] }]} activeOpacity={0.7}>
+              <TouchableOpacity
+                onPress={clearSearch}
+                style={[
+                  styles.clearBtn,
+                  {
+                    backgroundColor: isDark
+                      ? colors.neutral[700]
+                      : colors.neutral[200],
+                  },
+                ]}
+                activeOpacity={0.7}
+              >
                 <Ionicons name="close" size={12} color={colors.text.secondary} />
               </TouchableOpacity>
             )}
           </View>
+
           {searchTerm.length > 0 && !loading && (
-            <Text style={[styles.searchResultsLabel, { color: colors.text.muted }]}>
-              {totalResults > 0
-                ? `${totalResults} result${totalResults !== 1 ? 's' : ''} found`
-                : `No results for "${searchTerm}"`}
-            </Text>
+            <View
+              style={[
+                styles.searchResultsChip,
+                {
+                  backgroundColor: isDark
+                    ? `${colors.primary[500]}12`
+                    : colors.primary[50],
+                  borderColor: isDark
+                    ? `${colors.primary[500]}30`
+                    : colors.primary[200],
+                },
+              ]}
+            >
+              <Text style={[styles.searchResultsLabel, { color: colors.primary[600] }]}>
+                {totalResults > 0
+                  ? `${totalResults} result${totalResults !== 1 ? 's' : ''} found`
+                  : `No results for "${searchTerm}"`}
+              </Text>
+            </View>
           )}
         </View>
 
-        {/* Content */}
+        {/* ── Content ── */}
         {loading ? (
           <View style={styles.loadingBox}>
             <ActivityIndicator size="small" color={colors.primary[600]} />
-            <Text style={[styles.loadingText, { color: colors.text.secondary }]}>Loading...</Text>
+            <Text style={[styles.loadingText, { color: colors.text.secondary }]}>
+              Loading…
+            </Text>
           </View>
         ) : !villageId ? (
-          <View style={styles.emptyBox}>
-            <View style={[styles.emptyIconBox, { backgroundColor: `${colors.primary[500]}15`, borderColor: colors.border }]}>
+          /* ── No village scanned ── */
+          <View
+            style={[
+              styles.emptyCard,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
+            <View
+              style={[
+                styles.emptyIconBox,
+                {
+                  backgroundColor: isDark
+                    ? `${colors.primary[500]}15`
+                    : colors.primary[50],
+                  borderColor: isDark
+                    ? `${colors.primary[500]}30`
+                    : colors.primary[200],
+                },
+              ]}
+            >
               <Ionicons name="qr-code-outline" size={32} color={colors.primary[500]} />
             </View>
-            <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>Scan Village QR First</Text>
-            <Text style={[styles.emptySub, { color: colors.text.secondary }]}>Please scan your village QR code to access the work guide.</Text>
-            <TouchableOpacity 
-              style={[styles.scanBtn, { backgroundColor: colors.primary[600] }]} 
-              onPress={() => router.push('/qr-scanner' as any)}>
-              <Text style={styles.scanBtnText}>Scan QR Code</Text>
+            <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
+              Scan Village QR First
+            </Text>
+            <Text style={[styles.emptySub, { color: colors.text.secondary }]}>
+              Please scan your village QR code to access the work guide.
+            </Text>
+            <TouchableOpacity
+              style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
+              onPress={() => router.push('/qr-scanner' as any)}
+              activeOpacity={0.82}
+            >
+              <Text style={styles.emptyBtnText}>Scan QR Code</Text>
             </TouchableOpacity>
           </View>
         ) : totalResults === 0 ? (
-          <View style={styles.emptyBox}>
-            <View style={[styles.emptyIconBox, { backgroundColor: `${colors.primary[500]}15`, borderColor: colors.border }]}>
-              <Ionicons name="document-text-outline" size={32} color={colors.primary[500]} />
+          /* ── Empty state ── */
+          <View
+            style={[
+              styles.emptyCard,
+              { backgroundColor: colors.surface, borderColor: colors.border },
+            ]}
+          >
+            <View
+              style={[
+                styles.emptyIconBox,
+                {
+                  backgroundColor: isDark
+                    ? `${colors.primary[500]}15`
+                    : colors.primary[50],
+                  borderColor: isDark
+                    ? `${colors.primary[500]}30`
+                    : colors.primary[200],
+                },
+              ]}
+            >
+              <Ionicons
+                name="document-text-outline"
+                size={32}
+                color={colors.primary[500]}
+              />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
               {searchTerm ? 'No results found' : 'No services listed yet'}
@@ -622,19 +977,46 @@ export default function WorkGuideScreen() {
                 : 'The village admin will add services soon'}
             </Text>
             {searchTerm ? (
-              <TouchableOpacity style={[styles.clearSearchBtn, { backgroundColor: colors.primary[600] }]} onPress={clearSearch} activeOpacity={0.8}>
-                <Text style={styles.clearSearchBtnText}>Clear Search</Text>
+              <TouchableOpacity
+                style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
+                onPress={clearSearch}
+                activeOpacity={0.82}
+              >
+                <Text style={styles.emptyBtnText}>Clear Search</Text>
               </TouchableOpacity>
             ) : null}
           </View>
         ) : (
+          /* ── Results list ── */
           <View style={styles.listSection}>
             {grouped.map(group => (
               <View key={group.category} style={styles.categoryGroup}>
+                {/* Category header — matches complaint's fieldLabel pattern */}
                 <View style={styles.categoryHeader}>
-                  <Text style={[styles.categoryTitle, { color: colors.text.secondary }]}>{group.category}</Text>
-                  <Text style={[styles.categoryCount, { color: colors.primary[600], backgroundColor: `${colors.primary[500]}15` }]}>{group.items.length}</Text>
+                  <Text style={[styles.categoryTitle, { color: colors.text.muted }]}>
+                    {group.category}
+                  </Text>
+                  <View
+                    style={[
+                      styles.categoryCountBadge,
+                      {
+                        backgroundColor: isDark
+                          ? `${colors.primary[500]}18`
+                          : colors.primary[50],
+                        borderColor: isDark
+                          ? `${colors.primary[500]}30`
+                          : colors.primary[200],
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[styles.categoryCount, { color: colors.primary[600] }]}
+                    >
+                      {group.items.length}
+                    </Text>
+                  </View>
                 </View>
+
                 {group.items.map((item, idx) => (
                   <WorkGuideCard
                     key={item._id}
@@ -662,195 +1044,251 @@ export default function WorkGuideScreen() {
 const styles = StyleSheet.create({
   root: { flex: 1 },
 
-  // Header styles
+  // ── Header — identical structure to complaint.tsx ──────────────────────────
   headerShell: {
     paddingBottom: 28,
-    overflow: "hidden",
-    shadowColor: "#000",
+    overflow: 'hidden',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.22,
     shadowRadius: 12,
     elevation: 10,
   },
   accentCircle1: {
-    position: "absolute",
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    top: -80,
-    right: -50,
+    position: 'absolute',
+    width: 220, height: 220, borderRadius: 110,
+    top: -80, right: -50,
   },
   accentCircle2: {
-    position: "absolute",
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    bottom: -30,
-    left: 30,
+    position: 'absolute',
+    width: 130, height: 130, borderRadius: 65,
+    bottom: -30, left: 30,
   },
-  headerNavRow: {
-    paddingTop: 54,
-    paddingHorizontal: 16,
-    paddingBottom: 18,
-  },
+  headerNavRow: { paddingTop: 54, paddingHorizontal: 16, paddingBottom: 18 },
   backBtn: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    width: 38, height: 38, borderRadius: 12,
+    justifyContent: 'center', alignItems: 'center',
   },
-  backBtnTxt: {
-    fontSize: 20,
-    lineHeight: 24,
-    fontWeight: "600",
-  },
-  headerTitleBlock: {
-    paddingHorizontal: 18,
-    gap: 4,
-  },
+  backBtnTxt: { fontSize: 20, lineHeight: 24, fontWeight: '600' },
+  headerTitleBlock: { paddingHorizontal: 18, gap: 4 },
   headerEyebrow: {
-    fontSize: 10,
-    fontWeight: "800",
-    letterSpacing: 2.5,
-    marginBottom: 2,
+    fontSize: 10, fontWeight: '800',
+    letterSpacing: 2.5, marginBottom: 2,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    letterSpacing: -0.8,
-    lineHeight: 34,
+    fontSize: 28, fontWeight: '800',
+    letterSpacing: -0.8, lineHeight: 34,
   },
   headerBreadcrumb: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 7,
-    marginTop: 4,
+    flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 4,
   },
-  headerBreadcrumbDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-  },
-  headerSub: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
+  headerBreadcrumbDot: { width: 5, height: 5, borderRadius: 3 },
+  headerSub: { fontSize: 12, fontWeight: '500' },
 
+  // ── Scroll ────────────────────────────────────────────────────────────────
   scrollContent: { paddingBottom: 24 },
 
-  quickSection: {
-    paddingTop: 20,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
+  // ── Quick actions ─────────────────────────────────────────────────────────
+  quickSection: { paddingTop: 20, paddingBottom: 4 },
+  quickHeading: {
+    fontSize: 13, fontWeight: '800',
+    letterSpacing: 0.3,
+    paddingHorizontal: 16, marginBottom: 12,
   },
-  quickHeading: { 
-    fontSize: 15, 
-    fontWeight: '700', 
-    paddingHorizontal: 16, 
-    marginBottom: 12,
-  },
-  quickRow: { 
-    paddingHorizontal: 16, 
-    paddingBottom: 16, 
-    gap: 10,
-  },
+  quickRow: { paddingHorizontal: 16, paddingBottom: 16, gap: 8 },
   quickChip: {
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 32,
-    minWidth: 110,
+    paddingHorizontal: 14, paddingVertical: 9,
+    borderRadius: 10, borderWidth: 1.5,
     alignItems: 'center',
   },
-  quickChipText: { 
-    fontSize: 13,
-  },
+  quickChipText: { fontSize: 12 },
 
-  searchSection: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 },
+  // ── Search ────────────────────────────────────────────────────────────────
+  searchSection: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 8, gap: 8 },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1.5,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 14, borderWidth: 1.5,
+    paddingHorizontal: 14, height: 50,
     gap: 10,
   },
-  searchInput: { flex: 1, fontSize: 14, paddingVertical: 0 },
-  clearBtn: { width: 20, height: 20, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-  searchResultsLabel: { fontSize: 12, marginTop: 8, paddingHorizontal: 2 },
+  searchInput: { flex: 1, fontSize: 14, fontWeight: '500', paddingVertical: 0 },
+  clearBtn: {
+    width: 20, height: 20, borderRadius: 10,
+    justifyContent: 'center', alignItems: 'center',
+  },
+  searchResultsChip: {
+    alignSelf: 'flex-start',
+    borderRadius: 8, borderWidth: 1,
+    paddingHorizontal: 10, paddingVertical: 4,
+  },
+  searchResultsLabel: { fontSize: 11, fontWeight: '700' },
 
-  loadingBox: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 60, gap: 10 },
+  // ── Loading ───────────────────────────────────────────────────────────────
+  loadingBox: {
+    flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60, gap: 10,
+  },
   loadingText: { fontSize: 14 },
 
-  emptyBox: { alignItems: 'center', paddingVertical: 60, paddingHorizontal: 32 },
-  emptyIconBox: { width: 70, height: 70, borderRadius: 20, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', marginBottom: 8, textAlign: 'center' },
-  emptySub: { fontSize: 13, textAlign: 'center', lineHeight: 20, marginBottom: 20 },
-  scanBtn: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 25 },
-  scanBtnText: { fontSize: 14, fontWeight: '600', color: '#fff' },
-  clearSearchBtn: { paddingHorizontal: 20, paddingVertical: 10, borderRadius: 25 },
-  clearSearchBtnText: { fontSize: 13, fontWeight: '600', color: '#fff' },
+  // ── Empty state card — matches complaint card style ────────────────────────
+  emptyCard: {
+    marginHorizontal: 16, marginTop: 16,
+    borderRadius: 18, borderWidth: 1,
+    overflow: 'hidden', alignItems: 'center',
+    paddingVertical: 48, paddingHorizontal: 28,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
+  },
+  emptyIconBox: {
+    width: 72, height: 72, borderRadius: 20,
+    borderWidth: 1,
+    justifyContent: 'center', alignItems: 'center',
+    marginBottom: 20,
+  },
+  emptyTitle: {
+    fontSize: 18, fontWeight: '800',
+    letterSpacing: -0.3, marginBottom: 8, textAlign: 'center',
+  },
+  emptySub: {
+    fontSize: 13, textAlign: 'center',
+    lineHeight: 20, marginBottom: 24,
+  },
+  emptyBtn: {
+    borderRadius: 12, paddingHorizontal: 24, paddingVertical: 13,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
+  },
+  emptyBtnText: { fontSize: 14, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
 
-  listSection: { paddingHorizontal: 16, paddingTop: 16, gap: 20 },
+  // ── List ─────────────────────────────────────────────────────────────────
+  listSection: { paddingHorizontal: 16, paddingTop: 12, gap: 20 },
   categoryGroup: { gap: 8 },
-  categoryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
-  categoryTitle: { fontSize: 13, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6 },
-  categoryCount: { fontSize: 11, fontWeight: '700', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 10 },
+  categoryHeader: {
+    flexDirection: 'row', alignItems: 'center',
+    justifyContent: 'space-between', marginBottom: 4,
+    paddingHorizontal: 2,
+  },
+  categoryTitle: {
+    fontSize: 10, fontWeight: '800',
+    letterSpacing: 1.5, textTransform: 'uppercase',
+  },
+  categoryCountBadge: {
+    borderRadius: 8, borderWidth: 1,
+    paddingHorizontal: 8, paddingVertical: 2,
+  },
+  categoryCount: { fontSize: 11, fontWeight: '800' },
 
-  card: { borderRadius: 16, borderWidth: 1, overflow: 'hidden', marginBottom: 12 },
-  cardExpanded: {},
-  cardHeader: { flexDirection: 'row', alignItems: 'flex-start', padding: 16, gap: 10 },
+  // ── Card — matches complaint card style ────────────────────────────────────
+  card: {
+    borderRadius: 18, borderWidth: 1,
+    overflow: 'hidden', marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07, shadowRadius: 8, elevation: 2,
+  },
+  cardHeader: {
+    flexDirection: 'row', alignItems: 'flex-start',
+    padding: 16, gap: 10,
+  },
   cardHeaderLeft: { flex: 1 },
-  cardWorkName: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
-  cardOfficer: { fontSize: 13, marginBottom: 2 },
-  cardDesignation: { fontSize: 11, marginBottom: 8 },
+  cardWorkName: { fontSize: 15, fontWeight: '800', marginBottom: 3, letterSpacing: -0.2 },
+  cardOfficer: { fontSize: 13, fontWeight: '500', marginBottom: 2 },
+  cardDesignation: { fontSize: 11, fontWeight: '500', marginBottom: 10 },
 
-  nextVisitPill: { flexDirection: 'row', alignItems: 'center', gap: 5, alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
-  nextVisitPillToday: {},
+  chevronWrap: {
+    width: 30, height: 30, borderRadius: 9,
+    borderWidth: 1,
+    justifyContent: 'center', alignItems: 'center',
+  },
+
+  nextVisitPill: {
+    flexDirection: 'row', alignItems: 'center', gap: 5,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8, paddingVertical: 4,
+    borderRadius: 8, borderWidth: 1,
+  },
   nextVisitText: { fontSize: 11, fontWeight: '600' },
 
-  chevron: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
-  chevronExpanded: { transform: [{ rotate: '180deg' }] },
+  // ── Card body ─────────────────────────────────────────────────────────────
+  cardBody: { paddingHorizontal: 14, paddingBottom: 16 },
+  divider: { height: 1, marginBottom: 14 },
 
-  cardBody: { paddingHorizontal: 16, paddingBottom: 16 },
-  divider: { height: 1, marginBottom: 16 },
-
-  detailsGrid: { gap: 12, marginBottom: 16 },
-  detailRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
-  detailIcon: { width: 18 },
-  detailLabel: { fontSize: 12, fontWeight: '600' },
-  detailValue: { fontSize: 13, flex: 1 },
+  // Details grid — cleaner icon+label+value layout
+  detailsGrid: { gap: 10, marginBottom: 14 },
+  detailRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  detailIconWrap: {
+    width: 28, height: 28, borderRadius: 8,
+    justifyContent: 'center', alignItems: 'center', flexShrink: 0,
+  },
+  detailContent: { flex: 1 },
+  detailLabel: {
+    fontSize: 9, fontWeight: '800',
+    letterSpacing: 0.8, textTransform: 'uppercase',
+    marginBottom: 4,
+  },
+  detailValue: { fontSize: 13, fontWeight: '600', lineHeight: 18 },
   dayPills: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  dayPill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
+  dayPill: {
+    paddingHorizontal: 8, paddingVertical: 3,
+    borderRadius: 6, borderWidth: 1,
+  },
   dayPillText: { fontSize: 11, fontWeight: '700' },
 
-  nextVisitBox: { borderRadius: 12, borderWidth: 1, padding: 12, marginTop: 4 },
-  nextVisitBoxToday: {},
-  nextVisitBoxLabel: { fontSize: 11, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
-  nextVisitBoxDay: { fontSize: 15, fontWeight: '700' },
-  nextVisitBoxDayToday: {},
-  nextVisitBoxTime: { fontSize: 12, marginTop: 2 },
+  // Next visit box
+  nextVisitBox: {
+    borderRadius: 12, borderWidth: 1, padding: 12, marginBottom: 14,
+  },
+  nextVisitBoxLabel: {
+    fontSize: 9, fontWeight: '800',
+    textTransform: 'uppercase', letterSpacing: 0.8, marginBottom: 4,
+  },
+  nextVisitBoxDay: { fontSize: 15, fontWeight: '800', letterSpacing: -0.2 },
+  nextVisitBoxTime: { fontSize: 12, fontWeight: '500', marginTop: 2 },
 
-  checklistSection: { marginTop: 8 },
-  checklistHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
-  checklistTitle: { fontSize: 14, fontWeight: '700' },
-  checklistProgress: { fontSize: 12, fontWeight: '600' },
-  checklistProgressDone: {},
+  // Checklist — matches complaint warning/field card style
+  checklistSection: { marginTop: 4 },
+  checklistHeader: {
+    flexDirection: 'row', justifyContent: 'space-between',
+    alignItems: 'center', marginBottom: 10,
+  },
+  checklistTitle: { fontSize: 12, fontWeight: '800', letterSpacing: 0.3 },
+  checklistProgress: { fontSize: 12, fontWeight: '700' },
 
-  allReadyBanner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: 10, paddingHorizontal: 12, paddingVertical: 10, marginBottom: 12, gap: 6, borderWidth: 1 },
-  allReadyText: { fontSize: 12, fontWeight: '600' },
+  allReadyBanner: {
+    flexDirection: 'row', alignItems: 'center',
+    borderRadius: 10, borderWidth: 1,
+    paddingHorizontal: 12, paddingVertical: 9,
+    marginBottom: 10, gap: 7,
+  },
+  allReadyText: { fontSize: 12, fontWeight: '700' },
 
-  docRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 12, borderRadius: 10, marginBottom: 6, borderWidth: 1, gap: 12 },
-  docRowChecked: {},
-  checkbox: { width: 20, height: 20, borderRadius: 5, borderWidth: 1.5, justifyContent: 'center', alignItems: 'center', flexShrink: 0 },
-  checkboxChecked: {},
+  docRow: {
+    flexDirection: 'row', alignItems: 'center',
+    paddingVertical: 10, paddingHorizontal: 12,
+    borderRadius: 10, marginBottom: 6, borderWidth: 1, gap: 12,
+  },
+  checkbox: {
+    width: 20, height: 20, borderRadius: 5,
+    borderWidth: 1.5,
+    justifyContent: 'center', alignItems: 'center', flexShrink: 0,
+  },
   docText: { fontSize: 13, flex: 1, fontWeight: '500' },
-  docTextChecked: { textDecorationLine: 'line-through' },
-  resetBtn: { alignSelf: 'flex-start', paddingTop: 4 },
+
+  resetBtn: { alignSelf: 'flex-start', paddingTop: 6 },
   resetBtnText: { fontSize: 11, textDecorationLine: 'underline' },
 
-  noteBox: { marginTop: 12, borderRadius: 10, borderWidth: 1, borderLeftWidth: 3, padding: 12 },
-  noteLabel: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
-  noteText: { fontSize: 12, lineHeight: 18 },
+  // Note box — mirrors complaint warning row style
+  noteBox: {
+    marginTop: 12, borderRadius: 10,
+    borderWidth: 1, borderLeftWidth: 3, padding: 12,
+  },
+  noteHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 5, marginBottom: 5 },
+  noteIcon: { fontSize: 12 },
+  noteLabel: {
+    fontSize: 9, fontWeight: '800',
+    letterSpacing: 0.8, textTransform: 'uppercase',
+  },
+  noteText: { fontSize: 12, lineHeight: 18, fontWeight: '500' },
 });
