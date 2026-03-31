@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const features = [
   {
-    title: "Instant Village Notices",
-    tag: "Stay Informed",
-    description:
-      "Get all important village notices the moment they are published. No more missing announcements or relying on word of mouth.",
+    titleKey: "feature1_title",
+    tagKey: "feature1_tag",
+    descKey: "feature1_desc",
     image: "/qr.jpeg",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -14,10 +14,9 @@ const features = [
     ),
   },
   {
-    title: "Report Issues in Seconds",
-    tag: "Zero Office Visits",
-    description:
-      "Report problems like water shortage or road damage in a few taps with photos. Officials are notified instantly — no office visit needed.",
+    titleKey: "feature2_title",
+    tagKey: "feature2_tag",
+    descKey: "feature2_desc",
     image: "/f3.png",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -26,10 +25,9 @@ const features = [
     ),
   },
   {
-    title: "Contact the Right Official",
-    tag: "Officials Directory",
-    description:
-      "Know who handles what. Find and call the right person directly — no confusion, no multiple office visits, no wasted time.",
+    titleKey: "feature3_title",
+    tagKey: "feature3_tag",
+    descKey: "feature3_desc",
     image: "/f2.jpg",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,10 +36,9 @@ const features = [
     ),
   },
   {
-    title: "QR-First Access",
-    tag: "No Login Needed",
-    description:
-      "Scan once and access everything instantly — no account, no login. Designed for every citizen regardless of technical ability.",
+    titleKey: "feature4_title",
+    tagKey: "feature4_tag",
+    descKey: "feature4_desc",
     image: "/illu1.png",
     icon: (
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,6 +51,7 @@ const features = [
 const DURATION = 5000;
 
 export default function Features() {
+  const { t } = useTranslation();
   const [active, setActive] = useState(0);
   const [prev, setPrev] = useState(null);
   const [transitioning, setTransitioning] = useState(false);
@@ -115,11 +113,10 @@ export default function Features() {
         <div className="max-w-xl mb-12">
           <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 text-sm font-semibold uppercase tracking-wider mb-4">
             <span className="w-6 h-px bg-primary-600 dark:bg-primary-400" />
-            What We Offer
+            {t('features_header')}
           </span>
           <h2 className="text-4xl lg:text-5xl font-bold text-text-primary dark:text-dark-text-primary leading-tight">
-            Everything your village needs —{" "}
-            <span className="text-primary-600 dark:text-primary-400">in one place</span>
+            {t('features_title')}
           </h2>
         </div>
 
@@ -166,7 +163,7 @@ export default function Features() {
                 {/* Tag */}
                 <span className="inline-flex items-center gap-2 bg-primary-400/20 border border-primary-400/30 text-primary-300 text-xs font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full w-fit mb-6">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary-400" />
-                  {feature.tag}
+                  {t(feature.tagKey)}
                 </span>
 
                 {/* Icon + Title */}
@@ -175,13 +172,13 @@ export default function Features() {
                     {feature.icon}
                   </div>
                   <h3 className="text-3xl lg:text-4xl font-bold text-white leading-tight">
-                    {feature.title}
+                    {t(feature.titleKey)}
                   </h3>
                 </div>
 
                 {/* Description */}
                 <p className="text-white/65 text-base leading-relaxed max-w-lg mb-8">
-                  {feature.description}
+                  {t(feature.descKey)}
                 </p>
 
                 {/* Bottom controls row */}
@@ -199,7 +196,7 @@ export default function Features() {
                             : "bg-white/10 text-white/60 border-white/20 hover:bg-white/20 hover:text-white"
                         }`}
                       >
-                        {f.title}
+                        {t(f.titleKey)}
                       </button>
                     ))}
                   </div>

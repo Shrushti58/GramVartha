@@ -15,31 +15,32 @@ import { useTheme } from '../../context/ThemeContext';
 import { apiService } from '../../services/api';
 import { formatLongDate } from '../../utils/format';
 import { Notice } from '../../types/Notice';
+import { useTranslation } from 'react-i18next';
 
 const { width, height } = Dimensions.get('window');
 
 // ─── Category config with theme support ──────────────────────────────────────
-const getCategoryStyles = (category: string, colors: any) => {
+const getCategoryStyles = (category: string, colors: any, t: any) => {
   const catMap: Record<string, { name: string; color: string }> = {
-    development:    { name: 'Development',    color: colors.categories?.development || '#3b82f6' },
-    health:         { name: 'Health',         color: colors.categories?.health || '#ef4444' },
-    education:      { name: 'Education',      color: colors.categories?.education || '#8b5cf6' },
-    agriculture:    { name: 'Agriculture',    color: colors.categories?.agriculture || '#10b981' },
-    employment:     { name: 'Employment',     color: colors.categories?.employment || '#f59e0b' },
-    social_welfare: { name: 'Social Welfare', color: colors.categories?.social_welfare || '#ec4899' },
-    tax_billing:    { name: 'Tax & Billing',  color: colors.categories?.tax_billing || '#14b8a6' },
-    election:       { name: 'Election',       color: colors.categories?.election || '#f97316' },
-    meeting:        { name: 'Meeting',        color: colors.categories?.meeting || '#6366f1' },
-    general:        { name: 'General',        color: colors.categories?.general || '#64748b' },
+    development:    { name: t('development_category'),    color: colors.categories?.development || '#3b82f6' },
+    health:         { name: t('health_category'),         color: colors.categories?.health || '#ef4444' },
+    education:      { name: t('education_category'),      color: colors.categories?.education || '#8b5cf6' },
+    agriculture:    { name: t('agriculture_category'),    color: colors.categories?.agriculture || '#10b981' },
+    employment:     { name: t('employment_category'),     color: colors.categories?.employment || '#f59e0b' },
+    social_welfare: { name: t('social_welfare_category'), color: colors.categories?.social_welfare || '#ec4899' },
+    tax_billing:    { name: t('tax_billing_category'),    color: colors.categories?.tax_billing || '#14b8a6' },
+    election:       { name: t('election_category'),       color: colors.categories?.election || '#f97316' },
+    meeting:        { name: t('meeting_category'),        color: colors.categories?.meeting || '#6366f1' },
+    general:        { name: t('general_category'),        color: colors.categories?.general || '#64748b' },
   };
   return catMap[category] ?? catMap.general;
 };
 
-const getPriorityStyles = (priority: string) => {
+const getPriorityStyles = (priority: string, t: any) => {
   const priMap: Record<string, { label: string }> = {
-    high:   { label: 'High Priority' },
-    medium: { label: 'Normal'        },
-    low:    { label: 'General'       },
+    high:   { label: t('high_priority') },
+    medium: { label: t('normal_priority')        },
+    low:    { label: t('general_priority')       },
   };
   return priMap[priority] ?? priMap.low;
 };
@@ -394,8 +395,7 @@ const AttachmentCard = ({ notice, onView, colors }: { notice: Notice; onView(): 
 
 // ─── Main screen ──────────────────────────────────────────────────────────
 export default function NoticeDetailsScreen() {
-  const { colors, isDark } = useTheme();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { colors, isDark } = useTheme();  const { t } = useTranslation();  const { id } = useLocalSearchParams<{ id: string }>();
   const [notice, setNotice]   = useState<Notice | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState<string | null>(null);
@@ -526,8 +526,8 @@ export default function NoticeDetailsScreen() {
     );
   }
 
-  const cat      = getCategoryStyles(notice.category, colors);
-  const pri      = getPriorityStyles((notice as any).priority ?? 'low');
+  const cat      = getCategoryStyles(notice.category, colors, t);
+  const pri      = getPriorityStyles((notice as any).priority ?? 'low', t);
   const ft       = notice.fileUrl ? getFileType(notice.fileUrl, notice.fileName ?? '') : 'unknown';
   const cfg      = getFileConfig(ft, colors);
   const hasFile  = !!notice.fileUrl;

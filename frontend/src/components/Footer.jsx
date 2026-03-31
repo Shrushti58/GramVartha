@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const scrollTo = (id) => {
   const el = document.getElementById(id);
@@ -7,6 +8,7 @@ const scrollTo = (id) => {
 };
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className="bg-primary-900 dark:bg-dark-background text-white font-sans transition-colors duration-300 overflow-hidden">
 
@@ -15,10 +17,10 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16 flex flex-col lg:flex-row items-center justify-between gap-8">
           <div>
             <h2 className="text-3xl lg:text-4xl font-bold text-white leading-tight">
-              Ready to connect your village?
+              {t('footer_cta_title')}
             </h2>
             <p className="mt-3 text-white/50 text-base">
-              Join 50+ villages already on GramVartha.
+              {t('footer_cta_desc')}
             </p>
           </div>
           <div className="flex gap-4 flex-shrink-0">
@@ -26,7 +28,7 @@ export default function Footer() {
               to="/village/register"
               className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-400 text-white font-semibold px-7 py-3.5 rounded-xl transition-all duration-200 shadow-large hover:-translate-y-0.5"
             >
-              Register Village
+              {t('register_village')}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -48,28 +50,28 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">GramVartha</span>
             </div>
             <p className="text-white/50 text-sm leading-relaxed max-w-xs">
-              Connecting rural communities with their local government through transparent digital governance.
+              {t('footer_description')}
             </p>
             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
               <span className="w-2 h-2 bg-primary-400 rounded-full animate-pulse" />
-              <span className="text-xs text-white/60 font-medium">Platform is live across Maharashtra</span>
+              <span className="text-xs text-white/60 font-medium">{t('footer_live_text')}</span>
             </div>
           </div>
 
           {/* Platform */}
           <div>
-            <h4 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-5">Platform</h4>
+            <h4 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-5">{t('footer_platform')}</h4>
             <ul className="space-y-3">
               {[
-                { label: "About", action: () => scrollTo("about") },
-                { label: "Features", action: () => scrollTo("features") },
+                { labelKey: "nav_about", action: () => scrollTo("about") },
+                { labelKey: "nav_features", action: () => scrollTo("features") },
               ].map((item) => (
-                <li key={item.label}>
+                <li key={item.labelKey}>
                   <button
                     onClick={item.action}
                     className="text-sm text-white/50 hover:text-primary-400 transition-colors duration-200 text-left"
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </button>
                 </li>
               ))}
@@ -78,7 +80,7 @@ export default function Footer() {
                   to="/village/register"
                   className="text-sm text-white/50 hover:text-primary-400 transition-colors duration-200"
                 >
-                  Register Village
+                  {t('register_village')}
                 </Link>
               </li>
             </ul>
@@ -86,14 +88,14 @@ export default function Footer() {
 
           {/* Portals */}
           <div>
-            <h4 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-5">Portals</h4>
+            <h4 className="text-xs font-semibold text-white/40 uppercase tracking-wider mb-5">{t('footer_portals')}</h4>
             <ul className="space-y-3">
               <li>
                 <Link
                   to="/officials/login"
                   className="text-sm text-white/50 hover:text-primary-400 transition-colors duration-200"
                 >
-                  Officials Login
+                  {t('nav_officials_login')}
                 </Link>
               </li>
               <li>
@@ -101,7 +103,7 @@ export default function Footer() {
                   to="/admin/login"
                   className="text-sm text-white/50 hover:text-primary-400 transition-colors duration-200"
                 >
-                  Admin Login
+                  {t('nav_admin_login')}
                 </Link>
               </li>
             </ul>
@@ -117,7 +119,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-4">
             <p className="text-xs text-white/30">
-              © {new Date().getFullYear()} GramVartha. All rights reserved.
+              {t('footer_rights').replace('2025', new Date().getFullYear())}
             </p>
             
           </div>

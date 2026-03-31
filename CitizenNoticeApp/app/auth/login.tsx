@@ -20,9 +20,11 @@ import { useTheme } from "../../context/ThemeContext";
 import { ThemedView } from "../../components/ThemedView";
 import { ThemedText } from "../../components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -44,8 +46,8 @@ export default function Login() {
     if (!phone.trim() || !password.trim()) {
       Toast.show({
         type: "error",
-        text1: "Missing fields",
-        text2: "Please enter your phone and password.",
+        text1: t('missing_fields'),
+        text2: t('enter_phone_password'),
       });
       return;
     }
@@ -56,8 +58,8 @@ export default function Login() {
     if (!villageObj.villageId) {
       Toast.show({
         type: "error",
-        text1: "No village found",
-        text2: "Please scan your village QR code first.",
+        text1: t('no_village_found'),
+        text2: t('scan_village_login'),
       });
       return;
     }
@@ -68,15 +70,15 @@ export default function Login() {
       await AsyncStorage.setItem("token", res.token);
       Toast.show({
         type: "success",
-        text1: "Welcome back!",
-        text2: "Logged in successfully.",
+        text1: t('welcome_back'),
+        text2: t('login_success'),
       });
-      setTimeout(() => router.replace("/complaint"), 1200);
+      setTimeout(() => router.replace("/complaints/my-complaints"), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Login failed",
-        text2: err.response?.data?.message || "Invalid phone or password.",
+        text1: t('login_failed'),
+        text2: err.response?.data?.message || t('invalid_credentials'),
       });
     } finally {
       setLoading(false);

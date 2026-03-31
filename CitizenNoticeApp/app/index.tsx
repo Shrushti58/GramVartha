@@ -35,6 +35,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { use } from 'i18next';
 
 const { width, height } = Dimensions.get('window');
 
@@ -53,32 +54,32 @@ interface ScannedVillage {
 const TABS = [
   {
     key: 'notices',
-    label: 'Notices',
+    labelKey: 'tab_notices',
     icon: 'document-text-outline' as const,
     activeIcon: 'document-text' as const,
   },
   {
     key: 'complaint',
-    label: 'Report',
+    labelKey: 'tab_report',
     icon: 'alert-circle-outline' as const,
     activeIcon: 'alert-circle' as const,
   },
   // Center scan placeholder — rendered by TabItem isScan
   {
     key: 'scan',
-    label: 'Scan',
+    labelKey: 'tab_scan',
     icon: 'qr-code-outline' as const,
     activeIcon: 'qr-code' as const,
   },
   {
     key: 'workguide',
-    label: 'Guide',
+    labelKey: 'tab_guide',
     icon: 'book-outline' as const,
     activeIcon: 'book' as const,
   },
   {
     key: 'villages',
-    label: 'Recent',
+    labelKey: 'tab_recent',
     icon: 'time-outline' as const,
     activeIcon: 'time' as const,
   },
@@ -361,6 +362,7 @@ const TabItem = ({
   colors: any;
   isScan?: boolean;
 }) => {
+  const { t } = useTranslation();
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
   const prevActive = useRef(isActive);
@@ -411,7 +413,7 @@ const TabItem = ({
           </LinearGradient>
         </Animated.View>
         <Text style={[styles.tabLabelCenter, { color: colors.primary[500] }]}>
-          {tab.label}
+          {t(tab.labelKey)}
         </Text>
       </TouchableOpacity>
     );
@@ -443,7 +445,7 @@ const TabItem = ({
           isActive && styles.tabLabelActive,
         ]}
       >
-        {tab.label}
+        {t(tab.labelKey)}
       </Text>
     </TouchableOpacity>
   );
@@ -527,6 +529,8 @@ export default function HomeScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide = useRef(new Animated.Value(24)).current;
 
+
+
   useEffect(() => {
     const splashTimer = setTimeout(() => {
       Animated.parallel([
@@ -583,7 +587,7 @@ export default function HomeScreen() {
         break;
       case 'notices':
         if (!recentVillages.length) {
-          Alert.alert('Scan First', 'Please scan a village QR code to view notices.');
+          Alert.alert(t('scan_first'), t('scan_first_message'));
         } else {
           router.push(`/qr-notices/${recentVillages[0].villageId}` as any);
         }
@@ -596,7 +600,7 @@ export default function HomeScreen() {
         break;
       case 'villages':
         if (!recentVillages.length) {
-          Alert.alert('No Villages', 'Scan a village QR code first to see recent villages.');
+          Alert.alert(t('no_villages'), t('scan_village_first'));
         } else {
           router.push(`/qr-notices/${recentVillages[0].villageId}` as any);
         }
@@ -872,7 +876,7 @@ export default function HomeScreen() {
               style={[styles.quickAccessButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
               onPress={() => {
                 if (!recentVillages.length) {
-                  Alert.alert('No Village', 'Please scan a village QR code first to view village complaints.');
+                  Alert.alert(t('no_village'), t('scan_village_complaints'));
                   return;
                 }
                 router.push(`/complaints/all-complaints?villageId=${recentVillages[0].villageId}` as any);

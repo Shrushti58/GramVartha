@@ -20,6 +20,7 @@ import apiService from "../services/api";
 import { router } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ComplaintType = "issue" | "suggestion";
@@ -46,8 +47,7 @@ function buildWarnings(location: GpsLocation | null): string[] {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Complaint() {
-  const { colors, isDark } = useTheme();
-  const [type, setType] = useState<ComplaintType>("issue");
+  const { colors, isDark } = useTheme();  const { t } = useTranslation();  const [type, setType] = useState<ComplaintType>("issue");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
@@ -155,7 +155,7 @@ export default function Complaint() {
   // ── Submit ─────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (!title.trim() || !description.trim()) {
-      Toast.show({ type: "error", text1: "Missing fields", text2: "Please fill in title and description." });
+      Toast.show({ type: "error", text1: t('missing_fields'), text2: t('fill_all_fields') });
       return;
     }
 
@@ -198,13 +198,13 @@ export default function Complaint() {
         return;
       }
 
-      Toast.show({ type: "success", text1: "Submitted!", text2: "Your complaint has been received." });
+      Toast.show({ type: "success", text1: "Submitted!", text2: t('complaint_submitted') });
       setTimeout(() => router.back(), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Submission failed",
-        text2: err.response?.data?.message || "Please try again.",
+        text1: t('complaint_error'),
+        text2: err.response?.data?.message || t('try_again'),
       });
     } finally {
       setLoading(false);

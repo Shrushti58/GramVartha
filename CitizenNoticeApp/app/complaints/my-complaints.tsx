@@ -9,6 +9,7 @@ import { router } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 import { apiService } from '../../services/api';
 import { formatDate } from '../../utils/format';
+import { isLoggedIn } from '../../utils/auth';
 import { LinearGradient } from 'expo-linear-gradient';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -221,6 +222,38 @@ const EmptyState = ({ query, filter, colors, isDark }: any) => (
   </View>
 );
 
+// ─── Login Prompt ─────────────────────────────────────────────────────────────
+const LoginPrompt = ({ colors, isDark }: any) => (
+  <View style={[styles.root, { backgroundColor: colors.background }]}>
+    <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+    <View style={styles.emptyWrap}>
+      <View style={[styles.emptyIconBox, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50], borderColor: isDark ? `${colors.primary[500]}30` : colors.primary[200] }]}>
+        <Text style={styles.emptyGlyph}>🔒</Text>
+      </View>
+      <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>Login Required</Text>
+      <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
+        You need to be logged in to view your complaints.
+      </Text>
+      <View style={styles.loginButtons}>
+        <TouchableOpacity
+          style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
+          onPress={() => router.push('/auth/login' as any)}
+          activeOpacity={0.82}
+        >
+          <Text style={styles.emptyBtnText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.emptyBtn, { backgroundColor: colors.secondary }]}
+          onPress={() => router.push('/auth/register' as any)}
+          activeOpacity={0.82}
+        >
+          <Text style={styles.emptyBtnText}>Register</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+);
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function MyComplaintsScreen() {
   const { colors, isDark } = useTheme();
@@ -231,6 +264,7 @@ export default function MyComplaintsScreen() {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [searchQuery,    setSearchQuery]    = useState('');
   const [searchFocused,  setSearchFocused]  = useState(false);
+  const [loggedIn,       setLoggedIn]       = useState(false);
 
   // ── Derived header colours — identical pattern to complaint.tsx ─────────────
   const headerTextColor    = isDark ? colors.primary[100]  : '#fff';
@@ -239,7 +273,15 @@ export default function MyComplaintsScreen() {
   const backBtnBg          = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
   const headerBg           = isDark ? colors.primary[900]  : colors.primary[700];
 
-  useEffect(() => { fetchMyComplaints(); }, [selectedFilter]);
+  useEffect(() => {
+    const checkLogin = async () => {
+      const loggedInStatus = await isLoggedIn();
+      setLoggedIn(loggedInStatus);
+    };
+    checkLogin();
+  }, []);
+
+  useEffect(() => { if (loggedIn) fetchMyComplaints(); }, [selectedFilter, loggedIn]);
   useEffect(() => { setSearchQuery(''); }, [selectedFilter]);
 
   const fetchMyComplaints = async () => {
@@ -279,6 +321,11 @@ export default function MyComplaintsScreen() {
         )
       : [...myComplaints];
   }, [myComplaints, searchQuery]);
+
+  // ── Check login ────────────────────────────────────────────────────────────
+  if (!loggedIn) {
+    return <LoginPrompt colors={colors} isDark={isDark} />;
+  }
 
   // ── Loading screen ────────────────────────────────────────────────────────
   if (loading && myComplaints.length === 0) {
@@ -710,4 +757,13 @@ const styles = StyleSheet.create({
     fontSize: 13, textAlign: 'center',
     lineHeight: 20, fontWeight: '500',
   },
+  emptyBtn: {
+    marginTop: 8, borderRadius: 12,
+    paddingHorizontal: 24, paddingVertical: 13,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
+  },
+  emptyBtnText: { fontSize: 14, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
+  loginButtons: { flexDirection: 'row', gap: 12, marginTop: 8 },
 });

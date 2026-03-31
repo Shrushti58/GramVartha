@@ -1,9 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export default function Hero() {
   const { dark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <section className="relative min-h-screen bg-accent-mist dark:bg-dark-background overflow-hidden flex items-center font-sans transition-colors duration-300">
@@ -32,17 +34,17 @@ export default function Hero() {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/60 border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
               <span className="w-2 h-2 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-              Serving Rural Communities
+              {t('serving_rural_communities')}
             </div>
 
             {/* Heading */}
             <div className="space-y-4">
               <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-text-primary dark:text-dark-text-primary leading-[1.05] tracking-tight">
-                Welcome to<br />
-                <span className="text-primary-600 dark:text-primary-400">GramVartha</span>
+                {t('welcome_to')}<br />
+                <span className="text-primary-600 dark:text-primary-400">{t('brand')}</span>
               </h1>
               <p className="text-lg text-text-secondary dark:text-dark-text-secondary max-w-lg leading-relaxed font-light">
-                Empowering rural communities through digital governance and transparent communication.
+                {t('tagline')}
               </p>
             </div>
 
@@ -52,7 +54,7 @@ export default function Hero() {
                 to="/qr-scanner"
                 className="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 shadow-large dark:shadow-dark-large hover:-translate-y-0.5"
               >
-                Scan QR to View Notices
+                {t('scan_qr_view_notices')}
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -61,7 +63,7 @@ export default function Hero() {
                 to="/village/register"
                 className="inline-flex items-center justify-center gap-2 bg-white dark:bg-dark-surface2 hover:bg-primary-50 dark:hover:bg-dark-surface border border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 text-text-primary dark:text-dark-text-primary font-semibold px-8 py-4 rounded-xl transition-all duration-200"
               >
-                Register Village
+                {t('register_village')}
               </Link>
             </div>
 
@@ -69,12 +71,12 @@ export default function Hero() {
             <div className="flex gap-10 pt-4 border-t border-border dark:border-dark-border">
               <div>
                 <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">10,000+</p>
-                <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">Active Readers</p>
+                <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('active_readers')}</p>
               </div>
               <div className="w-px bg-border dark:bg-dark-border" />
               <div>
                 <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">50+</p>
-                <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">Villages Served</p>
+                <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('villages_served')}</p>
               </div>
               <div className="w-px bg-border dark:bg-dark-border" />
               <div>

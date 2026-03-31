@@ -19,6 +19,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { Config } from '../../constants/config';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -44,20 +45,20 @@ interface GroupedGuide {
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { label: 'Birth Certificate',   search: 'birth certificate'   },
-  { label: 'Death Certificate',   search: 'death certificate'   },
-  { label: 'Residence Proof',     search: 'residence'           },
-  { label: 'Caste Certificate',   search: 'caste'               },
-  { label: 'Income Certificate',  search: 'income'              },
-  { label: '7/12 Land Record',    search: '7/12'                },
-  { label: 'Property Tax',        search: 'property tax'        },
-  { label: 'Ration Card',         search: 'ration'              },
-  { label: 'Pension Application', search: 'pension'             },
-  { label: 'NREGA Job Card',      search: 'nrega'               },
-  { label: 'PM Awas Yojana',      search: 'awas'                },
-  { label: 'Water Connection',    search: 'water'               },
-  { label: 'Voter ID Help',       search: 'voter'               },
-  { label: 'Scholarship',         search: 'scholarship'         },
+  { labelKey: 'birth_certificate',         search: 'birth certificate'   },
+  { labelKey: 'death_certificate',         search: 'death certificate'   },
+  { labelKey: 'residence_proof',           search: 'residence'           },
+  { labelKey: 'caste_certificate',         search: 'caste'               },
+  { labelKey: 'income_certificate',        search: 'income'              },
+  { labelKey: 'seven_twelve_land_record',  search: '7/12'                },
+  { labelKey: 'property_tax',              search: 'property tax'        },
+  { labelKey: 'ration_card',               search: 'ration'              },
+  { labelKey: 'pension_application',       search: 'pension'             },
+  { labelKey: 'nrega_job_card',            search: 'nrega'               },
+  { labelKey: 'pm_awas_yojana',            search: 'awas'                },
+  { labelKey: 'water_connection',          search: 'water'               },
+  { labelKey: 'voter_id_help',             search: 'voter'               },
+  { labelKey: 'scholarship',               search: 'scholarship'         },
 ];
 
 // ── Next Visit Calculator ──────────────────────────────────────────────────────
@@ -565,6 +566,7 @@ const WorkGuideCard = ({
 // ── Main Screen ────────────────────────────────────────────────────────────────
 export default function WorkGuideScreen() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const [villageId,         setVillageId]         = useState<string>('');
   const [villageName,       setVillageName]       = useState<string>('');
   const [grouped,           setGrouped]           = useState<GroupedGuide[]>([]);
@@ -743,17 +745,17 @@ export default function WorkGuideScreen() {
 
         <View style={styles.headerTitleBlock}>
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-            VILLAGE SERVICES
+            {t('village_services')}
           </Text>
           <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-            Work Guide 📘
+            {t('work_guide')}
           </Text>
           <View style={styles.headerBreadcrumb}>
             <View
               style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]}
             />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              {villageName || 'Your Village'}
+              {villageName || t('your_village')}
             </Text>
           </View>
         </View>
@@ -767,7 +769,7 @@ export default function WorkGuideScreen() {
         {/* ── Quick Actions ── */}
         <View style={styles.quickSection}>
           <Text style={[styles.quickHeading, { color: colors.text.primary }]}>
-            What do you need?
+            {t('what_do_you_need')}
           </Text>
           <ScrollView
             horizontal
@@ -817,7 +819,7 @@ export default function WorkGuideScreen() {
                       },
                     ]}
                   >
-                    {action.label}
+                    {t(action.labelKey)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -851,7 +853,7 @@ export default function WorkGuideScreen() {
               onChangeText={handleSearch}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              placeholder="Search work, officer, document…"
+              placeholder={t('search_work_officer_document')}
               placeholderTextColor={colors.text.muted}
               returnKeyType="search"
             />
@@ -889,8 +891,8 @@ export default function WorkGuideScreen() {
             >
               <Text style={[styles.searchResultsLabel, { color: colors.primary[600] }]}>
                 {totalResults > 0
-                  ? `${totalResults} result${totalResults !== 1 ? 's' : ''} found`
-                  : `No results for "${searchTerm}"`}
+                  ? `${totalResults} ${totalResults !== 1 ? t('results_found') : t('result_found')}`
+                  : `${t('no_results_for')} "${searchTerm}"`}
               </Text>
             </View>
           )}
@@ -901,7 +903,7 @@ export default function WorkGuideScreen() {
           <View style={styles.loadingBox}>
             <ActivityIndicator size="small" color={colors.primary[600]} />
             <Text style={[styles.loadingText, { color: colors.text.secondary }]}>
-              Loading…
+              {t('loading')}
             </Text>
           </View>
         ) : !villageId ? (
@@ -928,17 +930,17 @@ export default function WorkGuideScreen() {
               <Ionicons name="qr-code-outline" size={32} color={colors.primary[500]} />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-              Scan Village QR First
+              {t('scan_village_qr_first')}
             </Text>
             <Text style={[styles.emptySub, { color: colors.text.secondary }]}>
-              Please scan your village QR code to access the work guide.
+              {t('scan_village_to_access_guide')}
             </Text>
             <TouchableOpacity
               style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
               onPress={() => router.push('/qr-scanner' as any)}
               activeOpacity={0.82}
             >
-              <Text style={styles.emptyBtnText}>Scan QR Code</Text>
+              <Text style={styles.emptyBtnText}>{t('scan_qr_code')}</Text>
             </TouchableOpacity>
           </View>
         ) : totalResults === 0 ? (
@@ -969,12 +971,12 @@ export default function WorkGuideScreen() {
               />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-              {searchTerm ? 'No results found' : 'No services listed yet'}
+              {searchTerm ? t('no_results_found') : t('no_services_listed_yet')}
             </Text>
             <Text style={[styles.emptySub, { color: colors.text.secondary }]}>
               {searchTerm
-                ? 'Try a different word or browse quick actions above'
-                : 'The village admin will add services soon'}
+                ? t('try_different_word')
+                : t('admin_will_add_services')}
             </Text>
             {searchTerm ? (
               <TouchableOpacity
@@ -982,7 +984,7 @@ export default function WorkGuideScreen() {
                 onPress={clearSearch}
                 activeOpacity={0.82}
               >
-                <Text style={styles.emptyBtnText}>Clear Search</Text>
+                <Text style={styles.emptyBtnText}>{t('clear_search')}</Text>
               </TouchableOpacity>
             ) : null}
           </View>

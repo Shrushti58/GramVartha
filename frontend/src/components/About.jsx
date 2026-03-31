@@ -1,9 +1,10 @@
 import React from "react";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const stats = [
-  { value: "10K+", label: "Active Readers" },
-  { value: "50+", label: "Villages Onboarded" },
+  { value: "10K+", labelKey: "active_readers" },
+  { value: "50+", labelKey: "villages_served" },
   { value: "100%", label: "Free Access" },
 ];
 
@@ -14,6 +15,7 @@ const features = [
 ];
 
 export default function About() {
+  const { t } = useTranslation();
   return (
     <section
       id="about"
@@ -45,7 +47,7 @@ export default function About() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-text-muted dark:text-dark-text-muted">Villages Served</p>
+                  <p className="text-xs text-text-muted dark:text-dark-text-muted">{t('villages_served')}</p>
                   <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary">50+ Villages</p>
                 </div>
               </div>
@@ -58,7 +60,7 @@ export default function About() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-xs text-white/50">Active Readers</p>
+                  <p className="text-xs text-white/50">{t('active_readers')}</p>
                   <p className="text-sm font-bold text-white">10,000+</p>
                 </div>
               </div>
@@ -68,7 +70,7 @@ export default function About() {
             <div className="mt-4 bg-primary-800 dark:bg-primary-900 rounded-2xl px-6 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 bg-primary-400 rounded-full animate-pulse" />
-                <p className="text-white text-sm font-medium">Actively serving rural Maharashtra</p>
+                <p className="text-white text-sm font-medium">{t('actively_serving')}</p>
               </div>
               <span className="text-primary-400 text-sm font-semibold">Live</span>
             </div>
@@ -80,13 +82,13 @@ export default function About() {
             <div>
               <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 text-sm font-semibold uppercase tracking-wider mb-4">
                 <span className="w-6 h-px bg-primary-600 dark:bg-primary-400" />
-                About Us
+                {t('about_us')}
               </span>
               <h2 className="text-4xl font-bold text-text-primary dark:text-dark-text-primary leading-tight mt-2">
-                Governance at every doorstep
+                {t('governance_title')}
               </h2>
               <p className="mt-4 text-text-muted dark:text-dark-text-muted leading-relaxed">
-                GramVartha bridges citizens and their Gram Panchayat. Access notices, report issues, and reach officials — all from your phone, no paperwork needed.
+                {t('governance_desc')}
               </p>
             </div>
 
@@ -95,7 +97,7 @@ export default function About() {
               {stats.map((s, i) => (
                 <div key={i}>
                   <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">{s.value}</p>
-                  <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{s.label}</p>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{s.labelKey ? t(s.labelKey) : s.label}</p>
                 </div>
               ))}
             </div>

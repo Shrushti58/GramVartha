@@ -9,6 +9,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 import { apiService } from '../../services/api';
 import { formatDate } from '../../utils/format';
+import { isLoggedIn } from '../../utils/auth';
 import { LinearGradient } from 'expo-linear-gradient';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -262,6 +263,38 @@ const Pagination = ({ page, totalPages, onPress, colors, isDark }: any) => (
   </View>
 );
 
+// ─── Login Prompt ─────────────────────────────────────────────────────────────
+const LoginPrompt = ({ colors, isDark }: any) => (
+  <View style={[styles.root, { backgroundColor: colors.background }]}>
+    <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+    <View style={styles.emptyWrap}>
+      <View style={[styles.emptyIconBox, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50], borderColor: isDark ? `${colors.primary[500]}30` : colors.primary[200] }]}>
+        <Text style={styles.emptyGlyph}>🔒</Text>
+      </View>
+      <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>Login Required</Text>
+      <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
+        You need to be logged in to view complaints.
+      </Text>
+      <View style={styles.loginButtons}>
+        <TouchableOpacity
+          style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
+          onPress={() => router.push('/auth/login' as any)}
+          activeOpacity={0.82}
+        >
+          <Text style={styles.emptyBtnText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.emptyBtn, { backgroundColor: colors.secondary }]}
+          onPress={() => router.push('/auth/register' as any)}
+          activeOpacity={0.82}
+        >
+          <Text style={styles.emptyBtnText}>Register</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+);
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function AllComplaintsScreen() {
   const { colors, isDark }  = useTheme();
@@ -276,6 +309,7 @@ export default function AllComplaintsScreen() {
   const [totalPages,     setTotalPages]     = useState(1);
   const [searchQuery,    setSearchQuery]    = useState('');
   const [searchFocused,  setSearchFocused]  = useState(false);
+  const [loggedIn,       setLoggedIn]       = useState(false);
 
   // ── Derived header colours — same pattern across all screens ───────────────
   const headerBg           = isDark ? colors.primary[900]  : colors.primary[700];
@@ -284,7 +318,15 @@ export default function AllComplaintsScreen() {
   const headerEyebrowColor = isDark ? colors.primary[300]  : 'rgba(255,255,255,0.6)';
   const backBtnBg          = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
 
-  useEffect(() => { if (villageId) fetchComplaints(); }, [villageId, selectedFilter, page]);
+  useEffect(() => {
+    const checkLogin = async () => {
+      const loggedInStatus = await isLoggedIn();
+      setLoggedIn(loggedInStatus);
+    };
+    checkLogin();
+  }, []);
+
+  useEffect(() => { if (villageId && loggedIn) fetchComplaints(); }, [villageId, selectedFilter, page, loggedIn]);
   useEffect(() => { setSearchQuery(''); }, [selectedFilter]);
 
   const fetchComplaints = async () => {
@@ -327,7 +369,10 @@ export default function AllComplaintsScreen() {
         )
       : [...allComplaints];
   }, [allComplaints, searchQuery]);
-
+  // ── Check login ────────────────────────────────────────────────────────────
+  if (!loggedIn) {
+    return <LoginPrompt colors={colors} isDark={isDark} />;
+  }
   // ── No village selected ───────────────────────────────────────────────────
   if (!villageId) {
     return (
@@ -788,6 +833,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
   },
   emptyBtnText: { fontSize: 14, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
+  loginButtons: { flexDirection: 'row', gap: 12, marginTop: 8 },
 
   // ── Pagination ────────────────────────────────────────────────────────────
   pagination: {

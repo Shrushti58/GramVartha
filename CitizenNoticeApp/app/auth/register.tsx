@@ -18,9 +18,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTranslation } from "react-i18next";
 
 export default function Register() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -43,8 +45,8 @@ export default function Register() {
     if (!name.trim() || !phone.trim() || !password.trim()) {
       Toast.show({
         type: "error",
-        text1: "Missing fields",
-        text2: "Please fill in all fields.",
+        text1: t('missing_fields'),
+        text2: t('fill_all_fields'),
       });
       return;
     }
@@ -54,8 +56,8 @@ export default function Register() {
     if (!villageObj.villageId) {
       Toast.show({
         type: "error",
-        text1: "No village found",
-        text2: "Please scan your village QR code first.",
+        text1: t('no_village_found'),
+        text2: t('scan_village_login'),
       });
       return;
     }
@@ -73,15 +75,15 @@ export default function Register() {
       await AsyncStorage.setItem("token", res.token);
       Toast.show({
         type: "success",
-        text1: "Welcome!",
-        text2: "Your account has been created.",
+        text1: t('welcome'),
+        text2: t('register_success'),
       });
-      setTimeout(() => router.replace("/"), 1200);
+      setTimeout(() => router.replace("/complaints/my-complaints"), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: "Registration failed",
-        text2: err.response?.data?.message || "Please try again.",
+        text1: t('register_error'),
+        text2: err.response?.data?.message || t('try_again'),
       });
     } finally {
       setLoading(false);

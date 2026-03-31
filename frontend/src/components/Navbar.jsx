@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const scrollTo = (id) => {
   const el = document.getElementById(id);
@@ -13,6 +15,7 @@ export default function Navbar() {
   const { dark, toggleTheme } = useTheme();
   const location = useLocation();
   const isHome = location.pathname === "/";
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -61,13 +64,13 @@ export default function Navbar() {
                 onClick={() => handleNavClick("about")}
                 className="text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
-                About
+                {t('nav_about')}
               </button>
               <button
                 onClick={() => handleNavClick("features")}
                 className="text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
-                Features
+                {t('nav_features')}
               </button>
 
               <div className="w-px h-5 bg-border dark:bg-dark-border mx-2" />
@@ -95,27 +98,30 @@ export default function Navbar() {
                 )}
               </button>
 
+              {/* Language Switcher */}
+              <LanguageSwitcher />
+
               <Link
                 to="/officials/login"
                 className="text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
-                Officials Login
+                {t('nav_officials_login')}
               </Link>
               <Link
                 to="/admin/login"
                 className="text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
-                Admin Login
+                {t('nav_admin_login')}
               </Link>
               <Link
                 to="/village/register"
                 className="text-sm font-semibold text-white px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-all duration-200 shadow-soft"
               >
-                Register Village
+                {t('register_village')}
               </Link>
             </div>
 
-            {/* Mobile Right — Theme Toggle + Hamburger */}
+            {/* Mobile Right — Theme Toggle + Language Switcher + Hamburger */}
             <div className="md:hidden flex items-center gap-2">
               <button
                 onClick={toggleTheme}
@@ -136,6 +142,8 @@ export default function Navbar() {
                   </svg>
                 )}
               </button>
+
+              <LanguageSwitcher />
 
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -167,25 +175,25 @@ export default function Navbar() {
               onClick={() => handleNavClick("about")}
               className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-4 py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
             >
-              About
+              {t('nav_about')}
             </button>
             <button
               onClick={() => handleNavClick("features")}
               className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-4 py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
             >
-              Features
+              {t('nav_features')}
             </button>
 
             <div className="pt-2 border-t border-border dark:border-dark-border space-y-2 mt-2">
               <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider px-4 pb-1">
-                Login Portals
+                {t('login_portals')}
               </p>
               <Link
                 to="/officials/login"
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
-                <span>Officials Login</span>
+                <span>{t('nav_officials_login')}</span>
                 <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -195,7 +203,7 @@ export default function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
-                <span>Admin Login</span>
+                <span>{t('nav_admin_login')}</span>
                 <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
