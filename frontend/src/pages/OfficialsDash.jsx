@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ComplaintsDashboard from "../pages/Complaintsdashboard";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -69,8 +70,6 @@ function SkeletonNoticeList() {
 }
 
 function SkeletonDashboard() {
-  const { dark } = useTheme();
-  
   return (
     <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
       {/* Navbar skeleton */}
@@ -134,25 +133,25 @@ function SkeletonDashboard() {
   );
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Constants with translation keys ────────────────────────────────────────────────
 
 const categories = [
-  { value: "development",   label: "Development"   },
-  { value: "health",        label: "Health"        },
-  { value: "education",     label: "Education"     },
-  { value: "agriculture",   label: "Agriculture"   },
-  { value: "employment",    label: "Employment"    },
-  { value: "social_welfare",label: "Social Welfare"},
-  { value: "tax_billing",   label: "Tax & Billing" },
-  { value: "election",      label: "Election"      },
-  { value: "urgent",        label: "Urgent"        },
-  { value: "general",       label: "General"       },
+  { value: "development",   labelKey: "officials.categories.development" },
+  { value: "health",        labelKey: "officials.categories.health" },
+  { value: "education",     labelKey: "officials.categories.education" },
+  { value: "agriculture",   labelKey: "officials.categories.agriculture" },
+  { value: "employment",    labelKey: "officials.categories.employment" },
+  { value: "social_welfare",labelKey: "officials.categories.social_welfare" },
+  { value: "tax_billing",   labelKey: "officials.categories.tax_billing" },
+  { value: "election",      labelKey: "officials.categories.election" },
+  { value: "urgent",        labelKey: "officials.categories.urgent" },
+  { value: "general",       labelKey: "officials.categories.general" },
 ];
 
 const priorities = [
-  { value: "low",    label: "Low"    },
-  { value: "medium", label: "Medium" },
-  { value: "high",   label: "High"   },
+  { value: "low",    labelKey: "officials.priorities.low" },
+  { value: "medium", labelKey: "officials.priorities.medium" },
+  { value: "high",   labelKey: "officials.priorities.high" },
 ];
 
 const catColor = {
@@ -218,24 +217,26 @@ function ThemeToggle() {
 // ─── Delete Confirm (inline) ──────────────────────────────────────────────────
 
 function DeleteConfirm({ onConfirm, onCancel }) {
+  const { t } = useTranslation();
+  
   return (
     <div className="bg-white dark:bg-dark-surface border border-red-200 dark:border-red-800 rounded-2xl overflow-hidden mb-4">
       <div className="px-6 py-4 border-b border-red-100 dark:border-red-900/30 bg-red-50/60 dark:bg-red-900/10 flex items-center justify-between">
-        <p className="text-sm font-bold text-red-700 dark:text-red-400">Delete this notice?</p>
+        <p className="text-sm font-bold text-red-700 dark:text-red-400">{t('officials.delete_confirm.title')}</p>
         <button onClick={onCancel} className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-red-400 transition-all">
           <IcoX />
         </button>
       </div>
       <div className="p-5 flex items-center justify-between gap-4">
         <p className="text-sm text-text-muted dark:text-dark-text-muted">
-          This cannot be undone. Citizens will no longer see this notice.
+          {t('officials.delete_confirm.message')}
         </p>
         <div className="flex gap-3 flex-shrink-0">
           <button onClick={onCancel} className="px-4 py-2 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
-            Cancel
+            {t('officials.delete_confirm.cancel')}
           </button>
           <button onClick={onConfirm} className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition-all">
-            Delete
+            {t('officials.delete_confirm.delete')}
           </button>
         </div>
       </div>
@@ -246,24 +247,26 @@ function DeleteConfirm({ onConfirm, onCancel }) {
 // ─── QR Section (inline) ─────────────────────────────────────────────────────
 
 function QRSection({ village, onDownload, loading, onClose }) {
+  const { t } = useTranslation();
+  
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden mb-4">
       <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2">
-        <h3 className="text-sm font-bold text-text-primary dark:text-dark-text-primary">Village QR Code</h3>
+        <h3 className="text-sm font-bold text-text-primary dark:text-dark-text-primary">{t('officials.qr.title')}</h3>
         <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-border dark:hover:bg-dark-border text-text-muted dark:text-dark-text-muted transition-all">
           <IcoX />
         </button>
       </div>
       <div className="p-6">
         {!village ? (
-          <p className="text-sm text-text-muted dark:text-dark-text-muted text-center py-4">No village linked to your account.</p>
+          <p className="text-sm text-text-muted dark:text-dark-text-muted text-center py-4">{t('officials.qr.no_village')}</p>
         ) : (
           <div className="flex items-center justify-between gap-4 bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border rounded-2xl p-5">
             <div>
               <p className="text-base font-bold text-text-primary dark:text-dark-text-primary">{village.name}</p>
               <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{village.district}, {village.state}</p>
               <p className={`text-xs font-semibold mt-2 ${village.qrCode && village.qrCode.imageUrl ? 'text-primary-600 dark:text-primary-400' : 'text-text-muted dark:text-dark-text-muted'}`}>
-                {village.qrCode && village.qrCode.imageUrl ? 'QR ready to download' : 'Not generated yet'}
+                {village.qrCode && village.qrCode.imageUrl ? t('officials.qr.ready') : t('officials.qr.not_generated')}
               </p>
             </div>
             <button
@@ -272,7 +275,7 @@ function QRSection({ village, onDownload, loading, onClose }) {
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex-shrink-0"
             >
               {loading && <IcoSpinner />}
-              {loading ? 'Please wait...' : 'Download QR'}
+              {loading ? t('officials.qr.waiting') : t('officials.qr.download')}
             </button>
           </div>
         )}
@@ -284,15 +287,17 @@ function QRSection({ village, onDownload, loading, onClose }) {
 // ─── File Viewer (inline expandable) ─────────────────────────────────────────
 
 function FileViewer({ notice, onClose }) {
+  const { t } = useTranslation();
   const ext = notice.fileUrl ? notice.fileUrl.split('.').pop().toLowerCase() : '';
   const isImage = ['jpg','jpeg','png','gif','webp'].includes(ext);
   const isPdf = ext === 'pdf';
+  
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden mb-4">
       <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2">
         <div className="flex-1 min-w-0 pr-4">
           <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary truncate">{notice.title}</p>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">Attachment</p>
+          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('officials.file_viewer.attachment')}</p>
         </div>
         <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-border dark:hover:bg-dark-border text-text-muted dark:text-dark-text-muted transition-all flex-shrink-0">
           <IcoX />
@@ -313,7 +318,7 @@ function FileViewer({ notice, onClose }) {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
-          Download File
+          {t('officials.file_viewer.download')}
         </a>
       </div>
     </div>
@@ -323,6 +328,7 @@ function FileViewer({ notice, onClose }) {
 // ─── Notice Form (inline) ─────────────────────────────────────────────────────
 
 function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
+  const { t } = useTranslation();
   const [title, setTitle]           = useState(initial ? initial.title : '');
   const [description, setDescription] = useState(initial ? (initial.description || '') : '');
   const [category, setCategory]     = useState(initial ? (initial.category || 'general') : 'general');
@@ -332,7 +338,10 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!title.trim() || !description.trim()) { toast.error('Fill in title and description'); return; }
+    if (!title.trim() || !description.trim()) { 
+      toast.error(t('officials.notice_form.fill_required')); 
+      return; 
+    }
     const fd = new FormData();
     fd.append('title', title.trim());
     fd.append('description', description.trim());
@@ -347,7 +356,7 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden mb-4">
       <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2">
         <h3 className="text-sm font-bold text-text-primary dark:text-dark-text-primary">
-          {initial ? 'Edit Notice' : 'Publish New Notice'}
+          {initial ? t('officials.notice_form.edit_title') : t('officials.notice_form.new_title')}
         </h3>
         <button type="button" onClick={onCancel} className="p-1.5 rounded-lg hover:bg-border dark:hover:bg-dark-border text-text-muted dark:text-dark-text-muted transition-all">
           <IcoX />
@@ -355,21 +364,21 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
       </div>
       <form onSubmit={handleSubmit} className="p-6 space-y-4">
         <div>
-          <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Title *</label>
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Notice title" required className={inp} />
+          <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('officials.notice_form.title')} *</label>
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('officials.notice_form.title_placeholder')} required className={inp} />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Category</label>
+            <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('officials.notice_form.category')}</label>
             <select value={category} onChange={(e) => setCategory(e.target.value)} className={inp}>
-              {categories.map((c) => <option key={c.value} value={c.value}>{c.label}</option>)}
+              {categories.map((cat) => <option key={cat.value} value={cat.value}>{t(cat.labelKey)}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Priority</label>
+            <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('officials.notice_form.priority')}</label>
             <select value={priority} onChange={(e) => setPriority(e.target.value)} className={inp}>
-              {priorities.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+              {priorities.map((pri) => <option key={pri.value} value={pri.value}>{t(pri.labelKey)}</option>)}
             </select>
           </div>
         </div>
@@ -382,25 +391,25 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
             <div className={`w-4 h-4 bg-white rounded-full absolute top-[3px] shadow-sm transition-all ${isPinned ? 'left-[22px]' : 'left-[3px]'}`} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">Pin to top</p>
-            <p className="text-xs text-text-muted dark:text-dark-text-muted">Show first in the notice board</p>
+            <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('officials.notice_form.pin_to_top')}</p>
+            <p className="text-xs text-text-muted dark:text-dark-text-muted">{t('officials.notice_form.pin_description')}</p>
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Description *</label>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Write the notice details here..." rows={4} required className={`${inp} resize-none`} />
+          <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('officials.notice_form.description')} *</label>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder={t('officials.notice_form.description_placeholder')} rows={4} required className={`${inp} resize-none`} />
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Attachment (optional)</label>
+          <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('officials.notice_form.attachment')}</label>
           <label htmlFor="notice-file" className="flex items-center gap-3 w-full px-4 py-3 rounded-xl border border-dashed border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2 hover:border-primary-400 cursor-pointer transition-all group">
             <svg className="w-5 h-5 text-text-muted dark:text-dark-text-muted group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
               <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
             </svg>
             <span className={`text-sm ${file ? 'text-text-primary dark:text-dark-text-primary font-medium' : 'text-text-muted dark:text-dark-text-muted'}`}>
-              {file ? file.name : 'PDF or Image, max 5MB'}
+              {file ? file.name : t('officials.notice_form.attachment_placeholder')}
             </span>
             <input id="notice-file" type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={(e) => setFile(e.target.files[0])} />
           </label>
@@ -408,18 +417,18 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
 
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onCancel} className="flex-1 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
-            Cancel
+            {t('officials.notice_form.cancel')}
           </button>
           <button type="submit" disabled={saving || !title.trim() || !description.trim()} className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex items-center justify-center gap-2">
             {saving && <IcoSpinner />}
-            {saving ? 'Saving...' : initial ? 'Update Notice' : 'Publish Notice'}
+            {saving ? t('officials.notice_form.saving') : initial ? t('officials.notice_form.update') : t('officials.notice_form.publish')}
           </button>
         </div>
 
         {initial && (
           <button type="button" onClick={onDelete}
             className="w-full py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 text-sm font-semibold rounded-xl transition-all">
-            Delete this notice
+            {t('officials.notice_form.delete')}
           </button>
         )}
       </form>
@@ -430,11 +439,12 @@ function NoticeForm({ initial, onSave, onCancel, saving, onDelete }) {
 // ─── Notice Card ──────────────────────────────────────────────────────────────
 
 function NoticeCard({ notice, onEdit, onDelete, onView }) {
+  const { t } = useTranslation();
   const isUrgent = notice.priority === 'high' || notice.category === 'urgent';
   const isActive = notice.status === 'published';
   const catCls = catColor[notice.category] || catColor.general;
   const catLabel = categories.find((c) => c.value === notice.category);
-  const label = catLabel ? catLabel.label : 'General';
+  const label = catLabel ? t(catLabel.labelKey) : t('officials.categories.general');
 
   return (
     <div className={`bg-white dark:bg-dark-surface border rounded-2xl p-5 transition-all duration-200 hover:shadow-medium dark:hover:shadow-dark-medium hover:-translate-y-0.5 ${
@@ -445,36 +455,36 @@ function NoticeCard({ notice, onEdit, onDelete, onView }) {
           <div className="flex items-center gap-2 flex-wrap mb-2">
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${catCls}`}>{label}</span>
             {notice.isPinned && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">Pinned</span>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">{t('officials.notice_card.pinned')}</span>
             )}
             {isUrgent && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">Urgent</span>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">{t('officials.notice_card.urgent')}</span>
             )}
             {notice.fileUrl && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">File</span>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">{t('officials.notice_card.file')}</span>
             )}
           </div>
           <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary mb-1 leading-snug">{notice.title}</p>
           <p className="text-xs text-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-2">{notice.description}</p>
           <p className="text-xs text-text-muted dark:text-dark-text-muted mt-2">
             {notice.createdAt ? new Date(notice.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
-            {notice.views !== undefined ? ` · ${notice.views} views` : ''}
+            {notice.views !== undefined ? ` · ${notice.views} ${t('officials.notice_card.views')}` : ''}
           </p>
         </div>
         <div className="flex flex-col gap-2 flex-shrink-0">
           <button onClick={() => onEdit(notice)}
             className="px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-xl border border-border dark:border-dark-border hover:border-primary-200 dark:hover:border-primary-700 transition-all">
-            Edit
+            {t('officials.notice_card.edit')}
           </button>
           {notice.fileUrl && (
             <button onClick={() => onView(notice)}
               className="px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 text-text-secondary dark:text-dark-text-secondary rounded-xl border border-border dark:border-dark-border hover:border-primary-200 transition-all">
-              View
+              {t('officials.notice_card.view')}
             </button>
           )}
           <button onClick={() => onDelete(notice._id)}
             className="px-3 py-1.5 text-xs font-semibold bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-800 hover:bg-red-100 transition-all">
-            Delete
+            {t('officials.notice_card.delete')}
           </button>
         </div>
       </div>
@@ -485,6 +495,8 @@ function NoticeCard({ notice, onEdit, onDelete, onView }) {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 function Footer({ village, noticeCount }) {
+  const { t } = useTranslation();
+  
   return (
     <footer className="w-full mt-auto">
       <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" className="w-full block -mb-1">
@@ -498,16 +510,16 @@ function Footer({ village, noticeCount }) {
             </div>
             <div>
               <p className="text-sm font-bold text-white">GramVartha</p>
-              <p className="text-xs text-primary-300">Officials Portal</p>
+              <p className="text-xs text-primary-300">{t('officials.footer.portal')}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
             <span className="w-2 h-2 bg-primary-400 rounded-full animate-pulse flex-shrink-0" />
             <span className="text-xs text-white/60 font-medium whitespace-nowrap">
-              {village ? village.name : 'Village'} · {noticeCount} notices
+              {village ? village.name : t('officials.footer.village')} · {noticeCount} {t('officials.footer.notices')}
             </span>
           </div>
-          <p className="text-xs text-white/30 whitespace-nowrap">© {new Date().getFullYear()} GramVartha. All rights reserved.</p>
+          <p className="text-xs text-white/30 whitespace-nowrap">© {new Date().getFullYear()} GramVartha. {t('officials.footer.rights')}</p>
         </div>
       </div>
     </footer>
@@ -519,18 +531,19 @@ function Footer({ village, noticeCount }) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 const PAGE_TABS = [
-  { key: 'notices',    label: 'Notices',    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-  { key: 'complaints', label: 'Complaints', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+  { key: 'notices',    labelKey: 'officials.tabs.notices', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+  { key: 'complaints', labelKey: 'officials.tabs.complaints', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
 ];
 
 const FILTER_TABS = [
-  { key: 'all',    label: 'All'    },
-  { key: 'active', label: 'Active' },
-  { key: 'pinned', label: 'Pinned' },
-  { key: 'urgent', label: 'Urgent' },
+  { key: 'all',    labelKey: 'officials.filters.all' },
+  { key: 'active', labelKey: 'officials.filters.active' },
+  { key: 'pinned', labelKey: 'officials.filters.pinned' },
+  { key: 'urgent', labelKey: 'officials.filters.urgent' },
 ];
 
 export default function OfficialsDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [notices, setNotices]               = useState([]);
   const [loading, setLoading]               = useState(true);
@@ -558,7 +571,7 @@ export default function OfficialsDashboard() {
         ? (profileRes.data.village._id || profileRes.data.village)
         : null;
       if (!villageId) { 
-        toast.error('No village linked to your account'); 
+        toast.error(t('officials.errors.no_village')); 
         setNotices([]); 
         return; 
       }
@@ -566,7 +579,7 @@ export default function OfficialsDashboard() {
       const noticesRes = await axios.get(`${API_BASE_URL}/notice/village/${villageId}`, { withCredentials: true });
       setNotices(Array.isArray(noticesRes.data && noticesRes.data.notices) ? noticesRes.data.notices : []);
     } catch(e) { 
-      toast.error('Failed to load notices'); 
+      toast.error(t('officials.errors.load_failed')); 
       setNotices([]); 
     } finally { 
       setLoading(false); 
@@ -601,11 +614,11 @@ export default function OfficialsDashboard() {
         headers: { 'Content-Type': 'multipart/form-data' }, 
         withCredentials: true 
       });
-      toast.success(noticeForm && noticeForm !== 'new' ? 'Notice updated!' : 'Notice published!');
+      toast.success(noticeForm && noticeForm !== 'new' ? t('officials.success.updated') : t('officials.success.published'));
       setNoticeForm(null);
       fetchNotices();
     } catch(err) {
-      toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : 'Failed to save notice');
+      toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : t('officials.errors.save_failed'));
     } finally { 
       setSaving(false); 
     }
@@ -614,12 +627,12 @@ export default function OfficialsDashboard() {
   async function handleDelete(id) {
     try {
       await axios.delete(`${API_BASE_URL}/notice/delete/${id}`, { withCredentials: true });
-      toast.success('Notice deleted');
+      toast.success(t('officials.success.deleted'));
       setDeleteTarget(null);
       setNoticeForm(null);
       fetchNotices();
     } catch(e) { 
-      toast.error('Failed to delete notice'); 
+      toast.error(t('officials.errors.delete_failed')); 
     }
   }
 
@@ -637,7 +650,7 @@ export default function OfficialsDashboard() {
           const f = new File([blob], `${(village.name || 'village').replace(/\s+/g, '_')}.png`, { type: blob.type });
           if (navigator.canShare({ files: [f] })) { 
             await navigator.share({ files: [f], title: village.name, text: qrUrl }); 
-            toast.success('Shared!'); 
+            toast.success(t('officials.success.shared')); 
             return; 
           }
         } catch(e) {}
@@ -649,9 +662,9 @@ export default function OfficialsDashboard() {
       document.body.appendChild(a); 
       a.click(); 
       a.remove();
-      toast.success('QR downloaded!');
+      toast.success(t('officials.success.downloaded'));
     } catch(err) {
-      toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : 'Failed to generate QR');
+      toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : t('officials.errors.qr_failed'));
     } finally { 
       setQrLoading(false); 
     }
@@ -660,10 +673,10 @@ export default function OfficialsDashboard() {
   async function handleLogout() {
     try {
       await axios.post(`${API_BASE_URL}/officials/logout`, {}, { withCredentials: true });
-      toast.info('Logged out'); 
+      toast.info(t('officials.success.logged_out')); 
       navigate('/');
     } catch(e) { 
-      toast.error('Error logging out'); 
+      toast.error(t('officials.errors.logout_failed')); 
     }
   }
 
@@ -684,13 +697,13 @@ export default function OfficialsDashboard() {
   });
 
   const statCards = [
-    { label: 'Total Notices', value: stats.total,  iconCls: 'text-primary-600 dark:text-primary-400', bgCls: 'bg-primary-100 dark:bg-primary-900/40',
+    { labelKey: 'officials.stats.total', value: stats.total, iconCls: 'text-primary-600 dark:text-primary-400', bgCls: 'bg-primary-100 dark:bg-primary-900/40',
       icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-    { label: 'Active',        value: stats.active, iconCls: 'text-sky-600 dark:text-sky-400',         bgCls: 'bg-sky-100 dark:bg-sky-900/30',
+    { labelKey: 'officials.stats.active', value: stats.active, iconCls: 'text-sky-600 dark:text-sky-400', bgCls: 'bg-sky-100 dark:bg-sky-900/30',
       icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-    { label: 'Pinned',        value: stats.pinned, iconCls: 'text-amber-600 dark:text-amber-400',     bgCls: 'bg-amber-100 dark:bg-amber-900/30',
+    { labelKey: 'officials.stats.pinned', value: stats.pinned, iconCls: 'text-amber-600 dark:text-amber-400', bgCls: 'bg-amber-100 dark:bg-amber-900/30',
       icon: 'M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z' },
-    { label: 'Urgent',        value: stats.urgent, iconCls: 'text-red-600 dark:text-red-400',         bgCls: 'bg-red-100 dark:bg-red-900/30',
+    { labelKey: 'officials.stats.urgent', value: stats.urgent, iconCls: 'text-red-600 dark:text-red-400', bgCls: 'bg-red-100 dark:bg-red-900/30',
       icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
   ];
 
@@ -713,22 +726,22 @@ export default function OfficialsDashboard() {
               </div>
               <div className="hidden sm:block">
                 <p className="text-sm font-bold text-white leading-none">GramVartha</p>
-                <p className="text-xs text-white/40 mt-0.5">Officials Portal</p>
+                <p className="text-xs text-white/40 mt-0.5">{t('officials.nav.portal')}</p>
               </div>
             </div>
 
             {/* Page tabs */}
             <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
-              {PAGE_TABS.map((t) => (
-                <button key={t.key} onClick={() => setActivePage(t.key)}
+              {PAGE_TABS.map((tab) => (
+                <button key={tab.key} onClick={() => setActivePage(tab.key)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
-                    activePage === t.key ? 'bg-white text-primary-900 shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/10'
+                    activePage === tab.key ? 'bg-white text-primary-900 shadow-sm' : 'text-white/60 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d={t.icon} />
+                    <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
                   </svg>
-                  {t.label}
+                  {t(tab.labelKey)}
                 </button>
               ))}
             </div>
@@ -744,13 +757,13 @@ export default function OfficialsDashboard() {
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                 <rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/>
               </svg>
-              Village QR
+              {t('officials.nav.village_qr')}
             </button>
             <button
               onClick={() => navigate('/officials/profile')}
               className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition-all"
             >
-              Profile
+              {t('officials.nav.profile')}
             </button>
             <button
               onClick={handleLogout}
@@ -759,7 +772,7 @@ export default function OfficialsDashboard() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
               </svg>
-              <span className="hidden sm:block">Logout</span>
+              <span className="hidden sm:block">{t('officials.nav.logout')}</span>
             </button>
           </div>
         </div>
@@ -781,8 +794,8 @@ export default function OfficialsDashboard() {
 
           {/* Page header */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">Community Notices</h1>
-            <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">Manage and publish announcements for your village</p>
+            <h1 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">{t('officials.notices.title')}</h1>
+            <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('officials.notices.subtitle')}</p>
           </div>
 
           {/* Inline panels */}
@@ -821,15 +834,15 @@ export default function OfficialsDashboard() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {statCards.map((s) => (
-              <div key={s.label} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${s.bgCls}`}>
-                  <svg className={`w-4 h-4 ${s.iconCls}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
+            {statCards.map((stat) => (
+              <div key={stat.labelKey} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft">
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${stat.bgCls}`}>
+                  <svg className={`w-4 h-4 ${stat.iconCls}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={stat.icon} />
                   </svg>
                 </div>
-                <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">{s.value}</p>
-                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">{s.label}</p>
+                <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">{stat.value}</p>
+                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">{t(stat.labelKey)}</p>
               </div>
             ))}
           </div>
@@ -837,19 +850,19 @@ export default function OfficialsDashboard() {
           {/* Filter tabs + New button */}
           <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
             <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
-              {FILTER_TABS.map((t) => {
-                const count = t.key === 'all' ? stats.total : t.key === 'active' ? stats.active : t.key === 'pinned' ? stats.pinned : stats.urgent;
+              {FILTER_TABS.map((filter) => {
+                const count = filter.key === 'all' ? stats.total : filter.key === 'active' ? stats.active : filter.key === 'pinned' ? stats.pinned : stats.urgent;
                 return (
-                  <button key={t.key} onClick={() => setActiveTab(t.key)}
+                  <button key={filter.key} onClick={() => setActiveTab(filter.key)}
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
-                      activeTab === t.key
+                      activeTab === filter.key
                         ? 'bg-primary-600 dark:bg-primary-700 text-white shadow-soft'
                         : 'text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary'
                     }`}
                   >
-                    {t.label}
+                    {t(filter.labelKey)}
                     <span className={`text-[10px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full ${
-                      activeTab === t.key ? 'bg-white/20 text-white' : 'bg-accent-mist dark:bg-dark-surface2 text-text-muted dark:text-dark-text-muted'
+                      activeTab === filter.key ? 'bg-white/20 text-white' : 'bg-accent-mist dark:bg-dark-surface2 text-text-muted dark:text-dark-text-muted'
                     }`}>{count}</span>
                   </button>
                 );
@@ -861,7 +874,7 @@ export default function OfficialsDashboard() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
-                New Notice
+                {t('officials.notices.new_notice')}
               </button>
             )}
           </div>
@@ -874,11 +887,11 @@ export default function OfficialsDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
               </div>
-              <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">No notices yet</p>
-              <p className="text-xs text-text-muted dark:text-dark-text-muted">Create the first notice for your village</p>
+              <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('officials.notices.no_notices')}</p>
+              <p className="text-xs text-text-muted dark:text-dark-text-muted">{t('officials.notices.no_notices_desc')}</p>
               <button onClick={() => setNoticeForm('new')}
                 className="mt-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
-                Publish First Notice
+                {t('officials.notices.publish_first')}
               </button>
             </div>
           ) : (

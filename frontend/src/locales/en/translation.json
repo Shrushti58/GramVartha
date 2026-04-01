@@ -1,119 +1,29 @@
 {
-  "brand": "GramVartha",
-  "nav_home": "Home",
-  "nav_about": "About",
-  "nav_contact": "Contact",
-  "about_title": "About Us",
-  "about_text": "GramVartha helps Grampanchayats share official notices and Government Resolutions (GRs) with citizens easily and effectively.",
-
-
-  "contact": "Contact Us",
-
-  "nav_admin_login": "Admin Login",
-  "nav_officials_login":"Officials Login",
-   "nav_notices": "Notices",
-  "nav_grs": "Grievance System",
-  
-  "f1": "Secure & Private",
-  "f1_desc": "End-to-end encryption ensures your data remains confidential and protected from unauthorized access.",
-  "f2": "Lightning Fast",
-  "f2_desc": "Experience blazing fast performance with our optimized architecture and global CDN network.",
-  "f3": "Community Driven",
-  "f3_desc": "Join thousands of active users who contribute to making our platform better every day.",
-  "explore_all_features": "Explore All Features",
-  
-  "welcome": "Stay informed, stay connected with GramVartha",
-  "nav_features": "Explore Features",
-  "learn_more": "Learn More",
-  
-  "footer": "Empowering communities with transparent information and digital governance",
-  "footer_about": "About Us",
-  "footer_features": "Features",
-  "footer_notices": "Notices",
-  "footer_grievance": "Grievance System",
-  "footer_contact": "Contact",
-  "footer_privacy": "Privacy Policy",
-  "footer_terms": "Terms of Service",
-  "footer_cookies": "Cookie Policy",
-  "footer_rights": "All rights reserved.",
-
-  "serving_rural_communities": "Serving Rural Communities",
-  "welcome_to": "Welcome to",
-  "tagline": "Empowering villages with timely news and updates",
-  "explore_features": "Explore Features",
-  "watch_demo": "Watch Demo",
-  "active_readers": "Active Readers",
-  "villages_served": "Villages Served",
-  "new_notices_added": "New Notices Added",
-  "easy_to_use": "Easy to Use",
-  "scan_qr_view_notices": "Scan QR to View Notices",
-  "register_village": "Register Village",
-
-  "actively_serving": "Actively serving rural Maharashtra",
-  "about_us": "About Us",
-  "governance_title": "Governance at every doorstep",
-  "governance_desc": "GramVartha bridges citizens and their Gram Panchayat. Access notices, report issues, and reach officials — all from your phone, no paperwork needed.",
-
-  "login_portals": "Login Portals",
-  "footer_cta_title": "Ready to connect your village?",
-  "footer_cta_desc": "Join 50+ villages already on GramVartha.",
-  "footer_description": "Connecting rural communities with their local government through transparent digital governance.",
-  "footer_live_text": "Platform is live across Maharashtra",
-  "footer_platform": "Platform",
-  "footer_portals": "Portals",
-  "free_access": "Free Access",
-"feature.no_login": "No login required — scan and access instantly",
-"feature.local_lang": "Available in local languages",
-"feature.verified": "Verified official notices only",
-"vision.quote": "Less running around. More solutions.",
-"vision.author": "— GramVartha Vision",
-"login.title": "Admin Login",
-  "login.heading": "Welcome back",
-  "login.subheading": "Enter your credentials to access the dashboard",
-  "login.email": "Email address",
-  "login.password": "Password",
-  "login.email_placeholder": "admin@gramvartha.in",
-  "login.password_placeholder": "Enter your password",
-  "login.button": "Sign in to Dashboard",
-  "login.loading": "Signing in...",
-  "login.success": "Login successful!",
-  "login.error": "Login failed",
-  "login.role_error": "Unknown user role",
-  "login.switch": "Already have an account? Sign in",
-  "login.secure_portal": "Secure Admin Portal",
-  "login.secure_access": "Secure, encrypted admin access",
-
-  "register.title": "Admin Registration",
-  "register.heading": "Create an account",
-  "register.subheading": "Register a new superadmin account",
-  "register.button": "Create Superadmin Account",
-  "register.loading": "Creating Account...",
-  "register.success": "Registration successful! Please login.",
-  "register.error": "Registration failed",
-  "register.switch": "First time? Register as Superadmin",
-
-  "common.or": "or",
-  "common.back_home": "Back to homepage",
-  "features_header": "Features",
-  "features_title": "Powerful tools for smart village management",
-
-  "feature1_title": "QR Based Notices",
-  "feature1_tag": "Instant Access",
-  "feature1_desc": "Scan QR codes to instantly view notices, announcements, and updates from your village administration.",
-
-  "feature2_title": "Emergency Alerts",
-  "feature2_tag": "Safety First",
-  "feature2_desc": "Get real-time alerts for emergencies and important updates to ensure citizen safety and awareness.",
-
-  "feature3_title": "Community Management",
-  "feature3_tag": "People First",
-  "feature3_desc": "Manage village data, users, and activities efficiently from a centralized dashboard.",
-
-  "feature4_title": "Smart Dashboard",
-  "feature4_tag": "Insights",
-  "feature4_desc": "Analyze data, track engagement, and monitor village activities with powerful analytics tools.",
-
-  "paused": "Paused",
+  "notices": {
+    "categories": {
+      "all": "All Categories",
+      "development": "Development",
+      "health": "Health",
+      "education": "Education",
+      "agriculture": "Agriculture",
+      "employment": "Employment",
+      "social_welfare": "Social Welfare",
+      "tax_billing": "Tax & Billing",
+      "election": "Election",
+      "meeting": "Meetings",
+      "general": "General"
+    },
+    "sort": {
+      "newest": "Newest First",
+      "oldest": "Oldest First",
+      "popular": "Most Popular",
+      "titleAsc": "Title A-Z",
+      "titleDesc": "Title Z-A"
+    },
+    "errors": {
+      "connection": "Cannot connect to server. Please try again later."
+    }
+  },
   "official": {
     "login": {
       "title": "Official Login",
@@ -135,7 +45,7 @@
       "success": "Login successful! Redirecting...",
       "error": "Something went wrong! Please try again."
     },
-     "register": {
+    "register": {
       "title": "Official Registration",
       "badge": "Officials Portal",
       "full_name": "Full Name",
@@ -171,7 +81,7 @@
       "error": "Something went wrong! Please try again."
     }
   },
-   "village": {
+  "village": {
     "register": {
       "title": "Village Registration",
       "badge": "Village Portal",
@@ -233,8 +143,174 @@
         "registration_failed": "Registration failed"
       }
     }
+  },
+  "officials": {
+    "profile": {
+      "title": "My Profile",
+      "subtitle": "Manage your official account and profile photo",
+      "dashboard": "Dashboard",
+      "loading": "Loading profile…",
+      "uploading": "Uploading…",
+      "change_photo": "Change profile photo",
+      "file_requirements": "JPG, PNG · Max 5 MB",
+      "account_details": "Account Details",
+      "personal_info": "Personal Information",
+      "full_name": "Full Name",
+      "email": "Email Address",
+      "account_status": "Account Status",
+      "department": "Department",
+      "role": "Role",
+      "phone": "Phone",
+      "member_since": "Member Since",
+      "contact_admin": "Contact your administrator to update account details.",
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      },
+      "errors": {
+        "load_failed": "Failed to load profile",
+        "invalid_file": "Please select a valid image file",
+        "file_too_large": "Image size should be less than 5MB",
+        "upload_failed": "Failed to upload image"
+      },
+      "success": {
+        "photo_updated": "Profile photo updated!"
+      }
+    },
+    "nav": {
+      "portal": "Officials Portal",
+      "village_qr": "Village QR",
+      "profile": "Profile",
+      "logout": "Logout"
+    },
+    "tabs": {
+      "notices": "Notices",
+      "complaints": "Complaints"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "pinned": "Pinned",
+      "urgent": "Urgent"
+    },
+    "stats": {
+      "total": "Total Notices",
+      "active": "Active",
+      "pinned": "Pinned",
+      "urgent": "Urgent"
+    },
+    "notices": {
+      "title": "Community Notices",
+      "subtitle": "Manage and publish announcements for your village",
+      "new_notice": "New Notice",
+      "no_notices": "No notices yet",
+      "no_notices_desc": "Create the first notice for your village",
+      "publish_first": "Publish First Notice"
+    },
+    "categories": {
+      "development": "Development",
+      "health": "Health",
+      "education": "Education",
+      "agriculture": "Agriculture",
+      "employment": "Employment",
+      "social_welfare": "Social Welfare",
+      "tax_billing": "Tax & Billing",
+      "election": "Election",
+      "urgent": "Urgent",
+      "general": "General"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "notice_form": {
+      "new_title": "Publish New Notice",
+      "edit_title": "Edit Notice",
+      "title": "Title",
+      "title_placeholder": "Notice title",
+      "category": "Category",
+      "priority": "Priority",
+      "pin_to_top": "Pin to top",
+      "pin_description": "Show first in the notice board",
+      "description": "Description",
+      "description_placeholder": "Write the notice details here...",
+      "attachment": "Attachment (optional)",
+      "attachment_placeholder": "PDF or Image, max 5MB",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "publish": "Publish Notice",
+      "update": "Update Notice",
+      "delete": "Delete this notice",
+      "fill_required": "Fill in title and description"
+    },
+    "notice_card": {
+      "pinned": "Pinned",
+      "urgent": "Urgent",
+      "file": "File",
+      "views": "views",
+      "edit": "Edit",
+      "view": "View",
+      "delete": "Delete"
+    },
+    "delete_confirm": {
+      "title": "Delete this notice?",
+      "message": "This cannot be undone. Citizens will no longer see this notice.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "qr": {
+      "title": "Village QR Code",
+      "no_village": "No village linked to your account.",
+      "ready": "QR ready to download",
+      "not_generated": "Not generated yet",
+      "waiting": "Please wait...",
+      "download": "Download QR"
+    },
+    "file_viewer": {
+      "attachment": "Attachment",
+      "download": "Download File"
+    },
+    "footer": {
+      "portal": "Officials Portal",
+      "village": "Village",
+      "notices": "notices",
+      "rights": "All rights reserved."
+    },
+    "errors": {
+      "no_village": "No village linked to your account",
+      "load_failed": "Failed to load notices",
+      "save_failed": "Failed to save notice",
+      "delete_failed": "Failed to delete notice",
+      "qr_failed": "Failed to generate QR",
+      "logout_failed": "Error logging out"
+    },
+    "success": {
+      "published": "Notice published!",
+      "updated": "Notice updated!",
+      "deleted": "Notice deleted",
+      "shared": "Shared!",
+      "downloaded": "QR downloaded!",
+      "logged_out": "Logged out"
+    }
+  },
+  "about": {
+    "about_us": "About Us",
+    "governance_title": "Bringing Governance to Every Village",
+    "governance_desc": "GramVartha is a digital platform bridging the gap between citizens and local governance. We ensure transparency, accessibility, and timely dissemination of critical information.",
+    "active_readers": "Active Readers",
+    "villages_served": "Villages Served",
+    "free_access": "Free Access",
+    "actively_serving": "Actively Serving",
+    "feature": {
+      "no_login": "No login required for citizens",
+      "local_lang": "Available in local languages",
+      "verified": "Verified government notices"
+    },
+    "vision": {
+      "quote": "Every citizen has the right to know and participate in their village's development journey.",
+      "author": "GramVartha Team"
+    }
   }
-
-  
-
 }

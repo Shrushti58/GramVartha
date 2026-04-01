@@ -793,14 +793,6 @@ video {
   z-index: 50;
 }
 
-.col-span-2{
-  grid-column: span 2 / span 2;
-}
-
-.col-span-3{
-  grid-column: span 3 / span 3;
-}
-
 .mx-2{
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -3961,11 +3953,6 @@ body {
 
 .disabled\:cursor-not-allowed:disabled{
   cursor: not-allowed;
-}
-
-.disabled\:bg-primary-300:disabled{
-  --tw-bg-opacity: 1;
-  background-color: rgb(212 128 74 / var(--tw-bg-opacity, 1));
 }
 
 .disabled\:opacity-40:disabled{

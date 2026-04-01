@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 import * as api from '../services/api';
 
 // ─── Spinner ──────────────────────────────────────────────────────────────────
@@ -14,11 +15,11 @@ function IcoSpinner({ size = 18 }) {
   );
 }
 
-// ─── Status config ────────────────────────────────────────────────────────────
+// ─── Status config with translation keys ─────────────────────────────────────
 
 const STATUS_CFG = {
   approved: {
-    label: 'Approved',
+    labelKey: 'officials.profile.status.approved',
     bg:    'bg-emerald-100 dark:bg-emerald-900/30',
     text:  'text-emerald-700 dark:text-emerald-400',
     dot:   'bg-emerald-500',
@@ -26,7 +27,7 @@ const STATUS_CFG = {
     bar:   'bg-emerald-500',
   },
   pending: {
-    label: 'Pending',
+    labelKey: 'officials.profile.status.pending',
     bg:    'bg-amber-100 dark:bg-amber-900/30',
     text:  'text-amber-700 dark:text-amber-400',
     dot:   'bg-amber-400',
@@ -34,7 +35,7 @@ const STATUS_CFG = {
     bar:   'bg-amber-400',
   },
   rejected: {
-    label: 'Rejected',
+    labelKey: 'officials.profile.status.rejected',
     bg:    'bg-red-100 dark:bg-red-900/30',
     text:  'text-red-700 dark:text-red-400',
     dot:   'bg-red-400',
@@ -44,12 +45,13 @@ const STATUS_CFG = {
 };
 
 function StatusBadge({ status, size = 'md' }) {
+  const { t } = useTranslation();
   const cfg = STATUS_CFG[status] || STATUS_CFG.pending;
   const pad = size === 'lg' ? 'px-3.5 py-1.5 text-xs' : 'px-2.5 py-1 text-[11px]';
   return (
     <span className={`inline-flex items-center gap-1.5 font-semibold rounded-lg ${pad} ${cfg.bg} ${cfg.text}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
-      {cfg.label}
+      {t(cfg.labelKey)}
     </span>
   );
 }
@@ -57,6 +59,7 @@ function StatusBadge({ status, size = 'md' }) {
 // ─── Field row with icon ──────────────────────────────────────────────────────
 
 function FieldRow({ icon, label, children }) {
+  const { t } = useTranslation();
   return (
     <div className="group flex items-start gap-4 py-4 border-b border-border dark:border-dark-border last:border-0">
       <div className="mt-0.5 w-8 h-8 rounded-lg bg-accent-mist dark:bg-dark-surface2 flex items-center justify-center flex-shrink-0 text-primary-500 group-hover:bg-primary-50 dark:group-hover:bg-primary-900/20 transition-colors">
@@ -64,7 +67,7 @@ function FieldRow({ icon, label, children }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted dark:text-dark-text-muted mb-0.5">
-          {label}
+          {t(label)}
         </p>
         <div className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">
           {children}
@@ -128,6 +131,8 @@ const Icons = {
 // ─── Upload button ────────────────────────────────────────────────────────────
 
 function UploadZone({ uploading, onClick }) {
+  const { t } = useTranslation();
+  
   return (
     <button
       onClick={onClick}
@@ -139,10 +144,10 @@ function UploadZone({ uploading, onClick }) {
       </div>
       <div className="text-left">
         <p className="text-xs font-semibold text-text-primary dark:text-dark-text-primary leading-tight">
-          {uploading ? 'Uploading…' : 'Change profile photo'}
+          {uploading ? t('officials.profile.uploading') : t('officials.profile.change_photo')}
         </p>
         <p className="text-[10px] text-text-muted dark:text-dark-text-muted mt-0.5">
-          JPG, PNG · Max 5 MB
+          {t('officials.profile.file_requirements')}
         </p>
       </div>
     </button>
@@ -152,6 +157,7 @@ function UploadZone({ uploading, onClick }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function OfficialProfile() {
+  const { t } = useTranslation();
   const [profile, setProfile]     = useState(null);
   const [loading, setLoading]     = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -165,7 +171,7 @@ export default function OfficialProfile() {
       const response = await api.getOfficialProfile();
       setProfile(response.data);
     } catch (error) {
-      toast.error('Failed to load profile');
+      toast.error(t('officials.profile.errors.load_failed'));
       if (error.response?.status === 401) navigate('/officials/login');
     } finally {
       setLoading(false);
@@ -175,15 +181,21 @@ export default function OfficialProfile() {
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    if (!file.type.startsWith('image/')) { toast.error('Please select a valid image file'); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error('Image size should be less than 5MB'); return; }
+    if (!file.type.startsWith('image/')) { 
+      toast.error(t('officials.profile.errors.invalid_file')); 
+      return; 
+    }
+    if (file.size > 5 * 1024 * 1024) { 
+      toast.error(t('officials.profile.errors.file_too_large')); 
+      return; 
+    }
     setUploading(true);
     try {
       const response = await api.uploadOfficialProfileImage(file);
       setProfile(prev => ({ ...prev, profileImage: response.data.profileImage }));
-      toast.success('Profile photo updated!');
+      toast.success(t('officials.profile.success.photo_updated'));
     } catch {
-      toast.error('Failed to upload image');
+      toast.error(t('officials.profile.errors.upload_failed'));
     } finally {
       setUploading(false);
     }
@@ -196,7 +208,7 @@ export default function OfficialProfile() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-8 py-8">
         <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex items-center justify-center py-24 gap-3">
           <IcoSpinner />
-          <p className="text-sm text-text-muted dark:text-dark-text-muted">Loading profile…</p>
+          <p className="text-sm text-text-muted dark:text-dark-text-muted">{t('officials.profile.loading')}</p>
         </div>
       </main>
     );
@@ -219,10 +231,10 @@ export default function OfficialProfile() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">
-            My Profile
+            {t('officials.profile.title')}
           </h1>
           <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
-            Manage your official account and profile photo
+            {t('officials.profile.subtitle')}
           </p>
         </div>
         <button
@@ -230,7 +242,7 @@ export default function OfficialProfile() {
           className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-text-muted dark:text-dark-text-muted border border-border dark:border-dark-border hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-text-primary dark:hover:text-dark-text-primary transition-all"
         >
           {Icons.back}
-          Dashboard
+          {t('officials.profile.dashboard')}
         </button>
       </div>
 
@@ -303,7 +315,7 @@ export default function OfficialProfile() {
               {profile?.department && (
                 <div className="flex-1 text-center">
                   <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted dark:text-dark-text-muted mb-1">
-                    Department
+                    {t('officials.profile.department')}
                   </p>
                   <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary leading-tight">
                     {profile.department}
@@ -313,7 +325,7 @@ export default function OfficialProfile() {
               {profile?.createdAt && (
                 <div className="flex-1 text-center pl-4">
                   <p className="text-[9px] font-bold uppercase tracking-widest text-text-muted dark:text-dark-text-muted mb-1">
-                    Member Since
+                    {t('officials.profile.member_since')}
                   </p>
                   <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary leading-tight">
                     {new Date(profile.createdAt).toLocaleDateString('en-IN', {
@@ -333,41 +345,41 @@ export default function OfficialProfile() {
           <div className="flex items-center justify-between px-6 py-5 border-b border-border dark:border-dark-border">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted dark:text-dark-text-muted">
-                Account Details
+                {t('officials.profile.account_details')}
               </p>
               <p className="text-base font-bold text-text-primary dark:text-dark-text-primary mt-0.5">
-                Personal Information
+                {t('officials.profile.personal_info')}
               </p>
             </div>
             {/* Subtle status indicator strip */}
             <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${statusCfg.bg}`}>
               <span className={`w-2 h-2 rounded-full ${statusCfg.dot}`} />
-              <span className={`text-xs font-semibold ${statusCfg.text}`}>{statusCfg.label}</span>
+              <span className={`text-xs font-semibold ${statusCfg.text}`}>{t(statusCfg.labelKey)}</span>
             </div>
           </div>
 
           {/* Field rows */}
           <div className="px-6 divide-y divide-border dark:divide-dark-border">
-            <FieldRow icon={Icons.user} label="Full Name">
+            <FieldRow icon={Icons.user} label="officials.profile.full_name">
               {profile?.name}
             </FieldRow>
 
-            <FieldRow icon={Icons.email} label="Email Address">
+            <FieldRow icon={Icons.email} label="officials.profile.email">
               <span className="font-mono text-xs tracking-tight">{profile?.email}</span>
             </FieldRow>
 
-            <FieldRow icon={Icons.status} label="Account Status">
+            <FieldRow icon={Icons.status} label="officials.profile.account_status">
               <StatusBadge status={profile?.status} />
             </FieldRow>
 
             {profile?.department && (
-              <FieldRow icon={Icons.department} label="Department">
+              <FieldRow icon={Icons.department} label="officials.profile.department">
                 {profile.department}
               </FieldRow>
             )}
 
             {profile?.role && (
-              <FieldRow icon={Icons.role} label="Role">
+              <FieldRow icon={Icons.role} label="officials.profile.role">
                 <span className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 capitalize">
                   {profile.role}
                 </span>
@@ -375,13 +387,13 @@ export default function OfficialProfile() {
             )}
 
             {profile?.phone && (
-              <FieldRow icon={Icons.phone} label="Phone">
+              <FieldRow icon={Icons.phone} label="officials.profile.phone">
                 <span className="font-mono text-xs">{profile.phone}</span>
               </FieldRow>
             )}
 
             {profile?.createdAt && (
-              <FieldRow icon={Icons.calendar} label="Member Since">
+              <FieldRow icon={Icons.calendar} label="officials.profile.member_since">
                 {new Date(profile.createdAt).toLocaleDateString('en-IN', {
                   day: 'numeric', month: 'long', year: 'numeric',
                 })}
@@ -392,14 +404,14 @@ export default function OfficialProfile() {
           {/* Card footer */}
           <div className="px-6 py-5 mt-2 border-t border-border dark:border-dark-border flex items-center justify-between">
             <p className="text-[11px] text-text-muted dark:text-dark-text-muted">
-              Contact your administrator to update account details.
+              {t('officials.profile.contact_admin')}
             </p>
             <button
               onClick={() => navigate('/officials/dashboard')}
               className="sm:hidden flex items-center gap-1.5 text-xs font-semibold text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors"
             >
               {Icons.back}
-              Dashboard
+              {t('officials.profile.dashboard')}
             </button>
           </div>
         </div>
