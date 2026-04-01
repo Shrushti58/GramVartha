@@ -5,7 +5,7 @@
   "nav_contact": "Contact",
   "about_title": "About Us",
   "about_text": "GramVartha helps Grampanchayats share official notices and Government Resolutions (GRs) with citizens easily and effectively.",
-  "features_title": "Key Features",
+
 
   "contact": "Contact Us",
 
@@ -48,26 +48,12 @@
   "easy_to_use": "Easy to Use",
   "scan_qr_view_notices": "Scan QR to View Notices",
   "register_village": "Register Village",
-  "active_readers": "Active Readers",
-  "villages_served": "Villages Served",
+
   "actively_serving": "Actively serving rural Maharashtra",
   "about_us": "About Us",
   "governance_title": "Governance at every doorstep",
   "governance_desc": "GramVartha bridges citizens and their Gram Panchayat. Access notices, report issues, and reach officials — all from your phone, no paperwork needed.",
-  "feature1_title": "Instant Village Notices",
-  "feature1_tag": "Stay Informed",
-  "feature1_desc": "Get all important village notices the moment they are published. No more missing announcements or relying on word of mouth.",
-  "feature2_title": "Report Issues in Seconds",
-  "feature2_tag": "Zero Office Visits",
-  "feature2_desc": "Report problems like water shortage or road damage in a few taps with photos. Officials are notified instantly — no office visit needed.",
-  "feature3_title": "Contact the Right Official",
-  "feature3_tag": "Officials Directory",
-  "feature3_desc": "Know who handles what. Find and call the right person directly — no confusion, no multiple office visits, no wasted time.",
-  "feature4_title": "QR-First Access",
-  "feature4_tag": "No Login Needed",
-  "feature4_desc": "Scan once and access everything instantly — no account, no login. Designed for every citizen regardless of technical ability.",
-  "features_header": "What We Offer",
-  "features_title": "Everything your village needs — in one place",
+
   "login_portals": "Login Portals",
   "footer_cta_title": "Ready to connect your village?",
   "footer_cta_desc": "Join 50+ villages already on GramVartha.",
@@ -107,5 +93,25 @@
   "register.switch": "First time? Register as Superadmin",
 
   "common.or": "or",
-  "common.back_home": "Back to homepage"
+  "common.back_home": "Back to homepage",
+  "features_header": "Features",
+  "features_title": "Powerful tools for smart village management",
+
+  "feature1_title": "QR Based Notices",
+  "feature1_tag": "Instant Access",
+  "feature1_desc": "Scan QR codes to instantly view notices, announcements, and updates from your village administration.",
+
+  "feature2_title": "Emergency Alerts",
+  "feature2_tag": "Safety First",
+  "feature2_desc": "Get real-time alerts for emergencies and important updates to ensure citizen safety and awareness.",
+
+  "feature3_title": "Community Management",
+  "feature3_tag": "People First",
+  "feature3_desc": "Manage village data, users, and activities efficiently from a centralized dashboard.",
+
+  "feature4_title": "Smart Dashboard",
+  "feature4_tag": "Insights",
+  "feature4_desc": "Analyze data, track engagement, and monitor village activities with powerful analytics tools.",
+
+  "paused": "Paused"
 }
