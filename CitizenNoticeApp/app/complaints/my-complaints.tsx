@@ -11,6 +11,7 @@ import { apiService } from '../../services/api';
 import { formatDate } from '../../utils/format';
 import { isLoggedIn } from '../../utils/auth';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -19,31 +20,77 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ComplaintStatus = 'pending' | 'in-progress' | 'resolved' | 'rejected';
 
-// ─── Helper functions ─────────────────────────────────────────────────────────
-const getTypeStyles = (type: string) => {
+// ─── Helper functions with translations ─────────────────────────────────────────
+const getTypeStyles = (type: string, t: any) => {
   const typeStyles: Record<string, any> = {
-    issue:      { bg: '#FEE9E7', bgDark: '#3D1A17', fg: '#C0392B', label: 'Issue',     icon: '⚠️' },
-    complaint:  { bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', label: 'Complaint', icon: '📋' },
-    suggestion: { bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', label: 'Suggestion',icon: '💡' },
+    issue: { 
+      bg: '#FEE9E7', 
+      bgDark: '#3D1A17', 
+      fg: '#C0392B', 
+      label: t('type.issue'), 
+      icon: '⚠️' 
+    },
+    complaint: { 
+      bg: '#E8F5E9', 
+      bgDark: '#1B3A1E', 
+      fg: '#2E7D32', 
+      label: t('type.complaint'), 
+      icon: '📋' 
+    },
+    suggestion: { 
+      bg: '#E3F2FD', 
+      bgDark: '#0D2137', 
+      fg: '#1976D2', 
+      label: t('type.suggestion'), 
+      icon: '💡' 
+    },
   };
   return typeStyles[type] || typeStyles.issue;
 };
 
-const getStatusConfig = (status: string) => {
+const getStatusConfig = (status: string, t: any) => {
   const map: Record<string, any> = {
-    pending:     { bg: '#FEF9E7', bgDark: '#342A05', fg: '#B7950B', dot: '#F1C40F', label: 'Pending',     icon: '⏳' },
-    'in-progress':{ bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', dot: '#2196F3', label: 'In Progress', icon: '🔧' },
-    resolved:    { bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', dot: '#4CAF50', label: 'Resolved',    icon: '✅' },
-    rejected:    { bg: '#FFEBEE', bgDark: '#3D1A1A', fg: '#C0392B', dot: '#F44336', label: 'Rejected',    icon: '❌' },
+    pending: { 
+      bg: '#FEF9E7', 
+      bgDark: '#342A05', 
+      fg: '#B7950B', 
+      dot: '#F1C40F', 
+      label: t('status.pending'), 
+      icon: '⏳' 
+    },
+    'in-progress': { 
+      bg: '#E3F2FD', 
+      bgDark: '#0D2137', 
+      fg: '#1976D2', 
+      dot: '#2196F3', 
+      label: t('status.in_progress'), 
+      icon: '🔧' 
+    },
+    resolved: { 
+      bg: '#E8F5E9', 
+      bgDark: '#1B3A1E', 
+      fg: '#2E7D32', 
+      dot: '#4CAF50', 
+      label: t('status.resolved'), 
+      icon: '✅' 
+    },
+    rejected: { 
+      bg: '#FFEBEE', 
+      bgDark: '#3D1A1A', 
+      fg: '#C0392B', 
+      dot: '#F44336', 
+      label: t('status.rejected'), 
+      icon: '❌' 
+    },
   };
   return map[status] || map.pending;
 };
 
 const MY_FILTERS = [
-  { id: 'all',         label: 'All',         status: undefined },
-  { id: 'pending',     label: 'Pending',     status: 'pending' },
-  { id: 'in-progress', label: 'In Progress', status: 'in-progress' },
-  { id: 'resolved',    label: 'Resolved',    status: 'resolved' },
+  { id: 'all', key: 'filter_all', status: undefined },
+  { id: 'pending', key: 'filter_pending', status: 'pending' },
+  { id: 'in-progress', key: 'filter_in_progress', status: 'in-progress' },
+  { id: 'resolved', key: 'filter_resolved', status: 'resolved' },
 ];
 
 // ─── Highlighted text ─────────────────────────────────────────────────────────
@@ -63,19 +110,19 @@ const HText = ({ text = '', query, style, lines }: any) => {
 };
 
 // ─── Complaint Card ───────────────────────────────────────────────────────────
-const ComplaintCard = ({ item, onPress, index, query, colors, isDark }: any) => {
-  const fade  = useRef(new Animated.Value(0)).current;
+const ComplaintCard = ({ item, onPress, index, query, colors, isDark, t }: any) => {
+  const fade = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(18)).current;
 
   useEffect(() => {
     Animated.parallel([
-      Animated.timing(fade,  { toValue: 1, duration: 280, delay: index * 45, useNativeDriver: true }),
+      Animated.timing(fade, { toValue: 1, duration: 280, delay: index * 45, useNativeDriver: true }),
       Animated.timing(slide, { toValue: 0, duration: 260, delay: index * 45, useNativeDriver: true }),
     ]).start();
   }, []);
 
-  const typ = getTypeStyles(item.type);
-  const sta = getStatusConfig(item.status);
+  const typ = getTypeStyles(item.type, t);
+  const sta = getStatusConfig(item.status, t);
 
   return (
     <Animated.View style={{ opacity: fade, transform: [{ translateY: slide }] }}>
@@ -104,7 +151,7 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark }: any) => 
               ]}
             >
               <Text style={[styles.pillTxt, { color: typ.fg }]}>
-                {typ.icon}  {typ.label}
+                {typ.icon} {typ.label}
               </Text>
             </View>
             <View
@@ -149,7 +196,7 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark }: any) => 
             >
               <Text style={styles.evidenceIcon}>📸</Text>
               <Text style={[styles.evidenceText, { color: colors.primary[isDark ? 300 : 700] }]}>
-                Image evidence
+                {t('my_complaints.image_evidence')}
               </Text>
             </View>
           )}
@@ -166,7 +213,7 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark }: any) => 
             >
               <Text style={styles.evidenceIcon}>✅</Text>
               <Text style={[styles.evidenceText, { color: '#2E7D32' }]}>
-                Resolution verified
+                {t('my_complaints.resolution_verified')}
               </Text>
             </View>
           )}
@@ -192,47 +239,52 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark }: any) => 
 };
 
 // ─── Empty state ──────────────────────────────────────────────────────────────
-const EmptyState = ({ query, filter, colors, isDark }: any) => (
-  <View style={styles.emptyWrap}>
-    <View
-      style={[
-        styles.emptyIconBox,
-        {
-          backgroundColor: isDark
-            ? `${colors.primary[500]}15`
-            : colors.primary[50],
-          borderColor: isDark
-            ? `${colors.primary[500]}30`
-            : colors.primary[200],
-        },
-      ]}
-    >
-      <Text style={styles.emptyGlyph}>{query ? '🔍' : '📭'}</Text>
+const EmptyState = ({ query, filter, colors, isDark, t }: any) => {
+  const filterKey = MY_FILTERS.find(f => f.id === filter)?.key || 'filter_all';
+  const filterLabel = t(`my_complaints.${filterKey}`);
+
+  return (
+    <View style={styles.emptyWrap}>
+      <View
+        style={[
+          styles.emptyIconBox,
+          {
+            backgroundColor: isDark
+              ? `${colors.primary[500]}15`
+              : colors.primary[50],
+            borderColor: isDark
+              ? `${colors.primary[500]}30`
+              : colors.primary[200],
+          },
+        ]}
+      >
+        <Text style={styles.emptyGlyph}>{query ? '🔍' : '📭'}</Text>
+      </View>
+      <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
+        {query ? t('my_complaints.no_results') : t('my_complaints.no_complaints')}
+      </Text>
+      <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
+        {query
+          ? t('my_complaints.no_results_desc', { query })
+          : filter === 'all'
+          ? t('my_complaints.no_complaints_desc')
+          : t('my_complaints.no_complaints_filter_desc', { filter: filterLabel })}
+      </Text>
     </View>
-    <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-      {query ? 'No results found' : 'No complaints yet'}
-    </Text>
-    <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
-      {query
-        ? `Nothing matched "${query}". Try different keywords.`
-        : filter === 'all'
-        ? "You haven't reported any complaints yet.\nTap + New to report an issue."
-        : `You have no ${filter.toLowerCase()} complaints.`}
-    </Text>
-  </View>
-);
+  );
+};
 
 // ─── Login Prompt ─────────────────────────────────────────────────────────────
-const LoginPrompt = ({ colors, isDark }: any) => (
+const LoginPrompt = ({ colors, isDark, t }: any) => (
   <View style={[styles.root, { backgroundColor: colors.background }]}>
     <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
     <View style={styles.emptyWrap}>
       <View style={[styles.emptyIconBox, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50], borderColor: isDark ? `${colors.primary[500]}30` : colors.primary[200] }]}>
         <Text style={styles.emptyGlyph}>🔒</Text>
       </View>
-      <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>Login Required</Text>
+      <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>{t('my_complaints.login_required')}</Text>
       <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
-        You need to be logged in to view your complaints.
+        {t('my_complaints.login_required_desc')}
       </Text>
       <View style={styles.loginButtons}>
         <TouchableOpacity
@@ -240,14 +292,14 @@ const LoginPrompt = ({ colors, isDark }: any) => (
           onPress={() => router.push('/auth/login' as any)}
           activeOpacity={0.82}
         >
-          <Text style={styles.emptyBtnText}>Login</Text>
+          <Text style={styles.emptyBtnText}>{t('my_complaints.login_button')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.emptyBtn, { backgroundColor: colors.secondary }]}
           onPress={() => router.push('/auth/register' as any)}
           activeOpacity={0.82}
         >
-          <Text style={styles.emptyBtnText}>Register</Text>
+          <Text style={styles.emptyBtnText}>{t('my_complaints.register_button')}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -257,21 +309,22 @@ const LoginPrompt = ({ colors, isDark }: any) => (
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function MyComplaintsScreen() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
 
-  const [myComplaints,   setMyComplaints]   = useState<any[]>([]);
-  const [loading,        setLoading]        = useState(true);
-  const [refreshing,     setRefreshing]     = useState(false);
+  const [myComplaints, setMyComplaints] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const [searchQuery,    setSearchQuery]    = useState('');
-  const [searchFocused,  setSearchFocused]  = useState(false);
-  const [loggedIn,       setLoggedIn]       = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   // ── Derived header colours — identical pattern to complaint.tsx ─────────────
-  const headerTextColor    = isDark ? colors.primary[100]  : '#fff';
-  const headerSubColor     = isDark ? colors.primary[200]  : 'rgba(255,255,255,0.8)';
-  const headerEyebrowColor = isDark ? colors.primary[300]  : 'rgba(255,255,255,0.6)';
-  const backBtnBg          = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
-  const headerBg           = isDark ? colors.primary[900]  : colors.primary[700];
+  const headerTextColor = isDark ? colors.primary[100] : '#fff';
+  const headerSubColor = isDark ? colors.primary[200] : 'rgba(255,255,255,0.8)';
+  const headerEyebrowColor = isDark ? colors.primary[300] : 'rgba(255,255,255,0.6)';
+  const backBtnBg = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
+  const headerBg = isDark ? colors.primary[900] : colors.primary[700];
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -281,21 +334,26 @@ export default function MyComplaintsScreen() {
     checkLogin();
   }, []);
 
-  useEffect(() => { if (loggedIn) fetchMyComplaints(); }, [selectedFilter, loggedIn]);
-  useEffect(() => { setSearchQuery(''); }, [selectedFilter]);
+  useEffect(() => {
+    if (loggedIn) fetchMyComplaints();
+  }, [selectedFilter, loggedIn]);
+
+  useEffect(() => {
+    setSearchQuery('');
+  }, [selectedFilter]);
 
   const fetchMyComplaints = async () => {
     try {
       setLoading(true);
       const filterObj = MY_FILTERS.find(f => f.id === selectedFilter);
-      const response  = await apiService.getMyComplaints();
-      let filtered    = response.complaints || response;
+      const response = await apiService.getMyComplaints();
+      let filtered = response.complaints || response;
       if (filterObj?.status) {
         filtered = filtered.filter((c: any) => c.status === filterObj.status);
       }
       setMyComplaints(filtered);
     } catch {
-      Alert.alert('Error', 'Failed to load your complaints. Please try again.');
+      Alert.alert(t('common.error') || 'Error', t('my_complaints.load_error'));
     } finally {
       setLoading(false);
     }
@@ -324,7 +382,7 @@ export default function MyComplaintsScreen() {
 
   // ── Check login ────────────────────────────────────────────────────────────
   if (!loggedIn) {
-    return <LoginPrompt colors={colors} isDark={isDark} />;
+    return <LoginPrompt colors={colors} isDark={isDark} t={t} />;
   }
 
   // ── Loading screen ────────────────────────────────────────────────────────
@@ -334,7 +392,7 @@ export default function MyComplaintsScreen() {
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <ActivityIndicator size="large" color={colors.primary[600]} />
         <Text style={[styles.loadingText, { color: colors.text.secondary }]}>
-          Loading your complaints…
+          {t('my_complaints.loading')}
         </Text>
       </View>
     );
@@ -396,22 +454,22 @@ export default function MyComplaintsScreen() {
             style={[styles.newBtn, { backgroundColor: backBtnBg, borderColor: isDark ? `${colors.primary[400]}50` : 'rgba(255,255,255,0.3)' }]}
             activeOpacity={0.75}
           >
-            <Text style={[styles.newBtnTxt, { color: headerTextColor }]}>+ New</Text>
+            <Text style={[styles.newBtnTxt, { color: headerTextColor }]}>{t('my_complaints.new_complaint')}</Text>
           </TouchableOpacity>
         </View>
 
         {/* Title block */}
         <View style={styles.headerTitleBlock}>
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-            CITIZEN PORTAL
+            {t('my_complaints.citizen_portal')}
           </Text>
           <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-            My Complaints 📋
+            {t('my_complaints.title')} 📋
           </Text>
           <View style={styles.headerBreadcrumb}>
             <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              Track your reported issues
+              {t('my_complaints.subtitle')}
             </Text>
           </View>
         </View>
@@ -438,11 +496,11 @@ export default function MyComplaintsScreen() {
           ]}
         >
           <Text style={[styles.searchIcon, { color: searchFocused ? colors.primary[500] : colors.text.muted }]}>
-            ⌕
+            {t('my_complaints.search_icon')}
           </Text>
           <TextInput
             style={[styles.searchInput, { color: colors.text.primary }]}
-            placeholder="Search your complaints…"
+            placeholder={t('my_complaints.search_placeholder')}
             placeholderTextColor={colors.text.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -458,7 +516,7 @@ export default function MyComplaintsScreen() {
               onPress={() => setSearchQuery('')}
               style={[
                 styles.clearBtn,
-                { backgroundColor: isDark ? colors.neutral[700] : colors.neutral[200] },
+                { backgroundColor: isDark ? colors.neutral?.[700] : colors.neutral?.[200] },
               ]}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
@@ -518,7 +576,7 @@ export default function MyComplaintsScreen() {
                   },
                 ]}
               >
-                {f.label}
+                {t(`my_complaints.${f.key}`)}
               </Text>
             </TouchableOpacity>
           );
@@ -543,8 +601,8 @@ export default function MyComplaintsScreen() {
           {processed.length}
         </Text>
         <Text style={[styles.countLabel, { color: colors.text.muted }]}>
-          {processed.length !== 1 ? 'complaints' : 'complaint'}
-          {searchQuery.trim() ? `  ·  "${searchQuery.trim()}"` : ''}
+          {processed.length !== 1 ? t('my_complaints.complaints_count') : t('my_complaints.complaint_count_singular')}
+          {searchQuery.trim() ? `  ·  ${t('my_complaints.search_results_for')} "${searchQuery.trim()}"` : ''}
         </Text>
       </View>
 
@@ -555,6 +613,7 @@ export default function MyComplaintsScreen() {
           filter={selectedFilter}
           colors={colors}
           isDark={isDark}
+          t={t}
         />
       ) : (
         <FlatList
@@ -567,6 +626,7 @@ export default function MyComplaintsScreen() {
               query={searchQuery}
               colors={colors}
               isDark={isDark}
+              t={t}
               onPress={() => router.push(`/complaints/${item._id}` as any)}
             />
           )}
@@ -578,6 +638,7 @@ export default function MyComplaintsScreen() {
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={colors.primary[600]}
+              title={t('my_complaints.pull_to_refresh')}
             />
           }
         />

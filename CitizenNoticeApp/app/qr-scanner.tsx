@@ -22,6 +22,7 @@ import { Config } from '../constants/config';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 const { width, height } = Dimensions.get('window');
 const FRAME_SIZE = width * 0.72;
@@ -151,6 +152,7 @@ const SuccessCheck = ({ visible, colors }: { visible: boolean; colors: any }) =>
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function QRScannerScreen() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -224,15 +226,15 @@ export default function QRScannerScreen() {
       setTimeout(() => {
         setShowSuccess(false);
         Alert.alert(
-          "✓ Village Found!",
-          `"${villageData.name}" has been scanned successfully.`,
+          t('qr_scanner.village_found'),
+          t('qr_scanner.village_found_message', { villageName: villageData.name }),
           [
             {
-              text: "View Notices",
+              text: t('qr_scanner.view_notices'),
               onPress: () => router.push(`qr-notices/${villageData._id}` as any),
             },
             {
-              text: "Scan Another",
+              text: t('qr_scanner.scan_another'),
               style: "cancel",
               onPress: () => {
                 setScanned(false);
@@ -246,11 +248,11 @@ export default function QRScannerScreen() {
     } catch (err: unknown) {
       const errorMessage =
         (err as any)?.response?.data?.error ||
-        "Invalid QR code. Please try again.";
+        t('qr_scanner.invalid_qr_error');
 
-      Alert.alert("Not Recognized", errorMessage, [
+      Alert.alert(t('qr_scanner.not_recognized'), errorMessage, [
         {
-          text: "Try Again",
+          text: t('qr_scanner.try_again'),
           onPress: () => {
             setScanned(false);
             setLoading(false);
@@ -262,7 +264,7 @@ export default function QRScannerScreen() {
 
   const handleManualSubmit = async () => {
     if (!manualInput.trim()) {
-      Alert.alert('Required', 'Please enter a QR code or village ID.');
+      Alert.alert(t('qr_scanner.required'), t('qr_scanner.enter_qr_code'));
       return;
     }
     await handleBarCodeScanned({ data: manualInput });
@@ -275,7 +277,7 @@ export default function QRScannerScreen() {
       <View style={[styles.permissionContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary[500]} />
         <Text style={[styles.permissionSubtext, { color: colors.text.secondary, marginTop: 16 }]}>
-          Checking camera permissions…
+          {t('qr_scanner.checking_permissions')}
         </Text>
       </View>
     );
@@ -289,24 +291,24 @@ export default function QRScannerScreen() {
           <Ionicons name="camera-outline" size={48} color={colors.primary[500]} />
         </View>
         <Text style={[styles.permissionTitle, { color: colors.text.primary }]}>
-          Camera Access Needed
+          {t('qr_scanner.camera_access_needed')}
         </Text>
         <Text style={[styles.permissionBody, { color: colors.text.secondary }]}>
-          We need camera access to scan village QR codes. This helps you quickly access village notices and updates.
+          {t('qr_scanner.camera_access_description')}
         </Text>
         <TouchableOpacity
           style={[styles.primaryBtn, { backgroundColor: colors.primary[500] }]}
           onPress={requestPermission}
           activeOpacity={0.85}
         >
-          <Text style={styles.primaryBtnText}>Allow Camera Access</Text>
+          <Text style={styles.primaryBtnText}>{t('qr_scanner.allow_camera_access')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.ghostBtn, { borderColor: colors.border }]}
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
-          <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>Go Back</Text>
+          <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>{t('qr_scanner.go_back')}</Text>
         </TouchableOpacity>
       </View>
     );
@@ -334,7 +336,7 @@ export default function QRScannerScreen() {
               style={[styles.backButton, { backgroundColor: `${colors.primary[500]}12` }]}
             >
               <Ionicons name="arrow-back" size={20} color={colors.primary[500]} />
-              <Text style={[styles.backButtonText, { color: colors.primary[500] }]}>Back to Scanner</Text>
+              <Text style={[styles.backButtonText, { color: colors.primary[500] }]}>{t('qr_scanner.back_to_scanner')}</Text>
             </TouchableOpacity>
           </View>
 
@@ -343,15 +345,15 @@ export default function QRScannerScreen() {
               <Ionicons name="keypad-outline" size={40} color={colors.primary[500]} />
             </View>
             <Text style={[styles.manualTitle, { color: colors.text.primary }]}>
-              Enter Village Code
+              {t('qr_scanner.enter_village_code')}
             </Text>
             <Text style={[styles.manualDesc, { color: colors.text.secondary }]}>
-              Type or paste the QR code value or village ID from your village notice board
+              {t('qr_scanner.enter_code_description')}
             </Text>
 
             <View style={styles.inputWrapper}>
               <Text style={[styles.inputLabel, { color: colors.text.secondary }]}>
-                QR CODE / VILLAGE ID
+                {t('qr_scanner.qr_code_village_id')}
               </Text>
               <TextInput
                 style={[
@@ -362,7 +364,7 @@ export default function QRScannerScreen() {
                     backgroundColor: colors.surface,
                   }
                 ]}
-                placeholder="e.g. VLG-MH-2024-0041"
+                placeholder={t('qr_scanner.code_placeholder')}
                 placeholderTextColor={colors.text.muted}
                 value={manualInput}
                 onChangeText={setManualInput}
@@ -388,14 +390,14 @@ export default function QRScannerScreen() {
               ) : (
                 <>
                   <Ionicons name="search-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
-                  <Text style={styles.primaryBtnText}>Find Village</Text>
+                  <Text style={styles.primaryBtnText}>{t('qr_scanner.find_village')}</Text>
                 </>
               )}
             </TouchableOpacity>
 
             <View style={styles.dividerRow}>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-              <Text style={[styles.dividerText, { color: colors.text.muted }]}>or</Text>
+              <Text style={[styles.dividerText, { color: colors.text.muted }]}>{t('qr_scanner.or')}</Text>
               <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
             </View>
 
@@ -409,7 +411,7 @@ export default function QRScannerScreen() {
               activeOpacity={0.7}
             >
               <Ionicons name="qr-code-outline" size={18} color={colors.text.primary} style={{ marginRight: 8 }} />
-              <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>Use Camera Scanner</Text>
+              <Text style={[styles.ghostBtnText, { color: colors.text.primary }]}>{t('qr_scanner.use_camera_scanner')}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -478,7 +480,7 @@ export default function QRScannerScreen() {
       {/* Centre instruction text */}
       <View style={styles.frameLabelContainer} pointerEvents="none">
         <Text style={styles.frameLabelText}>
-          {loading ? 'Verifying...' : scanned ? 'Code captured!' : 'Align QR code within frame'}
+          {loading ? t('qr_scanner.verifying') : scanned ? t('qr_scanner.code_captured') : t('qr_scanner.align_qr_code')}
         </Text>
       </View>
 
@@ -495,7 +497,7 @@ export default function QRScannerScreen() {
           <View style={styles.loadingRow}>
             <ActivityIndicator size="small" color={colors.primary[500]} />
             <Text style={[styles.loadingText, { color: colors.text.secondary, marginLeft: 12 }]}>
-              Checking village...
+              {t('qr_scanner.checking_village')}
             </Text>
           </View>
         ) : (
@@ -510,7 +512,7 @@ export default function QRScannerScreen() {
                 activeOpacity={0.85}
               >
                 <Ionicons name="refresh-outline" size={18} color="#fff" style={{ marginRight: 8 }} />
-                <Text style={styles.primaryBtnText}>Scan Again</Text>
+                <Text style={styles.primaryBtnText}>{t('qr_scanner.scan_again')}</Text>
               </TouchableOpacity>
             )}
             <TouchableOpacity
@@ -520,7 +522,7 @@ export default function QRScannerScreen() {
             >
               <Ionicons name="keypad-outline" size={18} color={colors.primary[500]} />
               <Text style={[styles.manualEntryText, { color: colors.primary[500], marginLeft: 8 }]}>
-                Enter code manually
+                {t('qr_scanner.enter_code_manually')}
               </Text>
             </TouchableOpacity>
           </>
@@ -530,7 +532,7 @@ export default function QRScannerScreen() {
   );
 }
 
-// ─── Shared styles ─────────────────────────────────────────────────────────────
+// ─── Shared styles remain the same ─────────────────────────────────────────────
 const styles = StyleSheet.create({
   flex: { flex: 1 },
 

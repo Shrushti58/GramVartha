@@ -37,17 +37,19 @@ interface GpsLocation {
 }
 
 // ─── Helper: build warning messages ──────────────────────────────────────────
-function buildWarnings(location: GpsLocation | null): string[] {
+function buildWarnings(location: GpsLocation | null, t: any): string[] {
   const warnings: string[] = [];
   if (!location) {
-    warnings.push("Location required for verification. Capturing automatically…");
+    warnings.push(t('complaint.location_required_warning'));
   }
   return warnings;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Complaint() {
-  const { colors, isDark } = useTheme();  const { t } = useTranslation();  const [type, setType] = useState<ComplaintType>("issue");
+  const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
+  const [type, setType] = useState<ComplaintType>("issue");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
@@ -59,7 +61,7 @@ export default function Complaint() {
   const [timestamp, setTimestamp] = useState<string | null>(null);
 
   // Derived warning list
-  const warnings = buildWarnings(location);
+  const warnings = buildWarnings(location, t);
 
   // Dynamic colors based on dark mode
   const headerBg = isDark ? colors.primary[900] : colors.primary[700];
@@ -77,8 +79,8 @@ export default function Complaint() {
       if (status !== "granted") {
         Toast.show({
           type: "error",
-          text1: "Permission needed",
-          text2: "Please allow location access to submit issue.",
+          text1: t('complaint.permission_needed'),
+          text2: t('complaint.allow_location_access'),
         });
         return;
       }
@@ -86,13 +88,21 @@ export default function Complaint() {
         accuracy: Location.Accuracy.High,
       });
       setLocation({ lat: loc.coords.latitude, lng: loc.coords.longitude });
-      Toast.show({ type: "success", text1: "Location captured", text2: "GPS coordinates saved." });
+      Toast.show({ 
+        type: "success", 
+        text1: t('complaint.location_captured'), 
+        text2: t('complaint.gps_coordinates_saved') 
+      });
     } catch {
-      Toast.show({ type: "error", text1: "Location failed", text2: "Could not get your location." });
+      Toast.show({ 
+        type: "error", 
+        text1: t('complaint.location_failed'), 
+        text2: t('complaint.could_not_get_location') 
+      });
     } finally {
       setLocLoading(false);
     }
-  }, [location]);
+  }, [location, t]);
 
   // ── Take photo from camera ────────────────────────────────────────────────
   const handleTakePhoto = async () => {
@@ -100,8 +110,8 @@ export default function Complaint() {
     if (status !== "granted") {
       Toast.show({
         type: "error",
-        text1: "Camera access needed",
-        text2: "Please allow camera access to take a photo.",
+        text1: t('complaint.camera_access_needed'),
+        text2: t('complaint.allow_camera_access'),
       });
       return;
     }
@@ -135,8 +145,8 @@ export default function Complaint() {
       if (status !== "granted") {
         Toast.show({
           type: "error",
-          text1: "Permission needed",
-          text2: "Please allow location access to submit issue.",
+          text1: t('complaint.permission_needed'),
+          text2: t('complaint.allow_location_access'),
         });
         return;
       }
@@ -144,9 +154,17 @@ export default function Complaint() {
         accuracy: Location.Accuracy.High,
       });
       setLocation({ lat: loc.coords.latitude, lng: loc.coords.longitude });
-      Toast.show({ type: "success", text1: "Location captured", text2: "GPS coordinates saved." });
+      Toast.show({ 
+        type: "success", 
+        text1: t('complaint.location_captured'), 
+        text2: t('complaint.gps_coordinates_saved') 
+      });
     } catch {
-      Toast.show({ type: "error", text1: "Location failed", text2: "Could not get your location." });
+      Toast.show({ 
+        type: "error", 
+        text1: t('complaint.location_failed'), 
+        text2: t('complaint.could_not_get_location') 
+      });
     } finally {
       setLocLoading(false);
     }
@@ -155,17 +173,29 @@ export default function Complaint() {
   // ── Submit ─────────────────────────────────────────────────────────────────
   const handleSubmit = async () => {
     if (!title.trim() || !description.trim()) {
-      Toast.show({ type: "error", text1: t('missing_fields'), text2: t('fill_all_fields') });
+      Toast.show({ 
+        type: "error", 
+        text1: t('auth.missing_fields'), 
+        text2: t('complaint.fill_all_fields') 
+      });
       return;
     }
 
     if (type === "issue") {
       if (!photoFile) {
-        Toast.show({ type: "error", text1: "Photo required", text2: "Please take a photo of the issue." });
+        Toast.show({ 
+          type: "error", 
+          text1: t('complaint.photo_required'), 
+          text2: t('complaint.take_photo_of_issue') 
+        });
         return;
       }
       if (!location) {
-        Toast.show({ type: "error", text1: "Location required", text2: "Please capture your GPS location." });
+        Toast.show({ 
+          type: "error", 
+          text1: t('complaint.location_required'), 
+          text2: t('complaint.capture_gps_location') 
+        });
         return;
       }
     }
@@ -191,20 +221,24 @@ export default function Complaint() {
       if (res.duplicateOf) {
         Toast.show({
           type: "info",
-          text1: "Already reported",
-          text2: "A similar issue exists nearby. We've noted your report.",
+          text1: t('complaint.already_reported'),
+          text2: t('complaint.duplicate_issue_message'),
         });
         setTimeout(() => router.back(), 2000);
         return;
       }
 
-      Toast.show({ type: "success", text1: "Submitted!", text2: t('complaint_submitted') });
+      Toast.show({ 
+        type: "success", 
+        text1: t('complaint.submitted'), 
+        text2: t('complaint.complaint_submitted_success') 
+      });
       setTimeout(() => router.back(), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: t('complaint_error'),
-        text2: err.response?.data?.message || t('try_again'),
+        text1: t('complaint.submission_error'),
+        text2: err.response?.data?.message || t('complaint.try_again'),
       });
     } finally {
       setLoading(false);
@@ -242,11 +276,11 @@ export default function Complaint() {
         </View>
         
         <View style={styles.headerTitleBlock}>
-          <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>CITIZEN PORTAL</Text>
-          <Text style={[styles.headerTitle, { color: headerTextColor }]}>New Complaint 📋</Text>
+          <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>{t('common.citizen_portal')}</Text>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>{t('complaint.new_complaint')} 📋</Text>
           <View style={styles.headerBreadcrumb}>
             <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
-            <Text style={[styles.headerSub, { color: headerSubColor }]}>Report an issue or share a suggestion</Text>
+            <Text style={[styles.headerSub, { color: headerSubColor }]}>{t('complaint.report_issue_or_suggestion')}</Text>
           </View>
         </View>
       </LinearGradient>
@@ -264,25 +298,25 @@ export default function Complaint() {
             borderColor: colors.border,
           }
         ]}>
-          {(["issue", "suggestion"] as ComplaintType[]).map((t) => (
-            <TouchableOpacity
-              key={t}
-              style={[
-                styles.toggleBtn,
-                type === t && [styles.toggleBtnActive, { backgroundColor: colors.primary[700] }]
-              ]}
-              onPress={() => setType(t)}
-              activeOpacity={0.8}
-            >
-              <Text style={[
-                styles.toggleBtnTxt,
-                { color: colors.text.secondary },
-                type === t && [styles.toggleBtnTxtActive, { color: "#fff" }]
-              ]}>
-                {t === "issue" ? "🔧  Issue" : "💡  Suggestion"}
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {(["issue", "suggestion"] as ComplaintType[]).map((complaintType) => (
+              <TouchableOpacity
+                key={complaintType}
+                style={[
+                  styles.toggleBtn,
+                  type === complaintType && [styles.toggleBtnActive, { backgroundColor: colors.primary[700] }]
+                ]}
+                onPress={() => setType(complaintType)}
+                activeOpacity={0.8}
+              >
+                <Text style={[
+                  styles.toggleBtnTxt,
+                  { color: colors.text.secondary },
+                  type === complaintType && [styles.toggleBtnTxtActive, { color: "#fff" }]
+                ]}>
+                  {complaintType === "issue" ? `🔧 ${t('complaint.issue')}` : `💡 ${t('complaint.suggestion')}`}
+                </Text>
+              </TouchableOpacity>
+            ))}
         </View>
 
         {/* ── Type hint ── */}
@@ -295,8 +329,8 @@ export default function Complaint() {
         ]}>
           <Text style={[styles.hintText, { color: colors.text.secondary }]}>
             {type === "issue"
-              ? "Issues require a photo and your GPS location to verify and locate the problem."
-              : "Suggestions are text-only. Share your ideas to improve the village."}
+              ? t('complaint.issue_hint')
+              : t('complaint.suggestion_hint')}
           </Text>
         </View>
 
@@ -310,7 +344,7 @@ export default function Complaint() {
         ]}>
           {/* Title */}
           <View style={[styles.fieldWrap, styles.fieldBorder, { borderBottomColor: colors.border }]}>
-            <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>Title</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>{t('complaint.title')}</Text>
             <View style={[
               styles.inputRow,
               {
@@ -324,7 +358,7 @@ export default function Complaint() {
             ]}>
               <TextInput
                 style={[styles.input, { color: colors.text.primary }]}
-                placeholder="Brief title of your complaint"
+                placeholder={t('complaint.title_placeholder')}
                 placeholderTextColor={colors.text.muted}
                 value={title}
                 onChangeText={setTitle}
@@ -338,7 +372,7 @@ export default function Complaint() {
 
           {/* Description */}
           <View style={styles.fieldWrap}>
-            <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>Description</Text>
+            <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>{t('complaint.description')}</Text>
             <View style={[
               styles.textAreaRow,
               {
@@ -352,7 +386,7 @@ export default function Complaint() {
             ]}>
               <TextInput
                 style={[styles.textArea, { color: colors.text.primary }]}
-                placeholder="Describe the issue or suggestion in detail…"
+                placeholder={t('complaint.description_placeholder')}
                 placeholderTextColor={colors.text.muted}
                 value={description}
                 onChangeText={setDescription}
@@ -378,7 +412,7 @@ export default function Complaint() {
           ]}>
             <View style={styles.fieldWrap}>
               <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>
-                Photo  <Text style={styles.requiredBadge}>REQUIRED</Text>
+                {t('complaint.photo')}  <Text style={styles.requiredBadge}>{t('complaint.required')}</Text>
               </Text>
 
               {photo ? (
@@ -390,7 +424,7 @@ export default function Complaint() {
                     { backgroundColor: isDark ? `${colors.primary[500]}20` : colors.primary[100] }
                   ]}>
                     <Text style={[styles.sourceBadgeTxt, { color: colors.primary[700] }]}>
-                      📸 Camera Photo
+                      📸 {t('complaint.camera_photo')}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -399,7 +433,7 @@ export default function Complaint() {
                     activeOpacity={0.8}
                   >
                     <Text style={[styles.photoRemoveTxt, { color: colors.error || "#e05252" }]}>
-                      ✕  Take New Photo
+                      ✕  {t('complaint.take_new_photo')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -418,10 +452,10 @@ export default function Complaint() {
                 >
                   <Text style={styles.cameraIcon}>📸</Text>
                   <Text style={[styles.cameraBtnTxt, { color: colors.primary[700] }]}>
-                    Take Photo
+                    {t('complaint.take_photo')}
                   </Text>
                   <Text style={[styles.cameraBtnSub, { color: colors.text.muted }]}>
-                    Required for issue reports
+                    {t('complaint.required_for_issue')}
                   </Text>
                 </TouchableOpacity>
               )}
@@ -455,7 +489,7 @@ export default function Complaint() {
           ]}>
             <View style={styles.fieldWrap}>
               <Text style={[styles.fieldLabel, { color: colors.text.secondary }]}>
-                Location  <Text style={styles.requiredBadge}>REQUIRED</Text>
+                {t('complaint.location')}  <Text style={styles.requiredBadge}>{t('complaint.required')}</Text>
               </Text>
 
               {location ? (
@@ -471,7 +505,7 @@ export default function Complaint() {
                       {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
                     </Text>
                     <Text style={[styles.locCaptured, { color: colors.primary[500] }]}>
-                      ✓ GPS captured
+                      ✓ {t('complaint.gps_captured')}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -483,7 +517,7 @@ export default function Complaint() {
                     {locLoading ? (
                       <ActivityIndicator color={colors.primary[500]} size="small" />
                     ) : (
-                      <Text style={[styles.locRefreshTxt, { color: colors.primary[700] }]}>Refresh</Text>
+                      <Text style={[styles.locRefreshTxt, { color: colors.primary[700] }]}>{t('complaint.refresh')}</Text>
                     )}
                   </TouchableOpacity>
                 </View>
@@ -504,7 +538,7 @@ export default function Complaint() {
                     <ActivityIndicator color={colors.primary[500]} size="small" />
                   ) : (
                     <Text style={[styles.locCaptureTxt, { color: colors.primary[500] }]}>
-                      📍  Capture My Location
+                      📍  {t('complaint.capture_my_location')}
                     </Text>
                   )}
                 </TouchableOpacity>
@@ -528,7 +562,7 @@ export default function Complaint() {
             <ActivityIndicator color="#fff" size="small" />
           ) : (
             <Text style={[styles.submitBtnTxt, { color: "#fff" }]}>
-              {type === "issue" ? "Submit Complaint" : "Submit Suggestion"}
+              {type === "issue" ? t('complaint.submit_complaint') : t('complaint.submit_suggestion')}
             </Text>
           )}
         </TouchableOpacity>
@@ -539,7 +573,7 @@ export default function Complaint() {
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles remain the same as before ─────────────────────────────────────────
 const styles = StyleSheet.create({
   root: { flex: 1 },
 

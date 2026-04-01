@@ -11,6 +11,7 @@ import { apiService } from '../../services/api';
 import { formatDate } from '../../utils/format';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
@@ -18,28 +19,78 @@ if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// ─── Helper functions ─────────────────────────────────────────────────────
-const getTypeStyles = (type: string) => {
+// ─── Helper functions with translation support ─────────────────────────────
+const getTypeStyles = (type: string, t: any) => {
   const typeStyles: Record<string, any> = {
-    issue: { bg: '#FEE9E7', bgDark: '#3D1A17', fg: '#C0392B', label: 'Issue', icon: '⚠️' },
-    complaint: { bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', label: 'Complaint', icon: '📋' },
-    suggestion: { bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', label: 'Suggestion', icon: '💡' },
+    issue: { 
+      bg: '#FEE9E7', 
+      bgDark: '#3D1A17', 
+      fg: '#C0392B', 
+      label: t('type.issue'), 
+      icon: '⚠️' 
+    },
+    complaint: { 
+      bg: '#E8F5E9', 
+      bgDark: '#1B3A1E', 
+      fg: '#2E7D32', 
+      label: t('type.complaint'), 
+      icon: '📋' 
+    },
+    suggestion: { 
+      bg: '#E3F2FD', 
+      bgDark: '#0D2137', 
+      fg: '#1976D2', 
+      label: t('type.suggestion'), 
+      icon: '💡' 
+    },
   };
   return typeStyles[type] || typeStyles.issue;
 };
 
-const getStatusStyles = (status: string) => {
+const getStatusStyles = (status: string, t: any) => {
   const statusStyles: Record<string, any> = {
-    pending: { bg: '#FEF9E7', bgDark: '#342A05', fg: '#B7950B', dot: '#F1C40F', icon: '⏳', label: 'Pending', next: 'in-progress' },
-    'in-progress': { bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', dot: '#2196F3', icon: '🔧', label: 'In Progress', next: 'resolved' },
-    resolved: { bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', dot: '#4CAF50', icon: '✅', label: 'Resolved', next: null },
-    rejected: { bg: '#FFEBEE', bgDark: '#3D1A1A', fg: '#C0392B', dot: '#F44336', icon: '❌', label: 'Rejected', next: null },
+    pending: { 
+      bg: '#FEF9E7', 
+      bgDark: '#342A05', 
+      fg: '#B7950B', 
+      dot: '#F1C40F', 
+      icon: '⏳', 
+      label: t('status.pending'), 
+      next: 'in-progress' 
+    },
+    'in-progress': { 
+      bg: '#E3F2FD', 
+      bgDark: '#0D2137', 
+      fg: '#1976D2', 
+      dot: '#2196F3', 
+      icon: '🔧', 
+      label: t('status.in_progress'), 
+      next: 'resolved' 
+    },
+    resolved: { 
+      bg: '#E8F5E9', 
+      bgDark: '#1B3A1E', 
+      fg: '#2E7D32', 
+      dot: '#4CAF50', 
+      icon: '✅', 
+      label: t('status.resolved'), 
+      next: null 
+    },
+    rejected: { 
+      bg: '#FFEBEE', 
+      bgDark: '#3D1A1A', 
+      fg: '#C0392B', 
+      dot: '#F44336', 
+      icon: '❌', 
+      label: t('status.rejected'), 
+      next: null 
+    },
   };
   return statusStyles[status] || statusStyles.pending;
 };
 
 // ─── Timeline component ───────────────────────────────────────────────────
-const StatusTimeline = ({ status, colors, isDark }: any) => {
+const StatusTimeline = ({ status, colors, isDark, t }: any) => {
   const statuses = ['pending', 'in-progress', 'resolved'];
   const currentIndex = statuses.indexOf(status);
 
@@ -47,14 +98,14 @@ const StatusTimeline = ({ status, colors, isDark }: any) => {
     <View style={styles.timelineContainer}>
       {statuses.map((s, idx) => {
         const isActive = idx <= currentIndex;
-        const sta = getStatusStyles(s);
+        const sta = getStatusStyles(s, t);
         return (
           <View key={s} style={styles.timelineItem}>
             <View
               style={[
                 styles.timelineDot,
                 {
-                  backgroundColor: isActive ? sta.dot : isDark ? colors.neutral[700] : colors.neutral[200],
+                  backgroundColor: isActive ? sta.dot : isDark ? colors.neutral?.[700] : colors.neutral?.[200] || '#E0E0E0',
                   borderColor: isActive ? sta.dot : colors.border,
                 },
               ]}
@@ -67,13 +118,13 @@ const StatusTimeline = ({ status, colors, isDark }: any) => {
               style={[
                 styles.timelineLabel,
                 {
-                  color: isActive ? colors.text.primary : colors.text.muted,
+                  color: isActive ? colors.text?.primary : colors.text?.muted,
                   fontWeight: isActive ? '700' : '500',
                 },
               ]}
               numberOfLines={1}
             >
-              {s === 'in-progress' ? 'In Progress' : s.charAt(0).toUpperCase() + s.slice(1)}
+              {s === 'in-progress' ? t('status.in_progress') : sta.label}
             </Text>
             {idx < statuses.length - 1 && (
               <View
@@ -94,10 +145,10 @@ const StatusTimeline = ({ status, colors, isDark }: any) => {
 const DetailRow = ({ label, value, icon, colors, isDark }: any) => (
   <View style={[styles.detailRow, { borderBottomColor: colors.border }]}>
     <View style={styles.detailLabel}>
-      {icon && <Ionicons name={icon} size={18} color={colors.text.secondary} style={{ marginRight: 10 }} />}
-      <Text style={[styles.labelText, { color: colors.text.secondary }]}>{label}</Text>
+      {icon && <Ionicons name={icon} size={18} color={colors.text?.secondary} style={{ marginRight: 10 }} />}
+      <Text style={[styles.labelText, { color: colors.text?.secondary }]}>{label}</Text>
     </View>
-    <Text style={[styles.valueText, { color: colors.text.primary }]} numberOfLines={3}>
+    <Text style={[styles.valueText, { color: colors.text?.primary }]} numberOfLines={3}>
       {value || '—'}
     </Text>
   </View>
@@ -106,7 +157,7 @@ const DetailRow = ({ label, value, icon, colors, isDark }: any) => (
 // ─── Info Card component ──────────────────────────────────────────────────
 const InfoCard = ({ title, children, colors, isDark }: any) => (
   <View style={[styles.infoCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-    <Text style={[styles.infoCardTitle, { color: colors.text.primary }]}>{title}</Text>
+    <Text style={[styles.infoCardTitle, { color: colors.text?.primary }]}>{title}</Text>
     <View style={styles.infoCardContent}>
       {children}
     </View>
@@ -151,6 +202,7 @@ const ImageViewer = ({ visible, imageUrl, onClose, colors }: any) => {
 // ─── Main component ───────────────────────────────────────────────────────
 export default function ComplaintDetailScreen() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const params = useLocalSearchParams();
   const complaintId = Array.isArray(params.id) ? params.id[0] : params.id;
 
@@ -182,7 +234,7 @@ export default function ComplaintDetailScreen() {
       setComplaint(data);
     } catch (err) {
       console.error('Fetch complaint details error:', err);
-      Alert.alert('Error', 'Failed to load complaint details.');
+      Alert.alert(t('error'), t('errors.load_complaint_failed'));
       router.back();
     } finally {
       setLoading(false);
@@ -195,18 +247,18 @@ export default function ComplaintDetailScreen() {
   };
 
   // Header colors
-  const headerBg = isDark ? colors.primary[900] : colors.primary[700];
-  const headerTextColor = isDark ? colors.primary[100] : '#fff';
-  const headerSubColor = isDark ? colors.primary[200] : 'rgba(255,255,255,0.8)';
-  const headerEyebrowColor = isDark ? colors.primary[300] : 'rgba(255,255,255,0.6)';
-  const backBtnBg = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
+  const headerBg = isDark ? colors.primary?.[900] : colors.primary?.[700];
+  const headerTextColor = isDark ? colors.primary?.[100] : '#fff';
+  const headerSubColor = isDark ? colors.primary?.[200] : 'rgba(255,255,255,0.8)';
+  const headerEyebrowColor = isDark ? colors.primary?.[300] : 'rgba(255,255,255,0.6)';
+  const backBtnBg = isDark ? `${colors.primary?.[500]}40` : 'rgba(255,255,255,0.15)';
 
   if (loading) {
     return (
       <View style={[styles.root, { backgroundColor: colors.background }]}>
         <StatusBar barStyle="light-content" backgroundColor={headerBg} />
         <LinearGradient
-          colors={isDark ? [colors.primary[800], colors.primary[900]] : [colors.primary[600], colors.primary[700]]}
+          colors={isDark ? [colors.primary?.[800], colors.primary?.[900]] : [colors.primary?.[600], colors.primary?.[700]]}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={styles.headerShell}
         >
@@ -218,13 +270,13 @@ export default function ComplaintDetailScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.headerTitleBlock}>
-            <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>COMPLAINT DETAILS</Text>
-            <Text style={[styles.headerTitle, { color: headerTextColor }]}>Loading...</Text>
+            <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>{t('complaint_details.header_title')}</Text>
+            <Text style={[styles.headerTitle, { color: headerTextColor }]}>{t('complaint_details.loading')}</Text>
           </View>
         </LinearGradient>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary[600]} />
-          <Text style={[styles.loadingText, { color: colors.text.secondary }]}>Loading complaint details...</Text>
+          <ActivityIndicator size="large" color={colors.primary?.[600]} />
+          <Text style={[styles.loadingText, { color: colors.text?.secondary }]}>{t('complaint_details.loading')}</Text>
         </View>
       </View>
     );
@@ -234,7 +286,7 @@ export default function ComplaintDetailScreen() {
     return (
       <View style={[styles.root, { backgroundColor: colors.background }]}>
         <LinearGradient
-          colors={isDark ? [colors.primary[800], colors.primary[900]] : [colors.primary[600], colors.primary[700]]}
+          colors={isDark ? [colors.primary?.[800], colors.primary?.[900]] : [colors.primary?.[600], colors.primary?.[700]]}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={styles.headerShell}
         >
@@ -246,25 +298,25 @@ export default function ComplaintDetailScreen() {
             </TouchableOpacity>
           </View>
           <View style={styles.headerTitleBlock}>
-            <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>COMPLAINT DETAILS</Text>
-            <Text style={[styles.headerTitle, { color: headerTextColor }]}>Not Found</Text>
+            <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>{t('complaint_details.header_title')}</Text>
+            <Text style={[styles.headerTitle, { color: headerTextColor }]}>{t('complaint_details.not_found')}</Text>
           </View>
         </LinearGradient>
         <View style={styles.emptyWrap}>
-          <View style={[styles.emptyIconBox, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50], borderColor: isDark ? `${colors.primary[500]}30` : colors.primary[200] }]}>
+          <View style={[styles.emptyIconBox, { backgroundColor: isDark ? `${colors.primary?.[500]}15` : colors.primary?.[50], borderColor: isDark ? `${colors.primary?.[500]}30` : colors.primary?.[200] }]}>
             <Text style={styles.emptyGlyph}>🔍</Text>
           </View>
-          <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>Complaint Not Found</Text>
-          <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
-            The complaint you're looking for doesn't exist or has been removed.
+          <Text style={[styles.emptyTitle, { color: colors.text?.primary }]}>{t('complaint_details.not_found')}</Text>
+          <Text style={[styles.emptyDesc, { color: colors.text?.secondary }]}>
+            {t('complaint_details.not_found_desc')}
           </Text>
         </View>
       </View>
     );
   }
 
-  const typ = getTypeStyles(complaint.type);
-  const sta = getStatusStyles(complaint.status);
+  const typ = getTypeStyles(complaint.type, t);
+  const sta = getStatusStyles(complaint.status, t);
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -285,7 +337,7 @@ export default function ComplaintDetailScreen() {
       >
         {/* Header */}
         <LinearGradient
-          colors={isDark ? [colors.primary[800], colors.primary[900]] : [colors.primary[600], colors.primary[700]]}
+          colors={isDark ? [colors.primary?.[800], colors.primary?.[900]] : [colors.primary?.[600], colors.primary?.[700]]}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
           style={styles.headerShell}
         >
@@ -299,14 +351,14 @@ export default function ComplaintDetailScreen() {
           </View>
 
           <View style={styles.headerTitleBlock}>
-            <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>COMPLAINT DETAILS</Text>
+            <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>{t('complaint_details.header_title')}</Text>
             <Text style={[styles.headerTitle, { color: headerTextColor }]} numberOfLines={2}>
               {complaint.title}
             </Text>
             <View style={styles.headerBreadcrumb}>
               <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
               <Text style={[styles.headerSub, { color: headerSubColor }]}>
-                ID: #{complaint._id?.slice(-8).toUpperCase()}
+                {t('complaint_details.id_label')}: #{complaint._id?.slice(-8).toUpperCase()}
               </Text>
             </View>
           </View>
@@ -333,14 +385,14 @@ export default function ComplaintDetailScreen() {
         </View>
 
         {/* Description Card */}
-        <InfoCard title="Description" colors={colors} isDark={isDark}>
-          <Text style={[styles.descriptionText, { color: colors.text.secondary }]}>
+        <InfoCard title={t('complaint_details.description_title')} colors={colors} isDark={isDark}>
+          <Text style={[styles.descriptionText, { color: colors.text?.secondary }]}>
             {complaint.description}
           </Text>
           {complaint.location && (
             <View style={[styles.locationBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-              <Ionicons name="location-outline" size={16} color={colors.primary[600]} />
-              <Text style={[styles.locationText, { color: colors.text.secondary }]}>
+              <Ionicons name="location-outline" size={16} color={colors.primary?.[600]} />
+              <Text style={[styles.locationText, { color: colors.text?.secondary }]}>
                 {complaint.location.lat.toFixed(6)}, {complaint.location.lng.toFixed(6)}
               </Text>
             </View>
@@ -348,13 +400,13 @@ export default function ComplaintDetailScreen() {
         </InfoCard>
 
         {/* Status Timeline Card */}
-        <InfoCard title="Status Timeline" colors={colors} isDark={isDark}>
-          <StatusTimeline status={complaint.status} colors={colors} isDark={isDark} />
+        <InfoCard title={t('complaint_details.status_timeline_title')} colors={colors} isDark={isDark}>
+          <StatusTimeline status={complaint.status} colors={colors} isDark={isDark} t={t} />
         </InfoCard>
 
         {/* Evidence Section */}
         {(complaint.imageUrl || complaint.resolvedImageUrl) && (
-          <InfoCard title="Evidence & Media" colors={colors} isDark={isDark}>
+          <InfoCard title={t('complaint_details.evidence_media_title')} colors={colors} isDark={isDark}>
             {complaint.imageUrl && (
               <TouchableOpacity
                 style={[styles.evidenceItem, { borderColor: colors.border }]}
@@ -365,7 +417,7 @@ export default function ComplaintDetailScreen() {
                 <View style={[styles.evidenceOverlay, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
                   <View style={styles.evidenceBadge}>
                     <Ionicons name="camera-outline" size={14} color="#fff" />
-                    <Text style={styles.evidenceBadgeText}>Original Report</Text>
+                    <Text style={styles.evidenceBadgeText}>{t('complaint_details.original_report')}</Text>
                   </View>
                   <View style={styles.evidenceExpand}>
                     <Ionicons name="expand-outline" size={20} color="#fff" />
@@ -384,7 +436,7 @@ export default function ComplaintDetailScreen() {
                 <View style={[styles.evidenceOverlay, { backgroundColor: 'rgba(0,0,0,0.4)' }]}>
                   <View style={[styles.evidenceBadge, { backgroundColor: '#4CAF50' }]}>
                     <Ionicons name="checkmark-circle-outline" size={14} color="#fff" />
-                    <Text style={styles.evidenceBadgeText}>Resolution Proof</Text>
+                    <Text style={styles.evidenceBadgeText}>{t('complaint_details.resolution_proof')}</Text>
                   </View>
                   <View style={styles.evidenceExpand}>
                     <Ionicons name="expand-outline" size={20} color="#fff" />
@@ -397,16 +449,16 @@ export default function ComplaintDetailScreen() {
 
         {/* Resolution Verification */}
         {complaint.resolutionVerification && (
-          <InfoCard title="Resolution Verification" colors={colors} isDark={isDark}>
+          <InfoCard title={t('complaint_details.resolution_verification_title')} colors={colors} isDark={isDark}>
             <View style={styles.scoreContainer}>
-              <View style={[styles.scoreCircle, { backgroundColor: colors.primary[50], borderColor: colors.primary[200] }]}>
-                <Text style={[styles.scoreText, { color: colors.primary[700] }]}>
+              <View style={[styles.scoreCircle, { backgroundColor: colors.primary?.[50], borderColor: colors.primary?.[200] }]}>
+                <Text style={[styles.scoreText, { color: colors.primary?.[700] }]}>
                   {complaint.resolutionVerification.score || 0}
                 </Text>
-                <Text style={[styles.scoreLabel, { color: colors.text.muted }]}>/100</Text>
+                <Text style={[styles.scoreLabel, { color: colors.text?.muted }]}>{t('complaint_details.score_unit')}</Text>
               </View>
               <View style={styles.scoreInfo}>
-                <Text style={[styles.scoreRemarks, { color: colors.text.secondary }]}>
+                <Text style={[styles.scoreRemarks, { color: colors.text?.secondary }]}>
                   {complaint.resolutionVerification.remarks}
                 </Text>
               </View>
@@ -416,38 +468,38 @@ export default function ComplaintDetailScreen() {
 
         {/* AI Analysis */}
         {complaint.aiVerification && (
-          <InfoCard title="AI Analysis" colors={colors} isDark={isDark}>
+          <InfoCard title={t('complaint_details.ai_analysis_title')} colors={colors} isDark={isDark}>
             <View style={styles.aiStats}>
               <View style={styles.aiStat}>
-                <Text style={[styles.aiStatLabel, { color: colors.text.muted }]}>Issue Valid</Text>
+                <Text style={[styles.aiStatLabel, { color: colors.text?.muted }]}>{t('complaint_details.issue_valid')}</Text>
                 <View style={[styles.aiStatBadge, { backgroundColor: complaint.aiVerification.isValidIssue ? '#4CAF5020' : '#F4433620' }]}>
                   <Text style={[styles.aiStatValue, { color: complaint.aiVerification.isValidIssue ? '#4CAF50' : '#F44336' }]}>
-                    {complaint.aiVerification.isValidIssue ? 'Yes ✓' : 'No ✗'}
+                    {complaint.aiVerification.isValidIssue ? t('complaint_details.yes') : t('complaint_details.no')}
                   </Text>
                 </View>
               </View>
               <View style={styles.aiStat}>
-                <Text style={[styles.aiStatLabel, { color: colors.text.muted }]}>Fraud Score</Text>
-                <View style={[styles.aiStatBadge, { backgroundColor: colors.primary[50] }]}>
-                  <Text style={[styles.aiStatValue, { color: colors.primary[700] }]}>
+                <Text style={[styles.aiStatLabel, { color: colors.text?.muted }]}>{t('complaint_details.fraud_score')}</Text>
+                <View style={[styles.aiStatBadge, { backgroundColor: colors.primary?.[50] }]}>
+                  <Text style={[styles.aiStatValue, { color: colors.primary?.[700] }]}>
                     {complaint.aiVerification.fraudScore || 0}%
                   </Text>
                 </View>
               </View>
             </View>
             <DetailRow
-              label="Remarks"
+              label={t('complaint_details.ai_remarks')}
               value={complaint.aiVerification.remarks}
               colors={colors}
               isDark={isDark}
             />
             {complaint.aiVerification.labels?.length > 0 && (
               <View style={styles.labelsContainer}>
-                <Text style={[styles.labelsTitle, { color: colors.text.muted }]}>Detected Labels</Text>
+                <Text style={[styles.labelsTitle, { color: colors.text?.muted }]}>{t('complaint_details.detected_labels')}</Text>
                 <View style={styles.labelsRow}>
                   {complaint.aiVerification.labels.map((label: string, idx: number) => (
-                    <View key={idx} style={[styles.labelChip, { backgroundColor: colors.primary[50], borderColor: colors.primary[200] }]}>
-                      <Text style={[styles.labelChipText, { color: colors.primary[700] }]}>{label}</Text>
+                    <View key={idx} style={[styles.labelChip, { backgroundColor: colors.primary?.[50], borderColor: colors.primary?.[200] }]}>
+                      <Text style={[styles.labelChipText, { color: colors.primary?.[700] }]}>{label}</Text>
                     </View>
                   ))}
                 </View>
@@ -457,9 +509,9 @@ export default function ComplaintDetailScreen() {
         )}
 
         {/* Additional Information */}
-        <InfoCard title="Additional Information" colors={colors} isDark={isDark}>
+        <InfoCard title={t('complaint_details.additional_info_title')} colors={colors} isDark={isDark}>
           <DetailRow
-            label="Village"
+            label={t('complaint_details.village_label')}
             value={complaint.village?.name}
             icon="location-outline"
             colors={colors}
@@ -467,7 +519,7 @@ export default function ComplaintDetailScreen() {
           />
           {complaint.citizen?.name && (
             <DetailRow
-              label="Reported By"
+              label={t('complaint_details.reported_by_label')}
               value={complaint.citizen.name}
               icon="person-outline"
               colors={colors}
@@ -475,15 +527,15 @@ export default function ComplaintDetailScreen() {
             />
           )}
           <DetailRow
-            label="Date Reported"
+            label={t('complaint_details.date_reported_label')}
             value={formatDate(complaint.createdAt)}
             icon="calendar-outline"
             colors={colors}
             isDark={isDark}
           />
           <DetailRow
-            label="Image Source"
-            value={complaint.imageSource === 'camera' ? '📷 Camera' : '🖼️ Gallery'}
+            label={t('complaint_details.image_source_label')}
+            value={complaint.imageSource === 'camera' ? `📷 ${t('complaint_details.camera_source')}` : `🖼️ ${t('complaint_details.gallery_source')}`}
             icon="image-outline"
             colors={colors}
             isDark={isDark}
@@ -492,12 +544,12 @@ export default function ComplaintDetailScreen() {
 
         {/* Duplicate Info */}
         {complaint.duplicateOf && (
-          <View style={[styles.duplicateCard, { backgroundColor: isDark ? `${colors.primary[500]}10` : colors.primary[50], borderColor: colors.primary[200] }]}>
-            <Ionicons name="duplicate-outline" size={22} color={colors.primary[600]} />
+          <View style={[styles.duplicateCard, { backgroundColor: isDark ? `${colors.primary?.[500]}10` : colors.primary?.[50], borderColor: colors.primary?.[200] }]}>
+            <Ionicons name="duplicate-outline" size={22} color={colors.primary?.[600]} />
             <View style={styles.duplicateContent}>
-              <Text style={[styles.duplicateTitle, { color: colors.primary[700] }]}>Duplicate Report</Text>
-              <Text style={[styles.duplicateDesc, { color: colors.primary[600] }]}>
-                This complaint is a duplicate of complaint #{complaint.duplicateOf.slice(-6).toUpperCase()}
+              <Text style={[styles.duplicateTitle, { color: colors.primary?.[700] }]}>{t('complaint_details.duplicate_report')}</Text>
+              <Text style={[styles.duplicateDesc, { color: colors.primary?.[600] }]}>
+                {t('complaint_details.duplicate_desc', { id: complaint.duplicateOf.slice(-6).toUpperCase() })}
               </Text>
             </View>
           </View>

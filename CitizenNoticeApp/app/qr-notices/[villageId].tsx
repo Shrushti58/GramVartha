@@ -10,6 +10,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 import { apiService } from '../../services/api';
 import { formatDate } from '../../utils/format';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -42,27 +43,27 @@ const getCategoryStyles = (category: string, colors: any) => {
   return catStyles[category] || catStyles.general;
 };
 
-const getPriorityStyles = (priority: string) => {
+const getPriorityStyles = (priority: string, t: any) => {
   const priStyles: Record<string, any> = {
-    high:   { bg: '#FEE9E7', fg: '#C0392B', dot: '#E74C3C', label: 'High' },
-    medium: { bg: '#FEF9E7', fg: '#B7950B', dot: '#F1C40F', label: 'Medium' },
-    low:    { bg: '#EAF4FB', fg: '#1A5276', dot: '#2E86C1', label: 'Low' },
+    high:   { bg: '#FEE9E7', fg: '#C0392B', dot: '#E74C3C', label: t('notices.priority_high') },
+    medium: { bg: '#FEF9E7', fg: '#B7950B', dot: '#F1C40F', label: t('notices.priority_medium') },
+    low:    { bg: '#EAF4FB', fg: '#1A5276', dot: '#2E86C1', label: t('notices.priority_low') },
   };
   return priStyles[priority] || priStyles.low;
 };
 
 const CATEGORIES = [
-  { id: 'all',           label: 'All' },
-  { id: 'urgent',        label: 'Urgent' },
-  { id: 'development',   label: 'Development' },
-  { id: 'health',        label: 'Health' },
-  { id: 'education',     label: 'Education' },
-  { id: 'agriculture',   label: 'Agriculture' },
-  { id: 'employment',    label: 'Employment' },
-  { id: 'social_welfare',label: 'Welfare' },
-  { id: 'tax_billing',   label: 'Tax & Billing' },
-  { id: 'election',      label: 'Election' },
-  { id: 'general',       label: 'General' },
+  { id: 'all',           labelKey: 'notices.category_all' },
+  { id: 'urgent',        labelKey: 'notices.category_urgent' },
+  { id: 'development',   labelKey: 'notices.category_development' },
+  { id: 'health',        labelKey: 'notices.category_health' },
+  { id: 'education',     labelKey: 'notices.category_education' },
+  { id: 'agriculture',   labelKey: 'notices.category_agriculture' },
+  { id: 'employment',    labelKey: 'notices.category_employment' },
+  { id: 'social_welfare',labelKey: 'notices.category_welfare' },
+  { id: 'tax_billing',   labelKey: 'notices.category_tax_billing' },
+  { id: 'election',      labelKey: 'notices.category_election' },
+  { id: 'general',       labelKey: 'notices.category_general' },
 ];
 
 // ─── Highlighted text component ─────────────────────────────────────────────
@@ -82,13 +83,13 @@ const HighlightText = ({ text = '', query, style, lines, colors }: { text: strin
 };
 
 // ─── Search Bar ───────────────────────────────────────────────────────────────
-const SearchBar = ({ value, onChange, onClear, colors }: { value: string; onChange: (t: string) => void; onClear: () => void; colors: any }) => (
+const SearchBar = ({ value, onChange, onClear, colors, t }: { value: string; onChange: (t: string) => void; onClear: () => void; colors: any; t: any }) => (
   <View style={[styles.searchWrap, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
     <View style={[styles.searchInner, { backgroundColor: colors.background, borderColor: colors.border }]}>
       <Text style={[styles.searchIcon, { color: colors.text.secondary }]}>🔍</Text>
       <TextInput
         style={[styles.searchInput, { color: colors.text.primary }]}
-        placeholder="Search notices..."
+        placeholder={t('notices.search_placeholder')}
         placeholderTextColor={colors.text.secondary + '80'}
         value={value}
         onChangeText={onChange}
@@ -109,7 +110,7 @@ const SearchBar = ({ value, onChange, onClear, colors }: { value: string; onChan
 );
 
 // ─── Notice Card (views removed) ──────────────────────────────────────────────
-const NoticeCard = ({ item, onPress, index, query, colors }: { item: any; onPress: () => void; index: number; query: string; colors: any }) => {
+const NoticeCard = ({ item, onPress, index, query, colors, t }: { item: any; onPress: () => void; index: number; query: string; colors: any; t: any }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
 
@@ -121,7 +122,7 @@ const NoticeCard = ({ item, onPress, index, query, colors }: { item: any; onPres
   }, []);
 
   const cat = getCategoryStyles(item.category, colors);
-  const pri = getPriorityStyles(item.priority);
+  const pri = getPriorityStyles(item.priority, t);
 
   return (
     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY }] }}>
@@ -139,14 +140,16 @@ const NoticeCard = ({ item, onPress, index, query, colors }: { item: any; onPres
           {/* Header Row - Category & Priority */}
           <View style={styles.cardHeaderRow}>
             <View style={[styles.categoryPill, { backgroundColor: cat.bg }]}>
-              <Text style={[styles.categoryText, { color: cat.fg }]}>{item.category?.replace('_', ' ').toUpperCase()}</Text>
+              <Text style={[styles.categoryText, { color: cat.fg }]}>
+                {t(`notices.category_${item.category?.replace('_', '')}`) || item.category?.replace('_', ' ').toUpperCase()}
+              </Text>
             </View>
             <View style={[styles.priorityBadge, { backgroundColor: pri.bg }]}>
               <Text style={[styles.priorityText, { color: pri.fg }]}>{pri.label}</Text>
             </View>
             {item.isPinned && (
               <View style={styles.pinnedBadge}>
-                <Text style={styles.pinnedText}>PINNED</Text>
+                <Text style={styles.pinnedText}>{t('notices.pinned')}</Text>
               </View>
             )}
           </View>
@@ -172,7 +175,7 @@ const NoticeCard = ({ item, onPress, index, query, colors }: { item: any; onPres
           {/* Footer - Only author and date */}
           <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
             <Text style={[styles.authorName, { color: colors.text.secondary }]} numberOfLines={1}>
-              {item.createdBy?.name || 'Official'}
+              {item.createdBy?.name || t('notices.official')}
             </Text>
             <Text style={[styles.dateText, { color: colors.text.secondary }]}>
               {formatDate(item.createdAt)}
@@ -185,12 +188,12 @@ const NoticeCard = ({ item, onPress, index, query, colors }: { item: any; onPres
 };
 
 // ─── Pinned Strip ─────────────────────────────────────────────────────────────
-const PinnedStrip = ({ notices, onPress, colors }: { notices: any[]; onPress: (id: string) => void; colors: any }) => {
+const PinnedStrip = ({ notices, onPress, colors, t }: { notices: any[]; onPress: (id: string) => void; colors: any; t: any }) => {
   if (!notices.length) return null;
   return (
     <View style={[styles.pinnedContainer, { borderBottomColor: colors.border }]}>
       <View style={styles.pinnedHeader}>
-        <Text style={[styles.pinnedHeaderText, { color: colors.text.secondary }]}>PINNED NOTICES</Text>
+        <Text style={[styles.pinnedHeaderText, { color: colors.text.secondary }]}>{t('notices.pinned_notices')}</Text>
       </View>
       <ScrollView
         horizontal
@@ -214,7 +217,9 @@ const PinnedStrip = ({ notices, onPress, colors }: { notices: any[]; onPress: (i
               onPress={() => onPress(n._id)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.pinnedCatText, { color: cat.fg }]}>{n.category?.replace('_', ' ')}</Text>
+              <Text style={[styles.pinnedCatText, { color: cat.fg }]}>
+                {t(`notices.category_${n.category?.replace('_', '')}`) || n.category?.replace('_', ' ')}
+              </Text>
               <Text numberOfLines={2} style={[styles.pinnedTitle, { color: colors.text.primary }]}>{n.title}</Text>
               <Text style={[styles.pinnedDate, { color: colors.text.secondary }]}>{formatDate(n.createdAt)}</Text>
             </TouchableOpacity>
@@ -226,11 +231,11 @@ const PinnedStrip = ({ notices, onPress, colors }: { notices: any[]; onPress: (i
 };
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
-const EmptyState = ({ query, category, colors }: { query: string; category: string; colors: any }) => {
+const EmptyState = ({ query, category, colors, t }: { query: string; category: string; colors: any; t: any }) => {
   const getEmptyMessage = () => {
-    if (query) return { title: 'No Results Found', desc: `No notices match "${query}". Try different words.` };
-    if (category !== 'all') return { title: 'No Notices', desc: `No ${category.replace('_', ' ')} notices available.` };
-    return { title: 'No Notices Yet', desc: 'This village has no notices at the moment.' };
+    if (query) return { title: t('notices.empty_no_results_title'), desc: t('notices.empty_no_results_desc') };
+    if (category !== 'all') return { title: t('notices.empty_no_notices_title'), desc: t('notices.empty_no_notices_desc') };
+    return { title: t('notices.empty_no_notices_yet_title'), desc: t('notices.empty_no_notices_yet_desc') };
   };
   const { title, desc } = getEmptyMessage();
 
@@ -248,6 +253,7 @@ const EmptyState = ({ query, category, colors }: { query: string; category: stri
 // ─── Main Component ─────────────────────────────────────────────────────────
 export default function QRNoticesScreen() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const params    = useLocalSearchParams();
   const villageId = Array.isArray(params.villageId) ? params.villageId[0] : (params.villageId || '');
 
@@ -270,7 +276,7 @@ export default function QRNoticesScreen() {
       setAllNotices(response.notices || []);
       setVillage(response.village);
     } catch (error) {
-      Alert.alert('Error', 'Failed to load notices. Please try again.');
+      Alert.alert(t('common.error'), t('notices.error_load_failed'));
     } finally { 
       setLoading(false); 
     }
@@ -346,7 +352,7 @@ export default function QRNoticesScreen() {
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <ActivityIndicator size="large" color={colors.primary[600]} />
-        <Text style={[styles.loadingText, { color: colors.text.secondary }]}>Loading notices...</Text>
+        <Text style={[styles.loadingText, { color: colors.text.secondary }]}>{t('notices.loading')}</Text>
       </View>
     );
   }
@@ -373,7 +379,7 @@ export default function QRNoticesScreen() {
             <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: headerTextColor, flex: 1, textAlign: 'center' }]} numberOfLines={1}>
-            {village?.name || 'Notices'}
+            {village?.name || t('notices.notices')}
           </Text>
           <TouchableOpacity 
             onPress={handleScanAnother} 
@@ -381,12 +387,12 @@ export default function QRNoticesScreen() {
             activeOpacity={0.7}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.scanText, { color: headerTextColor }]}>Scan</Text>
+            <Text style={[styles.scanText, { color: headerTextColor }]}>{t('notices.scan')}</Text>
           </TouchableOpacity>
         </View>
       </LinearGradient>
 
-      <SearchBar value={searchQuery} onChange={setSearchQuery} onClear={() => setSearchQuery('')} colors={colors} />
+      <SearchBar value={searchQuery} onChange={setSearchQuery} onClear={() => setSearchQuery('')} colors={colors} t={t} />
 
       <View style={[styles.categoryBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
         <ScrollView
@@ -416,7 +422,7 @@ export default function QRNoticesScreen() {
                   styles.categoryChipText,
                   { color: colors.text.secondary },
                   active && styles.categoryChipTextActive
-                ]}>{c.label}</Text>
+                ]}>{t(c.labelKey)}</Text>
               </TouchableOpacity>
             );
           })}
@@ -427,12 +433,12 @@ export default function QRNoticesScreen() {
         <View style={styles.countContainer}>
           <Text style={[styles.countNumber, { color: colors.primary[600] }]}>{processedNotices.length}</Text>
           <Text style={[styles.countLabel, { color: colors.text.secondary }]}>
-            {processedNotices.length !== 1 ? 'notices' : 'notice'}
+            {processedNotices.length !== 1 ? t('notices.notices') : t('notices.notice')}
           </Text>
         </View>
 
         <View style={styles.sortGroup}>
-          <Text style={[styles.sortLabel, { color: colors.text.secondary }]}>Sort:</Text>
+          <Text style={[styles.sortLabel, { color: colors.text.secondary }]}>{t('notices.sort')}:</Text>
           {(['date', 'priority'] as SortField[]).map((f) => {
             const active = sort.field === f;
             const arrow = active ? (sort.dir === 'desc' ? '↓' : '↑') : '';
@@ -455,7 +461,7 @@ export default function QRNoticesScreen() {
                   { color: colors.text.secondary },
                   active && styles.sortButtonTextActive
                 ]}>
-                  {f === 'date' ? 'Date' : 'Priority'} {arrow}
+                  {f === 'date' ? t('notices.date') : t('notices.priority')} {arrow}
                 </Text>
               </TouchableOpacity>
             );
@@ -464,7 +470,7 @@ export default function QRNoticesScreen() {
       </View>
 
       {processedNotices.length === 0 ? (
-        <EmptyState query={searchQuery} category={selectedCategory} colors={colors} />
+        <EmptyState query={searchQuery} category={selectedCategory} colors={colors} t={t} />
       ) : (
         <FlatList
           data={regularNotices}
@@ -475,6 +481,7 @@ export default function QRNoticesScreen() {
               index={index}
               query={searchQuery}
               colors={colors}
+              t={t}
               onPress={() => router.push(`/notice/${item._id}`)}
             />
           )}
@@ -491,7 +498,7 @@ export default function QRNoticesScreen() {
           }
           ListHeaderComponent={
             !searchQuery.trim() && pinnedNotices.length > 0
-              ? <PinnedStrip notices={pinnedNotices} onPress={(id) => router.push(`/notice/${id}`)} colors={colors} />
+              ? <PinnedStrip notices={pinnedNotices} onPress={(id) => router.push(`/notice/${id}`)} colors={colors} t={t} />
               : null
           }
         />

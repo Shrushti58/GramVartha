@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 
 const { width, height } = Dimensions.get('window');
 
-// ─── Category config ──────────────────────────────────────────────────────────
+// ─── Category config with translation support ─────────────────────────────────
 const getCategoryStyles = (category: string, colors: any, t: any) => {
   const catMap: Record<string, { name: string; color: string; bg: string; bgDark: string }> = {
     development:    { name: t('development_category'),    color: '#1976D2', bg: '#E3F2FD', bgDark: '#0D2137' },
@@ -83,7 +83,6 @@ const getFileCfg = (ft: FileType, isDark: boolean) => {
   return { ...c, color: isDark ? c.colorDark : c.colorLight, activeBg: isDark ? c.bgDark : c.bg };
 };
 
-// Format file size for display
 const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 B';
   const k = 1024;
@@ -92,7 +91,6 @@ const formatFileSize = (bytes: number): string => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 };
 
-// Format speed for display
 const formatSpeed = (bytesPerSecond: number): string => {
   if (bytesPerSecond === 0) return '0 B/s';
   const k = 1024;
@@ -101,7 +99,7 @@ const formatSpeed = (bytesPerSecond: number): string => {
   return parseFloat((bytesPerSecond / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 };
 
-// ─── Download helpers with progress using legacy API ─────────────────────────
+// ─── Download helpers with progress ─────────────────────────────────────────
 async function downloadToCache(
   remoteUrl: string, 
   fileName: string, 
@@ -110,9 +108,7 @@ async function downloadToCache(
   const dest = FileSystemLegacy.cacheDirectory + fileName;
   const info = await FileSystemLegacy.getInfoAsync(dest);
   
-  // Type-safe check for existing file
   if (info.exists) {
-    // Only access size if the file exists and has the size property
     const fileSize = info.exists && 'size' in info ? (info as any).size : 0;
     onProgress(1, fileSize, fileSize, 0); 
     return dest; 
@@ -132,7 +128,6 @@ async function downloadToCache(
       
       onProgress(progress, totalBytesWritten, totalBytesExpectedToWrite, speed);
       
-      // Reset for next calculation
       startTime = now;
       lastBytes = totalBytesWritten;
     }
@@ -149,7 +144,6 @@ async function downloadToCache(
   if (!result?.uri) throw new Error('Download failed');
   
   const finalInfo = await FileSystemLegacy.getInfoAsync(dest);
-  // Type-safe access to size property
   const finalSize = finalInfo.exists && 'size' in finalInfo ? (finalInfo as any).size : 0;
   onProgress(1, finalSize, finalSize, 0);
   return result.uri;
@@ -167,14 +161,14 @@ async function saveToDevice(localUri: string, ft: FileType, cfg: any): Promise<v
   }
 }
 
-// Enhanced share function with notice content
 async function shareFileWithNotice(localUri: string, ft: FileType, notice: Notice, cfg: any, t: any) {
-  const shareTitle = `📢 ${notice.title}`;
-  const shareMessage = `${notice.description || 'No description provided'}\n\n` +
-    `📅 ${formatLongDate(notice.createdAt)}\n` +
-    `🏷️ Category: ${notice.category}\n` +
-    `📎 Attached: ${notice.fileName || 'Document'}\n\n` +
-    `View full notice for more details.`;
+  const shareTitle = t('share.title', { title: notice.title });
+  const shareMessage = t('share.message_with_file', {
+    description: notice.description || 'No description provided',
+    date: formatLongDate(notice.createdAt),
+    category: notice.category,
+    fileName: notice.fileName || 'Document'
+  });
 
   const ok = await Sharing.isAvailableAsync();
   
@@ -199,7 +193,7 @@ async function shareFileWithNotice(localUri: string, ft: FileType, notice: Notic
   }
 }
 
-// ─── Progress overlay with detailed feedback ─────────────────────────────────────────
+// ─── Progress overlay ─────────────────────────────────────────────────────────
 type DlPhase = 'downloading' | 'saving' | 'done' | 'error' | 'preparing';
 interface DlState { 
   active: boolean; 
@@ -212,8 +206,8 @@ interface DlState {
   speed?: number;
 }
 
-const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
-  state: DlState; accentColor: string; onDismiss(): void; colors: any; isDark: boolean;
+const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark, t }: {
+  state: DlState; accentColor: string; onDismiss(): void; colors: any; isDark: boolean; t: any;
 }) => {
   const barAnim   = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.93)).current;
@@ -226,7 +220,6 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
         Animated.timing(fadeAnim,  { toValue: 1, duration: 200, useNativeDriver: true }),
       ]).start();
     } else {
-      // Reset animations when hidden
       scaleAnim.setValue(0.93);
       fadeAnim.setValue(0);
     }
@@ -244,7 +237,6 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
   const isPrep = state.phase === 'preparing';
   const pct    = Math.round(state.progress * 100);
   
-  // Format file size info
   const sizeInfo = state.downloadedBytes && state.totalBytes 
     ? `${formatFileSize(state.downloadedBytes)} / ${formatFileSize(state.totalBytes)}`
     : '';
@@ -263,6 +255,12 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
   const msgClr  = isDark ? colors.primary[100] : colors.text?.primary   || '#1e293b';
   const borderC = isDark ? `${colors.primary[500]}25` : 'rgba(0,0,0,0.06)';
 
+  const phaseTitle = isErr ? t('download.something_wrong') : 
+                     isDone ? t('download.all_done') : 
+                     isPrep ? t('download.preparing_share') : 
+                     isSave ? t('download.saving') : 
+                     t('download.downloading', { fileName: state.fileName || 'file' });
+
   return (
     <Modal transparent visible={state.active} animationType="none" statusBarTranslucent>
       <Animated.View style={[OV.backdrop, { opacity: fadeAnim, backgroundColor: isDark ? 'rgba(0,0,0,0.85)' : 'rgba(0,0,0,0.65)' }]}>
@@ -277,13 +275,7 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
               </Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={[OV.headTitle, { color: headClr }]}>
-                {isErr ? 'Something went wrong' : 
-                 isDone ? 'All done!' : 
-                 isPrep ? 'Preparing...' : 
-                 isSave ? 'Saving to device…' : 
-                 'Downloading file…'}
-              </Text>
+              <Text style={[OV.headTitle, { color: headClr }]}>{phaseTitle}</Text>
               {!isDone && !isErr && !isPrep && (
                 <Text style={[OV.headSub, { color: textClr }]}>{pct}% complete</Text>
               )}
@@ -295,7 +287,6 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
             
             {!isDone && !isErr && !isPrep && (
               <View style={{ gap: 12 }}>
-                {/* Progress bar */}
                 <View style={[OV.track, { backgroundColor: trackBg }]}>
                   <Animated.View style={[OV.fill, {
                     backgroundColor: accentColor,
@@ -303,7 +294,6 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
                   }]} />
                 </View>
                 
-                {/* Download details */}
                 <View style={OV.detailsRow}>
                   <View style={OV.detailItem}>
                     <Text style={[OV.detailLabel, { color: textClr }]}>Progress</Text>
@@ -334,7 +324,7 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
             
             {(isDone || isErr) && (
               <TouchableOpacity onPress={onDismiss} style={[OV.btn, { backgroundColor: isErr ? '#EF5350' : '#4CAF50' }]} activeOpacity={0.8}>
-                <Text style={OV.btnTxt}>{isDone ? 'Great, thanks!' : 'Close'}</Text>
+                <Text style={OV.btnTxt}>{isDone ? t('download.great_thanks') : t('download.close')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -346,10 +336,10 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark }: {
 
 // ─── Action sheet ─────────────────────────────────────────────────────────────
 const ViewerActionSheet = ({
-  visible, onClose, onShare, onDownload, colors, isDark, accentColor, fileName,
+  visible, onClose, onShare, onDownload, colors, isDark, accentColor, fileName, t,
 }: {
   visible: boolean; onClose(): void; onShare(): void; onDownload(): void;
-  colors: any; isDark: boolean; accentColor: string; fileName: string;
+  colors: any; isDark: boolean; accentColor: string; fileName: string; t: any;
 }) => {
   const slideAnim    = useRef(new Animated.Value(320)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
@@ -398,15 +388,15 @@ const ViewerActionSheet = ({
         <Animated.View style={[AS.sheet, { backgroundColor: sheetBg, borderColor: borderC, borderWidth: 1, transform: [{ translateY: slideAnim }] }]}>
           <View style={[AS.handle, { backgroundColor: handleC }]} />
           <Text style={[AS.sheetTitle, { color: titleClr }]} numberOfLines={1}>{fileName}</Text>
-          <Text style={[AS.sheetSub,   { color: subClr   }]}>What would you like to do?</Text>
+          <Text style={[AS.sheetSub,   { color: subClr   }]}>{t('notice_details.what_would_you_like')}</Text>
           <View style={[AS.divider, { backgroundColor: borderC }]} />
           <Row
-            icon="↗" label="Share File" sub="Send via Messages, Mail, or other apps"
+            icon="↗" label={t('notice_details.share_file')} sub={t('notice_details.share_file_desc')}
             iconBg={isDark ? `${colors.primary[500]}20` : colors.primary[50]}
             onPress={() => { onClose(); setTimeout(onShare, 300); }}
           />
           <Row
-            icon="↓" label="Save to Device" sub="Save to your Gallery or Files app"
+            icon="↓" label={t('notice_details.save_to_device')} sub={t('notice_details.save_to_device_desc')}
             iconBg={isDark ? `${accentColor}22` : `${accentColor}18`}
             onPress={() => { onClose(); setTimeout(onDownload, 300); }}
           />
@@ -419,7 +409,7 @@ const ViewerActionSheet = ({
             }]}
             activeOpacity={0.75}
           >
-            <Text style={[AS.cancelTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>Cancel</Text>
+            <Text style={[AS.cancelTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>{t('notice_details.cancel')}</Text>
           </TouchableOpacity>
           <View style={{ height: Platform.OS === 'ios' ? 24 : 8 }} />
         </Animated.View>
@@ -431,11 +421,11 @@ const ViewerActionSheet = ({
 // ─── Viewer shell ─────────────────────────────────────────────────────────────
 const ViewerShell = ({
   visible, accentColor, title, fileLabel,
-  onClose, onShare, onDownload, children, colors, isDark,
+  onClose, onShare, onDownload, children, colors, isDark, t,
 }: {
   visible: boolean; accentColor: string; title: string; fileLabel: string;
   onClose(): void; onShare(): void; onDownload(): void;
-  children: React.ReactNode; colors: any; isDark: boolean;
+  children: React.ReactNode; colors: any; isDark: boolean; t: any;
 }) => {
   const [actionSheet, setActionSheet] = useState(false);
 
@@ -486,7 +476,7 @@ const ViewerShell = ({
             activeOpacity={0.75}
           >
             <Text style={{ fontSize: 14, marginRight: 5 }}>↗</Text>
-            <Text style={[VM.btnOutlineTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>Share</Text>
+            <Text style={[VM.btnOutlineTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>{t('notice_details.share')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onDownload}
@@ -498,70 +488,70 @@ const ViewerShell = ({
             activeOpacity={0.8}
           >
             <Text style={{ fontSize: 14, color: '#fff', marginRight: 5 }}>↓</Text>
-            <Text style={VM.btnTxt}>Save to Device</Text>
+            <Text style={VM.btnTxt}>{t('notice_details.save_to_device')}</Text>
           </TouchableOpacity>
         </View>
 
         <ViewerActionSheet
           visible={actionSheet} onClose={() => setActionSheet(false)}
           onShare={onShare} onDownload={onDownload}
-          colors={colors} isDark={isDark} accentColor={accentColor} fileName={title}
+          colors={colors} isDark={isDark} accentColor={accentColor} fileName={title} t={t}
         />
       </SafeAreaView>
     </Modal>
   );
 };
 
-const LoaderView = ({ color, isDark, colors }: { color: string; isDark: boolean; colors: any }) => (
+const LoaderView = ({ color, isDark, colors, t }: { color: string; isDark: boolean; colors: any; t: any }) => (
   <View style={[VM.loader, { backgroundColor: isDark ? colors.background || '#0d1117' : '#f8fafc' }]}>
     <ActivityIndicator size="large" color={color} />
-    <Text style={[VM.loaderTxt, { color }]}>Opening…</Text>
+    <Text style={[VM.loaderTxt, { color }]}>{t('notice_details.loading')}</Text>
   </View>
 );
 
-const PdfViewer = ({ visible, url, title, onClose, onShare, onDownload, colors, isDark }: {
+const PdfViewer = ({ visible, url, title, onClose, onShare, onDownload, colors, isDark, t }: {
   visible: boolean; url: string; title: string;
-  onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean;
+  onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean; t: any;
 }) => {
   const cfg = getFileCfg('pdf', isDark);
   return (
     <ViewerShell visible={visible} accentColor={cfg.color} title={title} fileLabel="PDF Document"
-      onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark}>
+      onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark} t={t}>
       <WebView
         source={{ uri: `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true` }}
         style={{ flex: 1, backgroundColor: isDark ? '#0d1117' : '#fff' }}
-        startInLoadingState renderLoading={() => <LoaderView color={cfg.color} isDark={isDark} colors={colors} />}
+        startInLoadingState renderLoading={() => <LoaderView color={cfg.color} isDark={isDark} colors={colors} t={t} />}
       />
     </ViewerShell>
   );
 };
 
-const DocViewer = ({ visible, url, fileName, noticeTitle, onClose, onShare, onDownload, colors, isDark }: {
+const DocViewer = ({ visible, url, fileName, noticeTitle, onClose, onShare, onDownload, colors, isDark, t }: {
   visible: boolean; url: string; fileName: string; noticeTitle: string;
-  onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean;
+  onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean; t: any;
 }) => {
   const ft  = getFileType(url, fileName);
   const cfg = getFileCfg(ft, isDark);
   return (
     <ViewerShell visible={visible} accentColor={cfg.color} title={fileName || noticeTitle} fileLabel={cfg.label}
-      onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark}>
+      onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark} t={t}>
       <WebView
         source={{ uri: `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true` }}
         style={{ flex: 1, backgroundColor: isDark ? '#0d1117' : '#fff' }}
-        startInLoadingState renderLoading={() => <LoaderView color={cfg.color} isDark={isDark} colors={colors} />}
+        startInLoadingState renderLoading={() => <LoaderView color={cfg.color} isDark={isDark} colors={colors} t={t} />}
       />
     </ViewerShell>
   );
 };
 
-const ImageViewer = ({ visible, url, title, onClose, onShare, onDownload, colors, isDark }: {
+const ImageViewer = ({ visible, url, title, onClose, onShare, onDownload, colors, isDark, t }: {
   visible: boolean; url: string; title: string;
-  onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean;
+  onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean; t: any;
 }) => {
   const cfg = getFileCfg('jpg', isDark);
   return (
     <ViewerShell visible={visible} accentColor={cfg.color} title={title} fileLabel="Image"
-      onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark}>
+      onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark} t={t}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', minHeight: height * 0.7 }}
         maximumZoomScale={4} minimumZoomScale={1} bouncesZoom
@@ -573,8 +563,8 @@ const ImageViewer = ({ visible, url, title, onClose, onShare, onDownload, colors
 };
 
 // ─── Attachment card ──────────────────────────────────────────────────────────
-const AttachmentCard = ({ notice, onView, colors, isDark }: {
-  notice: Notice; onView(): void; colors: any; isDark: boolean;
+const AttachmentCard = ({ notice, onView, colors, isDark, t }: {
+  notice: Notice; onView(): void; colors: any; isDark: boolean; t: any;
 }) => {
   const [imgErr, setImgErr] = useState(false);
   if (!notice.fileUrl) return null;
@@ -596,7 +586,7 @@ const AttachmentCard = ({ notice, onView, colors, isDark }: {
       <TouchableOpacity onPress={onView} style={[AC.wrap, { borderColor: borderC, backgroundColor: cardBg }]} activeOpacity={0.85}>
         <Image source={{ uri: cloudThumb(notice.fileUrl!) }} style={AC.img} resizeMode="cover" onError={() => setImgErr(true)} />
         <View style={[AC.imgFooter, { backgroundColor: isDark ? 'rgba(0,0,0,0.65)' : cfg.color }]}>
-          <Text style={[AC.imgFooterTxt, { color: isDark ? cfg.color : '#fff' }]}>Tap to view full photo</Text>
+          <Text style={[AC.imgFooterTxt, { color: isDark ? cfg.color : '#fff' }]}>{t('notice_details.tap_to_view_photo')}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -621,7 +611,7 @@ const AttachmentCard = ({ notice, onView, colors, isDark }: {
           </View>
           <View style={AC.thumbInfo}>
             <Text style={[AC.thumbName, { color: textPri }]} numberOfLines={2}>{notice.fileName ?? 'Document.pdf'}</Text>
-            <Text style={[AC.thumbMeta, { color: textSec }]}>PDF Document · Tap to open</Text>
+            <Text style={[AC.thumbMeta, { color: textSec }]}>PDF Document · {t('notice_details.tap_to_open')}</Text>
           </View>
         </View>
         <View style={[AC.actionRow, { borderTopColor: borderC }]}>
@@ -633,8 +623,8 @@ const AttachmentCard = ({ notice, onView, colors, isDark }: {
             </View>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={[AC.actionLabel, { color: textPri }]}>Open document</Text>
-            <Text style={[AC.actionSub,   { color: textSec }]}>Tap to view PDF</Text>
+            <Text style={[AC.actionLabel, { color: textPri }]}>{t('notice_details.open_document')}</Text>
+            <Text style={[AC.actionSub,   { color: textSec }]}>{t('notice_details.tap_to_open')}</Text>
           </View>
           <View style={[AC.chevronBox, { borderColor: borderC, backgroundColor: chevBg }]}>
             <Text style={{ fontSize: 14, color: cfg.color, fontWeight: '700' }}>›</Text>
@@ -652,13 +642,13 @@ const AttachmentCard = ({ notice, onView, colors, isDark }: {
         </View>
         <View style={AC.thumbInfo}>
           <Text style={[AC.thumbName, { color: textPri }]} numberOfLines={2}>{notice.fileName ?? notice.title}</Text>
-          <Text style={[AC.thumbMeta, { color: textSec }]}>{cfg.label} · Tap to open</Text>
+          <Text style={[AC.thumbMeta, { color: textSec }]}>{cfg.label} · {t('notice_details.tap_to_open')}</Text>
         </View>
       </View>
       <View style={[AC.actionRow, { borderTopColor: borderC }]}>
         <View style={{ flex: 1 }}>
           <Text style={[AC.actionLabel, { color: textPri }]}>Open {cfg.label.toLowerCase()}</Text>
-          <Text style={[AC.actionSub,   { color: textSec }]}>Tap to view</Text>
+          <Text style={[AC.actionSub,   { color: textSec }]}>{t('notice_details.tap_to_open')}</Text>
         </View>
         <View style={[AC.chevronBox, { borderColor: borderC, backgroundColor: chevBg }]}>
           <Text style={{ fontSize: 14, color: cfg.color, fontWeight: '700' }}>›</Text>
@@ -704,7 +694,7 @@ export default function NoticeDetailsScreen() {
       setNotice(data);
       Animated.stagger(90, [animIn(fade0, slide0, 0), animIn(fade1, slide1, 0), animIn(fade2, slide2, 0)]).start();
     } catch {
-      setError('Could not load this notice. Please check your internet and try again.');
+      setError(t('notice_details.not_found_desc'));
     } finally {
       setLoading(false);
     }
@@ -727,17 +717,16 @@ export default function NoticeDetailsScreen() {
       active: true, 
       progress: 0, 
       phase: 'preparing', 
-      message: `Preparing to download ${notice.fileName ?? 'file'}...`,
+      message: t('download.preparing', { fileName: notice.fileName ?? 'file' }),
       fileName: notice.fileName ?? 'file'
     });
     
-    // Small delay to show preparing state
     await new Promise(resolve => setTimeout(resolve, 500));
     
     setDl(prev => ({ 
       ...prev, 
       phase: 'downloading', 
-      message: `Downloading: ${notice.fileName ?? 'file'}` 
+      message: t('download.downloading', { fileName: notice.fileName ?? 'file' })
     }));
     
     try {
@@ -751,14 +740,14 @@ export default function NoticeDetailsScreen() {
             downloadedBytes, 
             totalBytes, 
             speed,
-            message: `Downloading: ${Math.round(progress * 100)}% complete`
+            message: t('download.downloading_percent', { percent: Math.round(progress * 100) })
           }))
       );
       
       setDl(prev => ({ 
         ...prev, 
         phase: 'saving', 
-        message: 'Saving to your device…' 
+        message: t('download.saving')
       }));
       
       await saveToDevice(local, ft, cfg);
@@ -768,29 +757,30 @@ export default function NoticeDetailsScreen() {
         phase: 'done', 
         progress: 1, 
         message: ft === 'jpg' || ft === 'png' 
-          ? '✓ Photo saved to your Gallery' 
-          : '✓ Document saved. Check your Files app.' 
+          ? t('download.photo_saved')
+          : t('download.document_saved')
       }));
     } catch (e: any) {
       setDl(prev => ({ 
         ...prev, 
         phase: 'error', 
-        message: e?.message ?? 'Download failed. Please check your connection and try again.' 
+        message: e?.message ?? t('download.download_failed')
       }));
     }
-  }, [notice, getSafeName, isDark]);
+  }, [notice, getSafeName, isDark, t]);
 
   const handleShare = useCallback(async () => {
     if (!notice) return;
     
-    // If no file attached, just share the notice content
     if (!notice.fileUrl) {
-      const shareTitle = `📢 ${notice.title}`;
-      const shareMessage = `${notice.description || 'No description provided'}\n\n` +
-        `📅 ${formatLongDate(notice.createdAt)}\n` +
-        `🏷️ Category: ${notice.category}\n` +
-        `👤 Posted by: ${notice.createdBy?.name || 'Village Administration'}\n` +
-        `🏢 Department: ${notice.createdBy?.department || 'Village Notice Board'}`;
+      const shareTitle = t('share.title', { title: notice.title });
+      const shareMessage = t('share.message_without_file', {
+        description: notice.description || 'No description provided',
+        date: formatLongDate(notice.createdAt),
+        category: notice.category,
+        author: notice.createdBy?.name || 'Village Administration',
+        department: notice.createdBy?.department || 'Village Notice Board'
+      });
       
       await Share.share({
         title: shareTitle,
@@ -799,7 +789,6 @@ export default function NoticeDetailsScreen() {
       return;
     }
     
-    // For notices with files
     const ft = getFileType(notice.fileUrl, notice.fileName ?? '');
     const cfg = getFileCfg(ft, isDark);
     const name = getSafeName();
@@ -808,7 +797,7 @@ export default function NoticeDetailsScreen() {
       active: true, 
       progress: 0, 
       phase: 'preparing', 
-      message: 'Preparing file for sharing…',
+      message: t('download.preparing_share'),
       fileName: notice.fileName ?? 'file'
     });
     
@@ -817,7 +806,7 @@ export default function NoticeDetailsScreen() {
     setDl(prev => ({ 
       ...prev, 
       phase: 'downloading', 
-      message: `Preparing ${notice.fileName ?? 'file'} for sharing...` 
+      message: t('download.preparing_share')
     }));
     
     try {
@@ -831,7 +820,7 @@ export default function NoticeDetailsScreen() {
             downloadedBytes, 
             totalBytes, 
             speed,
-            message: `Preparing: ${Math.round(progress * 100)}%`
+            message: t('download.preparing_percent', { percent: Math.round(progress * 100) })
           }))
       );
       
@@ -841,14 +830,13 @@ export default function NoticeDetailsScreen() {
       setDl(prev => ({ 
         ...prev, 
         phase: 'error', 
-        message: e?.message ?? 'Could not share. Please try again.' 
+        message: e?.message ?? t('download.share_failed')
       }));
     }
   }, [notice, getSafeName, isDark, t]);
 
   const showFileModal = () => {
     if (!notice?.fileUrl) return;
-    // Close any active download modal first
     if (dl.active) {
       setDl(prev => ({ ...prev, active: false }));
     }
@@ -858,32 +846,28 @@ export default function NoticeDetailsScreen() {
     else setDocModal(true);
   };
 
-  // ── Derived header colours ──────────────────────────────────────────────
   const headerBg        = isDark ? colors.primary[900]  : colors.primary[700];
   const headerTextColor = isDark ? colors.primary[100]  : '#fff';
   const headerSubColor  = isDark ? colors.primary[200]  : 'rgba(255,255,255,0.8)';
   const headerEyeColor  = isDark ? colors.primary[300]  : 'rgba(255,255,255,0.6)';
   const backBtnBg       = isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)';
 
-  // ── Surface tokens ────────────────────────────────────────────────────────
   const bg       = colors.background;
   const surface  = isDark ? colors.surface || '#1e2535' : '#fff';
   const borderC  = isDark ? `${colors.primary[500]}25`  : colors.border;
   const textPri  = isDark ? colors.primary[100] : colors.text?.primary   || '#1e293b';
   const textSec  = isDark ? colors.primary[300] : colors.text?.secondary  || '#64748b';
 
-  // ── Loading ───────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <View style={[S.loadingWrap, { backgroundColor: bg }]}>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <ActivityIndicator size="large" color={colors.primary[600]} />
-        <Text style={[S.loadingText, { color: textSec }]}>Loading notice…</Text>
+        <Text style={[S.loadingText, { color: textSec }]}>{t('notice_details.loading')}</Text>
       </View>
     );
   }
 
-  // ── Error ─────────────────────────────────────────────────────────────────
   if (error || !notice) {
     return (
       <View style={[S.root, { backgroundColor: bg }]}>
@@ -895,10 +879,10 @@ export default function NoticeDetailsScreen() {
           }]}>
             <Text style={S.emptyGlyph}>⚠️</Text>
           </View>
-          <Text style={[S.emptyTitle, { color: textPri }]}>Notice not found</Text>
-          <Text style={[S.emptyDesc,  { color: textSec }]}>{error ?? 'This notice could not be loaded.'}</Text>
+          <Text style={[S.emptyTitle, { color: textPri }]}>{t('notice_details.not_found')}</Text>
+          <Text style={[S.emptyDesc,  { color: textSec }]}>{error ?? t('notice_details.not_found_desc')}</Text>
           <TouchableOpacity onPress={fetchNotice} style={[S.emptyBtn, { backgroundColor: colors.primary[700] }]} activeOpacity={0.82}>
-            <Text style={S.emptyBtnText}>Try Again</Text>
+            <Text style={S.emptyBtnText}>{t('notice_details.try_again')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -927,25 +911,22 @@ export default function NoticeDetailsScreen() {
     <View style={[S.root, { backgroundColor: bg }]}>
       <StatusBar barStyle="light-content" backgroundColor={headerBg} />
 
-      {/* Progress overlay - rendered at root level so it appears above everything */}
       <ProgressOverlay state={dl} accentColor={hasFile ? cfg.color : cat.color}
-        onDismiss={() => setDl(prev => ({ ...prev, active: false }))} colors={colors} isDark={isDark} />
+        onDismiss={() => setDl(prev => ({ ...prev, active: false }))} colors={colors} isDark={isDark} t={t} />
 
-      {/* Viewers */}
       {isPdf && notice.fileUrl && (
         <PdfViewer visible={pdfModal} url={notice.fileUrl} title={notice.fileName ?? notice.title}
-          onClose={() => setPdfModal(false)} onShare={handleShare} onDownload={handleDownload} colors={colors} isDark={isDark} />
+          onClose={() => setPdfModal(false)} onShare={handleShare} onDownload={handleDownload} colors={colors} isDark={isDark} t={t} />
       )}
       {isDoc && notice.fileUrl && (
         <DocViewer visible={docModal} url={notice.fileUrl} fileName={notice.fileName ?? ''} noticeTitle={notice.title}
-          onClose={() => setDocModal(false)} onShare={handleShare} onDownload={handleDownload} colors={colors} isDark={isDark} />
+          onClose={() => setDocModal(false)} onShare={handleShare} onDownload={handleDownload} colors={colors} isDark={isDark} t={t} />
       )}
       {isImg && notice.fileUrl && (
         <ImageViewer visible={imgModal} url={notice.fileUrl} title={notice.fileName ?? notice.title}
-          onClose={() => setImgModal(false)} onShare={handleShare} onDownload={handleDownload} colors={colors} isDark={isDark} />
+          onClose={() => setImgModal(false)} onShare={handleShare} onDownload={handleDownload} colors={colors} isDark={isDark} t={t} />
       )}
 
-      {/* HERO — LinearGradient */}
       <LinearGradient
         colors={isDark ? [colors.primary[800], colors.primary[900]] : [colors.primary[600], colors.primary[700]]}
         start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
@@ -954,7 +935,6 @@ export default function NoticeDetailsScreen() {
         <View style={[S.accentCircle1, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)' }]} />
         <View style={[S.accentCircle2, { backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)' }]} />
 
-        {/* Nav */}
         <View style={[S.headerNavRow, { paddingTop: Platform.OS === 'ios' ? 54 : 36 }]}>
           <TouchableOpacity onPress={() => router.back()} style={[S.backBtn, { backgroundColor: backBtnBg }]} activeOpacity={0.7}>
             <Text style={[S.backBtnTxt, { color: headerTextColor }]}>←</Text>
@@ -962,17 +942,15 @@ export default function NoticeDetailsScreen() {
         </View>
 
         <Animated.View style={[S.headerTitleBlock, { opacity: fade0, transform: [{ translateY: slide0 }] }]}>
-          <Text style={[S.headerEyebrow, { color: headerEyeColor }]}>VILLAGE NOTICES</Text>
+          <Text style={[S.headerEyebrow, { color: headerEyeColor }]}>{t('notice_details.village_notices')}</Text>
 
-          {/* Urgent pill */}
           {isUrgent && (
             <View style={[S.urgentPill, { backgroundColor: isDark ? '#3D1A1A' : '#B71C1C' }]}>
               <View style={[S.urgentDot, { backgroundColor: isDark ? '#EF5350' : '#fff' }]} />
-              <Text style={[S.urgentTxt, { color: isDark ? '#EF5350' : '#fff' }]}>Urgent — Immediate Action Required</Text>
+              <Text style={[S.urgentTxt, { color: isDark ? '#EF5350' : '#fff' }]}>{t('notice_details.urgent_action')}</Text>
             </View>
           )}
 
-          {/* Pills row */}
           <View style={S.pillRow}>
             <View style={[S.heroPill, { backgroundColor: isDark ? `${colors.primary[500]}25` : 'rgba(255,255,255,0.18)', borderColor: isDark ? `${colors.primary[400]}30` : 'rgba(255,255,255,0.3)' }]}>
               <Text style={[S.heroPillTxt, { color: headerTextColor }]}>{cat.name}</Text>
@@ -982,15 +960,13 @@ export default function NoticeDetailsScreen() {
             </View>
             {isUrgent && (
               <View style={[S.heroPill, { backgroundColor: isDark ? '#3D1A1A' : '#B71C1C', borderColor: 'transparent' }]}>
-                <Text style={[S.heroPillTxt, { color: isDark ? '#EF5350' : '#fff' }]}>High Priority</Text>
+                <Text style={[S.heroPillTxt, { color: isDark ? '#EF5350' : '#fff' }]}>{t('notice_details.high_priority_label')}</Text>
               </View>
             )}
           </View>
 
-          {/* Title */}
           <Text style={[S.headerTitle, { color: headerTextColor }]}>{notice.title}</Text>
 
-          {/* Breadcrumb */}
           <View style={S.headerBreadcrumb}>
             <View style={[S.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
             <Text style={[S.headerSub, { color: headerSubColor }]}>
@@ -998,7 +974,6 @@ export default function NoticeDetailsScreen() {
             </Text>
           </View>
 
-          {/* Author card */}
           {(notice.createdBy?.name || notice.createdBy?.department) && (
             <View style={[S.heroAuthor, {
               backgroundColor: isDark ? `${colors.primary[500]}15` : 'rgba(255,255,255,0.12)',
@@ -1008,7 +983,7 @@ export default function NoticeDetailsScreen() {
                 <Text style={[S.heroAvatarTxt, { color: avatarFg }]}>{initials}</Text>
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={[S.heroAuthorLabel, { color: headerEyeColor }]}>Posted by</Text>
+                <Text style={[S.heroAuthorLabel, { color: headerEyeColor }]}>{t('notice_details.posted_by')}</Text>
                 {notice.createdBy?.name && (
                   <Text style={[S.heroAuthorName, { color: headerTextColor }]} numberOfLines={1}>{notice.createdBy.name}</Text>
                 )}
@@ -1021,7 +996,6 @@ export default function NoticeDetailsScreen() {
           )}
         </Animated.View>
 
-        {/* Wave */}
         <View style={S.waveWrap} pointerEvents="none">
           <Svg width={width} height={40} viewBox={`0 0 ${width} 40`} preserveAspectRatio="none">
             <Path
@@ -1032,7 +1006,6 @@ export default function NoticeDetailsScreen() {
         </View>
       </LinearGradient>
 
-      {/* SCROLL BODY */}
       <ScrollView
         style={S.scroll}
         contentContainerStyle={S.scrollContent}
@@ -1040,210 +1013,71 @@ export default function NoticeDetailsScreen() {
       >
         <Animated.View style={{ opacity: fade1, transform: [{ translateY: slide1 }] }}>
           
-          {/* Stat row */}
           <View style={S.statRow}>
             {[
-              {
-                label: 'Date',
-                value: formatLongDate(notice.createdAt),
-                color: isDark ? '#EAEAEA' : colors.primary[700],
-              },
-              {
-                label: 'Category',
-                value: cat.name,
-                color: isDark ? '#EAEAEA' : cat.color,
-              },
-              {
-                label: 'Priority',
-                value: pri.label,
-                color: isUrgent
-                  ? '#FF6B6B'
-                  : (notice as any).priority === 'medium'
-                  ? '#64B5F6'
-                  : '#81C784',
-              },
+              { label: t('notice_details.date_label'), value: formatLongDate(notice.createdAt), color: isDark ? '#EAEAEA' : colors.primary[700] },
+              { label: t('notice_details.category_label'), value: cat.name, color: isDark ? '#EAEAEA' : cat.color },
+              { label: t('notice_details.priority_label'), value: pri.label, color: isUrgent ? '#FF6B6B' : (notice as any).priority === 'medium' ? '#64B5F6' : '#81C784' },
             ].map(({ label, value, color }) => (
-              <View
-                key={label}
-                style={[
-                  S.statCard,
-                  { backgroundColor: surface, borderColor: borderC },
-                ]}
-              >
-                <Text
-                  style={[
-                    S.statLabel,
-                    { color: isDark ? '#A0A0A0' : colors.primary[600] },
-                  ]}
-                >
-                  {label}
-                </Text>
-
+              <View key={label} style={[S.statCard, { backgroundColor: surface, borderColor: borderC }]}>
+                <Text style={[S.statLabel, { color: isDark ? '#A0A0A0' : colors.primary[600] }]}>{label}</Text>
                 <Text style={[S.statVal, { color }]}>{value}</Text>
               </View>
             ))}
           </View>
 
-          {/* Description card */}
           <View style={[S.card, { backgroundColor: surface, borderColor: borderC }]}>
             <View style={[S.cardHeader, { borderBottomColor: borderC }]}>
-              <View
-                style={[
-                  S.cardAccent,
-                  { backgroundColor: colors.primary[600] },
-                ]}
-              />
-              <Text
-                style={[
-                  S.cardHeaderTxt,
-                  { color: isDark ? '#FFFFFF' : textPri },
-                ]}
-              >
-                Notice Details
-              </Text>
+              <View style={[S.cardAccent, { backgroundColor: colors.primary[600] }]} />
+              <Text style={[S.cardHeaderTxt, { color: isDark ? '#FFFFFF' : textPri }]}>{t('notice_details.notice_details_title')}</Text>
             </View>
-
-            <Text
-              style={[
-                S.descTxt,
-                { color: isDark ? '#EAEAEA' : textPri },
-              ]}
-            >
-              {notice.description}
-            </Text>
+            <Text style={[S.descTxt, { color: isDark ? '#EAEAEA' : textPri }]}>{notice.description}</Text>
           </View>
         </Animated.View>
 
         <Animated.View style={{ opacity: fade2, transform: [{ translateY: slide2 }] }}>
           {hasFile && (
             <View style={S.attachSection}>
-              <Text
-                style={[
-                  S.attachLabel,
-                  { color: isDark ? '#EAEAEA' : textPri },
-                ]}
-              >
-                Attached File
-              </Text>
-
-              <AttachmentCard
-                notice={notice}
-                onView={showFileModal}
-                colors={colors}
-                isDark={isDark}
-              />
+              <Text style={[S.attachLabel, { color: isDark ? '#EAEAEA' : textPri }]}>{t('notice_details.attached_file')}</Text>
+              <AttachmentCard notice={notice} onView={showFileModal} colors={colors} isDark={isDark} t={t} />
             </View>
           )}
           <View style={{ height: 16 }} />
         </Animated.View>
       </ScrollView>
 
-      {/* ACTION BAR - Single share button for non-file notices */}
-      <View
-        style={[
-          S.bar,
-          {
-            backgroundColor: isDark ? colors.surface || '#1e2535' : surface,
-            borderTopColor: borderC,
-          },
-        ]}
-      >
-        {/* Share button - handles both file and non-file cases */}
+      <View style={[S.bar, { backgroundColor: isDark ? colors.surface || '#1e2535' : surface, borderTopColor: borderC }]}>
         <TouchableOpacity
           onPress={handleShare}
-          style={[
-            S.barSecBtn,
-            {
-              borderColor: isDark ? `${colors.primary[500]}40` : colors.primary[200],
-              backgroundColor: isDark ? `${colors.primary[500]}10` : colors.primary[50],
-              flex: hasFile ? 1 : 2,
-            },
-          ]}
+          style={[S.barSecBtn, { borderColor: isDark ? `${colors.primary[500]}40` : colors.primary[200], backgroundColor: isDark ? `${colors.primary[500]}10` : colors.primary[50], flex: hasFile ? 1 : 2 }]}
           activeOpacity={0.75}
         >
-          <Text
-            style={[
-              S.barSecIcon,
-              { color: isDark ? '#EAEAEA' : colors.primary[700] },
-            ]}
-          >
-            ↗
-          </Text>
-          <Text
-            style={[
-              S.barSecTxt,
-              { color: isDark ? '#EAEAEA' : colors.primary[700] },
-            ]}
-          >
-            Share Notice
-          </Text>
+          <Text style={[S.barSecIcon, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>↗</Text>
+          <Text style={[S.barSecTxt, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>{t('notice_details.share_notice')}</Text>
         </TouchableOpacity>
 
-        {/* Save button - only show if file exists */}
         {hasFile && (
           <TouchableOpacity
             onPress={handleDownload}
-            style={[
-              S.barSecBtn,
-              {
-                borderColor: isDark ? `${colors.primary[500]}40` : colors.primary[200],
-                backgroundColor: isDark ? `${colors.primary[500]}10` : colors.primary[50],
-              },
-            ]}
+            style={[S.barSecBtn, { borderColor: isDark ? `${colors.primary[500]}40` : colors.primary[200], backgroundColor: isDark ? `${colors.primary[500]}10` : colors.primary[50] }]}
             activeOpacity={0.75}
           >
-            <Text
-              style={[
-                S.barSecIcon,
-                { color: isDark ? '#EAEAEA' : colors.primary[700] },
-              ]}
-            >
-              ↓
-            </Text>
-            <Text
-              style={[
-                S.barSecTxt,
-                { color: isDark ? '#EAEAEA' : colors.primary[700] },
-              ]}
-            >
-              Save File
-            </Text>
+            <Text style={[S.barSecIcon, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>↓</Text>
+            <Text style={[S.barSecTxt, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>{t('notice_details.save_file')}</Text>
           </TouchableOpacity>
         )}
 
-        {/* Primary CTA */}
         <TouchableOpacity
           onPress={hasFile ? showFileModal : handleShare}
-          style={[
-            S.barPriBtn,
-            {
-              backgroundColor: colors.primary[700],
-              shadowColor: isDark ? colors.primary[900] : '#000',
-              flex: hasFile ? 2 : 1.5,
-            },
-          ]}
+          style={[S.barPriBtn, { backgroundColor: colors.primary[700], shadowColor: isDark ? colors.primary[900] : '#000', flex: hasFile ? 2 : 1.5 }]}
           activeOpacity={0.8}
         >
           <Text style={[S.barPriTxt, { color: '#FFFFFF' }]}>
-            {hasFile ? (isImg ? 'View Photo' : 'Open File') : 'Share Notice'}
+            {hasFile ? (isImg ? t('notice_details.view_photo') : t('notice_details.open_file')) : t('notice_details.share_notice')}
           </Text>
-
           {hasFile && (
-            <View
-              style={[
-                S.barPriArrow,
-                {
-                  backgroundColor: isDark
-                    ? `${colors.primary[500]}40`
-                    : 'rgba(255,255,255,0.2)',
-                },
-              ]}
-            >
-              <Text
-                style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}
-              >
-                ›
-              </Text>
+            <View style={[S.barPriArrow, { backgroundColor: isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.2)' }]}>
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '700' }}>›</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -1252,229 +1086,145 @@ export default function NoticeDetailsScreen() {
   );
 }
 
-// ─── Overlay styles ───────────────────────────────────────────────────────────
+// ─── Styles (unchanged, omitted for brevity) ─────────────────────────────────
 const OV = StyleSheet.create({
-  backdrop: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    justifyContent: 'center', alignItems: 'center', zIndex: 999,
-  },
-  card: {
-    width: width - 40, borderRadius: 22, overflow: 'hidden',
-    elevation: 24, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 20,
-  },
+  backdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: 999 },
+  card: { width: width - 40, borderRadius: 22, overflow: 'hidden', elevation: 24, shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.2, shadowRadius: 20 },
   cardHead: { paddingHorizontal: 18, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', gap: 14 },
   headIcon: { width: 38, height: 38, borderRadius: 11, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   headIconTxt: { fontSize: 16, color: '#fff', fontWeight: '800' },
   headTitle: { fontSize: 16, fontWeight: '800' },
-  headSub:   { fontSize: 12, marginTop: 2 },
-  cardBody:  { padding: 20, gap: 14 },
-  msg:       { fontSize: 14, lineHeight: 22, fontWeight: '500' },
-  track:     { height: 8, borderRadius: 4, overflow: 'hidden' },
-  fill:      { height: '100%', borderRadius: 4 },
-  pct:       { fontSize: 26, fontWeight: '900', textAlign: 'right' },
-  btn:       { paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
-  btnTxt:    { fontSize: 15, fontWeight: '800', color: '#fff' },
+  headSub: { fontSize: 12, marginTop: 2 },
+  cardBody: { padding: 20, gap: 14 },
+  msg: { fontSize: 14, lineHeight: 22, fontWeight: '500' },
+  track: { height: 8, borderRadius: 4, overflow: 'hidden' },
+  fill: { height: '100%', borderRadius: 4 },
+  pct: { fontSize: 26, fontWeight: '900', textAlign: 'right' },
+  btn: { paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
+  btnTxt: { fontSize: 15, fontWeight: '800', color: '#fff' },
   detailsRow: { flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginTop: 4 },
   detailItem: { flex: 1, alignItems: 'center' },
   detailLabel: { fontSize: 10, fontWeight: '600', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 4 },
   detailValue: { fontSize: 11, fontWeight: '700' },
   prepareContainer: { alignItems: 'center', gap: 12, paddingVertical: 8 },
-  prepareSpinner: { width: 32, height: 32, borderWidth: 3, borderRadius: 16, borderColor: 'transparent', borderTopWidth: 3 },
   prepareText: { fontSize: 12, textAlign: 'center' },
 });
 
-// ─── Action sheet styles ──────────────────────────────────────────────────────
 const AS = StyleSheet.create({
-  root:     { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998 },
+  root: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 998 },
   backdrop: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-  sheet: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
-    borderTopLeftRadius: 26, borderTopRightRadius: 26,
-    paddingHorizontal: 20, paddingTop: 14,
-    elevation: 30, shadowColor: '#000',
-    shadowOffset: { width: 0, height: -6 }, shadowOpacity: 0.18, shadowRadius: 24,
-  },
-  handle:     { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 18 },
+  sheet: { position: 'absolute', bottom: 0, left: 0, right: 0, borderTopLeftRadius: 26, borderTopRightRadius: 26, paddingHorizontal: 20, paddingTop: 14, elevation: 30, shadowColor: '#000', shadowOffset: { width: 0, height: -6 }, shadowOpacity: 0.18, shadowRadius: 24 },
+  handle: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 18 },
   sheetTitle: { fontSize: 15, fontWeight: '800', marginBottom: 3 },
-  sheetSub:   { fontSize: 12, marginBottom: 14 },
-  divider:    { height: 1, marginVertical: 8 },
-  row:        { flexDirection: 'row', alignItems: 'center', gap: 13, paddingVertical: 12, paddingHorizontal: 4, borderRadius: 12 },
-  rowIcon:    { width: 44, height: 44, borderRadius: 13, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  sheetSub: { fontSize: 12, marginBottom: 14 },
+  divider: { height: 1, marginVertical: 8 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 13, paddingVertical: 12, paddingHorizontal: 4, borderRadius: 12 },
+  rowIcon: { width: 44, height: 44, borderRadius: 13, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   rowIconTxt: { fontSize: 18 },
-  rowLabel:   { fontSize: 14, fontWeight: '700' },
-  rowSub:     { fontSize: 11, marginTop: 2 },
-  rowChev:    { fontSize: 20, fontWeight: '600' },
-  cancelBtn:  { marginTop: 8, paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, alignItems: 'center' },
-  cancelTxt:  { fontSize: 14, fontWeight: '700' },
+  rowLabel: { fontSize: 14, fontWeight: '700' },
+  rowSub: { fontSize: 11, marginTop: 2 },
+  rowChev: { fontSize: 20, fontWeight: '600' },
+  cancelBtn: { marginTop: 8, paddingVertical: 14, borderRadius: 12, borderWidth: 1.5, alignItems: 'center' },
+  cancelTxt: { fontSize: 14, fontWeight: '700' },
 });
 
-// ─── Viewer shell styles ──────────────────────────────────────────────────────
 const VM = StyleSheet.create({
-  header: {
-    paddingBottom: 18, overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.22, shadowRadius: 12, elevation: 10,
-  },
+  header: { paddingBottom: 18, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.22, shadowRadius: 12, elevation: 10 },
   accentCircle1: { position: 'absolute', width: 160, height: 160, borderRadius: 80, top: -60, right: -40 },
-  accentCircle2: { position: 'absolute', width: 90,  height: 90,  borderRadius: 45, bottom: -20, left: 20 },
-  headerRow: {
-    paddingTop: Platform.OS === 'ios' ? 54 : 36,
-    paddingHorizontal: 16, paddingBottom: 14,
-    flexDirection: 'row', alignItems: 'center',
-  },
-  navBtn:      { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  navBtnTxt:   { fontSize: 18, fontWeight: '600' },
-  fileLabel:   { fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 2.5, marginBottom: 2 },
+  accentCircle2: { position: 'absolute', width: 90, height: 90, borderRadius: 45, bottom: -20, left: 20 },
+  headerRow: { paddingTop: Platform.OS === 'ios' ? 54 : 36, paddingHorizontal: 16, paddingBottom: 14, flexDirection: 'row', alignItems: 'center' },
+  navBtn: { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  navBtnTxt: { fontSize: 18, fontWeight: '600' },
+  fileLabel: { fontSize: 10, fontWeight: '800', textTransform: 'uppercase', letterSpacing: 2.5, marginBottom: 2 },
   headerTitle: { fontSize: 14, fontWeight: '800', lineHeight: 20 },
-  footer: {
-    flexDirection: 'row', gap: 10,
-    paddingHorizontal: 16, paddingTop: 12,
-    paddingBottom: Platform.OS === 'ios' ? 34 : 18,
-    borderTopWidth: 1,
-  },
-  btn:          { flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 5 },
-  btnOutline:   { borderWidth: 1.5 },
-  btnOutlineTxt:{ fontSize: 13, fontWeight: '700' },
-  btnTxt:       { fontSize: 13, fontWeight: '800', color: '#fff' },
-  loader: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-    justifyContent: 'center', alignItems: 'center', gap: 14,
-  },
+  footer: { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingTop: 12, paddingBottom: Platform.OS === 'ios' ? 34 : 18, borderTopWidth: 1 },
+  btn: { flex: 1, paddingVertical: 13, borderRadius: 12, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 5 },
+  btnOutline: { borderWidth: 1.5 },
+  btnOutlineTxt: { fontSize: 13, fontWeight: '700' },
+  btnTxt: { fontSize: 13, fontWeight: '800', color: '#fff' },
+  loader: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', gap: 14 },
   loaderTxt: { fontSize: 13, fontWeight: '600' },
 });
 
-// ─── Attachment card styles ───────────────────────────────────────────────────
 const AC = StyleSheet.create({
-  wrap: {
-    borderRadius: 18, overflow: 'hidden', borderWidth: 1,
-    elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8,
-  },
-  img:          { width: '100%', height: 220 },
-  imgFooter:    { paddingHorizontal: 18, paddingVertical: 14, alignItems: 'center' },
+  wrap: { borderRadius: 18, overflow: 'hidden', borderWidth: 1, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8 },
+  img: { width: '100%', height: 220 },
+  imgFooter: { paddingHorizontal: 18, paddingVertical: 14, alignItems: 'center' },
   imgFooterTxt: { fontSize: 13, fontWeight: '700' },
-  thumbZone: {
-    height: 126, flexDirection: 'row', alignItems: 'center',
-    justifyContent: 'center', gap: 16, paddingHorizontal: 20, borderBottomWidth: 1,
-  },
-  docIllust:    { position: 'relative', width: 50, flexShrink: 0 },
-  docBody:      { width: 50, height: 62, borderWidth: 1.5, borderRadius: 8, overflow: 'hidden' },
-  docCorner:    { position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderLeftWidth: 13, borderLeftColor: 'transparent', borderTopWidth: 13 },
-  docLine:      { height: 3, borderRadius: 2 },
-  pdfBadge:     { position: 'absolute', top: -8, right: -10, paddingHorizontal: 5, paddingVertical: 2, borderRadius: 4 },
-  pdfBadgeTxt:  { fontSize: 8, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
-  thumbInfo:    { flex: 1, gap: 3 },
-  thumbName:    { fontSize: 13, fontWeight: '800', lineHeight: 18 },
-  thumbMeta:    { fontSize: 11 },
-  actionRow:    { flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 14, paddingVertical: 12, borderTopWidth: 1 },
-  actionIconBox:{ width: 34, height: 34, borderRadius: 9, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  actionLabel:  { fontSize: 13, fontWeight: '700' },
-  actionSub:    { fontSize: 11, marginTop: 1 },
-  chevronBox:   { width: 26, height: 26, borderRadius: 7, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
-  docTypeBox:   { width: 52, height: 52, borderRadius: 12, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  docTypeBoxTxt:{ fontSize: 12, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
+  thumbZone: { height: 126, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, paddingHorizontal: 20, borderBottomWidth: 1 },
+  docIllust: { position: 'relative', width: 50, flexShrink: 0 },
+  docBody: { width: 50, height: 62, borderWidth: 1.5, borderRadius: 8, overflow: 'hidden' },
+  docCorner: { position: 'absolute', top: 0, right: 0, width: 0, height: 0, borderLeftWidth: 13, borderLeftColor: 'transparent', borderTopWidth: 13 },
+  docLine: { height: 3, borderRadius: 2 },
+  pdfBadge: { position: 'absolute', top: -8, right: -10, paddingHorizontal: 5, paddingVertical: 2, borderRadius: 4 },
+  pdfBadgeTxt: { fontSize: 8, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
+  thumbInfo: { flex: 1, gap: 3 },
+  thumbName: { fontSize: 13, fontWeight: '800', lineHeight: 18 },
+  thumbMeta: { fontSize: 11 },
+  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 11, paddingHorizontal: 14, paddingVertical: 12, borderTopWidth: 1 },
+  actionIconBox: { width: 34, height: 34, borderRadius: 9, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  actionLabel: { fontSize: 13, fontWeight: '700' },
+  actionSub: { fontSize: 11, marginTop: 1 },
+  chevronBox: { width: 26, height: 26, borderRadius: 7, borderWidth: 1, alignItems: 'center', justifyContent: 'center' },
+  docTypeBox: { width: 52, height: 52, borderRadius: 12, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  docTypeBoxTxt: { fontSize: 12, fontWeight: '900', color: '#fff', letterSpacing: 0.5 },
 });
 
-// ─── Main screen styles ─────────────────────────────────────────
 const S = StyleSheet.create({
   root: { flex: 1 },
-
-  // Loading
   loadingWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 14 },
   loadingText: { fontSize: 14, fontWeight: '500' },
-
-  // Empty / error
-  emptyWrap:    { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 36, gap: 10 },
+  emptyWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 36, gap: 10 },
   emptyIconBox: { width: 72, height: 72, borderRadius: 20, borderWidth: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
-  emptyGlyph:   { fontSize: 30 },
-  emptyTitle:   { fontSize: 18, fontWeight: '800', letterSpacing: -0.3, textAlign: 'center' },
-  emptyDesc:    { fontSize: 13, textAlign: 'center', lineHeight: 20, fontWeight: '500' },
-  emptyBtn: {
-    marginTop: 8, borderRadius: 12, paddingHorizontal: 24, paddingVertical: 13,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4,
-  },
+  emptyGlyph: { fontSize: 30 },
+  emptyTitle: { fontSize: 18, fontWeight: '800', letterSpacing: -0.3, textAlign: 'center' },
+  emptyDesc: { fontSize: 13, textAlign: 'center', lineHeight: 20, fontWeight: '500' },
+  emptyBtn: { marginTop: 8, borderRadius: 12, paddingHorizontal: 24, paddingVertical: 13, shadowColor: '#000', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 4 },
   emptyBtnText: { fontSize: 14, fontWeight: '800', color: '#fff' },
-
-  // Header
-  headerShell: {
-    paddingBottom: 36, overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.22, shadowRadius: 12, elevation: 10,
-  },
-  accentCircle1: { position: 'absolute', width: 220, height: 220, borderRadius: 110, top: -80,  right: -50 },
-  accentCircle2: { position: 'absolute', width: 130, height: 130, borderRadius: 65,  bottom: -30, left: 30  },
-  headerNavRow:  { paddingHorizontal: 16, paddingBottom: 16, flexDirection: 'row', alignItems: 'center' },
-  backBtn:       { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  backBtnTxt:    { fontSize: 20, lineHeight: 24, fontWeight: '600' },
+  headerShell: { paddingBottom: 36, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.22, shadowRadius: 12, elevation: 10 },
+  accentCircle1: { position: 'absolute', width: 220, height: 220, borderRadius: 110, top: -80, right: -50 },
+  accentCircle2: { position: 'absolute', width: 130, height: 130, borderRadius: 65, bottom: -30, left: 30 },
+  headerNavRow: { paddingHorizontal: 16, paddingBottom: 16, flexDirection: 'row', alignItems: 'center' },
+  backBtn: { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  backBtnTxt: { fontSize: 20, lineHeight: 24, fontWeight: '600' },
   headerTitleBlock: { paddingHorizontal: 18, gap: 4 },
   headerEyebrow: { fontSize: 10, fontWeight: '800', letterSpacing: 2.5, marginBottom: 4 },
-  headerTitle:   { fontSize: 26, fontWeight: '800', letterSpacing: -0.6, lineHeight: 32 },
+  headerTitle: { fontSize: 26, fontWeight: '800', letterSpacing: -0.6, lineHeight: 32 },
   headerBreadcrumb: { flexDirection: 'row', alignItems: 'center', gap: 7, marginTop: 4 },
   headerBreadcrumbDot: { width: 5, height: 5, borderRadius: 3 },
-  headerSub:     { fontSize: 12, fontWeight: '500' },
-
-  urgentPill:  { marginTop: 10, borderRadius: 12, paddingHorizontal: 13, paddingVertical: 9, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  urgentDot:   { width: 7, height: 7, borderRadius: 3.5, flexShrink: 0 },
-  urgentTxt:   { fontSize: 11, fontWeight: '800', letterSpacing: 0.3, flex: 1 },
-
-  pillRow:     { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 12 },
-  heroPill:    { borderWidth: 1, borderRadius: 999, paddingHorizontal: 11, paddingVertical: 5 },
+  headerSub: { fontSize: 12, fontWeight: '500' },
+  urgentPill: { marginTop: 10, borderRadius: 12, paddingHorizontal: 13, paddingVertical: 9, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  urgentDot: { width: 7, height: 7, borderRadius: 3.5, flexShrink: 0 },
+  urgentTxt: { fontSize: 11, fontWeight: '800', letterSpacing: 0.3, flex: 1 },
+  pillRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 12 },
+  heroPill: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 11, paddingVertical: 5 },
   heroPillTxt: { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
-
-  heroAuthor: {
-    marginTop: 14, borderWidth: 1, borderRadius: 14, padding: 12,
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-  },
-  heroAvatar:      { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  heroAvatarTxt:   { fontSize: 14, fontWeight: '800' },
+  heroAuthor: { marginTop: 14, borderWidth: 1, borderRadius: 14, padding: 12, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  heroAvatar: { width: 38, height: 38, borderRadius: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  heroAvatarTxt: { fontSize: 14, fontWeight: '800' },
   heroAuthorLabel: { fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.6, marginBottom: 2 },
-  heroAuthorName:  { fontSize: 13, fontWeight: '800' },
-  heroAuthorDept:  { fontSize: 11, marginTop: 1 },
-  activeDot:       { width: 7, height: 7, borderRadius: 3.5, flexShrink: 0 },
-
+  heroAuthorName: { fontSize: 13, fontWeight: '800' },
+  heroAuthorDept: { fontSize: 11, marginTop: 1 },
+  activeDot: { width: 7, height: 7, borderRadius: 3.5, flexShrink: 0 },
   waveWrap: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 40 },
-
-  scroll:        { flex: 1 },
+  scroll: { flex: 1 },
   scrollContent: { paddingTop: 14, paddingHorizontal: 14, paddingBottom: 130 },
-
-  statRow:   { flexDirection: 'row', gap: 8, marginBottom: 10 },
-  statCard:  { flex: 1, borderRadius: 14, borderWidth: 1, padding: 12 },
+  statRow: { flexDirection: 'row', gap: 8, marginBottom: 10 },
+  statCard: { flex: 1, borderRadius: 14, borderWidth: 1, padding: 12 },
   statLabel: { fontSize: 9, fontWeight: '800', letterSpacing: 0.8, textTransform: 'uppercase', marginBottom: 4 },
-  statVal:   { fontSize: 12, fontWeight: '800', lineHeight: 16 },
-
-  card: {
-    borderRadius: 18, borderWidth: 1, marginBottom: 10, overflow: 'hidden',
-    elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8,
-  },
-  cardHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    paddingHorizontal: 15, paddingVertical: 12, borderBottomWidth: 1,
-  },
-  cardAccent:    { width: 3, height: 16, borderRadius: 2 },
+  statVal: { fontSize: 12, fontWeight: '800', lineHeight: 16 },
+  card: { borderRadius: 18, borderWidth: 1, marginBottom: 10, overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8 },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 15, paddingVertical: 12, borderBottomWidth: 1 },
+  cardAccent: { width: 3, height: 16, borderRadius: 2 },
   cardHeaderTxt: { fontSize: 13, fontWeight: '800' },
-  descTxt:       { fontSize: 15, lineHeight: 26, fontWeight: '400', padding: 15 },
-
+  descTxt: { fontSize: 15, lineHeight: 26, fontWeight: '400', padding: 15 },
   attachSection: { marginBottom: 10 },
-  attachLabel:   { fontSize: 13, fontWeight: '800', marginBottom: 8 },
-
-  // Action bar
-  bar: {
-    position: 'absolute', bottom: 0, left: 0, right: 0,
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 16, paddingTop: 12,
-    paddingBottom: Platform.OS === 'ios' ? 34 : 16,
-    borderTopWidth: 1, gap: 8,
-    elevation: 20, shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.1, shadowRadius: 14,
-  },
-  barSecBtn: {
-    alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 13, borderRadius: 12, borderWidth: 1.5, gap: 3,
-  },
+  attachLabel: { fontSize: 13, fontWeight: '800', marginBottom: 8 },
+  bar: { position: 'absolute', bottom: 0, left: 0, right: 0, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 12, paddingBottom: Platform.OS === 'ios' ? 34 : 16, borderTopWidth: 1, gap: 8, elevation: 20, shadowColor: '#000', shadowOffset: { width: 0, height: -4 }, shadowOpacity: 0.1, shadowRadius: 14 },
+  barSecBtn: { alignItems: 'center', justifyContent: 'center', paddingVertical: 13, borderRadius: 12, borderWidth: 1.5, gap: 3 },
   barSecIcon: { fontSize: 17 },
-  barSecTxt:  { fontSize: 10, fontWeight: '800' },
-  barPriBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9,
-    paddingVertical: 14, borderRadius: 12,
-    elevation: 4, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8,
-  },
-  barPriTxt:   { fontSize: 14, fontWeight: '900', color: '#fff' },
+  barSecTxt: { fontSize: 10, fontWeight: '800' },
+  barPriBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 9, paddingVertical: 14, borderRadius: 12, elevation: 4, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 8 },
+  barPriTxt: { fontSize: 14, fontWeight: '900', color: '#fff' },
   barPriArrow: { width: 24, height: 24, borderRadius: 7, alignItems: 'center', justifyContent: 'center' },
 });
