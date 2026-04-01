@@ -95,5 +95,32 @@
 "feature.local_lang": "स्थानिक भाषांमध्ये उपलब्ध",
 "feature.verified": "फक्त अधिकृत सत्यापित सूचना",
 "vision.quote": "कमी फेऱ्या. अधिक उपाय.",
-"vision.author": "— ग्रामवार्ता दृष्टिकोन"
+"vision.author": "— ग्रामवार्ता दृष्टिकोन",
+"login.title": "प्रशासक लॉगिन",
+  "login.heading": "पुन्हा स्वागत आहे",
+  "login.subheading": "डॅशबोर्डमध्ये प्रवेश करण्यासाठी तुमची माहिती भरा",
+  "login.email": "ईमेल पत्ता",
+  "login.password": "पासवर्ड",
+  "login.email_placeholder": "admin@gramvartha.in",
+  "login.password_placeholder": "तुमचा पासवर्ड टाका",
+  "login.button": "डॅशबोर्डमध्ये लॉगिन करा",
+  "login.loading": "लॉगिन होत आहे...",
+  "login.success": "लॉगिन यशस्वी!",
+  "login.error": "लॉगिन अयशस्वी",
+  "login.role_error": "अज्ञात वापरकर्ता भूमिका",
+  "login.switch": "आधीच खाते आहे? लॉगिन करा",
+  "login.secure_portal": "सुरक्षित प्रशासक पोर्टल",
+  "login.secure_access": "सुरक्षित व एनक्रिप्टेड प्रशासक प्रवेश",
+
+  "register.title": "प्रशासक नोंदणी",
+  "register.heading": "नवीन खाते तयार करा",
+  "register.subheading": "नवीन सुपरअॅडमिन खाते नोंदणी करा",
+  "register.button": "सुपरअॅडमिन खाते तयार करा",
+  "register.loading": "खाते तयार होत आहे...",
+  "register.success": "नोंदणी यशस्वी! कृपया लॉगिन करा.",
+  "register.error": "नोंदणी अयशस्वी",
+  "register.switch": "पहिल्यांदा? सुपरअॅडमिन म्हणून नोंदणी करा",
+
+  "common.or": "किंवा",
+  "common.back_home": "मुख्यपृष्ठावर परत जा"
 }

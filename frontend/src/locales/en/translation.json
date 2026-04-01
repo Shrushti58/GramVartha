@@ -80,5 +80,32 @@
 "feature.local_lang": "Available in local languages",
 "feature.verified": "Verified official notices only",
 "vision.quote": "Less running around. More solutions.",
-"vision.author": "— GramVartha Vision"
+"vision.author": "— GramVartha Vision",
+"login.title": "Admin Login",
+  "login.heading": "Welcome back",
+  "login.subheading": "Enter your credentials to access the dashboard",
+  "login.email": "Email address",
+  "login.password": "Password",
+  "login.email_placeholder": "admin@gramvartha.in",
+  "login.password_placeholder": "Enter your password",
+  "login.button": "Sign in to Dashboard",
+  "login.loading": "Signing in...",
+  "login.success": "Login successful!",
+  "login.error": "Login failed",
+  "login.role_error": "Unknown user role",
+  "login.switch": "Already have an account? Sign in",
+  "login.secure_portal": "Secure Admin Portal",
+  "login.secure_access": "Secure, encrypted admin access",
+
+  "register.title": "Admin Registration",
+  "register.heading": "Create an account",
+  "register.subheading": "Register a new superadmin account",
+  "register.button": "Create Superadmin Account",
+  "register.loading": "Creating Account...",
+  "register.success": "Registration successful! Please login.",
+  "register.error": "Registration failed",
+  "register.switch": "First time? Register as Superadmin",
+
+  "common.or": "or",
+  "common.back_home": "Back to homepage"
 }
