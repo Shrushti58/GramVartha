@@ -170,7 +170,71 @@
       "success": "Registration successful! Redirecting to dashboard...",
       "error": "Something went wrong! Please try again."
     }
+  },
+   "village": {
+    "register": {
+      "title": "Village Registration",
+      "badge": "Village Portal",
+      "step": "Step",
+      "of": "of",
+      "steps": {
+        "village_info": "Village Info",
+        "admin_account": "Admin Account",
+        "document_proof": "Document Proof"
+      },
+      "step_descriptions": {
+        "village_info": "Tell us about your village and its location",
+        "admin_account": "Set up your admin credentials",
+        "document_proof": "Upload proof of your village affiliation"
+      },
+      "village_name": "Village Name",
+      "village_name_placeholder": "e.g. Shirpur",
+      "district": "District",
+      "district_placeholder": "e.g. Nashik",
+      "state": "State",
+      "state_placeholder": "e.g. Maharashtra",
+      "pincode": "Pincode",
+      "pincode_placeholder": "e.g. 422001",
+      "coordinates": "Coordinates",
+      "auto_detect": "Auto-detect",
+      "detecting": "Detecting...",
+      "latitude_placeholder": "Latitude (18.5204)",
+      "longitude_placeholder": "Longitude (73.8567)",
+      "email": "Email Address",
+      "email_placeholder": "admin@gramvartha.in",
+      "password": "Password",
+      "password_placeholder": "Create a strong password",
+      "confirm_password": "Confirm Password",
+      "confirm_placeholder": "Re-enter your password",
+      "continue": "Continue",
+      "back": "Back",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "document_description": "Upload an image proving your village affiliation — e.g. Gram Panchayat ID, Aadhaar card, or residence proof.",
+      "click_to_upload": "Click to upload",
+      "file_requirements": "JPG, PNG only · Max 5MB",
+      "change": "Change",
+      "preview": "Preview",
+      "review_note": "Your registration will be reviewed by the superadmin. Once approved, you'll become the admin of your village.",
+      "secure_access": "Secure, encrypted access",
+      "back_home": "Back to homepage",
+      "location_detected": "Location detected successfully!",
+      "success_message": "Village registration submitted! Awaiting superadmin approval.",
+      "errors": {
+        "geolocation_unsupported": "Geolocation is not supported by your browser",
+        "location_failed": "Unable to detect location. Please enter manually.",
+        "coordinates_required": "Please fill all required fields including coordinates",
+        "fields_required": "Please fill all required fields",
+        "password_mismatch": "Passwords do not match",
+        "password_length": "Password must be at least 6 characters",
+        "invalid_file_type": "Please select a valid image file (JPG, PNG only)",
+        "file_too_large": "Image size should be less than 5MB",
+        "document_required": "Please upload a document",
+        "registration_failed": "Registration failed"
+      }
+    }
   }
+
   
 
 }

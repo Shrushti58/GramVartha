@@ -3,15 +3,17 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as api from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const STEPS = [
-  { id: 1, label: 'Village Info' },
-  { id: 2, label: 'Admin Account' },
-  { id: 3, label: 'Document Proof' },
+  { id: 1, labelKey: 'village.register.steps.village_info' },
+  { id: 2, labelKey: 'village.register.steps.admin_account' },
+  { id: 3, labelKey: 'village.register.steps.document_proof' },
 ];
 
 export default function VillageRegistration() {
   const { dark } = useTheme();
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '', district: '', state: '', pincode: '',
@@ -34,7 +36,7 @@ export default function VillageRegistration() {
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser');
+      toast.error(t('village.register.errors.geolocation_unsupported'));
       return;
     }
     setLocating(true);
@@ -46,11 +48,11 @@ export default function VillageRegistration() {
           longitude: pos.coords.longitude.toFixed(4),
         }));
         setLocating(false);
-        toast.success('Location detected successfully!');
+        toast.success(t('village.register.location_detected'));
       },
       (err) => {
         setLocating(false);
-        toast.error('Unable to detect location. Please enter manually.');
+        toast.error(t('village.register.errors.location_failed'));
       },
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -60,11 +62,11 @@ export default function VillageRegistration() {
     const file = e.target.files[0];
     if (!file) return;
     if (!['image/jpeg', 'image/jpg', 'image/png'].includes(file.type)) {
-      toast.error('Please select a valid image file (JPG, PNG only)');
+      toast.error(t('village.register.errors.invalid_file_type'));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size should be less than 5MB');
+      toast.error(t('village.register.errors.file_too_large'));
       return;
     }
     setDocumentFile(file);
@@ -82,21 +84,21 @@ export default function VillageRegistration() {
   const validateStep = () => {
     if (step === 1) {
       if (!formData.name || !formData.latitude || !formData.longitude) {
-        toast.error('Please fill all required fields including coordinates');
+        toast.error(t('village.register.errors.coordinates_required'));
         return false;
       }
     }
     if (step === 2) {
       if (!formData.requesterEmail || !formData.requesterPassword || !formData.confirmPassword) {
-        toast.error('Please fill all required fields');
+        toast.error(t('village.register.errors.fields_required'));
         return false;
       }
       if (formData.requesterPassword !== formData.confirmPassword) {
-        toast.error('Passwords do not match');
+        toast.error(t('village.register.errors.password_mismatch'));
         return false;
       }
       if (formData.requesterPassword.length < 6) {
-        toast.error('Password must be at least 6 characters');
+        toast.error(t('village.register.errors.password_length'));
         return false;
       }
     }
@@ -108,15 +110,18 @@ export default function VillageRegistration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!documentFile) { toast.error('Please upload a document'); return; }
+    if (!documentFile) { 
+      toast.error(t('village.register.errors.document_required')); 
+      return; 
+    }
     setLoading(true);
     try {
       const { confirmPassword, ...submitData } = formData;
       await api.registerVillage(submitData, documentFile);
-      toast.success('Village registration submitted! Awaiting superadmin approval.');
+      toast.success(t('village.register.success_message'));
       setTimeout(() => navigate('/'), 2000);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Registration failed');
+      toast.error(err.response?.data?.message || t('village.register.errors.registration_failed'));
     } finally {
       setLoading(false);
     }
@@ -200,13 +205,13 @@ export default function VillageRegistration() {
                 GramVartha
               </p>
               <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
-                Village Registration
+                {t('village.register.title')}
               </h1>
             </div>
           </div>
           <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
             <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-            Village Portal
+            {t('village.register.badge')}
           </div>
         </div>
 
@@ -234,17 +239,17 @@ export default function VillageRegistration() {
             ))}
           </div>
           <p className="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-0.5">
-            Step {step} of {STEPS.length}
+            {t('village.register.step')} {step} {t('village.register.of')} {STEPS.length}
           </p>
           <h2 className="text-lg font-semibold text-text-primary dark:text-dark-text-primary">
-            {step === 1 && 'Village Information'}
-            {step === 2 && 'Admin Account'}
-            {step === 3 && 'Document Proof'}
+            {step === 1 && t('village.register.steps.village_info')}
+            {step === 2 && t('village.register.steps.admin_account')}
+            {step === 3 && t('village.register.steps.document_proof')}
           </h2>
           <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">
-            {step === 1 && 'Tell us about your village and its location'}
-            {step === 2 && 'Set up your admin credentials'}
-            {step === 3 && 'Upload proof of your village affiliation'}
+            {step === 1 && t('village.register.step_descriptions.village_info')}
+            {step === 2 && t('village.register.step_descriptions.admin_account')}
+            {step === 3 && t('village.register.step_descriptions.document_proof')}
           </p>
         </div>
 
@@ -253,51 +258,51 @@ export default function VillageRegistration() {
           <div className="space-y-4">
             <div>
               <label className={labelClass}>
-                Village Name <span className="text-primary-500">*</span>
+                {t('village.register.village_name')} <span className="text-primary-500">*</span>
               </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="e.g. Shirpur"
+                placeholder={t('village.register.village_name_placeholder')}
                 className={inputClass}
               />
             </div>
             
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelClass}>District</label>
+                <label className={labelClass}>{t('village.register.district')}</label>
                 <input
                   type="text"
                   name="district"
                   value={formData.district}
                   onChange={handleChange}
-                  placeholder="e.g. Nashik"
+                  placeholder={t('village.register.district_placeholder')}
                   className={inputClass}
                 />
               </div>
               <div>
-                <label className={labelClass}>State</label>
+                <label className={labelClass}>{t('village.register.state')}</label>
                 <input
                   type="text"
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
-                  placeholder="e.g. Maharashtra"
+                  placeholder={t('village.register.state_placeholder')}
                   className={inputClass}
                 />
               </div>
             </div>
             
             <div>
-              <label className={labelClass}>Pincode</label>
+              <label className={labelClass}>{t('village.register.pincode')}</label>
               <input
                 type="text"
                 name="pincode"
                 value={formData.pincode}
                 onChange={handleChange}
-                placeholder="e.g. 422001"
+                placeholder={t('village.register.pincode_placeholder')}
                 className={inputClass}
               />
             </div>
@@ -305,7 +310,7 @@ export default function VillageRegistration() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary dark:text-dark-text-muted">
-                  Coordinates <span className="text-primary-500">*</span>
+                  {t('village.register.coordinates')} <span className="text-primary-500">*</span>
                 </label>
                 <button
                   type="button"
@@ -319,7 +324,7 @@ export default function VillageRegistration() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Detecting...
+                      {t('village.register.detecting')}
                     </>
                   ) : (
                     <>
@@ -327,7 +332,7 @@ export default function VillageRegistration() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
-                      Auto-detect
+                      {t('village.register.auto_detect')}
                     </>
                   )}
                 </button>
@@ -338,7 +343,7 @@ export default function VillageRegistration() {
                   name="latitude"
                   value={formData.latitude}
                   onChange={handleChange}
-                  placeholder="Latitude (18.5204)"
+                  placeholder={t('village.register.latitude_placeholder')}
                   step="0.0001"
                   className={inputClass}
                 />
@@ -347,7 +352,7 @@ export default function VillageRegistration() {
                   name="longitude"
                   value={formData.longitude}
                   onChange={handleChange}
-                  placeholder="Longitude (73.8567)"
+                  placeholder={t('village.register.longitude_placeholder')}
                   step="0.0001"
                   className={inputClass}
                 />
@@ -359,7 +364,7 @@ export default function VillageRegistration() {
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 mt-2 relative overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              Continue
+              {t('village.register.continue')}
               <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
@@ -371,21 +376,21 @@ export default function VillageRegistration() {
           <div className="space-y-4">
             <div>
               <label className={labelClass}>
-                Email Address <span className="text-primary-500">*</span>
+                {t('village.register.email')} <span className="text-primary-500">*</span>
               </label>
               <input
                 type="email"
                 name="requesterEmail"
                 value={formData.requesterEmail}
                 onChange={handleChange}
-                placeholder="admin@gramvartha.in"
+                placeholder={t('village.register.email_placeholder')}
                 className={inputClass}
               />
             </div>
             
             <div>
               <label className={labelClass}>
-                Password <span className="text-primary-500">*</span>
+                {t('village.register.password')} <span className="text-primary-500">*</span>
               </label>
               <div className="relative">
                 <input
@@ -393,7 +398,7 @@ export default function VillageRegistration() {
                   name="requesterPassword"
                   value={formData.requesterPassword}
                   onChange={handleChange}
-                  placeholder="Create a strong password"
+                  placeholder={t('village.register.password_placeholder')}
                   className={inputClass + " pr-10"}
                 />
                 <button
@@ -409,7 +414,7 @@ export default function VillageRegistration() {
             
             <div>
               <label className={labelClass}>
-                Confirm Password <span className="text-primary-500">*</span>
+                {t('village.register.confirm_password')} <span className="text-primary-500">*</span>
               </label>
               <div className="relative">
                 <input
@@ -417,7 +422,7 @@ export default function VillageRegistration() {
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Re-enter your password"
+                  placeholder={t('village.register.confirm_placeholder')}
                   className={inputClass + " pr-10"}
                 />
                 <button
@@ -439,14 +444,14 @@ export default function VillageRegistration() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Back
+                {t('village.register.back')}
               </button>
               <button
                 onClick={handleNext}
                 className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                Continue
+                {t('village.register.continue')}
                 <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -458,14 +463,14 @@ export default function VillageRegistration() {
         {step === 3 && (
           <form onSubmit={handleSubmit} className="space-y-4">
             <p className="text-xs text-text-muted dark:text-dark-text-muted leading-relaxed">
-              Upload an image proving your village affiliation — e.g. Gram Panchayat ID, Aadhaar card, or residence proof.
+              {t('village.register.document_description')}
             </p>
 
             {documentPreview ? (
               <div className="relative inline-block">
                 <img
                   src={documentPreview}
-                  alt="Preview"
+                  alt={t('village.register.preview')}
                   className="max-w-full max-h-36 rounded-xl border border-border dark:border-dark-border object-contain"
                 />
                 <button
@@ -487,8 +492,8 @@ export default function VillageRegistration() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                 </div>
-                <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">Click to upload</p>
-                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">JPG, PNG only · Max 5MB</p>
+                <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('village.register.click_to_upload')}</p>
+                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('village.register.file_requirements')}</p>
               </div>
             )}
 
@@ -507,7 +512,7 @@ export default function VillageRegistration() {
                     className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-xs font-medium"
                     disabled={loading}
                   >
-                    Change
+                    {t('village.register.change')}
                   </button>
                 </div>
               </div>
@@ -526,7 +531,7 @@ export default function VillageRegistration() {
               <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              Your registration will be reviewed by the superadmin. Once approved, you'll become the admin of your village.
+              {t('village.register.review_note')}
             </div>
 
             <div className="flex gap-3">
@@ -539,7 +544,7 @@ export default function VillageRegistration() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Back
+                {t('village.register.back')}
               </button>
               <button
                 type="submit"
@@ -553,11 +558,11 @@ export default function VillageRegistration() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Submitting...
+                    {t('village.register.submitting')}
                   </>
                 ) : (
                   <>
-                    Submit
+                    {t('village.register.submit')}
                     <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
@@ -574,7 +579,7 @@ export default function VillageRegistration() {
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            Secure, encrypted access
+            {t('village.register.secure_access')}
           </div>
           <Link
             to="/"
@@ -583,7 +588,7 @@ export default function VillageRegistration() {
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            Back to homepage
+            {t('village.register.back_home')}
           </Link>
         </div>
       </div>

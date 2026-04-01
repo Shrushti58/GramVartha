@@ -183,5 +183,68 @@
   "success": "नोंदणी यशस्वी! डॅशबोर्डकडे पुनर्निर्देशित केले जात आहे...",
   "error": "काही त्रुटी आढळली! कृपया पुन्हा प्रयत्न करा."
 }
+},
+"village": {
+  "register": {
+    "title": "ग्राम नोंदणी",
+    "badge": "ग्राम पोर्टल",
+    "step": "पायरी",
+    "of": "पैकी",
+    "steps": {
+      "village_info": "ग्राम माहिती",
+      "admin_account": "प्रशासक खाते",
+      "document_proof": "दस्तऐवज पुरावा"
+    },
+    "step_descriptions": {
+      "village_info": "आपल्या गावाची माहिती व स्थान प्रविष्ट करा",
+      "admin_account": "प्रशासकासाठी लॉगिन माहिती तयार करा",
+      "document_proof": "ग्रामाशी संबंधित असल्याचा पुरावा अपलोड करा"
+    },
+    "village_name": "गावाचे नाव",
+    "village_name_placeholder": "उदा. शिरपूर",
+    "district": "जिल्हा",
+    "district_placeholder": "उदा. नाशिक",
+    "state": "राज्य",
+    "state_placeholder": "उदा. महाराष्ट्र",
+    "pincode": "पिनकोड",
+    "pincode_placeholder": "उदा. ४२२००१",
+    "coordinates": "स्थान निर्देशांक",
+    "auto_detect": "स्वयंचलित शोध",
+    "detecting": "स्थान शोधले जात आहे...",
+    "latitude_placeholder": "अक्षांश (18.5204)",
+    "longitude_placeholder": "रेखांश (73.8567)",
+    "email": "ईमेल पत्ता",
+    "email_placeholder": "admin@gramvartha.in",
+    "password": "पासवर्ड",
+    "password_placeholder": "मजबूत पासवर्ड तयार करा",
+    "confirm_password": "पासवर्डची पुष्टी",
+    "confirm_placeholder": "पासवर्ड पुन्हा प्रविष्ट करा",
+    "continue": "पुढे जा",
+    "back": "मागे",
+    "submit": "सबमिट करा",
+    "submitting": "सबमिट केले जात आहे...",
+    "document_description": "आपल्या ग्रामाशी संबंधित असल्याचा पुरावा दर्शविणारा फोटो अपलोड करा — उदा. ग्रामपंचायत ओळखपत्र, आधार कार्ड किंवा निवास प्रमाणपत्र.",
+    "click_to_upload": "अपलोड करण्यासाठी येथे क्लिक करा",
+    "file_requirements": "फक्त JPG, PNG · कमाल 5MB",
+    "change": "बदल करा",
+    "preview": "पूर्वावलोकन",
+    "review_note": "आपली नोंदणी सुपरअॅडमिनकडून पडताळली जाईल. मंजुरीनंतर आपण आपल्या गावाचे प्रशासक बनाल.",
+    "secure_access": "सुरक्षित व एनक्रिप्टेड प्रवेश",
+    "back_home": "मुख्य पृष्ठावर परत जा",
+    "location_detected": "स्थान यशस्वीरीत्या शोधले गेले!",
+    "success_message": "ग्राम नोंदणी यशस्वीरित्या सबमिट केली! सुपरअॅडमिन मंजुरीची प्रतीक्षा आहे.",
+    "errors": {
+      "geolocation_unsupported": "आपल्या ब्राउझरमध्ये स्थान सेवा उपलब्ध नाही",
+      "location_failed": "स्थान शोधता आले नाही. कृपया माहिती स्वतः प्रविष्ट करा.",
+      "coordinates_required": "कृपया सर्व आवश्यक माहिती व स्थान निर्देशांक भरा",
+      "fields_required": "कृपया सर्व आवश्यक माहिती भरा",
+      "password_mismatch": "पासवर्ड जुळत नाहीत",
+      "password_length": "पासवर्ड किमान ६ अक्षरांचा असावा",
+      "invalid_file_type": "कृपया वैध प्रतिमा फाइल निवडा (फक्त JPG, PNG)",
+      "file_too_large": "प्रतिमेचा आकार 5MB पेक्षा कमी असावा",
+      "document_required": "कृपया दस्तऐवज अपलोड करा",
+      "registration_failed": "नोंदणी अयशस्वी झाली"
+    }
+  }
 }
 }
