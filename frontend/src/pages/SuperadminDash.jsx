@@ -3,24 +3,27 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as api from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const TABS = [
-  { key: 'villages',     label: 'Pending Villages', countKey: 'pendingVillages' },
-  { key: 'admins',       label: 'Pending Admins',   countKey: 'pendingAdmins'   },
-  { key: 'all-villages', label: 'All Villages',      countKey: null              },
+  { key: 'villages',     labelKey: 'superadmin.tabs.pending_villages', countKey: 'pendingVillages' },
+  { key: 'admins',       labelKey: 'superadmin.tabs.pending_admins',   countKey: 'pendingAdmins'   },
+  { key: 'all-villages', labelKey: 'superadmin.tabs.all_villages',      countKey: null              },
 ];
 
 // Skeleton Components
 function Spinner() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-3">
       <div className="w-9 h-9 border-2 border-primary-200 dark:border-primary-800 border-t-primary-600 dark:border-t-primary-400 rounded-full animate-spin" />
-      <p className="text-sm text-text-muted dark:text-dark-text-muted font-medium">Loading data...</p>
+      <p className="text-sm text-text-muted dark:text-dark-text-muted font-medium">{t('superadmin.loading')}</p>
     </div>
   );
 }
 
 function Empty() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-3">
       <div className="w-14 h-14 bg-accent-mist dark:bg-dark-surface2 rounded-2xl flex items-center justify-center">
@@ -28,8 +31,8 @@ function Empty() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
-      <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">All clear</p>
-      <p className="text-xs text-text-muted dark:text-dark-text-muted">Nothing pending here</p>
+      <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('superadmin.all_clear')}</p>
+      <p className="text-xs text-text-muted dark:text-dark-text-muted">{t('superadmin.nothing_pending')}</p>
     </div>
   );
 }
@@ -118,6 +121,7 @@ function StatsCardSkeleton() {
 }
 
 function StatusBadge({ status }) {
+  const { t } = useTranslation();
   const map = {
     approved: 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-800',
     pending:  'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800',
@@ -128,15 +132,21 @@ function StatusBadge({ status }) {
     pending:  'bg-amber-500',
     rejected: 'bg-red-500',
   };
+  
+  const statusLabel = status === 'approved' ? t('superadmin.status.approved') 
+                    : status === 'pending' ? t('superadmin.status.pending')
+                    : t('superadmin.status.rejected');
+  
   return (
     <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full capitalize ${map[status] || map.pending}`}>
       <span className={`w-1.5 h-1.5 rounded-full ${dot[status] || dot.pending}`} />
-      {status}
+      {statusLabel}
     </span>
   );
 }
 
 function DocPreview({ url }) {
+  const { t } = useTranslation();
   return (
     <div className="border-t border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2 p-6">
       <div className="flex items-center justify-between mb-4">
@@ -147,7 +157,7 @@ function DocPreview({ url }) {
             </svg>
           </div>
           <p className="text-xs font-semibold text-text-primary dark:text-dark-text-primary">
-            Registration Document
+            {t('superadmin.document.registration_document')}
           </p>
         </div>
         <a
@@ -156,7 +166,7 @@ function DocPreview({ url }) {
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors duration-200"
         >
-          Open full size
+          {t('superadmin.document.open_full_size')}
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
@@ -164,7 +174,7 @@ function DocPreview({ url }) {
       </div>
       <img
         src={url}
-        alt="Document"
+        alt={t('superadmin.document.document')}
         className="w-full max-h-96 object-contain rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface shadow-soft"
       />
     </div>
@@ -172,7 +182,9 @@ function DocPreview({ url }) {
 }
 
 function VillageCard({ village, onApprove, onReject }) {
+  const { t } = useTranslation();
   const [showDoc, setShowDoc] = useState(false);
+  
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden hover:border-primary-200 dark:hover:border-primary-800 hover:shadow-medium dark:hover:shadow-dark-medium transition-all duration-200">
       <div className="p-6">
@@ -196,13 +208,13 @@ function VillageCard({ village, onApprove, onReject }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
                 <p className="text-xs text-text-muted dark:text-dark-text-muted">
-                  {village.requestedBy ? village.requestedBy.email : 'Unknown'}
+                  {village.requestedBy ? village.requestedBy.email : t('superadmin.unknown')}
                 </p>
               </div>
             </div>
           </div>
           <span className="bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800 text-xs font-semibold px-3 py-1.5 rounded-full flex-shrink-0">
-            Pending Review
+            {t('superadmin.pending_review')}
           </span>
         </div>
         <div className="flex items-center gap-2 mt-5 pt-5 border-t border-border dark:border-dark-border">
@@ -213,7 +225,7 @@ function VillageCard({ village, onApprove, onReject }) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Approve
+            {t('superadmin.approve')}
           </button>
           <button
             onClick={function() { onReject(village._id); }}
@@ -222,7 +234,7 @@ function VillageCard({ village, onApprove, onReject }) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-            Reject
+            {t('superadmin.reject')}
           </button>
           {village.documentUrl && (
             <button
@@ -233,7 +245,7 @@ function VillageCard({ village, onApprove, onReject }) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
               </svg>
-              {showDoc ? 'Hide Document' : 'View Document'}
+              {showDoc ? t('superadmin.hide_document') : t('superadmin.view_document')}
             </button>
           )}
         </div>
@@ -246,6 +258,8 @@ function VillageCard({ village, onApprove, onReject }) {
 }
 
 function AdminCard({ admin, onApprove }) {
+  const { t } = useTranslation();
+  
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 hover:border-primary-200 dark:hover:border-primary-800 hover:shadow-medium dark:hover:shadow-dark-medium transition-all duration-200">
       <div className="flex items-center justify-between gap-4">
@@ -260,7 +274,7 @@ function AdminCard({ admin, onApprove }) {
               {admin.email}
             </h3>
             <p className="text-sm text-text-secondary dark:text-dark-text-secondary mt-0.5">
-              Village: {admin.village ? admin.village.name : 'N/A'}
+              {t('superadmin.village_label')}: {admin.village ? admin.village.name : t('superadmin.na')}
             </p>
             <div className="mt-2">
               <StatusBadge status={admin.status} />
@@ -275,7 +289,7 @@ function AdminCard({ admin, onApprove }) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            Approve
+            {t('superadmin.approve')}
           </button>
         )}
       </div>
@@ -284,13 +298,14 @@ function AdminCard({ admin, onApprove }) {
 }
 
 function VillageRow({ village, onDelete }) {
+  const { t } = useTranslation();
   const formattedDate = village.createdAt
     ? new Date(village.createdAt).toLocaleDateString('en-IN', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
       })
-    : 'N/A';
+    : t('superadmin.na');
 
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 hover:border-primary-200 dark:hover:border-primary-800 hover:shadow-medium dark:hover:shadow-dark-medium transition-all duration-200">
@@ -320,34 +335,34 @@ function VillageRow({ village, onDelete }) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
             </svg>
-            Delete
+            {t('superadmin.delete')}
           </button>
         </div>
       </div>
       <div className="border-t border-border dark:border-dark-border mb-5" />
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3">
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">District</p>
+          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">{t('superadmin.district')}</p>
           <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">
-            {village.district || 'N/A'}
+            {village.district || t('superadmin.na')}
           </p>
         </div>
         <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3">
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">State</p>
+          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">{t('superadmin.state')}</p>
           <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">
-            {village.state || 'N/A'}
+            {village.state || t('superadmin.na')}
           </p>
         </div>
         <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3">
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">Registered On</p>
+          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">{t('superadmin.registered_on')}</p>
           <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">
             {formattedDate}
           </p>
         </div>
         <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3">
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">Village ID</p>
+          <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">{t('superadmin.village_id')}</p>
           <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary font-mono tracking-wide">
-            {village._id ? village._id.slice(-8).toUpperCase() : 'N/A'}
+            {village._id ? village._id.slice(-8).toUpperCase() : t('superadmin.na')}
           </p>
         </div>
       </div>
@@ -357,10 +372,12 @@ function VillageRow({ village, onDelete }) {
 
 function ThemeToggle() {
   const { dark, toggleTheme } = useTheme();
+  const { t } = useTranslation();
+  
   return (
     <button
       onClick={toggleTheme}
-      aria-label="Toggle theme"
+      aria-label={t('superadmin.theme_toggle')}
       className="p-2.5 rounded-xl border border-border dark:border-dark-border hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
     >
       {dark ? (
@@ -377,6 +394,7 @@ function ThemeToggle() {
 }
 
 export default function SuperadminDashboard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [adminRole, setAdminRole]             = useState(null);
   const [pendingVillages, setPendingVillages] = useState([]);
@@ -415,7 +433,7 @@ export default function SuperadminDashboard() {
       setPendingAdmins(aRes.data);
       setVillages(avRes.data);
     } catch(e) {
-      toast.error('Failed to load data');
+      toast.error(t('superadmin.errors.load_failed'));
     } finally {
       setLoading(false);
       setInitialLoading(false);
@@ -425,31 +443,31 @@ export default function SuperadminDashboard() {
   async function handleApproveVillage(id) {
     try {
       await api.approveVillage(id);
-      toast.success('Village approved');
+      toast.success(t('superadmin.success.village_approved'));
       setPendingVillages(function(p) { return p.filter(function(v) { return v._id !== id; }); });
       loadData();
     } catch(e) {
-      toast.error('Failed to approve village');
+      toast.error(t('superadmin.errors.approve_village_failed'));
     }
   }
 
   async function handleRejectVillage(id) {
     try {
       await api.rejectVillage(id);
-      toast.success('Village rejected');
+      toast.success(t('superadmin.success.village_rejected'));
       setPendingVillages(function(p) { return p.filter(function(v) { return v._id !== id; }); });
     } catch(e) {
-      toast.error('Failed to reject village');
+      toast.error(t('superadmin.errors.reject_village_failed'));
     }
   }
 
   async function handleApproveAdmin(id) {
     try {
       await api.approveAdmin(id);
-      toast.success('Admin approved');
+      toast.success(t('superadmin.success.admin_approved'));
       setPendingAdmins(function(p) { return p.filter(function(a) { return a._id !== id; }); });
     } catch(e) {
-      toast.error('Failed to approve admin');
+      toast.error(t('superadmin.errors.approve_admin_failed'));
     }
   }
 
@@ -461,12 +479,12 @@ export default function SuperadminDashboard() {
   async function confirmDeleteVillage() {
     try {
       await api.deleteVillage(deleteTarget.id);
-      toast.success('Village deleted successfully');
+      toast.success(t('superadmin.success.village_deleted'));
       setVillages(function(v) { return v.filter(function(village) { return village._id !== deleteTarget.id; }); });
       setShowDeleteModal(false);
       setDeleteTarget({ id: null, name: '' });
     } catch(e) {
-      toast.error('Failed to delete village');
+      toast.error(t('superadmin.errors.delete_village_failed'));
       setShowDeleteModal(false);
       setDeleteTarget({ id: null, name: '' });
     }
@@ -484,7 +502,7 @@ export default function SuperadminDashboard() {
   if (adminRole !== 'superadmin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background dark:bg-dark-background font-sans">
-        <p className="text-text-muted dark:text-dark-text-muted">Unauthorized</p>
+        <p className="text-text-muted dark:text-dark-text-muted">{t('superadmin.unauthorized')}</p>
       </div>
     );
   }
@@ -549,7 +567,7 @@ export default function SuperadminDashboard() {
                 GramVartha
               </p>
               <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">
-                Superadmin Panel
+                {t('superadmin.superadmin_panel')}
               </p>
             </div>
           </div>
@@ -559,7 +577,7 @@ export default function SuperadminDashboard() {
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
                 <p className="text-xs font-medium text-text-muted dark:text-dark-text-muted">
-                  Platform Live
+                  {t('superadmin.platform_live')}
                 </p>
               </div>
               <div className="w-px h-4 bg-border dark:bg-dark-border" />
@@ -571,7 +589,7 @@ export default function SuperadminDashboard() {
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-text-primary dark:text-dark-text-primary">
-                  {villages.length} Villages
+                  {villages.length} {t('superadmin.villages')}
                 </p>
               </div>
               <div className="w-px h-4 bg-border dark:bg-dark-border" />
@@ -582,7 +600,7 @@ export default function SuperadminDashboard() {
                   </svg>
                 </div>
                 <p className="text-xs font-semibold text-text-primary dark:text-dark-text-primary">
-                  {totalPending} Pending
+                  {totalPending} {t('superadmin.pending')}
                 </p>
               </div>
             </div>
@@ -598,7 +616,7 @@ export default function SuperadminDashboard() {
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                Logout
+                {t('superadmin.logout')}
               </button>
             </div>
           </div>
@@ -615,13 +633,13 @@ export default function SuperadminDashboard() {
         <div className="mb-10">
           <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 text-xs font-semibold px-3 py-1.5 rounded-full mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse" />
-            Superadmin Access
+            {t('superadmin.superadmin_access')}
           </div>
           <h1 className="text-4xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">
-            Control Panel
+            {t('superadmin.control_panel')}
           </h1>
           <p className="text-text-muted dark:text-dark-text-muted text-sm mt-1">
-            Manage village registrations, admin approvals and platform oversight.
+            {t('superadmin.control_panel_description')}
           </p>
         </div>
 
@@ -634,7 +652,7 @@ export default function SuperadminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="bg-primary-800 dark:bg-primary-900 rounded-2xl p-6 shadow-large">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-primary-300">Total Villages</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-primary-300">{t('superadmin.total_villages')}</p>
                 <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center">
                   <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -643,11 +661,11 @@ export default function SuperadminDashboard() {
                 </div>
               </div>
               <p className="text-5xl font-bold text-white">{villages.length}</p>
-              <p className="text-primary-300 text-xs mt-2">Registered on platform</p>
+              <p className="text-primary-300 text-xs mt-2">{t('superadmin.registered_on_platform')}</p>
             </div>
             <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 shadow-soft">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">Pending Villages</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">{t('superadmin.pending_villages')}</p>
                 <div className="w-9 h-9 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center">
                   <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -655,11 +673,11 @@ export default function SuperadminDashboard() {
                 </div>
               </div>
               <p className="text-5xl font-bold text-amber-500 dark:text-amber-400">{pendingVillages.length}</p>
-              <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">Awaiting approval</p>
+              <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">{t('superadmin.awaiting_approval')}</p>
             </div>
             <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 shadow-soft">
               <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">Pending Admins</p>
+                <p className="text-xs font-semibold uppercase tracking-wider text-text-muted dark:text-dark-text-muted">{t('superadmin.pending_admins')}</p>
                 <div className="w-9 h-9 bg-sky-100 dark:bg-sky-900/30 rounded-xl flex items-center justify-center">
                   <svg className="w-4 h-4 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -667,7 +685,7 @@ export default function SuperadminDashboard() {
                 </div>
               </div>
               <p className="text-5xl font-bold text-sky-500 dark:text-sky-400">{pendingAdmins.length}</p>
-              <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">Awaiting verification</p>
+              <p className="text-text-muted dark:text-dark-text-muted text-xs mt-2">{t('superadmin.awaiting_verification')}</p>
             </div>
           </div>
         )}
@@ -690,7 +708,7 @@ export default function SuperadminDashboard() {
                     : 'bg-white dark:bg-dark-surface border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary hover:border-primary-300 dark:hover:border-primary-700 hover:text-primary-600 dark:hover:text-primary-400'
                 }`}
               >
-                {tab.label}
+                {t(tab.labelKey)}
                 {count !== null && count > 0 && (
                   <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                     activeTab === tab.key
@@ -772,11 +790,10 @@ export default function SuperadminDashboard() {
                 </svg>
               </div>
               <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary mb-2">
-                Delete Village
+                {t('superadmin.delete_village')}
               </h2>
               <p className="text-text-secondary dark:text-dark-text-secondary text-sm">
-                Are you sure you want to delete <span className="font-semibold text-text-primary dark:text-dark-text-primary">"{deleteTarget.name}"</span>?
-                This action cannot be undone and will permanently remove the village from the system.
+                {t('superadmin.delete_confirmation_message', { name: deleteTarget.name })}
               </p>
             </div>
             <div className="flex gap-3">
@@ -787,13 +804,13 @@ export default function SuperadminDashboard() {
                 }}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200 font-medium"
               >
-                Cancel
+                {t('superadmin.cancel')}
               </button>
               <button
                 onClick={confirmDeleteVillage}
                 className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white transition-all duration-200 font-medium shadow-soft"
               >
-                Delete Village
+                {t('superadmin.delete_village_button')}
               </button>
             </div>
           </div>
@@ -818,17 +835,17 @@ export default function SuperadminDashboard() {
               </div>
               <div>
                 <p className="text-sm font-bold text-white">GramVartha</p>
-                <p className="text-xs text-primary-300">Superadmin Control Panel</p>
+                <p className="text-xs text-primary-300">{t('superadmin.superadmin_control_panel')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
               <span className="w-2 h-2 bg-primary-400 rounded-full animate-pulse" />
               <span className="text-xs text-white/60 font-medium">
-                {villages.length} villages · {totalPending} pending actions
+                {villages.length} {t('superadmin.villages_lower')} · {totalPending} {t('superadmin.pending_actions')}
               </span>
             </div>
             <p className="text-xs text-white/30">
-              © {new Date().getFullYear()} GramVartha. All rights reserved.
+              © {new Date().getFullYear()} GramVartha. {t('superadmin.all_rights_reserved')}
             </p>
           </div>
         </div>

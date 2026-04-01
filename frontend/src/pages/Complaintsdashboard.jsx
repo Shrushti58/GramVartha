@@ -1,23 +1,24 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 // Get API URL from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
+// ─── Constants with translation keys ────────────────────────────────────────────────
 
 const FILTER_TABS = [
-  { key: "all", label: "All" },
-  { key: "pending", label: "Pending" },
-  { key: "in-progress", label: "In Progress" },
-  { key: "resolved", label: "Resolved" },
-  { key: "rejected", label: "Rejected" },
+  { key: "all", labelKey: "complaints.filters.all" },
+  { key: "pending", labelKey: "complaints.filters.pending" },
+  { key: "in-progress", labelKey: "complaints.filters.in_progress" },
+  { key: "resolved", labelKey: "complaints.filters.resolved" },
+  { key: "rejected", labelKey: "complaints.filters.rejected" },
 ];
 
 const STATUS_CFG = {
   pending: {
-    label: "Pending",
+    labelKey: "complaints.status.pending",
     bg: "bg-amber-100 dark:bg-amber-900/30",
     text: "text-amber-700 dark:text-amber-400",
     border: "border-l-amber-500",
@@ -25,7 +26,7 @@ const STATUS_CFG = {
     accent: "from-amber-50/20 dark:from-amber-950/10",
   },
   "in-progress": {
-    label: "In Progress",
+    labelKey: "complaints.status.in_progress",
     bg: "bg-blue-100 dark:bg-blue-900/30",
     text: "text-blue-700 dark:text-blue-400",
     border: "border-l-blue-500",
@@ -33,7 +34,7 @@ const STATUS_CFG = {
     accent: "from-blue-50/20 dark:from-blue-950/10",
   },
   resolved: {
-    label: "Resolved",
+    labelKey: "complaints.status.resolved",
     bg: "bg-green-100 dark:bg-green-900/30",
     text: "text-green-700 dark:text-green-400",
     border: "border-l-green-500",
@@ -41,7 +42,7 @@ const STATUS_CFG = {
     accent: "from-green-50/20 dark:from-green-950/10",
   },
   rejected: {
-    label: "Rejected",
+    labelKey: "complaints.status.rejected",
     bg: "bg-red-100 dark:bg-red-900/30",
     text: "text-red-700 dark:text-red-400",
     border: "border-l-red-500",
@@ -52,13 +53,13 @@ const STATUS_CFG = {
 
 const TYPE_CFG = {
   issue: {
-    label: "Issue",
+    labelKey: "complaints.type.issue",
     bg: "bg-red-100 dark:bg-red-900/30",
     text: "text-red-700 dark:text-red-400",
     icon: "M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z",
   },
   suggestion: {
-    label: "Suggestion",
+    labelKey: "complaints.type.suggestion",
     bg: "bg-purple-100 dark:bg-purple-900/30",
     text: "text-purple-700 dark:text-purple-400",
     icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z",
@@ -149,10 +150,7 @@ function ComplaintCardSkeleton() {
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
       <div className="flex items-stretch gap-0 min-h-[96px]">
-        {/* Thumbnail skeleton */}
         <div className="w-28 sm:w-36 flex-shrink-0 bg-gray-200 dark:bg-gray-700" />
-        
-        {/* Content skeleton */}
         <div className="flex-1 px-4 py-3.5">
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex items-center gap-1.5">
@@ -177,6 +175,8 @@ function ComplaintCardSkeleton() {
 // ─── Image Lightbox (in-page, no redirect) ────────────────────────────────────
 
 function Lightbox({ src, alt, onClose }) {
+  const { t } = useTranslation();
+  
   useEffect(() => {
     const handler = (e) => {
       if (e.key === "Escape") onClose();
@@ -215,7 +215,7 @@ function Lightbox({ src, alt, onClose }) {
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-          Close
+          {t('complaints.lightbox.close')}
         </button>
         <img
           src={src}
@@ -232,6 +232,7 @@ function Lightbox({ src, alt, onClose }) {
 // ─── Complaint Image with expand button ──────────────────────────────────────
 
 function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
+  const { t } = useTranslation();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const jpgSrc = toJpg(src);
 
@@ -270,7 +271,7 @@ function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
                 d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
               />
             </svg>
-            View full image
+            {t('complaints.image.view_full')}
           </span>
         </button>
       </div>
@@ -289,6 +290,8 @@ function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
 // ─── Upload zone ──────────────────────────────────────────────────────────────
 
 function UploadZone({ file, onChange }) {
+  const { t } = useTranslation();
+  
   return (
     <label className="flex items-center gap-3 p-3 bg-accent-mist dark:bg-dark-surface2 border border-dashed border-border dark:border-dark-border rounded-xl cursor-pointer hover:border-primary-400 transition-colors">
       <div className="w-8 h-8 rounded-lg bg-white dark:bg-dark-surface flex items-center justify-center flex-shrink-0">
@@ -313,10 +316,10 @@ function UploadZone({ file, onChange }) {
       </div>
       <div>
         <p className="text-xs font-semibold text-text-primary dark:text-dark-text-primary">
-          {file ? file.name : "Attach resolution photo"}
+          {file ? file.name : t('complaints.upload.attach_photo')}
         </p>
         <p className="text-[11px] text-text-muted dark:text-dark-text-muted">
-          JPG or PNG · max 5 MB
+          {t('complaints.upload.file_requirements')}
         </p>
       </div>
       <input
@@ -338,6 +341,7 @@ function InlineDetail({
   updatingStatus,
   resolving,
 }) {
+  const { t } = useTranslation();
   const [newStatus, setNewStatus] = useState(complaint.status);
   const [showResolveForm, setShowResolveForm] = useState(false);
   const [resolutionFile, setResolutionFile] = useState(null);
@@ -367,6 +371,12 @@ function InlineDetail({
     </p>
   );
 
+  const statusOptions = [
+    { value: "pending", labelKey: "complaints.status.pending" },
+    { value: "in-progress", labelKey: "complaints.status.in_progress" },
+    { value: "rejected", labelKey: "complaints.status.rejected" },
+  ];
+
   return (
     <div
       onClick={(e) => e.stopPropagation()}
@@ -375,7 +385,7 @@ function InlineDetail({
       {/* AI Verification */}
       {complaint.aiVerification && (
         <div>
-          <SectionLabel>AI Verification</SectionLabel>
+          <SectionLabel>{t('complaints.detail.ai_verification')}</SectionLabel>
           <div className="flex gap-3 mb-3">
             <div className="flex-1 bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3 flex flex-col items-center gap-1">
               <span
@@ -384,7 +394,7 @@ function InlineDetail({
                 {complaint.aiVerification.isValidIssue ? "✓" : "✗"}
               </span>
               <span className="text-[11px] text-text-muted dark:text-dark-text-muted">
-                Valid issue
+                {t('complaints.detail.valid_issue')}
               </span>
             </div>
             <div className="flex-1 bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3 flex flex-col items-center gap-1">
@@ -392,7 +402,7 @@ function InlineDetail({
                 {fs}%
               </span>
               <span className="text-[11px] text-text-muted dark:text-dark-text-muted">
-                Fraud score
+                {t('complaints.detail.fraud_score')}
               </span>
             </div>
           </div>
@@ -427,10 +437,10 @@ function InlineDetail({
       {/* Resolution verification */}
       {complaint.resolutionVerification && (
         <div>
-          <SectionLabel>Resolution Verification</SectionLabel>
+          <SectionLabel>{t('complaints.detail.resolution_verification')}</SectionLabel>
           <div className="flex items-center justify-between bg-accent-mist dark:bg-dark-surface2 rounded-xl px-3 py-2.5 mb-2">
             <span className="text-xs text-text-muted dark:text-dark-text-muted">
-              Score
+              {t('complaints.detail.score')}
             </span>
             <span
               className={`text-xl font-bold ${complaint.resolutionVerification.score >= 70 ? "text-green-600 dark:text-green-400" : "text-red-500"}`}
@@ -452,7 +462,7 @@ function InlineDetail({
               {complaint.imageUrl && (
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted dark:text-dark-text-muted mb-1.5">
-                    Before
+                    {t('complaints.detail.before')}
                   </p>
                   <ComplaintImage
                     src={complaint.imageUrl}
@@ -463,7 +473,7 @@ function InlineDetail({
               )}
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted dark:text-dark-text-muted mb-1.5">
-                  After
+                  {t('complaints.detail.after')}
                 </p>
                 <ComplaintImage
                   src={complaint.resolvedImageUrl}
@@ -479,7 +489,7 @@ function InlineDetail({
       {/* Location */}
       {complaint.location?.lat && (
         <div>
-          <SectionLabel>Location</SectionLabel>
+          <SectionLabel>{t('complaints.detail.location')}</SectionLabel>
           <div className="flex items-center justify-between bg-accent-mist dark:bg-dark-surface2 rounded-xl px-3 py-2.5">
             <span className="text-xs font-mono font-semibold text-text-primary dark:text-dark-text-primary">
               {complaint.location.lat.toFixed(6)},{" "}
@@ -499,7 +509,7 @@ function InlineDetail({
               }}
               className="text-xs font-semibold text-primary-600 dark:text-primary-400 flex items-center gap-1 hover:underline"
             >
-              View on Map
+              {t('complaints.detail.view_on_map')}
               <svg
                 className="w-3 h-3"
                 fill="none"
@@ -526,16 +536,16 @@ function InlineDetail({
       {/* Actions */}
       {complaint.status !== "resolved" ? (
         <div>
-          <SectionLabel>Update Status</SectionLabel>
+          <SectionLabel>{t('complaints.detail.update_status')}</SectionLabel>
           <div className="flex gap-2 mb-3">
             <select
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
               className="flex-1 text-xs px-3 py-2 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface text-text-primary dark:text-dark-text-primary outline-none focus:border-primary-400 transition-colors"
             >
-              {["pending", "in-progress", "rejected"].map((s) => (
-                <option key={s} value={s}>
-                  {STATUS_CFG[s]?.label || s}
+              {statusOptions.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {t(s.labelKey)}
                 </option>
               ))}
             </select>
@@ -545,7 +555,7 @@ function InlineDetail({
               className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-soft"
             >
               {updatingStatus && <IcoSpinner size={12} />}
-              Save
+              {t('complaints.detail.save')}
             </button>
           </div>
 
@@ -558,14 +568,13 @@ function InlineDetail({
                 }}
                 className="w-full py-2.5 rounded-xl text-xs font-semibold border border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2 text-text-primary dark:text-dark-text-primary hover:border-primary-400 transition-all"
               >
-                {showResolveForm ? "Cancel" : "Mark as Resolved →"}
+                {showResolveForm ? t('complaints.detail.cancel') : t('complaints.detail.mark_resolved')}
               </button>
 
               {showResolveForm && (
                 <div className="mt-3 flex flex-col gap-3">
                   <p className="text-xs text-text-muted dark:text-dark-text-muted leading-relaxed">
-                    Upload a photo proving the issue is fixed. AI will verify
-                    it.
+                    {t('complaints.detail.resolution_instruction')}
                   </p>
                   <UploadZone
                     file={resolutionFile}
@@ -586,10 +595,10 @@ function InlineDetail({
                     {resolving ? (
                       <>
                         <IcoSpinner size={13} />
-                        Verifying with AI…
+                        {t('complaints.detail.verifying_ai')}
                       </>
                     ) : (
-                      "Submit Resolution"
+                      t('complaints.detail.submit_resolution')
                     )}
                   </button>
                 </div>
@@ -616,10 +625,10 @@ function InlineDetail({
           </div>
           <div>
             <p className="text-xs font-semibold text-green-800 dark:text-green-300">
-              Resolved
+              {t('complaints.detail.resolved')}
             </p>
             <p className="text-[11px] text-green-700 dark:text-green-400">
-              This complaint has been closed
+              {t('complaints.detail.closed')}
             </p>
           </div>
         </div>
@@ -654,6 +663,8 @@ function Pill({ bg, text, icon, children }) {
 // ─── Fraud gauge ──────────────────────────────────────────────────────────────
 
 function FraudGauge({ score }) {
+  const { t } = useTranslation();
+  
   return (
     <div
       className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs ${fraudBg(score)}`}
@@ -686,7 +697,7 @@ function FraudGauge({ score }) {
         {score}%
       </span>
       <span className="text-text-muted dark:text-dark-text-muted font-medium">
-        fraud
+        {t('complaints.fraud')}
       </span>
     </div>
   );
@@ -703,6 +714,7 @@ function ComplaintCard({
   updatingStatus,
   resolving,
 }) {
+  const { t } = useTranslation();
   const typeCfg = TYPE_CFG[complaint.type] || TYPE_CFG.issue;
   const statusCfg = STATUS_CFG[complaint.status] || STATUS_CFG.pending;
   const fraudScore = complaint.aiVerification?.fraudScore ?? 0;
@@ -748,20 +760,20 @@ function ComplaintCard({
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <Pill bg={typeCfg.bg} text={typeCfg.text} icon={typeCfg.icon}>
-                  {typeCfg.label}
+                  {t(typeCfg.labelKey)}
                 </Pill>
                 <Pill bg={statusCfg.bg} text={statusCfg.text}>
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot} mr-0.5 inline-block`}
                   />
-                  {statusCfg.label}
+                  {t(statusCfg.labelKey)}
                 </Pill>
                 {fraudScore > 60 && (
                   <Pill
                     bg="bg-red-100 dark:bg-red-900/30"
                     text="text-red-700 dark:text-red-400"
                   >
-                    ⚠ High Risk
+                    ⚠ {t('complaints.high_risk')}
                   </Pill>
                 )}
               </div>
@@ -853,20 +865,20 @@ function ComplaintCard({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap mb-2">
                   <Pill bg={typeCfg.bg} text={typeCfg.text} icon={typeCfg.icon}>
-                    {typeCfg.label}
+                    {t(typeCfg.labelKey)}
                   </Pill>
                   <Pill bg={statusCfg.bg} text={statusCfg.text}>
                     <span
                       className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot} mr-0.5 inline-block`}
                     />
-                    {statusCfg.label}
+                    {t(statusCfg.labelKey)}
                   </Pill>
                   {fraudScore > 60 && (
                     <Pill
                       bg="bg-red-100 dark:bg-red-900/30"
                       text="text-red-700 dark:text-red-400"
                     >
-                      ⚠ High Risk
+                      ⚠ {t('complaints.high_risk')}
                     </Pill>
                   )}
                 </div>
@@ -939,6 +951,7 @@ function ComplaintCard({
 // ─── Expanded hero image with lightbox trigger ────────────────────────────────
 
 function ComplaintImageExpanded({ src, alt }) {
+  const { t } = useTranslation();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const jpgSrc = toJpg(src);
 
@@ -969,7 +982,7 @@ function ComplaintImageExpanded({ src, alt }) {
               d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
             />
           </svg>
-          View full
+          {t('complaints.image.view_full')}
         </button>
       </div>
       {lightboxOpen && (
@@ -986,6 +999,7 @@ function ComplaintImageExpanded({ src, alt }) {
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export default function ComplaintsDashboard() {
+  const { t } = useTranslation();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -1007,7 +1021,7 @@ export default function ComplaintsDashboard() {
       });
       setComplaints(Array.isArray(res.data) ? res.data : []);
     } catch {
-      toast.error("Failed to load complaints");
+      toast.error(t('complaints.errors.load_failed'));
       setComplaints([]);
     } finally {
       setLoading(false);
@@ -1029,25 +1043,25 @@ export default function ComplaintsDashboard() {
           { status: newStatus },
           { withCredentials: true },
         );
-        toast.success("Status updated");
+        toast.success(t('complaints.success.status_updated'));
         setComplaints((prev) =>
           prev.map((c) =>
             c._id === expandedId ? { ...c, status: newStatus } : c,
           ),
         );
       } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to update status");
+        toast.error(err.response?.data?.message || t('complaints.errors.update_failed'));
       } finally {
         setUpdatingStatus(false);
       }
     },
-    [expandedId],
+    [expandedId, t],
   );
 
   const handleResolve = useCallback(
     async (file) => {
       if (!expandedId || !file) {
-        toast.error("Please attach a resolution photo");
+        toast.error(t('complaints.errors.photo_required'));
         return;
       }
       try {
@@ -1062,19 +1076,19 @@ export default function ComplaintsDashboard() {
             withCredentials: true,
           },
         );
-        toast.success("Complaint marked as resolved");
+        toast.success(t('complaints.success.resolved'));
         setComplaints((prev) =>
           prev.map((c) => (c._id === res.data._id ? res.data : c)),
         );
       } catch (err) {
         toast.error(
-          err.response?.data?.message || "Failed to resolve complaint",
+          err.response?.data?.message || t('complaints.errors.resolve_failed'),
         );
       } finally {
         setResolving(false);
       }
     },
-    [expandedId],
+    [expandedId, t],
   );
 
   // ── Derived ────────────────────────────────────────────────────────────────
@@ -1104,35 +1118,35 @@ export default function ComplaintsDashboard() {
 
   const STAT_CARDS = [
     {
-      label: "Total Complaints",
+      labelKey: "complaints.stats.total",
       value: stats.total,
       bgCls: "bg-green-100 dark:bg-green-900/30",
       iconCls: "text-green-600 dark:text-green-400",
       icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
     },
     {
-      label: "Pending",
+      labelKey: "complaints.stats.pending",
       value: stats.pending,
       bgCls: "bg-amber-100 dark:bg-amber-900/30",
       iconCls: "text-amber-600 dark:text-amber-400",
       icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z",
     },
     {
-      label: "In Progress",
+      labelKey: "complaints.stats.in_progress",
       value: stats.inProgress,
       bgCls: "bg-blue-100 dark:bg-blue-900/30",
       iconCls: "text-blue-600 dark:text-blue-400",
       icon: "M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15",
     },
     {
-      label: "Resolved",
+      labelKey: "complaints.stats.resolved",
       value: stats.resolved,
       bgCls: "bg-green-100 dark:bg-green-900/30",
       iconCls: "text-green-600 dark:text-green-400",
       icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
     },
     {
-      label: "Rejected",
+      labelKey: "complaints.stats.rejected",
       value: stats.rejected,
       bgCls: "bg-red-100 dark:bg-red-900/30",
       iconCls: "text-red-600 dark:text-red-400",
@@ -1147,10 +1161,10 @@ export default function ComplaintsDashboard() {
       {/* Page header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">
-          Complaints
+          {t('complaints.title')}
         </h1>
         <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
-          Review, track and resolve citizen complaints
+          {t('complaints.subtitle')}
         </p>
       </div>
 
@@ -1167,7 +1181,7 @@ export default function ComplaintsDashboard() {
         ) : (
           STAT_CARDS.map((s) => (
             <div
-              key={s.label}
+              key={s.labelKey}
               className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft"
             >
               <div
@@ -1187,7 +1201,7 @@ export default function ComplaintsDashboard() {
                 {s.value}
               </p>
               <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">
-                {s.label}
+                {t(s.labelKey)}
               </p>
             </div>
           ))
@@ -1200,25 +1214,25 @@ export default function ComplaintsDashboard() {
           <FilterTabSkeleton />
         ) : (
           <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
-            {FILTER_TABS.map((t) => (
+            {FILTER_TABS.map((filter) => (
               <button
-                key={t.key}
-                onClick={() => setActiveTab(t.key)}
+                key={filter.key}
+                onClick={() => setActiveTab(filter.key)}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
-                  activeTab === t.key
+                  activeTab === filter.key
                     ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
                     : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
                 }`}
               >
-                {t.label}
+                {t(filter.labelKey)}
                 <span
                   className={`text-[10px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full ${
-                    activeTab === t.key
+                    activeTab === filter.key
                       ? "bg-white/20 text-white"
                       : "bg-accent-mist dark:bg-dark-surface2 text-text-muted dark:text-dark-text-muted"
                   }`}
                 >
-                  {tabCount(t.key)}
+                  {tabCount(filter.key)}
                 </span>
               </button>
             ))}
@@ -1229,17 +1243,21 @@ export default function ComplaintsDashboard() {
           <TypeFilterSkeleton />
         ) : (
           <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
-            {["all", "issue", "suggestion"].map((t) => (
+            {[
+              { key: "all", labelKey: "complaints.type.all" },
+              { key: "issue", labelKey: "complaints.type.issue" },
+              { key: "suggestion", labelKey: "complaints.type.suggestion" },
+            ].map((type) => (
               <button
-                key={t}
-                onClick={() => setTypeFilter(t)}
+                key={type.key}
+                onClick={() => setTypeFilter(type.key)}
                 className={`px-4 py-2 rounded-lg text-xs font-semibold capitalize transition-all duration-150 ${
-                  typeFilter === t
+                  typeFilter === type.key
                     ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
                     : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
                 }`}
               >
-                {t === "all" ? "All Types" : t}
+                {t(type.labelKey)}
               </button>
             ))}
           </div>
@@ -1273,10 +1291,10 @@ export default function ComplaintsDashboard() {
             </svg>
           </div>
           <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">
-            No complaints found
+            {t('complaints.empty.title')}
           </p>
           <p className="text-xs text-text-muted dark:text-dark-text-muted">
-            Try changing your filters
+            {t('complaints.empty.message')}
           </p>
         </div>
       ) : (

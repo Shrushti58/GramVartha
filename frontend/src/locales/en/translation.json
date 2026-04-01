@@ -79,72 +79,7 @@
       "phone_required": "Phone number is required.",
       "success": "Registration successful! Redirecting to dashboard...",
       "error": "Something went wrong! Please try again."
-    }
-  },
-  "village": {
-    "register": {
-      "title": "Village Registration",
-      "badge": "Village Portal",
-      "step": "Step",
-      "of": "of",
-      "steps": {
-        "village_info": "Village Info",
-        "admin_account": "Admin Account",
-        "document_proof": "Document Proof"
-      },
-      "step_descriptions": {
-        "village_info": "Tell us about your village and its location",
-        "admin_account": "Set up your admin credentials",
-        "document_proof": "Upload proof of your village affiliation"
-      },
-      "village_name": "Village Name",
-      "village_name_placeholder": "e.g. Shirpur",
-      "district": "District",
-      "district_placeholder": "e.g. Nashik",
-      "state": "State",
-      "state_placeholder": "e.g. Maharashtra",
-      "pincode": "Pincode",
-      "pincode_placeholder": "e.g. 422001",
-      "coordinates": "Coordinates",
-      "auto_detect": "Auto-detect",
-      "detecting": "Detecting...",
-      "latitude_placeholder": "Latitude (18.5204)",
-      "longitude_placeholder": "Longitude (73.8567)",
-      "email": "Email Address",
-      "email_placeholder": "admin@gramvartha.in",
-      "password": "Password",
-      "password_placeholder": "Create a strong password",
-      "confirm_password": "Confirm Password",
-      "confirm_placeholder": "Re-enter your password",
-      "continue": "Continue",
-      "back": "Back",
-      "submit": "Submit",
-      "submitting": "Submitting...",
-      "document_description": "Upload an image proving your village affiliation — e.g. Gram Panchayat ID, Aadhaar card, or residence proof.",
-      "click_to_upload": "Click to upload",
-      "file_requirements": "JPG, PNG only · Max 5MB",
-      "change": "Change",
-      "preview": "Preview",
-      "review_note": "Your registration will be reviewed by the superadmin. Once approved, you'll become the admin of your village.",
-      "secure_access": "Secure, encrypted access",
-      "back_home": "Back to homepage",
-      "location_detected": "Location detected successfully!",
-      "success_message": "Village registration submitted! Awaiting superadmin approval.",
-      "errors": {
-        "geolocation_unsupported": "Geolocation is not supported by your browser",
-        "location_failed": "Unable to detect location. Please enter manually.",
-        "coordinates_required": "Please fill all required fields including coordinates",
-        "fields_required": "Please fill all required fields",
-        "password_mismatch": "Passwords do not match",
-        "password_length": "Password must be at least 6 characters",
-        "invalid_file_type": "Please select a valid image file (JPG, PNG only)",
-        "file_too_large": "Image size should be less than 5MB",
-        "document_required": "Please upload a document",
-        "registration_failed": "Registration failed"
-      }
-    }
-  },
-  "officials": {
+    },
     "profile": {
       "title": "My Profile",
       "subtitle": "Manage your official account and profile photo",
@@ -312,5 +247,948 @@
       "quote": "Every citizen has the right to know and participate in their village's development journey.",
       "author": "GramVartha Team"
     }
+  },
+  "complaints": {
+    "title": "Complaints",
+    "subtitle": "Review, track and resolve citizen complaints",
+    "fraud": "fraud",
+    "high_risk": "High Risk",
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "rejected": "Rejected"
+    },
+    "type": {
+      "all": "All Types",
+      "issue": "Issue",
+      "suggestion": "Suggestion"
+    },
+    "status": {
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "rejected": "Rejected"
+    },
+    "stats": {
+      "total": "Total Complaints",
+      "pending": "Pending",
+      "in_progress": "In Progress",
+      "resolved": "Resolved",
+      "rejected": "Rejected"
+    },
+    "image": {
+      "view_full": "View full image"
+    },
+    "lightbox": {
+      "close": "Close"
+    },
+    "upload": {
+      "attach_photo": "Attach resolution photo",
+      "file_requirements": "JPG or PNG · max 5 MB"
+    },
+    "detail": {
+      "ai_verification": "AI Verification",
+      "valid_issue": "Valid issue",
+      "fraud_score": "Fraud score",
+      "resolution_verification": "Resolution Verification",
+      "score": "Score",
+      "before": "Before",
+      "after": "After",
+      "location": "Location",
+      "view_on_map": "View on Map",
+      "update_status": "Update Status",
+      "save": "Save",
+      "cancel": "Cancel",
+      "mark_resolved": "Mark as Resolved →",
+      "resolution_instruction": "Upload a photo proving the issue is fixed. AI will verify it.",
+      "verifying_ai": "Verifying with AI…",
+      "submit_resolution": "Submit Resolution",
+      "resolved": "Resolved",
+      "closed": "This complaint has been closed"
+    },
+    "empty": {
+      "title": "No complaints found",
+      "message": "Try changing your filters"
+    },
+    "errors": {
+      "load_failed": "Failed to load complaints",
+      "update_failed": "Failed to update status",
+      "photo_required": "Please attach a resolution photo",
+      "resolve_failed": "Failed to resolve complaint"
+    },
+    "success": {
+      "status_updated": "Status updated",
+      "resolved": "Complaint marked as resolved"
+    }
+  },
+  "village": {
+    "register": {
+      "title": "Village Registration",
+      "badge": "Village Portal",
+      "step": "Step",
+      "of": "of",
+      "steps": {
+        "village_info": "Village Info",
+        "admin_account": "Admin Account",
+        "document_proof": "Document Proof"
+      },
+      "step_descriptions": {
+        "village_info": "Tell us about your village and its location",
+        "admin_account": "Set up your admin credentials",
+        "document_proof": "Upload proof of your village affiliation"
+      },
+      "village_name": "Village Name",
+      "village_name_placeholder": "e.g. Shirpur",
+      "district": "District",
+      "district_placeholder": "e.g. Nashik",
+      "state": "State",
+      "state_placeholder": "e.g. Maharashtra",
+      "pincode": "Pincode",
+      "pincode_placeholder": "e.g. 422001",
+      "coordinates": "Coordinates",
+      "auto_detect": "Auto-detect",
+      "detecting": "Detecting...",
+      "latitude_placeholder": "Latitude (18.5204)",
+      "longitude_placeholder": "Longitude (73.8567)",
+      "email": "Email Address",
+      "email_placeholder": "admin@gramvartha.in",
+      "password": "Password",
+      "password_placeholder": "Create a strong password",
+      "confirm_password": "Confirm Password",
+      "confirm_placeholder": "Re-enter your password",
+      "continue": "Continue",
+      "back": "Back",
+      "submit": "Submit",
+      "submitting": "Submitting...",
+      "document_description": "Upload an image proving your village affiliation — e.g. Gram Panchayat ID, Aadhaar card, or residence proof.",
+      "click_to_upload": "Click to upload",
+      "file_requirements": "JPG, PNG only · Max 5MB",
+      "change": "Change",
+      "preview": "Preview",
+      "review_note": "Your registration will be reviewed by the superadmin. Once approved, you'll become the admin of your village.",
+      "secure_access": "Secure, encrypted access",
+      "back_home": "Back to homepage",
+      "location_detected": "Location detected successfully!",
+      "success_message": "Village registration submitted! Awaiting superadmin approval.",
+      "errors": {
+        "geolocation_unsupported": "Geolocation is not supported by your browser",
+        "location_failed": "Unable to detect location. Please enter manually.",
+        "coordinates_required": "Please fill all required fields including coordinates",
+        "fields_required": "Please fill all required fields",
+        "password_mismatch": "Passwords do not match",
+        "password_length": "Password must be at least 6 characters",
+        "invalid_file_type": "Please select a valid image file (JPG, PNG only)",
+        "file_too_large": "Image size should be less than 5MB",
+        "document_required": "Please upload a document",
+        "registration_failed": "Registration failed"
+      }
+    }
+  },
+  "active_readers": "Active Readers",
+  "villages_served": "Villages Served",
+  "free_access": "Free Access",
+  "about_us": "About Us",
+  "governance_title": "Democratizing Rural News",
+  "governance_desc": "GramVartha is a community-driven platform that brings verified local news to rural communities. We believe access to information should be free, unbiased, and available in every village.",
+  "actively_serving": "Actively Serving Rural Communities",
+  "vision": {
+    "quote": "Every village deserves a voice. Every story matters.",
+    "author": "— GramVartha Team"
+  },
+  "feature": {
+    "no_login": "No login required — instant access",
+    "local_lang": "Available in local languages",
+    "verified": "Verified by community journalists"
+  },
+  "common": {
+    "or": "or",
+    "back_home": "Back to Home",
+    "new": "New",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "login": {
+    "title": "Sign In",
+    "heading": "Sign in to your account",
+    "subheading": "Welcome to GramVartha Admin Panel",
+    "email": "Email Address",
+    "email_placeholder": "Enter your email",
+    "password": "Password",
+    "password_placeholder": "Enter your password",
+    "button": "Sign In",
+    "loading": "Signing in...",
+    "success": "Login successful! Redirecting...",
+    "error": "Login failed. Please check your credentials.",
+    "role_error": "Unauthorized role. Access denied.",
+    "switch": "Don't have an account? Sign up",
+    "secure_portal": "Secure Portal",
+    "secure_access": "Secure Admin Access"
+  },
+  "register": {
+    "title": "Sign Up",
+    "heading": "Create a new account",
+    "subheading": "Join GramVartha Administration",
+    "button": "Sign Up",
+    "loading": "Signing up...",
+    "success": "Registration successful! Please sign in.",
+    "error": "Registration failed. Please try again.",
+    "switch": "Already have an account? Sign in"
+  },
+  "nav_about": "About",
+  "nav_features": "Features",
+  "nav_officials_login": "Officials Login",
+  "nav_admin_login": "Admin Login",
+  "login_portals": "Login Portals",
+  "serving_rural_communities": "Serving Rural Communities",
+  "welcome_to": "Welcome to",
+  "brand": "GramVartha",
+  "tagline": "Your village's voice. Verified local news, right at your fingertips. No login, no barriers — just the truth.",
+  "scan_qr_view_notices": "Scan QR to View Notices",
+  "register_village": "Register Village",
+  "features_header": "Why GramVartha",
+  "features_title": "Made for rural India, powered by community",
+  "feature1_title": "QR Code Notices",
+  "feature1_tag": "Instant Access",
+  "feature1_desc": "Scan any QR code to instantly view official village notices, announcements, and updates — no login required.",
+  "feature2_title": "Local Language Support",
+  "feature2_tag": "In Your Language",
+  "feature2_desc": "Content available in Marathi and other local languages, ensuring every villager can read and understand important information.",
+  "feature3_title": "Verified by Journalists",
+  "feature3_tag": "Trusted Content",
+  "feature3_desc": "All notices and news are verified by trained community journalists before publishing, ensuring accuracy and reliability.",
+  "feature4_title": "Multi-Platform Access",
+  "feature4_tag": "Any Device",
+  "feature4_desc": "Access GramVartha from any smartphone, tablet, or computer — designed to work even on low-bandwidth connections.",
+  "footer_cta_title": "Ready to bring transparency to your village?",
+  "footer_cta_desc": "Join the growing network of villages using GramVartha.",
+  "footer_description": "GramVartha is a community-driven platform bringing verified local news and official notices to rural communities across India.",
+  "footer_live_text": "Actively Serving Rural India",
+  "footer_platform": "Platform",
+  "footer_portals": "Portals",
+  "footer_rights": "© 2025 GramVartha. All rights reserved.",
+  "dashboard": {
+    "village_admin_portal": "Village Admin Portal",
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening",
+    "pending_review_label": "pending",
+    "total_officials": "Total Officials",
+    "pending_review": "Pending Review",
+    "active_notices": "Active Notices",
+    "approved": "Approved",
+    "needs_approval": "Needs your approval",
+    "see_all": "See all",
+    "recent_notices": "Recent Notices",
+    "all": "All",
+    "no_notices_yet": "No notices yet.",
+    "publish_first_notice": "Publish your first notice",
+    "pending_approvals": "Pending Approvals",
+    "pending_sub": "{{count}} official waiting for review",
+    "pending_sub_plural": "{{count}} officials waiting for review",
+    "all_caught_up": "All caught up!",
+    "no_pending": "No pending approvals right now.",
+    "officials_title": "Officials",
+    "officials_sub": "{{count}} registered official",
+    "officials_sub_plural": "{{count}} registered officials",
+    "no_officials": "No officials yet",
+    "no_officials_sub": "Approved officials will appear here.",
+    "notices_title": "Notices",
+    "notices_sub": "{{count}} published notice",
+    "notices_sub_plural": "{{count}} published notices",
+    "new_notice": "New Notice",
+    "no_notices": "No notices yet",
+    "no_notices_sub": "Publish your first notice to inform citizens.",
+    "publish_notice": "Publish Notice",
+    "qr_title": "QR Code",
+    "qr_sub": "Citizens scan this to access village notices instantly",
+    "village_qr": "Village QR Code",
+    "qr_description": "Share with citizens for instant notice access",
+    "village": "Village",
+    "generated": "Generated",
+    "open_full": "Open Full",
+    "share": "Share",
+    "qr_generate_prompt": "Generate a QR code so citizens can scan and access village notices.",
+    "generate_qr": "Generate QR Code",
+    "work_guide_title": "Work Guide",
+    "work_guide_sub": "Step by step guide for managing your village",
+    "load_failed": "Failed to load dashboard",
+    "approve_success": "Official approved",
+    "approve_failed": "Failed to approve",
+    "reject_success": "Official rejected",
+    "reject_failed": "Failed to reject",
+    "confirm_remove_official": "Remove this official?",
+    "remove_success": "Removed",
+    "remove_failed": "Failed to remove",
+    "confirm_delete_notice": "Delete this notice?",
+    "notice_delete_success": "Notice deleted",
+    "notice_delete_failed": "Failed to delete",
+    "notice_publish_success": "Notice published",
+    "notice_update_success": "Notice updated",
+    "notice_failed": "Failed to save notice",
+    "qr_generate_success": "QR generated",
+    "qr_generate_failed": "Failed to generate QR",
+    "qr_copied": "QR link copied to clipboard",
+    "qr_copy_failed": "Failed to copy QR link",
+    "official_update_success": "Official updated successfully",
+    "official_update_failed": "Failed to update official",
+    "edit_official": "Edit Official",
+    "update_official": "Update Official",
+    "tab_overview": "Overview",
+    "tab_pending": "Pending",
+    "tab_officials": "Officials",
+    "tab_notices": "Notices",
+    "tab_qr": "QR Code",
+    "tab_workguide": "Work Guide",
+    "logout": "Logout",
+    "admin_portal": "Admin Portal",
+    "officials": "officials",
+    "notices": "notices",
+    "pending": "pending",
+    "all_rights": "All rights reserved.",
+     "admin_panel": "Admin Panel"
+  },
+  "notice": {
+    "new_title": "Publish New Notice",
+    "edit_title": "Edit Notice",
+    "title": "Title",
+    "title_placeholder": "Notice title",
+    "description": "Description",
+    "description_placeholder": "Full notice content...",
+    "category": "Category",
+    "priority": "Priority",
+    "status": "Status",
+    "pin_notice": "Pin this notice",
+    "attachment": "Attachment (optional)",
+    "click_to_attach": "Click to attach a file",
+    "saving": "Saving...",
+    "save_changes": "Save Changes",
+    "publish": "Publish Notice",
+    "pinned": "Pinned",
+    "content": "Content",
+    "view_attachment": "View Attachment"
+  },
+  "official": {
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "joined": "Joined",
+    "village": "Village",
+    "document_proof": "Document Proof",
+    "approve": "Approve",
+    "reject": "Reject",
+    "remove": "Remove Official",
+    "status": "Status"
+  },
+  "category": {
+    "general": "General",
+    "development": "Development",
+    "health": "Health",
+    "education": "Education",
+    "agriculture": "Agriculture",
+    "employment": "Employment",
+    "social_welfare": "Social Welfare",
+    "tax_billing": "Tax & Billing",
+    "election": "Election",
+    "meeting": "Meetings"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published",
+    "archived": "Archived",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "workGuide": {
+    "title": "Work Guide",
+    "subtitle": "Help citizens find the right official for their work",
+    "entries": "entries",
+    "entry": "entry",
+    "across": "across",
+    "categories": "categories",
+    "addEntry": "Add Entry",
+    "addFirstEntry": "Add First Entry",
+    "noEntries": "No work guide entries yet",
+    "noEntriesDescription": "Add entries to help citizens find the right official for their work"
+  },
+  "workGuideForm": {
+    "newEntryTitle": "Add New Work Guide Entry",
+    "editEntryTitle": "Edit Work Guide Entry",
+    "fields": {
+      "category": {
+        "label": "Category",
+        "required": true
+      },
+      "workName": {
+        "label": "Work Name",
+        "required": true,
+        "selectPlaceholder": "— Select a work type —",
+        "other": "Other (type your own)",
+        "customPlaceholder": "Type the work name..."
+      },
+      "officerName": {
+        "label": "Officer Name",
+        "required": true,
+        "placeholder": "e.g. Rajesh Patil"
+      },
+      "designation": {
+        "label": "Designation",
+        "required": true
+      },
+      "availableDays": {
+        "label": "Available Days",
+        "days": {
+          "monday": "Mon",
+          "tuesday": "Tue",
+          "wednesday": "Wed",
+          "thursday": "Thu",
+          "friday": "Fri",
+          "saturday": "Sat"
+        }
+      },
+      "timing": {
+        "label": "Timing",
+        "required": true,
+        "placeholder": "e.g. 10:00 AM – 1:00 PM"
+      },
+      "location": {
+        "label": "Location",
+        "required": true,
+        "placeholder": "e.g. Room 2, Panchayat Office"
+      },
+      "documents": {
+        "label": "Documents Required",
+        "helpText": "citizen must bring",
+        "placeholder": "e.g. Aadhar Card",
+        "addButton": "Add"
+      },
+      "searchKeywords": {
+        "label": "Search Keywords",
+        "helpText": "(alternate names, local terms)",
+        "placeholder": "e.g. janam, janm praman patra",
+        "addButton": "Add"
+      },
+      "note": {
+        "label": "Note",
+        "optional": "(optional)",
+        "placeholder": "Any extra info for citizens..."
+      },
+      "active": {
+        "label": "Active",
+        "description": "Citizens can see this entry"
+      }
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "saveChanges": "Save Changes",
+      "addEntry": "Add Entry",
+      "saving": "Saving..."
+    }
+  },
+  "workGuideDelete": {
+    "title": "Delete this entry?",
+    "message": "This cannot be undone. Citizens will no longer see this entry.",
+    "cancel": "Cancel",
+    "confirm": "Delete"
+  },
+  "workGuideItem": {
+    "inactive": "Inactive",
+    "more": "more",
+    "edit": "Edit",
+    "delete": "Delete",
+    "documents": {
+      "moreCount": "+{{count}} more"
+    }
+  },
+  "workGuideErrors": {
+    "loadFailed": "Failed to load work guide",
+    "officerNameRequired": "Officer name is required",
+    "timingRequired": "Timing is required",
+    "locationRequired": "Location is required",
+    "workNameRequired": "Work name is required",
+    "saveFailed": "Failed to save entry",
+    "deleteFailed": "Failed to delete entry",
+    "networkError": "Network error. Please try again"
+  },
+  "workGuideSuccess": {
+    "saveSuccess": "Entry saved successfully",
+    "updateSuccess": "Entry updated successfully",
+    "deleteSuccess": "Entry deleted successfully"
+  },
+  "workGuideSkeleton": {
+    "loading": "Loading..."
+  },
+  "designations": {
+    "sarpanch": "Sarpanch",
+    "gramSevak": "Gram Sevak",
+    "talathiPatwari": "Talathi / Patwari",
+    "clerk": "Clerk",
+    "accountant": "Accountant",
+    "healthWorker": "Health Worker (ASHA)",
+    "anganwadiWorker": "Anganwadi Worker",
+    "panchayatSecretary": "Panchayat Secretary",
+    "engineer": "Engineer / JE",
+    "other": "Other"
+  },
+  "categories": {
+    "certificates": "Certificates & Documents",
+    "landProperty": "Land & Property",
+    "rationSchemes": "Ration & Government Schemes",
+    "waterSanitation": "Water & Sanitation",
+    "roadsInfrastructure": "Roads & Infrastructure",
+    "birthDeath": "Birth & Death Registration",
+    "elections": "Elections",
+    "agriculture": "Agriculture",
+    "health": "Health",
+    "education": "Education",
+    "gramSabha": "Gram Sabha & Administration"
+  },
+  "workNames": {
+    "certificates": {
+      "birth": "Birth Certificate",
+      "death": "Death Certificate",
+      "residence": "Residence / Domicile Certificate",
+      "caste": "Caste Certificate (SC/ST/OBC)",
+      "income": "Income Certificate",
+      "noc": "No Objection Certificate (NOC)",
+      "character": "Character Certificate",
+      "singleStatus": "Single Status Certificate",
+      "solvency": "Solvency Certificate"
+    },
+    "landProperty": {
+      "satbara": "7/12 Extract (Satbara Utara)",
+      "8a": "8A Extract",
+      "propertyTax": "Property Tax Payment & Receipt",
+      "mutation": "Property Mutation (Name Transfer)",
+      "landUse": "Land Use Certificate",
+      "buildingPermission": "Building Permission / Construction NOC",
+      "shopLicense": "Shop / Commercial Establishment License"
+    },
+    "rationSchemes": {
+      "rationCard": "Ration Card (New / Correction / Member Addition)",
+      "pmAwas": "PM Awas Yojana",
+      "pmKisan": "PM Kisan Samman Nidhi",
+      "mgnrega": "MGNREGA Job Card",
+      "pension": "Widow / Old Age / Disability Pension",
+      "scholarship": "Scholarship Applications",
+      "ujjwala": "Ujjwala Yojana (LPG Connection)",
+      "ayushman": "Ayushman Bharat Health Card"
+    },
+    "waterSanitation": {
+      "waterConnection": "New Water Connection",
+      "waterBill": "Water Bill Payment",
+      "handpumpRepair": "Handpump / Borewell Repair Request",
+      "drainage": "Drainage / Sewage Work Request",
+      "odf": "ODF Certificate"
+    },
+    "roadsInfrastructure": {
+      "roadRepair": "Road Repair Request",
+      "streetLight": "Street Light Request",
+      "newRoad": "New Road / Bridge Demand",
+      "constructionQuery": "Construction Work Query"
+    },
+    "birthDeath": {
+      "registerBirth": "Register New Birth",
+      "registerDeath": "Register a Death",
+      "correction": "Correction in Birth / Death Record",
+      "reissue": "Reissue of Certificate"
+    },
+    "elections": {
+      "voterId": "Voter ID Registration Help",
+      "voterList": "Voter List Correction",
+      "pollingBooth": "Polling Booth Information"
+    },
+    "agriculture": {
+      "cropDamage": "Crop Damage Report",
+      "kisanCredit": "Kisan Credit Card Help",
+      "soilHealth": "Soil Health Card",
+      "irrigation": "Irrigation Water Demand",
+      "schemeApplication": "Agriculture Scheme Application"
+    },
+    "health": {
+      "ashaContact": "ASHA Worker Contact",
+      "anganwadiServices": "Anganwadi Services",
+      "healthCamp": "Health Camp Information",
+      "jananiSuraksha": "Janani Suraksha Yojana"
+    },
+    "education": {
+      "schoolEnrollment": "School Enrollment Help",
+      "scholarshipForm": "Scholarship Form Submission",
+      "balwadiEnrollment": "Balwadi / Anganwadi Enrollment"
+    },
+    "gramSabha": {
+      "meetingRequest": "Gram Sabha Meeting Request",
+      "rtiHelp": "RTI Application Help",
+      "generalQuery": "General Query to Sarpanch"
+    }
+  },
+  "days": {
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
+  },
+  "common": {
+    "required": "Required",
+    "optional": "Optional",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "official": {
+    "login": {
+      "title": "Official Login",
+      "badge": "Officials Portal",
+      "welcome": "Welcome back",
+      "subtitle": "Enter your credentials to access your dashboard",
+      "email": "Email address",
+      "email_placeholder": "official@gramvartha.in",
+      "password": "Password",
+      "password_placeholder": "Enter your password",
+      "show_password": "Show password",
+      "hide_password": "Hide password",
+      "signing_in": "Signing in...",
+      "login_button": "Login to Dashboard",
+      "or": "or",
+      "register_link": "Don't have an account? Register here",
+      "secure_access": "Secure, encrypted official access",
+      "back_home": "Back to homepage",
+      "success": "Login successful! Redirecting...",
+      "error": "Something went wrong! Please try again."
+    },
+    "register": {
+      "title": "Official Registration",
+      "badge": "Officials Portal",
+      "full_name": "Full Name",
+      "name_placeholder": "Sarpanch / Gram Sevak",
+      "village": "Village",
+      "select_village": "Select village",
+      "email": "Email",
+      "email_placeholder": "official@gramvartha.in",
+      "phone": "Phone",
+      "phone_placeholder": "+91 98765 43210",
+      "profile_photo": "Profile Photo",
+      "for_verification": "for verification",
+      "click_to_upload_photo": "Click to upload photo",
+      "click_to_upload_document": "Click to upload document proof",
+      "browse": "Browse",
+      "preview": "Preview",
+      "id_proof": "ID Proof (Aadhar/Passport/BPL Card)",
+      "document_preview": "Document preview",
+      "password": "Password",
+      "password_placeholder": "Create password",
+      "confirm_password": "Confirm",
+      "confirm_placeholder": "Re-enter",
+      "creating_account": "Creating account…",
+      "create_account": "Create Official Account",
+      "back_home": "Back to home",
+      "secure_encrypted": "Secure & encrypted",
+      "login_instead": "Login instead →",
+      "password_mismatch": "Passwords do not match!",
+      "photo_required": "Profile photo is required for verification.",
+      "document_required": "Document proof is required for verification.",
+      "phone_required": "Phone number is required.",
+      "success": "Registration successful! Redirecting to dashboard...",
+      "error": "Something went wrong! Please try again."
+    },
+    "profile": {
+      "title": "My Profile",
+      "subtitle": "Manage your official account and profile photo",
+      "dashboard": "Dashboard",
+      "loading": "Loading profile…",
+      "uploading": "Uploading…",
+      "change_photo": "Change profile photo",
+      "file_requirements": "JPG, PNG · Max 5 MB",
+      "account_details": "Account Details",
+      "personal_info": "Personal Information",
+      "full_name": "Full Name",
+      "email": "Email Address",
+      "account_status": "Account Status",
+      "department": "Department",
+      "role": "Role",
+      "phone": "Phone",
+      "member_since": "Member Since",
+      "contact_admin": "Contact your administrator to update account details.",
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      },
+      "errors": {
+        "load_failed": "Failed to load profile",
+        "invalid_file": "Please select a valid image file",
+        "file_too_large": "Image size should be less than 5MB",
+        "upload_failed": "Failed to upload image"
+      },
+      "success": {
+        "photo_updated": "Profile photo updated!"
+      }
+    },
+    "nav": {
+      "portal": "Officials Portal",
+      "village_qr": "Village QR",
+      "profile": "Profile",
+      "logout": "Logout"
+    }},
+     "officials": {
+    "tabs": {
+      "notices": "Notices",
+      "complaints": "Complaints"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "pinned": "Pinned",
+      "urgent": "Urgent"
+    },
+    "stats": {
+      "total": "Total Notices",
+      "active": "Active",
+      "pinned": "Pinned",
+      "urgent": "Urgent"
+    },
+    "categories": {
+      "development": "Development",
+      "health": "Health",
+      "education": "Education",
+      "agriculture": "Agriculture",
+      "employment": "Employment",
+      "social_welfare": "Social Welfare",
+      "tax_billing": "Tax & Billing",
+      "election": "Election",
+      "urgent": "Urgent",
+      "general": "General"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "notices": {
+      "title": "Community Notices",
+      "subtitle": "Manage and publish announcements for your village",
+      "new_notice": "New Notice",
+      "no_notices": "No notices yet",
+      "no_notices_desc": "Create the first notice for your village",
+      "publish_first": "Publish First Notice"
+    },
+    "notice_form": {
+      "new_title": "Publish New Notice",
+      "edit_title": "Edit Notice",
+      "title": "Title",
+      "title_placeholder": "Notice title",
+      "category": "Category",
+      "priority": "Priority",
+      "pin_to_top": "Pin to top",
+      "pin_description": "Show first in the notice board",
+      "description": "Description",
+      "description_placeholder": "Write the notice details here...",
+      "attachment": "Attachment (optional)",
+      "attachment_placeholder": "PDF or Image, max 5MB",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "publish": "Publish Notice",
+      "update": "Update Notice",
+      "delete": "Delete this notice",
+      "fill_required": "Please fill in title and description"
+    },
+    "notice_card": {
+      "pinned": "Pinned",
+      "urgent": "Urgent",
+      "file": "File",
+      "views": "views",
+      "edit": "Edit",
+      "view": "View",
+      "delete": "Delete"
+    },
+    "delete_confirm": {
+      "title": "Delete this notice?",
+      "message": "This cannot be undone. Citizens will no longer see this notice.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "qr": {
+      "title": "Village QR Code",
+      "no_village": "No village linked to your account.",
+      "ready": "QR ready to download",
+      "not_generated": "Not generated yet",
+      "waiting": "Please wait...",
+      "download": "Download QR"
+    },
+    "file_viewer": {
+      "attachment": "Attachment",
+      "download": "Download File"
+    },
+    "footer": {
+      "portal": "Officials Portal",
+      "village": "Village",
+      "notices": "notices",
+      "rights": "All rights reserved."
+    },
+    "nav": {
+      "portal": "Officials Portal",
+      "village_qr": "Village QR",
+      "profile": "Profile",
+      "logout": "Logout"
+    },
+    "errors": {
+      "no_village": "No village linked to your account",
+      "load_failed": "Failed to load notices",
+      "save_failed": "Failed to save notice",
+      "delete_failed": "Failed to delete notice",
+      "qr_failed": "Failed to generate QR",
+      "logout_failed": "Error logging out"
+    },
+    "success": {
+      "published": "Notice published!",
+      "updated": "Notice updated!",
+      "deleted": "Notice deleted",
+      "shared": "Shared!",
+      "downloaded": "QR downloaded!",
+      "logged_out": "Logged out"
+    }
+  },
+  "officials": {
+    "profile": {
+      "title": "My Profile",
+      "subtitle": "Manage your official account and profile photo",
+      "dashboard": "Dashboard",
+      "loading": "Loading profile…",
+      "uploading": "Uploading…",
+      "change_photo": "Change profile photo",
+      "file_requirements": "JPG, PNG · Max 5 MB",
+      "account_details": "Account Details",
+      "personal_info": "Personal Information",
+      "full_name": "Full Name",
+      "email": "Email Address",
+      "account_status": "Account Status",
+      "department": "Department",
+      "role": "Role",
+      "phone": "Phone",
+      "member_since": "Member Since",
+      "contact_admin": "Contact your administrator to update account details.",
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending",
+        "rejected": "Rejected"
+      },
+      "errors": {
+        "load_failed": "Failed to load profile",
+        "invalid_file": "Please select a valid image file",
+        "file_too_large": "Image size should be less than 5MB",
+        "upload_failed": "Failed to upload image"
+      },
+      "success": {
+        "photo_updated": "Profile photo updated!"
+      }
+    }
+  },
+  "common": {
+    "or": "or",
+    "back_home": "Back to Home",
+    "new": "New",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel"
+  },
+  "official": {
+    "remove": "Remove Official",
+    "edit_official": "Edit Official",
+    "update_official": "Update Official",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "joined": "Joined",
+    "village": "Village",
+    "document_proof": "Document Proof",
+    "approve": "Approve",
+    "reject": "Reject",
+    "status": "Status"
+  },
+   "superadmin": {
+    "loading": "Loading...",
+    "all_clear": "All clear",
+    "nothing_pending": "Nothing pending here",
+    "unknown": "Unknown",
+    "pending_review": "Pending Review",
+    "approve": "Approve",
+    "reject": "Reject",
+    "view_document": "View Document",
+    "hide_document": "Hide Document",
+    "delete": "Delete",
+    "district": "District",
+    "state": "State",
+    "registered_on": "Registered On",
+    "village_id": "Village ID",
+    "na": "N/A",
+    "village_label": "Village",
+    "unauthorized": "Unauthorized",
+    "superadmin_panel": "Superadmin Panel",
+    "platform_live": "Platform Live",
+    "villages": "Villages",
+    "pending": "Pending",
+    "logout": "Logout",
+    "superadmin_access": "Superadmin Access",
+    "control_panel": "Control Panel",
+    "control_panel_description": "Manage village registrations, admin approvals and platform oversight.",
+    "total_villages": "Total Villages",
+    "registered_on_platform": "Registered on platform",
+    "pending_villages": "Pending Villages",
+    "awaiting_approval": "Awaiting approval",
+    "pending_admins": "Pending Admins",
+    "awaiting_verification": "Awaiting verification",
+    "delete_village": "Delete Village",
+    "delete_confirmation_message": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone and will permanently remove the village from the system.",
+    "cancel": "Cancel",
+    "delete_village_button": "Delete Village",
+    "superadmin_control_panel": "Superadmin Control Panel",
+    "villages_lower": "villages",
+    "pending_actions": "pending actions",
+    "all_rights_reserved": "All rights reserved.",
+    "theme_toggle": "Toggle theme",
+    "tabs": {
+      "pending_villages": "Pending Villages",
+      "pending_admins": "Pending Admins",
+      "all_villages": "All Villages"
+    },
+    "status": {
+      "approved": "Approved",
+      "pending": "Pending",
+      "rejected": "Rejected"
+    },
+    "document": {
+      "registration_document": "Registration Document",
+      "open_full_size": "Open full size",
+      "document": "Document"
+    },
+    "errors": {
+      "load_failed": "Failed to load data",
+      "approve_village_failed": "Failed to approve village",
+      "reject_village_failed": "Failed to reject village",
+      "approve_admin_failed": "Failed to approve admin",
+      "delete_village_failed": "Failed to delete village"
+    },
+    "success": {
+      "village_approved": "Village approved",
+      "village_rejected": "Village rejected",
+      "admin_approved": "Admin approved",
+      "village_deleted": "Village deleted successfully"
+    }
   }
+  
 }

@@ -123,11 +123,13 @@ const updateNotice = async (req, res) => {
       return res.status(404).json({ message: "Notice not found" });
     }
 
-    if (
-      notice.createdBy.toString() !== req.user.id ||
-      notice.village.toString() !== req.user.village.toString()
-    ) {
-      return res.status(403).json({ message: "Not authorized to update this notice" });
+    // Check if official is in the same village as the notice
+    // Any official in the same village can update notices
+    if (!req.user.village) {
+      return res.status(401).json({ message: "Village information not found in token. Please log in again." });
+    }
+    if (notice.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Not authorized to update this notice - different village" });
     }
 
     let fileUrl = null;
@@ -266,8 +268,13 @@ const deleteNotice = async (req, res) => {
       return res.status(404).json({ message: "Notice not found" });
     }
 
-    if (notice.createdBy.toString() !== req.user.id || notice.village.toString() !== req.user.village.toString()) {
-      return res.status(403).json({ message: "Not authorized to delete this notice" });
+    // Check if official is in the same village as the notice
+    // Any official in the same village can delete notices
+    if (!req.user.village) {
+      return res.status(401).json({ message: "Village information not found in token. Please log in again." });
+    }
+    if (notice.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Not authorized to delete this notice - different village" });
     }
 
     await notice.deleteOne();
@@ -411,6 +418,11 @@ const getNoticesByVillage = async (req, res) => {
 
     if (village.status !== 'approved') {
       return res.status(403).json({ message: "Village is not approved yet" });
+    }
+
+    // For authenticated officials, ensure they can only view their own village's notices
+    if (req.user && req.user.village && req.user.village.toString() !== villageId.toString()) {
+      return res.status(403).json({ message: "Not authorized to view notices from this village" });
     }
 
     // Build filter

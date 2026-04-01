@@ -14,143 +14,78 @@
       "general": "सामान्य"
     },
     "sort": {
-      "newest": "नवीनतम प्रथम",
+      "newest": "नवीन प्रथम",
       "oldest": "जुने प्रथम",
       "popular": "सर्वाधिक लोकप्रिय",
-      "titleAsc": "शीर्षक अ ते क",
-      "titleDesc": "शीर्षक क ते अ"
+      "titleAsc": "शीर्षक अ ते ज",
+      "titleDesc": "शीर्षक ज ते अ"
     },
     "errors": {
-      "connection": "सर्व्हरशी कनेक्ट होऊ शकत नाही. कृपया नंतर पुन्हा प्रयत्न करा."
+      "connection": "सर्व्हरशी संपर्क साधता येत नाही. कृपया नंतर पुन्हा प्रयत्न करा."
     }
   },
   "official": {
     "login": {
-      "title": "अधिकृत लॉगिन",
-      "badge": "अधिकाऱ्यांचे पोर्टल",
+      "title": "अधिकारी लॉगिन",
+      "badge": "अधिकारी पोर्टल",
       "welcome": "पुन्हा स्वागत आहे",
-      "subtitle": "आपल्या डॅशबोर्डवर प्रवेश करण्यासाठी आपली क्रेडेन्शियल्स प्रविष्ट करा",
+      "subtitle": "तुमच्या डॅशबोर्डवर जाण्यासाठी तुमची क्रेडेन्शियल्स प्रविष्ट करा",
       "email": "ईमेल पत्ता",
-      "email_placeholder": "अधिकृत@ग्रामवार्था.इन",
+      "email_placeholder": "official@gramvartha.in",
       "password": "पासवर्ड",
-      "password_placeholder": "आपला पासवर्ड प्रविष्ट करा",
+      "password_placeholder": "तुमचा पासवर्ड प्रविष्ट करा",
       "show_password": "पासवर्ड दाखवा",
       "hide_password": "पासवर्ड लपवा",
-      "signing_in": "साइन इन करत आहे...",
+      "signing_in": "साइन इन होत आहे...",
       "login_button": "डॅशबोर्डवर लॉगिन करा",
       "or": "किंवा",
       "register_link": "खाते नाही? येथे नोंदणी करा",
-      "secure_access": "सुरक्षित, एन्क्रिप्टेड अधिकृत प्रवेश",
+      "secure_access": "सुरक्षित, एन्क्रिप्टेड अधिकारी प्रवेश",
       "back_home": "मुख्यपृष्ठावर परत",
-      "success": "लॉगिन यशस्वी! पुनर्निर्देशित करत आहे...",
+      "success": "लॉगिन यशस्वी! पुनर्निर्देशित होत आहे...",
       "error": "काहीतरी चूक झाली! कृपया पुन्हा प्रयत्न करा."
     },
     "register": {
-      "title": "अधिकृत नोंदणी",
-      "badge": "अधिकाऱ्यांचे पोर्टल",
+      "title": "अधिकारी नोंदणी",
+      "badge": "अधिकारी पोर्टल",
       "full_name": "पूर्ण नाव",
       "name_placeholder": "सरपंच / ग्रामसेवक",
       "village": "गाव",
       "select_village": "गाव निवडा",
       "email": "ईमेल",
-      "email_placeholder": "अधिकृत@ग्रामवार्था.इन",
-      "phone": "मोबाईल नंबर",
+      "email_placeholder": "official@gramvartha.in",
+      "phone": "फोन",
       "phone_placeholder": "+91 98765 43210",
       "profile_photo": "प्रोफाइल फोटो",
-      "for_verification": "(पडताळणीसाठी)",
+      "for_verification": "पडताळणीसाठी",
       "click_to_upload_photo": "फोटो अपलोड करण्यासाठी क्लिक करा",
-      "click_to_upload_document": "दस्तऐवज अपलोड करण्यासाठी क्लिक करा",
-      "browse": "निवडा",
+      "click_to_upload_document": "दस्तऐवज पुरावा अपलोड करण्यासाठी क्लिक करा",
+      "browse": "ब्राउझ करा",
       "preview": "पूर्वावलोकन",
-      "id_proof": "ओळख पुरावा (आधार/पासपोर्ट/बीपीएल कार्ड)",
-      "document_preview": "दस्तऐवज पूर्वावलोकन",
+      "id_proof": "आयडी पुरावा (आधार/पासपोर्ट/बीपीएल कार्ड)",
+      "document_preview": "दस्तऐवजाचे पूर्वावलोकन",
       "password": "पासवर्ड",
       "password_placeholder": "पासवर्ड तयार करा",
-      "confirm_password": "पासवर्ड पुष्टी करा",
+      "confirm_password": "पुष्टी करा",
       "confirm_placeholder": "पुन्हा प्रविष्ट करा",
-      "creating_account": "खाते तयार करत आहे...",
-      "create_account": "अधिकृत खाते तयार करा",
+      "creating_account": "खाते तयार होत आहे…",
+      "create_account": "अधिकारी खाते तयार करा",
       "back_home": "मुख्यपृष्ठावर परत",
       "secure_encrypted": "सुरक्षित आणि एन्क्रिप्टेड",
-      "login_instead": "लॉगिन करा →",
+      "login_instead": "त्याऐवजी लॉगिन करा →",
       "password_mismatch": "पासवर्ड जुळत नाहीत!",
       "photo_required": "पडताळणीसाठी प्रोफाइल फोटो आवश्यक आहे.",
       "document_required": "पडताळणीसाठी दस्तऐवज पुरावा आवश्यक आहे.",
-      "phone_required": "मोबाईल नंबर आवश्यक आहे.",
-      "success": "नोंदणी यशस्वी! डॅशबोर्डवर पुनर्निर्देशित करत आहे...",
+      "phone_required": "फोन नंबर आवश्यक आहे.",
+      "success": "नोंदणी यशस्वी! डॅशबोर्डवर पुनर्निर्देशित होत आहे...",
       "error": "काहीतरी चूक झाली! कृपया पुन्हा प्रयत्न करा."
-    }
-  },
-  "village": {
-    "register": {
-      "title": "गाव नोंदणी",
-      "badge": "ग्राम पोर्टल",
-      "step": "पायरी",
-      "of": "पैकी",
-      "steps": {
-        "village_info": "गाव माहिती",
-        "admin_account": "प्रशासक खाते",
-        "document_proof": "दस्तऐवज पुरावा"
-      },
-      "step_descriptions": {
-        "village_info": "आपल्या गावाबद्दल आणि त्याच्या स्थानाबद्दल सांगा",
-        "admin_account": "आपले प्रशासक क्रेडेन्शियल्स सेट करा",
-        "document_proof": "आपल्या गावाशी संलग्नतेचा पुरावा अपलोड करा"
-      },
-      "village_name": "गावाचे नाव",
-      "village_name_placeholder": "उदा. शिरपूर",
-      "district": "जिल्हा",
-      "district_placeholder": "उदा. नाशिक",
-      "state": "राज्य",
-      "state_placeholder": "उदा. महाराष्ट्र",
-      "pincode": "पिनकोड",
-      "pincode_placeholder": "उदा. 422001",
-      "coordinates": "अक्षांश / रेखांश",
-      "auto_detect": "स्वयं-शोधा",
-      "detecting": "शोधत आहे...",
-      "latitude_placeholder": "अक्षांश (18.5204)",
-      "longitude_placeholder": "रेखांश (73.8567)",
-      "email": "ईमेल पत्ता",
-      "email_placeholder": "प्रशासक@ग्रामवार्था.इन",
-      "password": "पासवर्ड",
-      "password_placeholder": "मजबूत पासवर्ड तयार करा",
-      "confirm_password": "पासवर्ड पुष्टी करा",
-      "confirm_placeholder": "आपला पासवर्ड पुन्हा प्रविष्ट करा",
-      "continue": "पुढे जा",
-      "back": "मागे",
-      "submit": "सबमिट करा",
-      "submitting": "सबमिट करत आहे...",
-      "document_description": "आपल्या गावाशी संलग्नतेचा पुरावा दर्शविणारी प्रतिमा अपलोड करा — उदा. ग्रामपंचायत आयडी, आधार कार्ड किंवा निवास पुरावा.",
-      "click_to_upload": "अपलोड करण्यासाठी क्लिक करा",
-      "file_requirements": "फक्त JPG, PNG · कमाल 5MB",
-      "change": "बदला",
-      "preview": "पूर्वावलोकन",
-      "review_note": "आपली नोंदणी सुपरॅडमिनद्वारे पुनरावलोकन केली जाईल. एकदा मंजूर झाल्यानंतर, आपण आपल्या गावाचे प्रशासक व्हाल.",
-      "secure_access": "सुरक्षित, एन्क्रिप्टेड प्रवेश",
-      "back_home": "मुख्यपृष्ठावर परत",
-      "location_detected": "स्थान यशस्वीरित्या शोधले!",
-      "success_message": "गाव नोंदणी सबमिट केली! सुपरॅडमिन मंजुरीची प्रतीक्षा करा.",
-      "errors": {
-        "geolocation_unsupported": "आपला ब्राउझर जिओलोकेशनला समर्थन देत नाही",
-        "location_failed": "स्थान शोधण्यात अक्षम. कृपया स्वहस्ते प्रविष्ट करा.",
-        "coordinates_required": "कृपया निर्देशांकांसह सर्व आवश्यक फील्ड भरा",
-        "fields_required": "कृपया सर्व आवश्यक फील्ड भरा",
-        "password_mismatch": "पासवर्ड जुळत नाहीत",
-        "password_length": "पासवर्ड किमान 6 अक्षरांचा असणे आवश्यक आहे",
-        "invalid_file_type": "कृपया वैध प्रतिमा फाइल निवडा (फक्त JPG, PNG)",
-        "file_too_large": "प्रतिमा आकार 5MB पेक्षा कमी असावा",
-        "document_required": "कृपया दस्तऐवज अपलोड करा",
-        "registration_failed": "नोंदणी अयशस्वी"
-      }
-    }
-  },
-  "officials": {
+    },
     "profile": {
       "title": "माझे प्रोफाइल",
-      "subtitle": "आपले अधिकृत खाते आणि प्रोफाइल फोटो व्यवस्थापित करा",
+      "subtitle": "तुमचे अधिकारी खाते आणि प्रोफाइल फोटो व्यवस्थापित करा",
       "dashboard": "डॅशबोर्ड",
-      "loading": "प्रोफाइल लोड करत आहे…",
-      "uploading": "अपलोड करत आहे…",
+      "loading": "प्रोफाइल लोड होत आहे…",
+      "uploading": "अपलोड होत आहे…",
       "change_photo": "प्रोफाइल फोटो बदला",
       "file_requirements": "JPG, PNG · कमाल 5 MB",
       "account_details": "खाते तपशील",
@@ -160,13 +95,13 @@
       "account_status": "खाते स्थिती",
       "department": "विभाग",
       "role": "भूमिका",
-      "phone": "मोबाईल नंबर",
-      "member_since": "सदस्यता दिनांक",
-      "contact_admin": "खाते तपशील अद्यतनित करण्यासाठी आपल्या प्रशासकाशी संपर्क साधा.",
+      "phone": "फोन",
+      "member_since": "सदस्यत्वापासून",
+      "contact_admin": "खाते तपशील अद्यतनित करण्यासाठी तुमच्या प्रशासकाशी संपर्क साधा.",
       "status": {
         "approved": "मंजूर",
         "pending": "प्रलंबित",
-        "rejected": "नाकारले"
+        "rejected": "नाकारलेले"
       },
       "errors": {
         "load_failed": "प्रोफाइल लोड करण्यात अयशस्वी",
@@ -179,8 +114,8 @@
       }
     },
     "nav": {
-      "portal": "अधिकाऱ्यांचे पोर्टल",
-      "village_qr": "गाव क्यूआर",
+      "portal": "अधिकारी पोर्टल",
+      "village_qr": "गाव QR",
       "profile": "प्रोफाइल",
       "logout": "लॉगआउट"
     },
@@ -202,10 +137,10 @@
     },
     "notices": {
       "title": "समुदाय सूचना",
-      "subtitle": "आपल्या गावासाठी घोषणा व्यवस्थापित आणि प्रकाशित करा",
+      "subtitle": "तुमच्या गावासाठी घोषणा व्यवस्थापित आणि प्रकाशित करा",
       "new_notice": "नवीन सूचना",
-      "no_notices": "अद्याप कोणत्याही सूचना नाहीत",
-      "no_notices_desc": "आपल्या गावासाठी पहिली सूचना तयार करा",
+      "no_notices": "अद्याप सूचना नाहीत",
+      "no_notices_desc": "तुमच्या गावासाठी पहिली सूचना तयार करा",
       "publish_first": "पहिली सूचना प्रकाशित करा"
     },
     "categories": {
@@ -233,9 +168,9 @@
       "category": "श्रेणी",
       "priority": "प्राधान्यक्रम",
       "pin_to_top": "शीर्षस्थानी पिन करा",
-      "pin_description": "सूचना बोर्डात प्रथम दर्शवा",
+      "pin_description": "सूचना फलकात प्रथम दर्शवा",
       "description": "वर्णन",
-      "description_placeholder": "येथे सूचना तपशील लिहा...",
+      "description_placeholder": "सूचना तपशील येथे लिहा...",
       "attachment": "संलग्नक (पर्यायी)",
       "attachment_placeholder": "PDF किंवा प्रतिमा, कमाल 5MB",
       "cancel": "रद्द करा",
@@ -248,7 +183,7 @@
     "notice_card": {
       "pinned": "पिन केलेले",
       "urgent": "तातडीचे",
-      "file": "फाईल",
+      "file": "फाइल",
       "views": "दृश्ये",
       "edit": "संपादित करा",
       "view": "पहा",
@@ -256,61 +191,1004 @@
     },
     "delete_confirm": {
       "title": "ही सूचना हटवायची?",
-      "message": "हे पूर्ववत करता येणार नाही. नागरिकांना ही सूचना दिसणार नाही.",
+      "message": "हे पूर्ववत करता येणार नाही. नागरिकांना ही सूचना पुन्हा दिसणार नाही.",
       "cancel": "रद्द करा",
       "delete": "हटवा"
     },
     "qr": {
-      "title": "गाव क्यूआर कोड",
-      "no_village": "आपल्या खात्याशी कोणतेही गाव जोडलेले नाही.",
-      "ready": "क्यूआर डाउनलोड करण्यास तयार",
-      "not_generated": "अद्याप तयार केलेला नाही",
-      "waiting": "कृपया प्रतीक्षा करा...",
-      "download": "क्यूआर डाउनलोड करा"
+      "title": "गाव QR कोड",
+      "no_village": "तुमच्या खात्याशी कोणतेही गाव जोडलेले नाही.",
+      "ready": "QR डाउनलोड करण्यासाठी सज्ज",
+      "not_generated": "अद्याप व्युत्पन्न केलेले नाही",
+      "waiting": "कृपया थांबा...",
+      "download": "QR डाउनलोड करा"
     },
     "file_viewer": {
       "attachment": "संलग्नक",
-      "download": "फाईल डाउनलोड करा"
+      "download": "फाइल डाउनलोड करा"
     },
     "footer": {
-      "portal": "अधिकाऱ्यांचे पोर्टल",
+      "portal": "अधिकारी पोर्टल",
       "village": "गाव",
       "notices": "सूचना",
       "rights": "सर्व हक्क राखीव."
     },
     "errors": {
-      "no_village": "आपल्या खात्याशी कोणतेही गाव जोडलेले नाही",
+      "no_village": "तुमच्या खात्याशी कोणतेही गाव जोडलेले नाही",
       "load_failed": "सूचना लोड करण्यात अयशस्वी",
       "save_failed": "सूचना जतन करण्यात अयशस्वी",
-      "delete_failed": "सूचना हटविण्यात अयशस्वी",
-      "qr_failed": "क्यूआर तयार करण्यात अयशस्वी",
-      "logout_failed": "लॉगआउट करताना त्रुटी"
+      "delete_failed": "सूचना हटवण्यात अयशस्वी",
+      "qr_failed": "QR व्युत्पन्न करण्यात अयशस्वी",
+      "logout_failed": "लॉगआउट करण्यात त्रुटी"
     },
     "success": {
       "published": "सूचना प्रकाशित!",
       "updated": "सूचना अद्यतनित!",
-      "deleted": "सूचना हटविली",
+      "deleted": "सूचना हटवली",
       "shared": "शेअर केले!",
-      "downloaded": "क्यूआर डाउनलोड केले!",
+      "downloaded": "QR डाउनलोड केले!",
       "logged_out": "लॉगआउट केले"
     }
   },
   "about": {
     "about_us": "आमच्याबद्दल",
-    "governance_title": "प्रत्येक गावात प्रशासन पोहोचवताना",
-    "governance_desc": "ग्रामवार्था हे नागरिक आणि स्थानिक प्रशासन यांच्यातील दुवा साधणारे डिजिटल प्लॅटफॉर्म आहे. आम्ही पारदर्शकता, प्रवेशयोग्यता आणि महत्त्वाच्या माहितीचा वेळेवर प्रसार सुनिश्चित करतो.",
+    "governance_title": "प्रत्येक गावात प्रशासन आणणे",
+    "governance_desc": "ग्रामवार्ता हे नागरिक आणि स्थानिक प्रशासन यांच्यातील अंतर कमी करणारे डिजिटल व्यासपीठ आहे. आम्ही पारदर्शकता, प्रवेशयोग्यता आणि महत्त्वाच्या माहितीचा वेळेवर प्रसार सुनिश्चित करतो.",
     "active_readers": "सक्रिय वाचक",
-    "villages_served": "सेवा केलेली गावे",
+    "villages_served": "सेवा दिलेली गावे",
     "free_access": "मोफत प्रवेश",
     "actively_serving": "सक्रियपणे सेवा देत आहे",
     "feature": {
       "no_login": "नागरिकांसाठी लॉगिन आवश्यक नाही",
       "local_lang": "स्थानिक भाषांमध्ये उपलब्ध",
-      "verified": "प्रमाणित शासकीय सूचना"
+      "verified": "प्रमाणित सरकारी सूचना"
     },
     "vision": {
-      "quote": "प्रत्येक नागरिकाला आपल्या गावाच्या विकासाच्या प्रवासात जाणून घेण्याचा आणि सहभागी होण्याचा अधिकार आहे.",
-      "author": "ग्रामवार्था टीम"
+      "quote": "प्रत्येक नागरिकाला त्यांच्या गावाच्या विकास प्रवासात सहभागी होण्याचा आणि माहिती जाणून घेण्याचा अधिकार आहे.",
+      "author": "ग्रामवार्ता टीम"
+    }
+  },
+  "complaints": {
+    "title": "तक्रारी",
+    "subtitle": "नागरिकांच्या तक्रारींचे पुनरावलोकन, मागोवा आणि निराकरण करा",
+    "fraud": "फसवणूक",
+    "high_risk": "उच्च जोखीम",
+    "filters": {
+      "all": "सर्व",
+      "pending": "प्रलंबित",
+      "in_progress": "प्रगतीपथावर",
+      "resolved": "निराकरण झाले",
+      "rejected": "नाकारलेले"
+    },
+    "type": {
+      "all": "सर्व प्रकार",
+      "issue": "समस्या",
+      "suggestion": "सूचना"
+    },
+    "status": {
+      "pending": "प्रलंबित",
+      "in_progress": "प्रगतीपथावर",
+      "resolved": "निराकरण झाले",
+      "rejected": "नाकारलेले"
+    },
+    "stats": {
+      "total": "एकूण तक्रारी",
+      "pending": "प्रलंबित",
+      "in_progress": "प्रगतीपथावर",
+      "resolved": "निराकरण झाले",
+      "rejected": "नाकारलेले"
+    },
+    "image": {
+      "view_full": "संपूर्ण प्रतिमा पहा"
+    },
+    "lightbox": {
+      "close": "बंद करा"
+    },
+    "upload": {
+      "attach_photo": "निराकरण फोटो संलग्न करा",
+      "file_requirements": "JPG किंवा PNG · कमाल 5 MB"
+    },
+    "detail": {
+      "ai_verification": "AI पडताळणी",
+      "valid_issue": "वैध समस्या",
+      "fraud_score": "फसवणूक स्कोअर",
+      "resolution_verification": "निराकरण पडताळणी",
+      "score": "स्कोअर",
+      "before": "आधी",
+      "after": "नंतर",
+      "location": "स्थान",
+      "view_on_map": "नकाशावर पहा",
+      "update_status": "स्थिती अद्यतनित करा",
+      "save": "जतन करा",
+      "cancel": "रद्द करा",
+      "mark_resolved": "निराकरण म्हणून चिन्हांकित करा →",
+      "resolution_instruction": "समस्या सोडवली असल्याचा पुरावा देणारा फोटो अपलोड करा. AI ते सत्यापित करेल.",
+      "verifying_ai": "AI सह सत्यापन होत आहे…",
+      "submit_resolution": "निराकरण सबमिट करा",
+      "resolved": "निराकरण झाले",
+      "closed": "ही तक्रार बंद करण्यात आली आहे"
+    },
+    "empty": {
+      "title": "तक्रारी आढळल्या नाहीत",
+      "message": "तुमचे फिल्टर बदलण्याचा प्रयत्न करा"
+    },
+    "errors": {
+      "load_failed": "तक्रारी लोड करण्यात अयशस्वी",
+      "update_failed": "स्थिती अद्यतनित करण्यात अयशस्वी",
+      "photo_required": "कृपया निराकरण फोटो संलग्न करा",
+      "resolve_failed": "तक्रार निराकरण करण्यात अयशस्वी"
+    },
+    "success": {
+      "status_updated": "स्थिती अद्यतनित",
+      "resolved": "तक्रार निराकरण म्हणून चिन्हांकित केली"
+    }
+  },
+  "village": {
+    "register": {
+      "title": "गाव नोंदणी",
+      "badge": "गाव पोर्टल",
+      "step": "पायरी",
+      "of": "पैकी",
+      "steps": {
+        "village_info": "गाव माहिती",
+        "admin_account": "प्रशासक खाते",
+        "document_proof": "दस्तऐवज पुरावा"
+      },
+      "step_descriptions": {
+        "village_info": "आम्हाला तुमच्या गावाबद्दल आणि त्याच्या स्थानाबद्दल सांगा",
+        "admin_account": "तुमची प्रशासक क्रेडेन्शियल्स सेट करा",
+        "document_proof": "तुमच्या गावाशी संलग्नतेचा पुरावा अपलोड करा"
+      },
+      "village_name": "गावाचे नाव",
+      "village_name_placeholder": "उदा. शिरपूर",
+      "district": "जिल्हा",
+      "district_placeholder": "उदा. नाशिक",
+      "state": "राज्य",
+      "state_placeholder": "उदा. महाराष्ट्र",
+      "pincode": "पिनकोड",
+      "pincode_placeholder": "उदा. 422001",
+      "coordinates": "निर्देशांक",
+      "auto_detect": "स्वयं-शोधा",
+      "detecting": "शोधत आहे...",
+      "latitude_placeholder": "अक्षांश (18.5204)",
+      "longitude_placeholder": "रेखांश (73.8567)",
+      "email": "ईमेल पत्ता",
+      "email_placeholder": "admin@gramvartha.in",
+      "password": "पासवर्ड",
+      "password_placeholder": "एक मजबूत पासवर्ड तयार करा",
+      "confirm_password": "पासवर्डची पुष्टी करा",
+      "confirm_placeholder": "तुमचा पासवर्ड पुन्हा प्रविष्ट करा",
+      "continue": "पुढे जा",
+      "back": "मागे",
+      "submit": "सबमिट करा",
+      "submitting": "सबमिट करत आहे...",
+      "document_description": "तुमच्या गावाशी संलग्नतेचा पुरावा देणारी प्रतिमा अपलोड करा — उदा. ग्रामपंचायत आयडी, आधार कार्ड, किंवा निवास पुरावा.",
+      "click_to_upload": "अपलोड करण्यासाठी क्लिक करा",
+      "file_requirements": "JPG, PNG फक्त · कमाल 5MB",
+      "change": "बदला",
+      "preview": "पूर्वावलोकन",
+      "review_note": "तुमची नोंदणी सुपरअॅडमिनद्वारे पुनरावलोकन केली जाईल. एकदा मंजूर झाल्यानंतर, तुम्ही तुमच्या गावाचे प्रशासक व्हाल.",
+      "secure_access": "सुरक्षित, एन्क्रिप्टेड प्रवेश",
+      "back_home": "मुख्यपृष्ठावर परत",
+      "location_detected": "स्थान यशस्वीरित्या आढळले!",
+      "success_message": "गाव नोंदणी सबमिट केली! सुपरअॅडमिनच्या मंजूरीची प्रतीक्षा आहे.",
+      "errors": {
+        "geolocation_unsupported": "भौगोलिक स्थान शोध तुमच्या ब्राउझरद्वारे समर्थित नाही",
+        "location_failed": "स्थान शोधण्यात अक्षम. कृपया व्यक्तिचलितपणे प्रविष्ट करा.",
+        "coordinates_required": "कृपया निर्देशांकांसह सर्व आवश्यक फील्ड भरा",
+        "fields_required": "कृपया सर्व आवश्यक फील्ड भरा",
+        "password_mismatch": "पासवर्ड जुळत नाहीत",
+        "password_length": "पासवर्ड किमान 6 वर्णांचा असावा",
+        "invalid_file_type": "कृपया वैध प्रतिमा फाइल निवडा (JPG, PNG फक्त)",
+        "file_too_large": "प्रतिमा आकार 5MB पेक्षा कमी असावा",
+        "document_required": "कृपया एक दस्तऐवज अपलोड करा",
+        "registration_failed": "नोंदणी अयशस्वी"
+      }
+    }
+  },
+  "active_readers": "सक्रिय वाचक",
+  "villages_served": "सेवा दिलेली गावे",
+  "free_access": "मोफत प्रवेश",
+  "about_us": "आमच्याबद्दल",
+  "governance_title": "ग्रामीण बातम्यांचे लोकशाहीकरण",
+  "governance_desc": "ग्रामवार्ता हे एक समुदाय-चालित व्यासपीठ आहे जे सत्यापित स्थानिक बातम्या ग्रामीण समुदायांपर्यंत पोहोचवते. आमचा विश्वास आहे की माहितीमध्ये प्रवेश विनामूल्य, निःपक्षपाती आणि प्रत्येक गावात उपलब्ध असावा.",
+  "actively_serving": "ग्रामीण समुदायांना सक्रियपणे सेवा देत आहे",
+  "vision": {
+    "quote": "प्रत्येक गावाला आवाजाचा हक्क आहे. प्रत्येक कथेला महत्त्व आहे.",
+    "author": "— ग्रामवार्ता टीम"
+  },
+  "feature": {
+    "no_login": "लॉगिन आवश्यक नाही — त्वरित प्रवेश",
+    "local_lang": "स्थानिक भाषांमध्ये उपलब्ध",
+    "verified": "समुदाय पत्रकारांद्वारे सत्यापित"
+  },
+  "common": {
+    "or": "किंवा",
+    "back_home": "मुख्यपृष्ठावर परत",
+    "new": "नवीन",
+    "edit": "संपादित करा",
+    "delete": "हटवा",
+    "cancel": "रद्द करा"
+  },
+  "login": {
+    "title": "साइन इन करा",
+    "heading": "तुमच्या खात्यात साइन इन करा",
+    "subheading": "ग्रामवार्ता प्रशासक पॅनेलमध्ये स्वागत आहे",
+    "email": "ईमेल पत्ता",
+    "email_placeholder": "तुमचा ईमेल प्रविष्ट करा",
+    "password": "पासवर्ड",
+    "password_placeholder": "तुमचा पासवर्ड प्रविष्ट करा",
+    "button": "साइन इन करा",
+    "loading": "साइन इन होत आहे...",
+    "success": "लॉगिन यशस्वी! पुनर्निर्देशित होत आहे...",
+    "error": "लॉगिन अयशस्वी. कृपया तुमची क्रेडेन्शियल्स तपासा.",
+    "role_error": "अनधिकृत भूमिका. प्रवेश निषिद्ध.",
+    "switch": "खाते नाही? साइन अप करा",
+    "secure_portal": "सुरक्षित पोर्टल",
+    "secure_access": "सुरक्षित प्रशासक प्रवेश"
+  },
+  "register": {
+    "title": "साइन अप करा",
+    "heading": "नवीन खाते तयार करा",
+    "subheading": "ग्रामवार्ता प्रशासनात सामील व्हा",
+    "button": "साइन अप करा",
+    "loading": "साइन अप होत आहे...",
+    "success": "नोंदणी यशस्वी! कृपया साइन इन करा.",
+    "error": "नोंदणी अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+    "switch": "आधीच खाते आहे? साइन इन करा"
+  },
+  "nav_about": "आमच्याबद्दल",
+  "nav_features": "वैशिष्ट्ये",
+  "nav_officials_login": "अधिकारी लॉगिन",
+  "nav_admin_login": "प्रशासक लॉगिन",
+  "login_portals": "लॉगिन पोर्टल्स",
+  "serving_rural_communities": "ग्रामीण समुदायांना सेवा देत आहे",
+  "welcome_to": "स्वागत आहे",
+  "brand": "ग्रामवार्ता",
+  "tagline": "तुमच्या गावाचा आवाज. सत्यापित स्थानिक बातम्या, तुमच्या नखात. कोणतेही लॉगिन नाही, कोणतेही अडथळे नाहीत — फक्त सत्य.",
+  "scan_qr_view_notices": "सूचना पाहण्यासाठी QR स्कॅन करा",
+  "register_village": "गाव नोंदणी करा",
+  "features_header": "ग्रामवार्ता का?",
+  "features_title": "ग्रामीण भारतासाठी बनवलेले, समुदायाद्वारे सशक्त",
+  "feature1_title": "QR कोड सूचना",
+  "feature1_tag": "त्वरित प्रवेश",
+  "feature1_desc": "कोणताही QR कोड स्कॅन करा आणि अधिकृत गाव सूचना, घोषणा आणि अद्यतने त्वरित पहा — कोणत्याही लॉगिनची आवश्यकता नाही.",
+  "feature2_title": "स्थानिक भाषा समर्थन",
+  "feature2_tag": "तुमच्या भाषेत",
+  "feature2_desc": "सामग्री मराठी आणि इतर स्थानिक भाषांमध्ये उपलब्ध आहे, ज्यामुळे प्रत्येक ग्रामस्थ महत्त्वाची माहिती वाचू आणि समजून घेऊ शकतो.",
+  "feature3_title": "पत्रकारांद्वारे सत्यापित",
+  "feature3_tag": "विश्वसनीय सामग्री",
+  "feature3_desc": "सर्व सूचना आणि बातम्या प्रकाशित करण्यापूर्वी प्रशिक्षित समुदाय पत्रकारांद्वारे सत्यापित केल्या जातात, अचूकता आणि विश्वासार्हता सुनिश्चित करतात.",
+  "feature4_title": "बहु-व्यासपीठ प्रवेश",
+  "feature4_tag": "कोणतेही उपकरण",
+  "feature4_desc": "ग्रामवार्ता कोणत्याही स्मार्टफोन, टॅब्लेट किंवा संगणकावरून प्रवेश करा — कमी बँडविड्थ कनेक्शनवरही कार्य करण्यासाठी डिझाइन केलेले.",
+  "footer_cta_title": "तुमच्या गावात पारदर्शकता आणण्यासाठी तयार आहात?",
+  "footer_cta_desc": "ग्रामवार्ता वापरणाऱ्या वाढत्या गावांच्या नेटवर्कमध्ये सामील व्हा.",
+  "footer_description": "ग्रामवार्ता हे एक समुदाय-चालित व्यासपीठ आहे जे संपूर्ण भारतातील ग्रामीण समुदायांमध्ये सत्यापित स्थानिक बातम्या आणि अधिकृत सूचना आणते.",
+  "footer_live_text": "ग्रामीण भारताला सक्रियपणे सेवा देत आहे",
+  "footer_platform": "व्यासपीठ",
+  "footer_portals": "पोर्टल्स",
+  "footer_rights": "© 2025 ग्रामवार्ता. सर्व हक्क राखीव.",
+  "dashboard": {
+    "village_admin_portal": "गाव प्रशासक पोर्टल",
+    "greeting_morning": "सुप्रभात",
+    "greeting_afternoon": "शुभ दुपार",
+    "greeting_evening": "शुभ संध्याकाळ",
+    "pending_review_label": "प्रलंबित",
+    "total_officials": "एकूण अधिकारी",
+    "pending_review": "प्रलंबित पुनरावलोकन",
+    "active_notices": "सक्रिय सूचना",
+    "approved": "मंजूर",
+    "needs_approval": "तुमच्या मंजूरीची आवश्यकता आहे",
+    "see_all": "सर्व पहा",
+    "recent_notices": "अलीकडील सूचना",
+    "all": "सर्व",
+    "no_notices_yet": "अद्याप सूचना नाहीत.",
+    "publish_first_notice": "तुमची पहिली सूचना प्रकाशित करा",
+    "pending_approvals": "प्रलंबित मंजूरी",
+    "pending_sub": "{{count}} अधिकारी पुनरावलोकनाच्या प्रतीक्षेत आहे",
+    "pending_sub_plural": "{{count}} अधिकारी पुनरावलोकनाच्या प्रतीक्षेत आहेत",
+    "all_caught_up": "सर्व कामे पूर्ण!",
+    "no_pending": "सध्या कोणतीही प्रलंबित मंजूरी नाही.",
+    "officials_title": "अधिकारी",
+    "officials_sub": "{{count}} नोंदणीकृत अधिकारी",
+    "officials_sub_plural": "{{count}} नोंदणीकृत अधिकारी",
+    "no_officials": "अद्याप अधिकारी नाहीत",
+    "no_officials_sub": "मंजूर अधिकारी येथे दिसतील.",
+    "notices_title": "सूचना",
+    "notices_sub": "{{count}} प्रकाशित सूचना",
+    "notices_sub_plural": "{{count}} प्रकाशित सूचना",
+    "new_notice": "नवीन सूचना",
+    "no_notices": "अद्याप सूचना नाहीत",
+    "no_notices_sub": "नागरिकांना माहिती देण्यासाठी तुमची पहिली सूचना प्रकाशित करा.",
+    "publish_notice": "सूचना प्रकाशित करा",
+    "qr_title": "QR कोड",
+    "qr_sub": "नागरिक हे स्कॅन करून गावाच्या सूचनांमध्ये त्वरित प्रवेश करू शकतात",
+    "village_qr": "गाव QR कोड",
+    "qr_description": "त्वरित सूचना प्रवेशासाठी नागरिकांसोबत शेअर करा",
+    "village": "गाव",
+    "generated": "व्युत्पन्न केले",
+    "open_full": "संपूर्ण उघडा",
+    "share": "शेअर करा",
+    "qr_generate_prompt": "नागरिक स्कॅन करून गावाच्या सूचनांमध्ये प्रवेश करू शकतील असा QR कोड व्युत्पन्न करा.",
+    "generate_qr": "QR कोड व्युत्पन्न करा",
+    "work_guide_title": "कार्य मार्गदर्शक",
+    "work_guide_sub": "तुमचे गाव व्यवस्थापित करण्यासाठी चरण-दर-चरण मार्गदर्शक",
+    "load_failed": "डॅशबोर्ड लोड करण्यात अयशस्वी",
+    "approve_success": "अधिकारी मंजूर",
+    "approve_failed": "मंजूर करण्यात अयशस्वी",
+    "reject_success": "अधिकारी नाकारला",
+    "reject_failed": "नाकारण्यात अयशस्वी",
+    "confirm_remove_official": "हा अधिकारी काढून टाकायचा?",
+    "remove_success": "काढून टाकले",
+    "remove_failed": "काढून टाकण्यात अयशस्वी",
+    "confirm_delete_notice": "ही सूचना हटवायची?",
+    "notice_delete_success": "सूचना हटवली",
+    "notice_delete_failed": "हटवण्यात अयशस्वी",
+    "notice_publish_success": "सूचना प्रकाशित",
+    "notice_update_success": "सूचना अद्यतनित",
+    "notice_failed": "सूचना जतन करण्यात अयशस्वी",
+    "qr_generate_success": "QR व्युत्पन्न केले",
+    "qr_generate_failed": "QR व्युत्पन्न करण्यात अयशस्वी",
+    "qr_copied": "QR लिंक क्लिपबोर्डवर कॉपी केली",
+    "qr_copy_failed": "QR लिंक कॉपी करण्यात अयशस्वी",
+    "official_update_success": "अधिकारी यशस्वीरित्या अद्यतनित",
+    "official_update_failed": "अधिकारी अद्यतनित करण्यात अयशस्वी",
+    "edit_official": "अधिकारी संपादित करा",
+    "update_official": "अधिकारी अद्यतनित करा",
+    "tab_overview": "विहंगावलोकन",
+    "tab_pending": "प्रलंबित",
+    "tab_officials": "अधिकारी",
+    "tab_notices": "सूचना",
+    "tab_qr": "QR कोड",
+    "tab_workguide": "कार्य मार्गदर्शक",
+    "logout": "लॉगआउट",
+    "admin_portal": "प्रशासक पोर्टल",
+    "officials": "अधिकारी",
+    "notices": "सूचना",
+    "pending": "प्रलंबित",
+    "all_rights": "सर्व हक्क राखीव.",
+    "admin_panel": "प्रशासक पॅनेल"
+  },
+  "notice": {
+    "new_title": "नवीन सूचना प्रकाशित करा",
+    "edit_title": "सूचना संपादित करा",
+    "title": "शीर्षक",
+    "title_placeholder": "सूचना शीर्षक",
+    "description": "वर्णन",
+    "description_placeholder": "संपूर्ण सूचना सामग्री...",
+    "category": "श्रेणी",
+    "priority": "प्राधान्यक्रम",
+    "status": "स्थिती",
+    "pin_notice": "ही सूचना पिन करा",
+    "attachment": "संलग्नक (पर्यायी)",
+    "click_to_attach": "फाइल संलग्न करण्यासाठी क्लिक करा",
+    "saving": "जतन करत आहे...",
+    "save_changes": "बदल जतन करा",
+    "publish": "सूचना प्रकाशित करा",
+    "pinned": "पिन केलेले",
+    "content": "सामग्री",
+    "view_attachment": "संलग्नक पहा"
+  },
+  "official": {
+    "name": "नाव",
+    "email": "ईमेल",
+    "phone": "फोन",
+    "joined": "सामील झाल्यापासून",
+    "village": "गाव",
+    "document_proof": "दस्तऐवज पुरावा",
+    "approve": "मंजूर करा",
+    "reject": "नाकारा",
+    "remove": "अधिकारी काढून टाका",
+    "status": "स्थिती"
+  },
+  "category": {
+    "general": "सामान्य",
+    "development": "विकास",
+    "health": "आरोग्य",
+    "education": "शिक्षण",
+    "agriculture": "कृषी",
+    "employment": "रोजगार",
+    "social_welfare": "समाज कल्याण",
+    "tax_billing": "कर आणि बिलिंग",
+    "election": "निवडणूक",
+    "meeting": "सभा"
+  },
+  "priority": {
+    "low": "कमी",
+    "medium": "मध्यम",
+    "high": "उच्च"
+  },
+  "status": {
+    "draft": "मसुदा",
+    "published": "प्रकाशित",
+    "archived": "संग्रहित",
+    "pending": "प्रलंबित",
+    "approved": "मंजूर",
+    "rejected": "नाकारलेले"
+  },
+  "workGuide": {
+    "title": "कार्य मार्गदर्शक",
+    "subtitle": "नागरिकांना त्यांच्या कामासाठी योग्य अधिकारी शोधण्यात मदत करा",
+    "entries": "प्रविष्ट्या",
+    "entry": "प्रविष्टी",
+    "across": "पैकी",
+    "categories": "श्रेण्या",
+    "addEntry": "प्रविष्टी जोडा",
+    "addFirstEntry": "पहिली प्रविष्टी जोडा",
+    "noEntries": "अद्याप कार्य मार्गदर्शक प्रविष्ट्या नाहीत",
+    "noEntriesDescription": "नागरिकांना त्यांच्या कामासाठी योग्य अधिकारी शोधण्यात मदत करण्यासाठी प्रविष्ट्या जोडा"
+  },
+  "workGuideForm": {
+    "newEntryTitle": "नवीन कार्य मार्गदर्शक प्रविष्टी",
+    "editEntryTitle": "कार्य मार्गदर्शक प्रविष्टी संपादित करा",
+    "fields": {
+      "category": {
+        "label": "श्रेणी",
+        "required": true
+      },
+      "workName": {
+        "label": "कार्याचे नाव",
+        "required": true,
+        "selectPlaceholder": "— कार्य प्रकार निवडा —",
+        "other": "इतर (स्वतःचे टाइप करा)",
+        "customPlaceholder": "कार्याचे नाव टाइप करा..."
+      },
+      "officerName": {
+        "label": "अधिकाऱ्याचे नाव",
+        "required": true,
+        "placeholder": "उदा. राजेश पाटील"
+      },
+      "designation": {
+        "label": "पदनाम",
+        "required": true
+      },
+      "availableDays": {
+        "label": "उपलब्ध दिवस",
+        "days": {
+          "monday": "सोम",
+          "tuesday": "मंगळ",
+          "wednesday": "बुध",
+          "thursday": "गुरु",
+          "friday": "शुक्र",
+          "saturday": "शनि"
+        }
+      },
+      "timing": {
+        "label": "वेळ",
+        "required": true,
+        "placeholder": "उदा. 10:00 AM – 1:00 PM"
+      },
+      "location": {
+        "label": "स्थान",
+        "required": true,
+        "placeholder": "उदा. पंचायत कार्यालय, खोली क्र. 2"
+      },
+      "documents": {
+        "label": "आवश्यक दस्तऐवज",
+        "helpText": "नागरिकांनी आणावयाचे",
+        "placeholder": "उदा. आधार कार्ड",
+        "addButton": "जोडा"
+      },
+      "searchKeywords": {
+        "label": "शोध कीवर्ड",
+        "helpText": "(पर्यायी नावे, स्थानिक शब्द)",
+        "placeholder": "उदा. जन्म, जन्म प्रमाणपत्र",
+        "addButton": "जोडा"
+      },
+      "note": {
+        "label": "सूचना",
+        "optional": "(पर्यायी)",
+        "placeholder": "नागरिकांसाठी अतिरिक्त माहिती..."
+      },
+      "active": {
+        "label": "सक्रिय",
+        "description": "नागरिक ही प्रविष्टी पाहू शकतात"
+      }
+    },
+    "buttons": {
+      "cancel": "रद्द करा",
+      "saveChanges": "बदल जतन करा",
+      "addEntry": "प्रविष्टी जोडा",
+      "saving": "जतन होत आहे..."
+    }
+  },
+  "workGuideDelete": {
+    "title": "ही प्रविष्टी हटवायची?",
+    "message": "हे पूर्ववत करता येणार नाही. नागरिकांना ही प्रविष्टी पुन्हा दिसणार नाही.",
+    "cancel": "रद्द करा",
+    "confirm": "हटवा"
+  },
+  "workGuideItem": {
+    "inactive": "निष्क्रिय",
+    "more": "अधिक",
+    "edit": "संपादित करा",
+    "delete": "हटवा",
+    "documents": {
+      "moreCount": "+{{count}} अधिक"
+    }
+  },
+  "workGuideErrors": {
+    "loadFailed": "कार्य मार्गदर्शक लोड करण्यात अयशस्वी",
+    "officerNameRequired": "अधिकाऱ्याचे नाव आवश्यक आहे",
+    "timingRequired": "वेळ आवश्यक आहे",
+    "locationRequired": "स्थान आवश्यक आहे",
+    "workNameRequired": "कार्याचे नाव आवश्यक आहे",
+    "saveFailed": "प्रविष्टी जतन करण्यात अयशस्वी",
+    "deleteFailed": "प्रविष्टी हटवण्यात अयशस्वी",
+    "networkError": "नेटवर्क त्रुटी. कृपया पुन्हा प्रयत्न करा"
+  },
+  "workGuideSuccess": {
+    "saveSuccess": "प्रविष्टी यशस्वीरित्या जतन केली",
+    "updateSuccess": "प्रविष्टी यशस्वीरित्या अद्यतनित केली",
+    "deleteSuccess": "प्रविष्टी यशस्वीरित्या हटविली"
+  },
+  "workGuideSkeleton": {
+    "loading": "लोड होत आहे..."
+  },
+  "designations": {
+    "sarpanch": "सरपंच",
+    "gramSevak": "ग्रामसेवक",
+    "talathiPatwari": "तलाठी / पटवारी",
+    "clerk": "क्लार्क",
+    "accountant": "लेखापाल",
+    "healthWorker": "आरोग्य कार्यकर्ता (आशा)",
+    "anganwadiWorker": "अंगणवाडी कार्यकर्ता",
+    "panchayatSecretary": "पंचायत सचिव",
+    "engineer": "अभियंता / जेई",
+    "other": "इतर"
+  },
+  "categories": {
+    "certificates": "प्रमाणपत्रे आणि दस्तऐवज",
+    "landProperty": "जमीन आणि मालमत्ता",
+    "rationSchemes": "रेशन आणि सरकारी योजना",
+    "waterSanitation": "पाणी आणि स्वच्छता",
+    "roadsInfrastructure": "रस्ते आणि पायाभूत सुविधा",
+    "birthDeath": "जन्म आणि मृत्यू नोंदणी",
+    "elections": "निवडणुका",
+    "agriculture": "कृषी",
+    "health": "आरोग्य",
+    "education": "शिक्षण",
+    "gramSabha": "ग्रामसभा आणि प्रशासन"
+  },
+  "workNames": {
+    "certificates": {
+      "birth": "जन्म प्रमाणपत्र",
+      "death": "मृत्यू प्रमाणपत्र",
+      "residence": "निवास / देशीयता प्रमाणपत्र",
+      "caste": "जात प्रमाणपत्र (अनुसूचित जाती/अनुसूचित जमाती/इतर मागासवर्गीय)",
+      "income": "उत्पन्न प्रमाणपत्र",
+      "noc": "हरकत नसल्याचे प्रमाणपत्र (एनओसी)",
+      "character": "चारित्र्य प्रमाणपत्र",
+      "singleStatus": "एकल स्थिती प्रमाणपत्र",
+      "solvency": "सॉल्व्हन्सी प्रमाणपत्र"
+    },
+    "landProperty": {
+      "satbara": "७/१२ उतारा (सातबारा उतरा)",
+      "8a": "८अ उतारा",
+      "propertyTax": "मालमत्ता कर भरणा आणि पावती",
+      "mutation": "मालमत्ता हस्तांतरण (नाव हस्तांतरण)",
+      "landUse": "जमीन वापर प्रमाणपत्र",
+      "buildingPermission": "इमारत परवानगी / बांधकाम एनओसी",
+      "shopLicense": "दुकान / व्यावसायिक स्थापना परवाना"
+    },
+    "rationSchemes": {
+      "rationCard": "रेशन कार्ड (नवीन / दुरुस्ती / सदस्य भर",
+      "pmAwas": "पीएम आवास योजना",
+      "pmKisan": "पीएम किसान सन्मान निधी",
+      "mgnrega": "मनरेगा जॉब कार्ड",
+      "pension": "विधवा / वृद्ध / अपंगत्व पेन्शन",
+      "scholarship": "शिष्यवृत्ती अर्ज",
+      "ujjwala": "उज्ज्वला योजना (एलपीजी कनेक्शन)",
+      "ayushman": "आयुष्मान भारत आरोग्य कार्ड"
+    },
+    "waterSanitation": {
+      "waterConnection": "नवीन पाणी जोडणी",
+      "waterBill": "पाणी बिल भरणा",
+      "handpumpRepair": "हँडपंप / बोअरवेल दुरुस्ती विनंती",
+      "drainage": "नाला / सांडपाणी काम विनंती",
+      "odf": "ओडीएफ प्रमाणपत्र"
+    },
+    "roadsInfrastructure": {
+      "roadRepair": "रस्ता दुरुस्ती विनंती",
+      "streetLight": "रस्त्यावरील दिवा विनंती",
+      "newRoad": "नवीन रस्ता / पूल मागणी",
+      "constructionQuery": "बांधकाम काम चौकशी"
+    },
+    "birthDeath": {
+      "registerBirth": "नवीन जन्म नोंदणी",
+      "registerDeath": "मृत्यू नोंदणी",
+      "correction": "जन्म / मृत्यू नोंदणीत दुरुस्ती",
+      "reissue": "प्रमाणपत्र पुन्हा मिळवा"
+    },
+    "elections": {
+      "voterId": "मतदार ओळखपत्र नोंदणी मदत",
+      "voterList": "मतदार यादी दुरुस्ती",
+      "pollingBooth": "मतदान केंद्र माहिती"
+    },
+    "agriculture": {
+      "cropDamage": "पीक नुकसान अहवाल",
+      "kisanCredit": "किसान क्रेडिट कार्ड मदत",
+      "soilHealth": "माती आरोग्य कार्ड",
+      "irrigation": "सिंचन पाणी मागणी",
+      "schemeApplication": "कृषी योजना अर्ज"
+    },
+    "health": {
+      "ashaContact": "आशा कार्यकर्ता संपर्क",
+      "anganwadiServices": "अंगणवाडी सेवा",
+      "healthCamp": "आरोग्य शिबिर माहिती",
+      "jananiSuraksha": "जननी सुरक्षा योजना"
+    },
+    "education": {
+      "schoolEnrollment": "शाळा प्रवेश मदत",
+      "scholarshipForm": "शिष्यवृत्ती फॉर्म सबमिशन",
+      "balwadiEnrollment": "बालवाडी / अंगणवाडी प्रवेश"
+    },
+    "gramSabha": {
+      "meetingRequest": "ग्रामसभा सभा विनंती",
+      "rtiHelp": "आरटीआय अर्ज मदत",
+      "generalQuery": "सरपंचांना सामान्य प्रश्न"
+    }
+  },
+  "days": {
+    "monday": "सोमवार",
+    "tuesday": "मंगळवार",
+    "wednesday": "बुधवार",
+    "thursday": "गुरुवार",
+    "friday": "शुक्रवार",
+    "saturday": "शनिवार"
+  },
+  "common": {
+    "required": "आवश्यक",
+    "optional": "पर्यायी",
+    "save": "जतन करा",
+    "cancel": "रद्द करा",
+    "delete": "हटवा",
+    "edit": "संपादित करा",
+    "add": "जोडा",
+    "loading": "लोड होत आहे...",
+    "error": "त्रुटी",
+    "success": "यश"
+  },
+  "official": {
+    "login": {
+      "title": "अधिकारी लॉगिन",
+      "badge": "अधिकारी पोर्टल",
+      "welcome": "पुन्हा स्वागत आहे",
+      "subtitle": "तुमच्या डॅशबोर्डवर जाण्यासाठी तुमची क्रेडेन्शियल्स प्रविष्ट करा",
+      "email": "ईमेल पत्ता",
+      "email_placeholder": "official@gramvartha.in",
+      "password": "पासवर्ड",
+      "password_placeholder": "तुमचा पासवर्ड प्रविष्ट करा",
+      "show_password": "पासवर्ड दाखवा",
+      "hide_password": "पासवर्ड लपवा",
+      "signing_in": "साइन इन होत आहे...",
+      "login_button": "डॅशबोर्डवर लॉगिन करा",
+      "or": "किंवा",
+      "register_link": "खाते नाही? येथे नोंदणी करा",
+      "secure_access": "सुरक्षित, एन्क्रिप्टेड अधिकारी प्रवेश",
+      "back_home": "मुख्यपृष्ठावर परत",
+      "success": "लॉगिन यशस्वी! पुनर्निर्देशित होत आहे...",
+      "error": "काहीतरी चूक झाली! कृपया पुन्हा प्रयत्न करा."
+    },
+    "register": {
+      "title": "अधिकारी नोंदणी",
+      "badge": "अधिकारी पोर्टल",
+      "full_name": "पूर्ण नाव",
+      "name_placeholder": "सरपंच / ग्रामसेवक",
+      "village": "गाव",
+      "select_village": "गाव निवडा",
+      "email": "ईमेल",
+      "email_placeholder": "official@gramvartha.in",
+      "phone": "फोन",
+      "phone_placeholder": "+91 98765 43210",
+      "profile_photo": "प्रोफाइल फोटो",
+      "for_verification": "पडताळणीसाठी",
+      "click_to_upload_photo": "फोटो अपलोड करण्यासाठी क्लिक करा",
+      "click_to_upload_document": "दस्तऐवज पुरावा अपलोड करण्यासाठी क्लिक करा",
+      "browse": "ब्राउझ करा",
+      "preview": "पूर्वावलोकन",
+      "id_proof": "आयडी पुरावा (आधार/पासपोर्ट/बीपीएल कार्ड)",
+      "document_preview": "दस्तऐवजाचे पूर्वावलोकन",
+      "password": "पासवर्ड",
+      "password_placeholder": "पासवर्ड तयार करा",
+      "confirm_password": "पुष्टी करा",
+      "confirm_placeholder": "पुन्हा प्रविष्ट करा",
+      "creating_account": "खाते तयार होत आहे…",
+      "create_account": "अधिकारी खाते तयार करा",
+      "back_home": "मुख्यपृष्ठावर परत",
+      "secure_encrypted": "सुरक्षित आणि एन्क्रिप्टेड",
+      "login_instead": "त्याऐवजी लॉगिन करा →",
+      "password_mismatch": "पासवर्ड जुळत नाहीत!",
+      "photo_required": "पडताळणीसाठी प्रोफाइल फोटो आवश्यक आहे.",
+      "document_required": "पडताळणीसाठी दस्तऐवज पुरावा आवश्यक आहे.",
+      "phone_required": "फोन नंबर आवश्यक आहे.",
+      "success": "नोंदणी यशस्वी! डॅशबोर्डवर पुनर्निर्देशित होत आहे...",
+      "error": "काहीतरी चूक झाली! कृपया पुन्हा प्रयत्न करा."
+    },
+    "profile": {
+      "title": "माझे प्रोफाइल",
+      "subtitle": "तुमचे अधिकारी खाते आणि प्रोफाइल फोटो व्यवस्थापित करा",
+      "dashboard": "डॅशबोर्ड",
+      "loading": "प्रोफाइल लोड होत आहे…",
+      "uploading": "अपलोड होत आहे…",
+      "change_photo": "प्रोफाइल फोटो बदला",
+      "file_requirements": "JPG, PNG · कमाल 5 MB",
+      "account_details": "खाते तपशील",
+      "personal_info": "वैयक्तिक माहिती",
+      "full_name": "पूर्ण नाव",
+      "email": "ईमेल पत्ता",
+      "account_status": "खाते स्थिती",
+      "department": "विभाग",
+      "role": "भूमिका",
+      "phone": "फोन",
+      "member_since": "सदस्यत्वापासून",
+      "contact_admin": "खाते तपशील अद्यतनित करण्यासाठी तुमच्या प्रशासकाशी संपर्क साधा.",
+      "status": {
+        "approved": "मंजूर",
+        "pending": "प्रलंबित",
+        "rejected": "नाकारलेले"
+      },
+      "errors": {
+        "load_failed": "प्रोफाइल लोड करण्यात अयशस्वी",
+        "invalid_file": "कृपया वैध प्रतिमा फाइल निवडा",
+        "file_too_large": "प्रतिमा आकार 5MB पेक्षा कमी असावा",
+        "upload_failed": "प्रतिमा अपलोड करण्यात अयशस्वी"
+      },
+      "success": {
+        "photo_updated": "प्रोफाइल फोटो अद्यतनित!"
+      }
+    },
+    "nav": {
+      "portal": "अधिकारी पोर्टल",
+      "village_qr": "गाव QR",
+      "profile": "प्रोफाइल",
+      "logout": "लॉगआउट"
+    }
+  },
+  "officials": {
+    "tabs": {
+      "notices": "सूचना",
+      "complaints": "तक्रारी"
+    },
+    "filters": {
+      "all": "सर्व",
+      "active": "सक्रिय",
+      "pinned": "पिन केलेले",
+      "urgent": "तातडीचे"
+    },
+    "stats": {
+      "total": "एकूण सूचना",
+      "active": "सक्रिय",
+      "pinned": "पिन केलेले",
+      "urgent": "तातडीचे"
+    },
+    "categories": {
+      "development": "विकास",
+      "health": "आरोग्य",
+      "education": "शिक्षण",
+      "agriculture": "कृषी",
+      "employment": "रोजगार",
+      "social_welfare": "समाज कल्याण",
+      "tax_billing": "कर आणि बिलिंग",
+      "election": "निवडणूक",
+      "urgent": "तातडीचे",
+      "general": "सामान्य"
+    },
+    "priorities": {
+      "low": "कमी",
+      "medium": "मध्यम",
+      "high": "उच्च"
+    },
+    "notices": {
+      "title": "समुदाय सूचना",
+      "subtitle": "तुमच्या गावासाठी घोषणा व्यवस्थापित आणि प्रकाशित करा",
+      "new_notice": "नवीन सूचना",
+      "no_notices": "अद्याप सूचना नाहीत",
+      "no_notices_desc": "तुमच्या गावासाठी पहिली सूचना तयार करा",
+      "publish_first": "पहिली सूचना प्रकाशित करा"
+    },
+    "notice_form": {
+      "new_title": "नवीन सूचना प्रकाशित करा",
+      "edit_title": "सूचना संपादित करा",
+      "title": "शीर्षक",
+      "title_placeholder": "सूचना शीर्षक",
+      "category": "श्रेणी",
+      "priority": "प्राधान्यक्रम",
+      "pin_to_top": "शीर्षस्थानी पिन करा",
+      "pin_description": "सूचना फलकात प्रथम दर्शवा",
+      "description": "वर्णन",
+      "description_placeholder": "सूचना तपशील येथे लिहा...",
+      "attachment": "संलग्नक (पर्यायी)",
+      "attachment_placeholder": "PDF किंवा प्रतिमा, कमाल 5MB",
+      "cancel": "रद्द करा",
+      "saving": "जतन करत आहे...",
+      "publish": "सूचना प्रकाशित करा",
+      "update": "सूचना अद्यतनित करा",
+      "delete": "ही सूचना हटवा",
+      "fill_required": "कृपया शीर्षक आणि वर्णन भरा"
+    },
+    "notice_card": {
+      "pinned": "पिन केलेले",
+      "urgent": "तातडीचे",
+      "file": "फाइल",
+      "views": "दृश्ये",
+      "edit": "संपादित करा",
+      "view": "पहा",
+      "delete": "हटवा"
+    },
+    "delete_confirm": {
+      "title": "ही सूचना हटवायची?",
+      "message": "हे पूर्ववत करता येणार नाही. नागरिकांना ही सूचना पुन्हा दिसणार नाही.",
+      "cancel": "रद्द करा",
+      "delete": "हटवा"
+    },
+    "qr": {
+      "title": "गाव QR कोड",
+      "no_village": "तुमच्या खात्याशी कोणतेही गाव जोडलेले नाही.",
+      "ready": "QR डाउनलोड करण्यासाठी सज्ज",
+      "not_generated": "अद्याप व्युत्पन्न केलेले नाही",
+      "waiting": "कृपया थांबा...",
+      "download": "QR डाउनलोड करा"
+    },
+    "file_viewer": {
+      "attachment": "संलग्नक",
+      "download": "फाइल डाउनलोड करा"
+    },
+    "footer": {
+      "portal": "अधिकारी पोर्टल",
+      "village": "गाव",
+      "notices": "सूचना",
+      "rights": "सर्व हक्क राखीव."
+    },
+    "nav": {
+      "portal": "अधिकारी पोर्टल",
+      "village_qr": "गाव QR",
+      "profile": "प्रोफाइल",
+      "logout": "लॉगआउट"
+    },
+    "errors": {
+      "no_village": "तुमच्या खात्याशी कोणतेही गाव जोडलेले नाही",
+      "load_failed": "सूचना लोड करण्यात अयशस्वी",
+      "save_failed": "सूचना जतन करण्यात अयशस्वी",
+      "delete_failed": "सूचना हटवण्यात अयशस्वी",
+      "qr_failed": "QR व्युत्पन्न करण्यात अयशस्वी",
+      "logout_failed": "लॉगआउट करण्यात त्रुटी"
+    },
+    "success": {
+      "published": "सूचना प्रकाशित!",
+      "updated": "सूचना अद्यतनित!",
+      "deleted": "सूचना हटवली",
+      "shared": "शेअर केले!",
+      "downloaded": "QR डाउनलोड केले!",
+      "logged_out": "लॉगआउट केले"
+    }
+  },
+  "officials": {
+    "profile": {
+      "title": "माझे प्रोफाइल",
+      "subtitle": "तुमचे अधिकारी खाते आणि प्रोफाइल फोटो व्यवस्थापित करा",
+      "dashboard": "डॅशबोर्ड",
+      "loading": "प्रोफाइल लोड होत आहे…",
+      "uploading": "अपलोड होत आहे…",
+      "change_photo": "प्रोफाइल फोटो बदला",
+      "file_requirements": "JPG, PNG · कमाल 5 MB",
+      "account_details": "खाते तपशील",
+      "personal_info": "वैयक्तिक माहिती",
+      "full_name": "पूर्ण नाव",
+      "email": "ईमेल पत्ता",
+      "account_status": "खाते स्थिती",
+      "department": "विभाग",
+      "role": "भूमिका",
+      "phone": "फोन",
+      "member_since": "सदस्यत्वापासून",
+      "contact_admin": "खाते तपशील अद्यतनित करण्यासाठी तुमच्या प्रशासकाशी संपर्क साधा.",
+      "status": {
+        "approved": "मंजूर",
+        "pending": "प्रलंबित",
+        "rejected": "नाकारलेले"
+      },
+      "errors": {
+        "load_failed": "प्रोफाइल लोड करण्यात अयशस्वी",
+        "invalid_file": "कृपया वैध प्रतिमा फाइल निवडा",
+        "file_too_large": "प्रतिमा आकार 5MB पेक्षा कमी असावा",
+        "upload_failed": "प्रतिमा अपलोड करण्यात अयशस्वी"
+      },
+      "success": {
+        "photo_updated": "प्रोफाइल फोटो अद्यतनित!"
+      }
+    }
+  },
+   "common": {
+    "or": "किंवा",
+    "back_home": "मुख्यपृष्ठावर परत",
+    "new": "नवीन",
+    "edit": "संपादित करा",
+    "delete": "हटवा",
+    "cancel": "रद्द करा"
+  },
+  "official": {
+    "remove": "अधिकारी काढून टाका",
+    "edit_official": "अधिकारी संपादित करा",
+    "update_official": "अधिकारी अद्यतनित करा",
+    "name": "नाव",
+    "email": "ईमेल",
+    "phone": "फोन",
+    "joined": "सामील झाल्यापासून",
+    "village": "गाव",
+    "document_proof": "दस्तऐवज पुरावा",
+    "approve": "मंजूर करा",
+    "reject": "नाकारा",
+    "status": "स्थिती"
+  },
+  "superadmin": {
+    "loading": "लोड होत आहे...",
+    "all_clear": "सर्व व्यवस्थित",
+    "nothing_pending": "येथे काहीही प्रलंबित नाही",
+    "unknown": "अज्ञात",
+    "pending_review": "प्रलंबित पुनरावलोकन",
+    "approve": "मंजूर करा",
+    "reject": "नाकारा",
+    "view_document": "दस्तऐवज पहा",
+    "hide_document": "दस्तऐवज लपवा",
+    "delete": "हटवा",
+    "district": "जिल्हा",
+    "state": "राज्य",
+    "registered_on": "नोंदणी दिनांक",
+    "village_id": "गाव आयडी",
+    "na": "N/A",
+    "village_label": "गाव",
+    "unauthorized": "अनधिकृत",
+    "superadmin_panel": "सुपरअॅडमिन पॅनेल",
+    "platform_live": "प्लॅटफॉर्म सक्रिय",
+    "villages": "गावे",
+    "pending": "प्रलंबित",
+    "logout": "लॉगआउट",
+    "superadmin_access": "सुपरअॅडमिन प्रवेश",
+    "control_panel": "नियंत्रण कक्ष",
+    "control_panel_description": "गाव नोंदणी, प्रशासक मंजूरी आणि प्लॅटफॉर्म देखरेख व्यवस्थापित करा.",
+    "total_villages": "एकूण गावे",
+    "registered_on_platform": "प्लॅटफॉर्मवर नोंदणीकृत",
+    "pending_villages": "प्रलंबित गावे",
+    "awaiting_approval": "मंजूरीच्या प्रतीक्षेत",
+    "pending_admins": "प्रलंबित प्रशासक",
+    "awaiting_verification": "पडताळणीच्या प्रतीक्षेत",
+    "delete_village": "गाव हटवा",
+    "delete_confirmation_message": "तुम्हाला खात्री आहे की तुम्हाला \"{{name}}\" हे गाव हटवायचे आहे? ही क्रिया पूर्ववत करता येणार नाही आणि गाव सिस्टममधून कायमचे हटविले जाईल.",
+    "cancel": "रद्द करा",
+    "delete_village_button": "गाव हटवा",
+    "superadmin_control_panel": "सुपरअॅडमिन नियंत्रण कक्ष",
+    "villages_lower": "गावे",
+    "pending_actions": "प्रलंबित क्रिया",
+    "all_rights_reserved": "सर्व हक्क राखीव.",
+    "theme_toggle": "थीम बदला",
+    "tabs": {
+      "pending_villages": "प्रलंबित गावे",
+      "pending_admins": "प्रलंबित प्रशासक",
+      "all_villages": "सर्व गावे"
+    },
+    "status": {
+      "approved": "मंजूर",
+      "pending": "प्रलंबित",
+      "rejected": "नाकारलेले"
+    },
+    "document": {
+      "registration_document": "नोंदणी दस्तऐवज",
+      "open_full_size": "संपूर्ण आकारात उघडा",
+      "document": "दस्तऐवज"
+    },
+    "errors": {
+      "load_failed": "डेटा लोड करण्यात अयशस्वी",
+      "approve_village_failed": "गाव मंजूर करण्यात अयशस्वी",
+      "reject_village_failed": "गाव नाकारण्यात अयशस्वी",
+      "approve_admin_failed": "प्रशासक मंजूर करण्यात अयशस्वी",
+      "delete_village_failed": "गाव हटवण्यात अयशस्वी"
+    },
+    "success": {
+      "village_approved": "गाव मंजूर झाले",
+      "village_rejected": "गाव नाकारले गेले",
+      "admin_approved": "प्रशासक मंजूर झाले",
+      "village_deleted": "गाव यशस्वीरित्या हटविले"
     }
   }
 }
