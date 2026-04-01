@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function OfficialRegister() {
   const { dark } = useTheme();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -19,11 +21,6 @@ export default function OfficialRegister() {
   const [documentPreview, setDocumentPreview] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [profilePreview, setProfilePreview] = useState(null);
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [phoneVerified, setPhoneVerified] = useState(false);
-  const [otpStatus, setOtpStatus] = useState({ text: "", success: false });
-  const [otpLoading, setOtpLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [showCpw, setShowCpw] = useState(false);
   const [message, setMessage] = useState({ text: "", success: false });
@@ -40,11 +37,6 @@ export default function OfficialRegister() {
 
   const handleChange = (e) => {
     setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
-    if (e.target.name === 'phone') {
-      setPhoneVerified(false);
-      setOtpSent(false);
-      setOtpStatus({ text: '', success: false });
-    }
   };
 
   const handleImageChange = (e) => {
@@ -75,71 +67,23 @@ export default function OfficialRegister() {
     }
   };
 
-  const sendOtp = async () => {
-    if (!formData.phone) {
-      setOtpStatus({ text: "Enter your phone number first", success: false });
-      return;
-    }
-    setOtpLoading(true);
-    setOtpStatus({ text: "", success: false });
-
-    try {
-      const res = await axios.post(`${API_BASE_URL}/officials/send-otp`, {
-        phone: formData.phone,
-      });
-      setOtpSent(true);
-      setOtpStatus({ text: res.data.message, success: true });
-    } catch (err) {
-      setOtpStatus({
-        text: err.response?.data?.message || "OTP request failed",
-        success: false,
-      });
-    } finally {
-      setOtpLoading(false);
-    }
-  };
-
-  const verifyOtp = async () => {
-    if (!formData.phone || !otp) {
-      setOtpStatus({ text: "Phone and OTP are required", success: false });
-      return;
-    }
-    setOtpLoading(true);
-    try {
-      const res = await axios.post(`${API_BASE_URL}/officials/verify-otp`, {
-        phone: formData.phone,
-        otp,
-      });
-      setPhoneVerified(true);
-      setOtpStatus({ text: res.data.message, success: true });
-    } catch (err) {
-      setOtpStatus({
-        text: err.response?.data?.message || "OTP verification failed",
-        success: false,
-      });
-      setPhoneVerified(false);
-    } finally {
-      setOtpLoading(false);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword)
-      return setMessage({ text: "Passwords do not match!", success: false });
+      return setMessage({ text: t('official.register.password_mismatch'), success: false });
     if (!profileImage)
       return setMessage({
-        text: "Profile photo is required for verification.",
+        text: t('official.register.photo_required'),
         success: false,
       });
     if (!documentProof)
       return setMessage({
-        text: "Document proof is required for verification.",
+        text: t('official.register.document_required'),
         success: false,
       });
-    if (!phoneVerified)
+    if (!formData.phone)
       return setMessage({
-        text: "Please verify your phone number via OTP before registering.",
+        text: t('official.register.phone_required'),
         success: false,
       });
 
@@ -150,7 +94,6 @@ export default function OfficialRegister() {
       ["name", "email", "password", "village", "phone"].forEach((k) =>
         fd.append(k, formData[k])
       );
-      fd.append("phoneVerified", "true");
       fd.append("profileImage", profileImage);
       fd.append("documentProof", documentProof);
       const res = await axios.post(
@@ -161,11 +104,11 @@ export default function OfficialRegister() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      setMessage({ text: res.data.message, success: true });
+      setMessage({ text: res.data.message || t('official.register.success'), success: true });
       if (res.data.official) navigate("/officials/dashboard");
     } catch (err) {
       setMessage({
-        text: err.response?.data?.message || "Something went wrong!",
+        text: err.response?.data?.message || t('official.register.error'),
         success: false,
       });
     } finally {
@@ -240,13 +183,13 @@ export default function OfficialRegister() {
                 GramVartha
               </p>
               <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
-                Official Registration
+                {t('official.register.title')}
               </h1>
             </div>
           </div>
           <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
             <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-            Officials Portal
+            {t('official.register.badge')}
           </div>
         </div>
 
@@ -294,7 +237,7 @@ export default function OfficialRegister() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="name" className={labelClass}>
-                Full Name
+                {t('official.register.full_name')}
               </label>
               <input
                 id="name"
@@ -303,14 +246,14 @@ export default function OfficialRegister() {
                 required
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Sarpanch / Gram Sevak"
+                placeholder={t('official.register.name_placeholder')}
                 disabled={loading}
                 className={inputClass}
               />
             </div>
             <div>
               <label htmlFor="village" className={labelClass}>
-                Village <span className="text-primary-500 normal-case tracking-normal">*</span>
+                {t('official.register.village')} <span className="text-primary-500 normal-case tracking-normal">*</span>
               </label>
               <div className="relative">
                 <select
@@ -322,7 +265,7 @@ export default function OfficialRegister() {
                   disabled={loading}
                   className={inputClass + " appearance-none pr-8 cursor-pointer"}
                 >
-                  <option value="">Select village</option>
+                  <option value="">{t('official.register.select_village')}</option>
                   {villages.map((v) => (
                     <option key={v._id} value={v._id}>
                       {v.name}
@@ -351,7 +294,7 @@ export default function OfficialRegister() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="email" className={labelClass}>
-                Email
+                {t('official.register.email')}
               </label>
               <input
                 id="email"
@@ -360,14 +303,14 @@ export default function OfficialRegister() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="official@gramvartha.in"
+                placeholder={t('official.register.email_placeholder')}
                 disabled={loading}
                 className={inputClass}
               />
             </div>
             <div>
               <label htmlFor="phone" className={labelClass}>
-                Phone <span className="text-primary-500 normal-case tracking-normal">*</span>
+                {t('official.register.phone')} <span className="text-primary-500 normal-case tracking-normal">*</span>
               </label>
               <input
                 id="phone"
@@ -376,61 +319,19 @@ export default function OfficialRegister() {
                 required
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+91 98765 43210"
+                placeholder={t('official.register.phone_placeholder')}
                 disabled={loading}
                 className={inputClass}
               />
             </div>
           </div>
 
-          {/* Phone OTP Verification */}
-          <div className="grid grid-cols-3 gap-3 items-end">
-            <div className="col-span-2">
-              <label className={labelClass}>OTP Code</label>
-              <input
-                name="otp"
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter OTP"
-                disabled={otpLoading || phoneVerified}
-                className={inputClass}
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={sendOtp}
-                disabled={otpLoading || !formData.phone}
-                className="inline-flex justify-center items-center rounded-xl px-3 py-2 text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300"
-              >
-                {otpLoading ? 'Sending...' : otpSent ? 'Resend OTP' : 'Send OTP'}
-              </button>
-              <button
-                type="button"
-                onClick={verifyOtp}
-                disabled={otpLoading || !otp}
-                className="inline-flex justify-center items-center rounded-xl px-3 py-2 text-xs font-semibold text-white bg-secondary-600 hover:bg-secondary-700 disabled:bg-secondary-300"
-              >
-                {otpLoading ? 'Verifying...' : 'Verify'}
-              </button>
-            </div>
-            {otpStatus.text && (
-              <p className={`col-span-3 text-xs ${otpStatus.success ? 'text-green-600' : 'text-red-600'}`}>
-                {otpStatus.text}
-              </p>
-            )}
-            {phoneVerified && (
-              <p className="col-span-3 text-xs text-green-700">Phone verified ✅</p>
-            )}
-          </div>
-
           {/* Profile Photo - Enhanced */}
           <div>
             <label className={labelClass}>
-              Profile Photo <span className="text-primary-500 normal-case tracking-normal">*</span>
+              {t('official.register.profile_photo')} <span className="text-primary-500 normal-case tracking-normal">*</span>
               <span className="normal-case tracking-normal font-normal text-text-light dark:text-dark-text-muted ml-1">
-                (for verification)
+                ({t('official.register.for_verification')})
               </span>
             </label>
             <div className="flex items-start gap-4">
@@ -459,18 +360,18 @@ export default function OfficialRegister() {
                       ✓ {profileImage.name}
                     </span>
                   ) : (
-                    "Click to upload photo"
+                    t('official.register.click_to_upload_photo')
                   )}
                 </span>
                 <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/40 rounded-lg px-2.5 py-1 flex-shrink-0">
-                  Browse
+                  {t('official.register.browse')}
                 </span>
               </label>
               {profilePreview && (
                 <div className="flex-shrink-0 relative">
                   <img
                     src={profilePreview}
-                    alt="Preview"
+                    alt={t('official.register.preview')}
                     className="w-12 h-12 rounded-full object-cover border-2 border-primary-300 dark:border-primary-600 shadow-md"
                   />
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full border-2 border-white dark:border-dark-surface animate-pulse" />
@@ -491,7 +392,7 @@ export default function OfficialRegister() {
           {/* Document Proof Upload */}
           <div>
             <label className={labelClass}>
-              ID Proof (Aadhar/Passport/BPL Card) <span className="text-primary-500 normal-case tracking-normal">*</span>
+              {t('official.register.id_proof')} <span className="text-primary-500 normal-case tracking-normal">*</span>
             </label>
             <div className="flex items-start gap-4">
               <label
@@ -519,18 +420,18 @@ export default function OfficialRegister() {
                       ✓ {documentProof.name}
                     </span>
                   ) : (
-                    "Click to upload document proof"
+                    t('official.register.click_to_upload_document')
                   )}
                 </span>
                 <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/40 rounded-lg px-2.5 py-1 flex-shrink-0">
-                  Browse
+                  {t('official.register.browse')}
                 </span>
               </label>
               {documentPreview && (
                 <div className="flex-shrink-0 relative">
                   <img
                     src={documentPreview}
-                    alt="Document preview"
+                    alt={t('official.register.document_preview')}
                     className="w-12 h-12 rounded-lg object-cover border-2 border-primary-300 dark:border-primary-600 shadow-md"
                   />
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full border-2 border-white dark:border-dark-surface animate-pulse" />
@@ -552,7 +453,7 @@ export default function OfficialRegister() {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label htmlFor="password" className={labelClass}>
-                Password
+                {t('official.register.password')}
               </label>
               <div className="relative">
                 <input
@@ -562,7 +463,7 @@ export default function OfficialRegister() {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Create password"
+                  placeholder={t('official.register.password_placeholder')}
                   disabled={loading}
                   className={inputClass + " pr-10"}
                 />
@@ -578,7 +479,7 @@ export default function OfficialRegister() {
             </div>
             <div>
               <label htmlFor="confirmPassword" className={labelClass}>
-                Confirm
+                {t('official.register.confirm_password')}
               </label>
               <div className="relative">
                 <input
@@ -588,7 +489,7 @@ export default function OfficialRegister() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="Re-enter"
+                  placeholder={t('official.register.confirm_placeholder')}
                   disabled={loading}
                   className={inputClass + " pr-10"}
                 />
@@ -632,11 +533,11 @@ export default function OfficialRegister() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Creating account…
+                {t('official.register.creating_account')}
               </>
             ) : (
               <>
-                Create Official Account
+                {t('official.register.create_account')}
                 <svg
                   className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
                   fill="none"
@@ -674,7 +575,7 @@ export default function OfficialRegister() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Back to home
+            {t('official.register.back_home')}
           </Link>
           <div className="flex items-center gap-2 text-xs text-text-light dark:text-dark-text-muted">
             <svg
@@ -690,13 +591,13 @@ export default function OfficialRegister() {
                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
               />
             </svg>
-            Secure & encrypted
+            {t('official.register.secure_encrypted')}
           </div>
           <Link
             to="/officials/login"
             className="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors duration-200"
           >
-            Login instead →
+            {t('official.register.login_instead')} →
           </Link>
         </div>
       </div>

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function OfficialLogin({ onLogin }) {
   const { dark } = useTheme();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState({ text: "", success: false });
@@ -27,11 +29,11 @@ export default function OfficialLogin({ onLogin }) {
         formData,
         { withCredentials: true }
       );
-      setMessage({ text: res.data.message, success: true });
+      setMessage({ text: res.data.message || t('official.login.success'), success: true });
       if (res.data.official) navigate("/officials/dashboard");
     } catch (err) {
       setMessage({
-        text: err.response?.data?.message || "Something went wrong!",
+        text: err.response?.data?.message || t('official.login.error'),
         success: false,
       });
     } finally {
@@ -106,13 +108,13 @@ export default function OfficialLogin({ onLogin }) {
                 GramVartha
               </p>
               <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
-                Official Login
+                {t('official.login.title')}
               </h1>
             </div>
           </div>
           <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
             <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-            Officials Portal
+            {t('official.login.badge')}
           </div>
         </div>
 
@@ -122,10 +124,10 @@ export default function OfficialLogin({ onLogin }) {
         {/* Heading */}
         <div className="mb-6">
           <h2 className="text-lg font-semibold text-text-primary dark:text-dark-text-primary">
-            Welcome back
+            {t('official.login.welcome')}
           </h2>
           <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">
-            Enter your credentials to access your dashboard
+            {t('official.login.subtitle')}
           </p>
         </div>
 
@@ -168,7 +170,7 @@ export default function OfficialLogin({ onLogin }) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className={labelClass}>
-              Email address
+              {t('official.login.email')}
             </label>
             <input
               id="email"
@@ -177,7 +179,7 @@ export default function OfficialLogin({ onLogin }) {
               required
               value={formData.email}
               onChange={handleChange}
-              placeholder="official@gramvartha.in"
+              placeholder={t('official.login.email_placeholder')}
               disabled={loading}
               className={inputClass}
             />
@@ -185,7 +187,7 @@ export default function OfficialLogin({ onLogin }) {
 
           <div>
             <label htmlFor="password" className={labelClass}>
-              Password
+              {t('official.login.password')}
             </label>
             <div className="relative">
               <input
@@ -195,7 +197,7 @@ export default function OfficialLogin({ onLogin }) {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter your password"
+                placeholder={t('official.login.password_placeholder')}
                 disabled={loading}
                 className={inputClass + " pr-10"}
               />
@@ -204,6 +206,7 @@ export default function OfficialLogin({ onLogin }) {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 tabIndex={-1}
+                aria-label={showPassword ? t('official.login.hide_password') : t('official.login.show_password')}
               >
                 <EyeIcon open={showPassword} />
               </button>
@@ -238,11 +241,11 @@ export default function OfficialLogin({ onLogin }) {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                Signing in...
+                {t('official.login.signing_in')}
               </>
             ) : (
               <>
-                Login to Dashboard
+                {t('official.login.login_button')}
                 <svg
                   className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
                   fill="none"
@@ -264,7 +267,7 @@ export default function OfficialLogin({ onLogin }) {
         {/* Divider */}
         <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-border dark:bg-dark-border" />
-          <span className="text-xs text-text-light dark:text-dark-text-muted font-medium">or</span>
+          <span className="text-xs text-text-light dark:text-dark-text-muted font-medium">{t('official.login.or')}</span>
           <div className="flex-1 h-px bg-border dark:bg-dark-border" />
         </div>
 
@@ -274,7 +277,7 @@ export default function OfficialLogin({ onLogin }) {
             to="/officials/register"
             className="inline-flex items-center gap-1.5 text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
           >
-            Don't have an account? Register here
+            {t('official.login.register_link')}
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -284,7 +287,7 @@ export default function OfficialLogin({ onLogin }) {
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            Secure, encrypted official access
+            {t('official.login.secure_access')}
           </div>
         </div>
 
@@ -306,7 +309,7 @@ export default function OfficialLogin({ onLogin }) {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back to homepage
+          {t('official.login.back_home')}
         </Link>
       </div>
 

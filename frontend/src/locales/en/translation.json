@@ -113,5 +113,64 @@
   "feature4_tag": "Insights",
   "feature4_desc": "Analyze data, track engagement, and monitor village activities with powerful analytics tools.",
 
-  "paused": "Paused"
+  "paused": "Paused",
+  "official": {
+    "login": {
+      "title": "Official Login",
+      "badge": "Officials Portal",
+      "welcome": "Welcome back",
+      "subtitle": "Enter your credentials to access your dashboard",
+      "email": "Email address",
+      "email_placeholder": "official@gramvartha.in",
+      "password": "Password",
+      "password_placeholder": "Enter your password",
+      "show_password": "Show password",
+      "hide_password": "Hide password",
+      "signing_in": "Signing in...",
+      "login_button": "Login to Dashboard",
+      "or": "or",
+      "register_link": "Don't have an account? Register here",
+      "secure_access": "Secure, encrypted official access",
+      "back_home": "Back to homepage",
+      "success": "Login successful! Redirecting...",
+      "error": "Something went wrong! Please try again."
+    },
+     "register": {
+      "title": "Official Registration",
+      "badge": "Officials Portal",
+      "full_name": "Full Name",
+      "name_placeholder": "Sarpanch / Gram Sevak",
+      "village": "Village",
+      "select_village": "Select village",
+      "email": "Email",
+      "email_placeholder": "official@gramvartha.in",
+      "phone": "Phone",
+      "phone_placeholder": "+91 98765 43210",
+      "profile_photo": "Profile Photo",
+      "for_verification": "for verification",
+      "click_to_upload_photo": "Click to upload photo",
+      "click_to_upload_document": "Click to upload document proof",
+      "browse": "Browse",
+      "preview": "Preview",
+      "id_proof": "ID Proof (Aadhar/Passport/BPL Card)",
+      "document_preview": "Document preview",
+      "password": "Password",
+      "password_placeholder": "Create password",
+      "confirm_password": "Confirm",
+      "confirm_placeholder": "Re-enter",
+      "creating_account": "Creating account…",
+      "create_account": "Create Official Account",
+      "back_home": "Back to home",
+      "secure_encrypted": "Secure & encrypted",
+      "login_instead": "Login instead →",
+      "password_mismatch": "Passwords do not match!",
+      "photo_required": "Profile photo is required for verification.",
+      "document_required": "Document proof is required for verification.",
+      "phone_required": "Phone number is required.",
+      "success": "Registration successful! Redirecting to dashboard...",
+      "error": "Something went wrong! Please try again."
+    }
+  }
+  
+
 }
