@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function AdminRegister() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -17,7 +19,7 @@ export default function AdminRegister() {
     setIsLoading(true);
     setMessage({ text: "", success: false });
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/register`, formData);
+      const res = await axios.post(`${API_BASE_URL}/admin/register`, formData);
       setMessage({ text: res.data.message, success: true });
     } catch (err) {
       setMessage({

@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function OfficialRegister() {
   const { dark } = useTheme();
   const [formData, setFormData] = useState({
@@ -31,7 +33,7 @@ export default function OfficialRegister() {
 
   useEffect(() => {
     axios
-      .get(`${import.meta.env.VITE_API_URL}/villages`)
+      .get(`${API_BASE_URL}/villages`)
       .then((r) => setVillages(r.data || []))
       .catch(() => {});
   }, []);
@@ -82,7 +84,7 @@ export default function OfficialRegister() {
     setOtpStatus({ text: "", success: false });
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/officials/send-otp`, {
+      const res = await axios.post(`${API_BASE_URL}/officials/send-otp`, {
         phone: formData.phone,
       });
       setOtpSent(true);
@@ -104,7 +106,7 @@ export default function OfficialRegister() {
     }
     setOtpLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/officials/verify-otp`, {
+      const res = await axios.post(`${API_BASE_URL}/officials/verify-otp`, {
         phone: formData.phone,
         otp,
       });
@@ -152,7 +154,7 @@ export default function OfficialRegister() {
       fd.append("profileImage", profileImage);
       fd.append("documentProof", documentProof);
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/officials/register`,
+        `${API_BASE_URL}/officials/register`,
         fd,
         {
           withCredentials: true,

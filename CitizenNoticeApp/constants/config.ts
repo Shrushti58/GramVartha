@@ -3,16 +3,14 @@
  * Update the API_BASE_URL with your backend server address
  */
 
-// IMPORTANT: Replace with your backend server URL
-// For local development:
-// - Physical device: Use your computer's IP address (e.g., 'http://192.168.1.100:5000')
-// - Android Emulator: Use 'http://10.0.2.2:5000'
-// - iOS Simulator: Use 'http://localhost:5000'
-// For production: Use your deployed backend URL
+import { Platform } from 'react-native';
+
+// Get API URL from environment variables
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.31.219:3000';
 
 export const Config = {
-  API_BASE_URL: 'http://192.168.31.219:3000', 
-  API_TIMEOUT: 10000, 
+  API_BASE_URL: API_BASE_URL,
+  API_TIMEOUT: 10000,
 
   APP_NAME: 'Citizen Notice',
   APP_VERSION: '1.0.0',

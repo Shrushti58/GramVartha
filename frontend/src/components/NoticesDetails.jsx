@@ -21,6 +21,8 @@ import {
   EyeSlashIcon
 } from "@heroicons/react/24/solid";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const NoticeDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ const NoticeDetails = () => {
     const fetchNotice = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/notice/generateDetails/${id}`);
+        const res = await fetch(`${API_BASE_URL}/notice/generateDetails/${id}`);
         if (!res.ok) throw new Error("Failed to load notice details");
         const data = await res.json();
         setNotice(data.data);

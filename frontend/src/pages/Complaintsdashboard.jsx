@@ -2,6 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
+// Get API URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const FILTER_TABS = [
@@ -999,7 +1002,7 @@ export default function ComplaintsDashboard() {
   const fetchComplaints = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:3000/complaints", {
+      const res = await axios.get(`${API_BASE_URL}/complaints`, {
         withCredentials: true,
       });
       setComplaints(Array.isArray(res.data) ? res.data : []);
@@ -1022,7 +1025,7 @@ export default function ComplaintsDashboard() {
       try {
         setUpdatingStatus(true);
         await axios.patch(
-          `http://localhost:3000/complaints/${expandedId}/status`,
+          `${API_BASE_URL}/complaints/${expandedId}/status`,
           { status: newStatus },
           { withCredentials: true },
         );
@@ -1052,7 +1055,7 @@ export default function ComplaintsDashboard() {
         const fd = new FormData();
         fd.append("image", file);
         const res = await axios.patch(
-          `http://localhost:3000/complaints/${expandedId}/resolve`,
+          `${API_BASE_URL}/complaints/${expandedId}/resolve`,
           fd,
           {
             headers: { "Content-Type": "multipart/form-data" },

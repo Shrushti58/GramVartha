@@ -2,10 +2,7 @@
   "brand": "GramVartha",
   "nav_home": "Home",
   "nav_about": "About",
- 
   "nav_contact": "Contact",
-
- 
   "about_title": "About Us",
   "about_text": "GramVartha helps Grampanchayats share official notices and Government Resolutions (GRs) with citizens easily and effectively.",
   "features_title": "Key Features",
@@ -77,7 +74,11 @@
   "footer_description": "Connecting rural communities with their local government through transparent digital governance.",
   "footer_live_text": "Platform is live across Maharashtra",
   "footer_platform": "Platform",
-  "footer_portals": "Portals"
-
-
+  "footer_portals": "Portals",
+  "free_access": "Free Access",
+"feature.no_login": "No login required — scan and access instantly",
+"feature.local_lang": "Available in local languages",
+"feature.verified": "Verified official notices only",
+"vision.quote": "Less running around. More solutions.",
+"vision.author": "— GramVartha Vision"
 }

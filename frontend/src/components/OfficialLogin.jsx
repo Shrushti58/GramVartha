@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function OfficialLogin({ onLogin }) {
   const { dark } = useTheme();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -21,7 +23,7 @@ export default function OfficialLogin({ onLogin }) {
     setMessage({ text: "", success: false });
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/officials/login`,
+        `${API_BASE_URL}/officials/login`,
         formData,
         { withCredentials: true }
       );

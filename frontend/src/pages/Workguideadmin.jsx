@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 
+// Get API URL from environment variables
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const CATEGORIES = [
@@ -555,7 +558,7 @@ export default function WorkGuideAdmin({ villageId }) {
   async function fetchGuides() {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:3000/workguide/village/${villageId}`, { withCredentials: true });
+      const res = await axios.get(`${API_BASE_URL}/workguide/village/${villageId}`, { withCredentials: true });
       const data = Array.isArray(res.data) ? res.data : [];
       setGrouped(data);
       if (data.length > 0 && !expandedCat) setExpandedCat(data[0].category);
@@ -586,10 +589,10 @@ export default function WorkGuideAdmin({ villageId }) {
     try {
       setSaving(true);
       if (editingId) {
-        await axios.put(`http://localhost:3000/workguide/${editingId}`, payload, { withCredentials: true });
+        await axios.put(`${API_BASE_URL}/workguide/${editingId}`, payload, { withCredentials: true });
         toast.success('Work guide entry updated');
       } else {
-        await axios.post('http://localhost:3000/workguide', payload, { withCredentials: true });
+        await axios.post(`${API_BASE_URL}/workguide`, payload, { withCredentials: true });
         toast.success('Work guide entry added');
       }
       setShowForm(false);
@@ -604,7 +607,7 @@ export default function WorkGuideAdmin({ villageId }) {
   async function handleDelete() {
     if (!deleteTarget) return;
     try {
-      await axios.delete(`http://localhost:3000/workguide/${deleteTarget}`, { withCredentials: true });
+      await axios.delete(`${API_BASE_URL}/workguide/${deleteTarget}`, { withCredentials: true });
       toast.success('Entry deleted');
       setDeleteTarget(null);
       fetchGuides();

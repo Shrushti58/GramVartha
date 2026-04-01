@@ -26,6 +26,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { SparklesIcon, BookmarkIcon as BookmarkSolidIcon, EyeIcon as EyeSolidIcon } from "@heroicons/react/20/solid";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 const Notices = () => {
   const { t } = useTranslation();
   const [notices, setNotices] = useState([]);
@@ -164,7 +166,7 @@ const Notices = () => {
     const fetchNotices = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/notice/fetch`);
+        const response = await fetch(`${API_BASE_URL}/notice/fetch`);
         if (!response.ok) {
           throw new Error("Failed to fetch notices");
         }
@@ -209,7 +211,7 @@ const Notices = () => {
     const visitorId = getVisitorId();
     
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/notice/${noticeId}/view`, {
+      const response = await fetch(`${API_BASE_URL}/notice/${noticeId}/view`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

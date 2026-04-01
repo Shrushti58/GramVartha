@@ -1,21 +1,21 @@
 import React from "react";
-import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 const stats = [
   { value: "10K+", labelKey: "active_readers" },
   { value: "50+", labelKey: "villages_served" },
-  { value: "100%", label: "Free Access" },
+  { value: "100%", labelKey: "free_access" },
 ];
 
 const features = [
-  "No login required — scan and access instantly",
-  "Available in local languages",
-  "Verified official notices only",
+  "feature.no_login",
+  "feature.local_lang",
+  "feature.verified",
 ];
 
 export default function About() {
   const { t } = useTranslation();
+
   return (
     <section
       id="about"
@@ -23,7 +23,6 @@ export default function About() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
 
-        {/* ── Split Layout ── */}
         <div className="grid lg:grid-cols-2 gap-14 items-center">
 
           {/* Left — Image */}
@@ -48,7 +47,7 @@ export default function About() {
                 </div>
                 <div>
                   <p className="text-xs text-text-muted dark:text-dark-text-muted">{t('villages_served')}</p>
-                  <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary">50+ Villages</p>
+                  <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary">50+ {t('villages_served')}</p>
                 </div>
               </div>
 
@@ -97,21 +96,21 @@ export default function About() {
               {stats.map((s, i) => (
                 <div key={i}>
                   <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">{s.value}</p>
-                  <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{s.labelKey ? t(s.labelKey) : s.label}</p>
+                  <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{t(s.labelKey)}</p>
                 </div>
               ))}
             </div>
 
             {/* Checklist */}
             <div className="space-y-3">
-              {features.map((item, i) => (
+              {features.map((key, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-5 h-5 bg-primary-100 dark:bg-primary-900/60 rounded-full flex items-center justify-center flex-shrink-0">
                     <svg className="w-3 h-3 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <p className="text-sm text-text-secondary dark:text-dark-text-secondary">{item}</p>
+                  <p className="text-sm text-text-secondary dark:text-dark-text-secondary">{t(key)}</p>
                 </div>
               ))}
             </div>
@@ -119,9 +118,9 @@ export default function About() {
             {/* Vision quote */}
             <div className="bg-accent-mist dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl px-6 py-5">
               <p className="text-sm font-medium text-text-secondary dark:text-dark-text-secondary italic">
-                "Less running around. More solutions."
+                "{t('vision.quote')}"
               </p>
-              <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">— GramVartha Vision</p>
+              <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">{t('vision.author')}</p>
             </div>
 
           </div>

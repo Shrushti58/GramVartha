@@ -20,10 +20,10 @@ app.use(cookieParser());
    - Mobile (Expo / iOS / Android)
 ======================== */
 
-const allowedOrigins = [
-  "http://localhost:5173",          // Admin (Vite)
-  "https://gramvartha.vercel.app",  // Deployed Admin
-];
+const allowedOrigins = (
+  process.env.ALLOWED_ORIGINS || 
+  "http://localhost:5173,https://gramvartha.vercel.app"
+).split(',').map(origin => origin.trim());
 
 app.use(
   cors({

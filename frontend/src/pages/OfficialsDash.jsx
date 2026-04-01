@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import ComplaintsDashboard from "../pages/Complaintsdashboard";
 import { useTheme } from "../context/ThemeContext";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 // ─── Enhanced Skeleton Components ────────────────────────────────────────────────
 
 function SkeletonStats() {
@@ -551,7 +553,7 @@ export default function OfficialsDashboard() {
   async function fetchNotices() {
     try {
       setLoading(true);
-      const profileRes = await axios.get('http://localhost:3000/officials/profile', { withCredentials: true });
+      const profileRes = await axios.get(`${API_BASE_URL}/officials/profile`, { withCredentials: true });
       const villageId = profileRes.data && profileRes.data.village
         ? (profileRes.data.village._id || profileRes.data.village)
         : null;
@@ -561,7 +563,7 @@ export default function OfficialsDashboard() {
         return; 
       }
       setOfficialVillageId(villageId);
-      const noticesRes = await axios.get(`http://localhost:3000/notice/village/${villageId}`, { withCredentials: true });
+      const noticesRes = await axios.get(`${API_BASE_URL}/notice/village/${villageId}`, { withCredentials: true });
       setNotices(Array.isArray(noticesRes.data && noticesRes.data.notices) ? noticesRes.data.notices : []);
     } catch(e) { 
       toast.error('Failed to load notices'); 
@@ -573,12 +575,12 @@ export default function OfficialsDashboard() {
 
   async function fetchOfficialProfile() {
     try {
-      const res = await axios.get('http://localhost:3000/officials/profile', { withCredentials: true });
+      const res = await axios.get(`${API_BASE_URL}/officials/profile`, { withCredentials: true });
       if (res.data && res.data.village) {
         const vid = res.data.village._id || res.data.village;
         setOfficialVillage(res.data.village);
         try {
-          const qrRes = await axios.get(`http://localhost:3000/villages/${vid}/qrcode`, { withCredentials: true });
+          const qrRes = await axios.get(`${API_BASE_URL}/villages/${vid}/qrcode`, { withCredentials: true });
           if (qrRes.data && qrRes.data.village) {
             setOfficialVillage(prev => ({ ...prev, qrCode: qrRes.data.village.qrCode }));
           }
@@ -595,7 +597,7 @@ export default function OfficialsDashboard() {
       if (officialVillageId) fd.append('village', officialVillageId);
     }
     try {
-      await axios.post('http://localhost:3000/notice/upload', fd, { 
+      await axios.post(`${API_BASE_URL}/notice/upload`, fd, { 
         headers: { 'Content-Type': 'multipart/form-data' }, 
         withCredentials: true 
       });
@@ -611,7 +613,7 @@ export default function OfficialsDashboard() {
 
   async function handleDelete(id) {
     try {
-      await axios.delete(`http://localhost:3000/notice/delete/${id}`, { withCredentials: true });
+      await axios.delete(`${API_BASE_URL}/notice/delete/${id}`, { withCredentials: true });
       toast.success('Notice deleted');
       setDeleteTarget(null);
       setNoticeForm(null);
@@ -624,7 +626,7 @@ export default function OfficialsDashboard() {
   async function generateAndShareQr(village) {
     try {
       setQrLoading(true);
-      const res = await axios.post(`http://localhost:3000/villages/${village._id}/qrcode/generate`, {}, { withCredentials: true });
+      const res = await axios.post(`${API_BASE_URL}/villages/${village._id}/qrcode/generate`, {}, { withCredentials: true });
       const imageUrl = res.data && res.data.village && res.data.village.qrCode
         ? res.data.village.qrCode.imageUrl
         : (res.data && res.data.downloadUrl ? res.data.downloadUrl : null);
@@ -657,7 +659,7 @@ export default function OfficialsDashboard() {
 
   async function handleLogout() {
     try {
-      await axios.post('http://localhost:3000/officials/logout', {}, { withCredentials: true });
+      await axios.post(`${API_BASE_URL}/officials/logout`, {}, { withCredentials: true });
       toast.info('Logged out'); 
       navigate('/');
     } catch(e) { 
