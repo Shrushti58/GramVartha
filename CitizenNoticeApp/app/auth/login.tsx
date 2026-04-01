@@ -21,6 +21,7 @@ import { ThemedView } from "../../components/ThemedView";
 import { ThemedText } from "../../components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
+import { getOrCreatePushToken, setupNotificationListeners } from "../../utils/pushNotifications";
 
 export default function Login() {
   const { colors, isDark } = useTheme();
@@ -30,6 +31,17 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
   const [villageName, setVillageName] = useState<string>("Loading…");
+
+  useEffect(() => {
+    // Setup notification listeners when component mounts
+    const unsubscribe = setupNotificationListeners();
+    
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     AsyncStorage.getItem("scannedVillage").then((str) => {
@@ -68,6 +80,13 @@ export default function Login() {
       setLoading(true);
       const res = await apiService.loginCitizen({ phone, password });
       await AsyncStorage.setItem("token", res.token);
+
+      // Register for push notifications after successful login
+      const pushToken = await getOrCreatePushToken();
+      if (pushToken) {
+        console.log('✅ Push notification setup completed');
+      }
+
       Toast.show({
         type: "success",
         text1: t('welcome_back'),

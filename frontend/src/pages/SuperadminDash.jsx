@@ -283,7 +283,7 @@ function AdminCard({ admin, onApprove }) {
   );
 }
 
-function VillageRow({ village }) {
+function VillageRow({ village, onDelete }) {
   const formattedDate = village.createdAt
     ? new Date(village.createdAt).toLocaleDateString('en-IN', {
         day: 'numeric',
@@ -311,7 +311,18 @@ function VillageRow({ village }) {
             </p>
           </div>
         </div>
-        <StatusBadge status={village.status} />
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <StatusBadge status={village.status} />
+          <button
+            onClick={() => onDelete(village._id, village.name)}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:border-red-300 dark:hover:border-red-700 transition-all duration-200 text-sm font-medium"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete
+          </button>
+        </div>
       </div>
       <div className="border-t border-border dark:border-dark-border mb-5" />
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -374,6 +385,8 @@ export default function SuperadminDashboard() {
   const [activeTab, setActiveTab]             = useState('villages');
   const [loading, setLoading]                 = useState(false);
   const [initialLoading, setInitialLoading]   = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget]       = useState({ id: null, name: '' });
 
   useEffect(function() {
     checkAdminRole();
@@ -437,6 +450,25 @@ export default function SuperadminDashboard() {
       setPendingAdmins(function(p) { return p.filter(function(a) { return a._id !== id; }); });
     } catch(e) {
       toast.error('Failed to approve admin');
+    }
+  }
+
+  async function handleDeleteVillage(id, name) {
+    setDeleteTarget({ id, name });
+    setShowDeleteModal(true);
+  }
+
+  async function confirmDeleteVillage() {
+    try {
+      await api.deleteVillage(deleteTarget.id);
+      toast.success('Village deleted successfully');
+      setVillages(function(v) { return v.filter(function(village) { return village._id !== deleteTarget.id; }); });
+      setShowDeleteModal(false);
+      setDeleteTarget({ id: null, name: '' });
+    } catch(e) {
+      toast.error('Failed to delete village');
+      setShowDeleteModal(false);
+      setDeleteTarget({ id: null, name: '' });
     }
   }
 
@@ -718,6 +750,7 @@ export default function SuperadminDashboard() {
                       <VillageRow
                         key={village._id}
                         village={village}
+                        onDelete={handleDeleteVillage}
                       />
                     );
                   })}
@@ -727,6 +760,45 @@ export default function SuperadminDashboard() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 w-full max-w-md shadow-large">
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-text-primary dark:text-dark-text-primary mb-2">
+                Delete Village
+              </h2>
+              <p className="text-text-secondary dark:text-dark-text-secondary text-sm">
+                Are you sure you want to delete <span className="font-semibold text-text-primary dark:text-dark-text-primary">"{deleteTarget.name}"</span>?
+                This action cannot be undone and will permanently remove the village from the system.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeleteTarget({ id: null, name: '' });
+                }}
+                className="flex-1 px-4 py-2.5 rounded-xl border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200 font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteVillage}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white transition-all duration-200 font-medium shadow-soft"
+              >
+                Delete Village
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Footer ── */}
       <div className="mt-16">

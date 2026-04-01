@@ -7,6 +7,7 @@
     "icon": "./assets/images/gramvarthalogo.png",
     "scheme": "citizennoticeapp",
     "userInterfaceStyle": "automatic",
+    "projectId": "65e8f3a2-c1b2-e4f5-a6b7-c8d9e0f1a2b3",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -43,6 +44,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "58fb3296-0de7-440c-8507-924142c73659"
+      }
+    },
+    "owner": "shrushti58"
   }
 }

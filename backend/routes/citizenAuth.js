@@ -3,11 +3,13 @@ const router = express.Router();
 const { verifyToken } = require("../utlis/jwt");
 const {
   registerCitizen,
-  loginCitizen
+  loginCitizen,
+  registerPushToken
 } = require("../controllers/citizenAuth");
 
 router.post("/register", registerCitizen);
 router.post("/login", loginCitizen);
+router.post("/register-push-token", verifyToken, registerPushToken);
 
 router.get("/me", verifyToken, (req, res) => {
   console.log("Decoded user from token:", req.user); // Debug log

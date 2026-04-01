@@ -90,7 +90,44 @@ const loginCitizen = async (req, res) => {
   }
 };
 
+const registerPushToken = async (req, res) => {
+  try {
+    const { pushToken } = req.body;
+
+    if (!pushToken) {
+      return res.status(400).json({
+        message: "Push token is required"
+      });
+    }
+
+    const citizen = await Citizens.findById(req.user.id);
+
+    if (!citizen) {
+      return res.status(404).json({
+        message: "Citizen not found"
+      });
+    }
+
+    // Add push token if not already present
+    if (!citizen.pushTokens.includes(pushToken)) {
+      citizen.pushTokens.push(pushToken);
+      await citizen.save();
+      console.log(`📱 Push token registered for citizen ${citizen._id}`);
+    }
+
+    res.json({
+      message: "Push token registered successfully",
+      tokensCount: citizen.pushTokens.length
+    });
+
+  } catch (error) {
+    console.error("Error registering push token:", error);
+    res.status(500).json({ message: "Failed to register push token" });
+  }
+};
+
 module.exports = {
   registerCitizen,
-  loginCitizen
+  loginCitizen,
+  registerPushToken
 };

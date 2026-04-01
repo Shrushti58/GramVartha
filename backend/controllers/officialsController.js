@@ -12,15 +12,20 @@ const registerOfficial = async (req, res) => {
       });
     }
 
-    if (!req.file) {
+    if (!req.files || !req.files.profileImage || !req.files.documentProof) {
       return res.status(400).json({
-        message: "Profile image is required for verification"
+        message: "Profile image and ID proof are required for verification"
       });
     }
 
-    const exists = await Officials.findOne({ email });
-    if (exists) {
+    const emailExists = await Officials.findOne({ email });
+    if (emailExists) {
       return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const phoneExists = await Officials.findOne({ phone });
+    if (phoneExists) {
+      return res.status(400).json({ message: "Phone number already registered" });
     }
 
     const hashed = await bcrypt.hash(password, 10);
@@ -30,13 +35,11 @@ const registerOfficial = async (req, res) => {
       email,
       password: hashed,
       phone,
-      village
+      phoneVerified: true,
+      village,
+      profileImage: req.files.profileImage[0].path,
+      documentProof: req.files.documentProof[0].path,
     };
-
-    // Add profile image if uploaded
-    if (req.file) {
-      officialData.profileImage = req.file.path;
-    }
 
     await Officials.create(officialData);
 
@@ -248,6 +251,45 @@ const uploadProfileImage = async (req, res) => {
   }
 };
 
+const updateOfficial = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, status } = req.body;
+    
+    const official = await Officials.findById(id);
+    if (!official) {
+      return res.status(404).json({ message: "Official not found" });
+    }
+    
+    if (req.user.role === 'admin' && official.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    
+    // Update fields
+    if (name) official.name = name;
+    if (email) official.email = email;
+    if (phone) official.phone = phone;
+    if (status) official.status = status;
+    
+    await official.save();
+    
+    res.status(200).json({ 
+      message: "Official updated successfully", 
+      official: {
+        _id: official._id,
+        name: official.name,
+        email: official.email,
+        phone: official.phone,
+        status: official.status,
+        village: official.village
+      }
+    });
+  } catch (err) {
+    console.error("Error updating official:", err);
+    res.status(500).json({ message: "Error updating official" });
+  }
+};
+
 module.exports = {
   registerOfficial,
   loginOfficial,
@@ -258,6 +300,7 @@ module.exports = {
   rejectOfficial,
   getAllOfficials,
   deleteOfficial,
+  updateOfficial,
   getOfficialProfile,
   uploadProfileImage
 };

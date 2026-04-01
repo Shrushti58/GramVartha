@@ -589,7 +589,7 @@ function NoticeCard({ notice, onDelete, onEdit }) {
 
 // ─── Official Card ────────────────────────────────────────────────────────────
 
-function OfficialCard({ official, isPending, onApprove, onReject, onDelete }) {
+function OfficialCard({ official, isPending, onApprove, onReject, onDelete, onEdit }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden hover:border-primary-200 dark:hover:border-primary-800 transition-all duration-200">
@@ -630,9 +630,14 @@ function OfficialCard({ official, isPending, onApprove, onReject, onDelete }) {
                 </button>
               </div>
             ) : (
-              <button onClick={function() { onDelete(official._id); }} className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
-                <Ico name="trash" cls="w-4 h-4" /> Remove Official
-              </button>
+              <div className="flex gap-3 w-full">
+                <button onClick={function() { onEdit(official); }} className="flex-1 inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 text-white rounded-xl transition-all shadow-soft">
+                  <Ico name="edit" cls="w-4 h-4" /> Edit
+                </button>
+                <button onClick={function() { onDelete(official._id); }} className="flex-1 inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
+                  <Ico name="trash" cls="w-4 h-4" /> Remove Official
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -668,8 +673,8 @@ export default function VillageAdminDashboard() {
   const [loading, setLoading]       = useState(true);
   const [villageId, setVillageId]   = useState(null);
   const [qrData, setQrData]         = useState(null);
-  const [noticeForm, setNoticeForm] = useState(null);
-  const [saving, setSaving]         = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
 
   useEffect(function() { load(); }, []);
 
@@ -763,13 +768,25 @@ export default function VillageAdminDashboard() {
     catch(e) { toast.error('Failed to generate QR'); }
   }
 
-  async function shareQr() {
-    const url = qrData && qrData.imageUrl ? qrData.imageUrl : null;
-    if (!url) return;
+  async function editOfficial(official) {
+    setEditTarget(official);
+    setEditModal(true);
+  }
+
+  async function saveOfficialEdit(formData) {
     try {
-      if (navigator.share) await navigator.share({ title: 'Village QR', url: url });
-      else { await navigator.clipboard.writeText(url); toast.success('Link copied'); }
-    } catch(e) {}
+      const res = await api.updateOfficial(editTarget._id, formData);
+      setOfficials(function(list) {
+        return list.map(function(o) {
+          return o._id === editTarget._id ? res.data.official : o;
+        });
+      });
+      setEditModal(false);
+      setEditTarget(null);
+      toast.success('Official updated successfully');
+    } catch(e) {
+      toast.error(e.response?.data?.message || 'Failed to update official');
+    }
   }
 
   async function logout() {
@@ -1069,7 +1086,7 @@ export default function VillageAdminDashboard() {
             ) : (
               <div className="space-y-3">
                 {pending.map(function(o) {
-                  return <OfficialCard key={o._id} official={o} isPending={true} onApprove={approve} onReject={reject} onDelete={delOfficial} />;
+                  return <OfficialCard key={o._id} official={o} isPending={true} onApprove={approve} onReject={reject} onDelete={delOfficial} onEdit={editOfficial} />;
                 })}
               </div>
             )}
@@ -1085,7 +1102,7 @@ export default function VillageAdminDashboard() {
             ) : (
               <div className="space-y-3">
                 {officials.map(function(o) {
-                  return <OfficialCard key={o._id} official={o} isPending={false} onApprove={approve} onReject={reject} onDelete={delOfficial} />;
+                  return <OfficialCard key={o._id} official={o} isPending={false} onApprove={approve} onReject={reject} onDelete={delOfficial} onEdit={editOfficial} />;
                 })}
               </div>
             )}
@@ -1203,6 +1220,56 @@ export default function VillageAdminDashboard() {
       {/* ── Footer always at bottom ── */}
       <Footer village={village} officials={officials} notices={notices} pending={pending} />
 
+      {/* Edit Official Modal */}
+      {editModal && editTarget && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl w-full max-w-md shadow-large max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border">
+              <h3 className="text-lg font-bold text-text-primary dark:text-dark-text-primary">Edit Official</h3>
+              <button onClick={function() { setEditModal(false); setEditTarget(null); }} className="p-1.5 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted transition-all">
+                <Ico name="x" cls="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={function(e) {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              saveOfficialEdit(formData);
+            }} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Name *</label>
+                <input name="name" defaultValue={editTarget.name} required className={inp} />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Email *</label>
+                <input name="email" type="email" defaultValue={editTarget.email} required className={inp} />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Phone *</label>
+                <input name="phone" type="tel" defaultValue={editTarget.phone} required className={inp} />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">Status</label>
+                <select name="status" defaultValue={editTarget.status || 'approved'} className={inp}>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={function() { setEditModal(false); setEditTarget(null); }} className="flex-1 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
+                  Cancel
+                </button>
+                <button type="submit" className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
+                  Update Official
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
+      {/* ── Footer always at bottom ── */}

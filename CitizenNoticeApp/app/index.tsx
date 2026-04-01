@@ -530,7 +530,6 @@ export default function HomeScreen() {
   const contentSlide = useRef(new Animated.Value(24)).current;
 
 
-
   useEffect(() => {
     const splashTimer = setTimeout(() => {
       Animated.parallel([

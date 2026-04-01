@@ -56,6 +56,17 @@ class ApiService {
     }
   }
 
+  // Generic POST method for custom endpoints
+  async post(endpoint: string, data?: any) {
+    try {
+      const response = await this.api.post(endpoint, data);
+      return response.data;
+    } catch (error) {
+      console.error(`POST ${endpoint} error:`, error);
+      throw error;
+    }
+  }
+
   // ==============================
   // 🔐 AUTH APIs
   // ==============================

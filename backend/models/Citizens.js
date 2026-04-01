@@ -19,6 +19,10 @@ const CitizenSchema = new mongoose.Schema(
     type: mongoose.Schema.Types.ObjectId,
     ref: "Village",
     required: true
+  },
+  pushTokens: {
+    type: [String],
+    default: []
   }
 },
 { timestamps: true }

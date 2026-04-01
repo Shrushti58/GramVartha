@@ -117,6 +117,36 @@ export const deleteOfficial = (officialId) => {
   return api.delete(`/officials/${officialId}`);
 };
 
+export const updateOfficial = (officialId, officialData) => {
+  return api.put(`/officials/${officialId}`, officialData);
+};
+
+// Admin Management APIs
+export const getAllAdmins = () => {
+  return api.get('/admin/all-admins');
+};
+
+export const editAdmin = (adminId, adminData) => {
+  return api.put(`/admin/edit-admin/${adminId}`, adminData);
+};
+
+export const deleteAdmin = (adminId) => {
+  return api.delete(`/admin/delete-admin/${adminId}`);
+};
+
+// Official Management APIs (for admins)
+export const getAllOfficialsAdmin = () => {
+  return api.get('/admin/all-officials');
+};
+
+export const editOfficialAdmin = (officialId, officialData) => {
+  return api.put(`/admin/edit-official/${officialId}`, officialData);
+};
+
+export const deleteOfficialAdmin = (officialId) => {
+  return api.delete(`/admin/delete-official/${officialId}`);
+};
+
 // Notice APIs
 export const uploadNotice = (formData) => {
   return api.post('/notice/upload', formData, {
@@ -163,11 +193,28 @@ export const officialRegister = (officialData, profileImage = null) => {
     formData.append('profileImage', profileImage);
   }
 
+  // Add document proof if provided
+  if (officialData.documentProof) {
+    formData.append('documentProof', officialData.documentProof);
+  }
+
+  if (officialData.phoneVerified) {
+    formData.append('phoneVerified', 'true');
+  }
+
   return api.post('/officials/register', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+};
+
+export const sendOfficialOtp = (phone) => {
+  return api.post('/officials/send-otp', { phone });
+};
+
+export const verifyOfficialOtp = (phone, otp) => {
+  return api.post('/officials/verify-otp', { phone, otp });
 };
 
 export const officialLogin = (email, password) => {

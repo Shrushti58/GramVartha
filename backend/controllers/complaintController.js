@@ -1,7 +1,6 @@
 const Complaint = require("../models/Complaint");
 const { analyzeImage } = require("../utlis/vision");
 const Citizen = require("../models/Citizens");
-const { sendSMS } = require('../service/smsService');
 
 const VALID_STATUSES = ["pending", "in-progress", "resolved", "rejected"];
 
@@ -172,26 +171,6 @@ const updateStatus = async (req, res) => {
       return res.status(404).json({ message: "Complaint not found" });
     }
 
-    // ── SMS: notify citizen based on status ──
-    try {
-      const citizen = await Citizen.findById(complaint.citizen);
-      if (citizen?.phone) {
-        let message = '';
-
-        if (status === 'resolved') {
-          message = `✅ Your complaint "${complaint.title}" (#${complaint._id}) has been RESOLVED by Gram Panchayat. Thank you for reporting!`;
-        } else if (status === 'rejected') {
-          message = `❌ Your complaint "${complaint.title}" (#${complaint._id}) has been REJECTED by Gram Panchayat. Visit the portal for more details.`;
-        } else if (status === 'in_progress') {
-          message = `🔧 Your complaint "${complaint.title}" (#${complaint._id}) is now IN PROGRESS. We are working on it!`;
-        }
-
-        if (message) await sendSMS(citizen.phone, message);
-      }
-    } catch (smsErr) {
-      console.error("SMS error [updateStatus]:", smsErr.message);
-    }
-
     return res.status(200).json(complaint);
   } catch (err) {
     console.error("[updateStatus]", err);
@@ -261,17 +240,6 @@ const resolveComplaint = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
-
-    // ── SMS: notify citizen of resolution with AI score ──
-    try {
-      const citizen = await Citizen.findById(complaint.citizen);
-      if (citizen?.phone) {
-        const message = `✅ Your complaint "${complaint.title}" (#${complaint._id}) has been RESOLVED by Gram Panchayat. Verification score: ${score}/100. ${remarks}`;
-        await sendSMS(citizen.phone, message);
-      }
-    } catch (smsErr) {
-      console.error("SMS error [resolveComplaint]:", smsErr.message);
-    }
 
     return res.status(200).json(updated);
   } catch (err) {

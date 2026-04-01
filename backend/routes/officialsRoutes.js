@@ -4,7 +4,7 @@ const officialsController = require('../controllers/officialsController');
 const { verifyToken } = require("../utlis/jwt");
 const { uploadProfile } = require("../middlewares/uploadCloud");
 
-router.post("/register", uploadProfile.single('profileImage'), officialsController.registerOfficial);
+router.post("/register", uploadProfile.fields([{ name: 'profileImage', maxCount: 1 }, { name: 'documentProof', maxCount: 1 }]), officialsController.registerOfficial);
 router.post("/login", officialsController.loginOfficial);
 router.post("/logout", officialsController.logoutOfficial);
 
@@ -18,5 +18,6 @@ router.put("/approve/:id", verifyToken, officialsController.approveOfficial);
 router.put("/reject/:id", verifyToken, officialsController.rejectOfficial);
 router.get("/all", verifyToken, officialsController.getAllOfficials);
 router.delete("/:id", verifyToken, officialsController.deleteOfficial);
+router.put("/:id", verifyToken, officialsController.updateOfficial);
 
 module.exports = router;

@@ -147,6 +147,179 @@ const getAdminMe = async (req, res) => {
     }
 };
 
+// Get all admins (with role-based filtering)
+const getAllAdmins = async (req, res) => {
+    try {
+        let query = {};
+        if (req.user.role === 'admin') {
+            // Village admin can only see admins from their village
+            query.village = req.user.village;
+        }
+        // Superadmin can see all admins
+
+        const admins = await Admin.find(query).populate('village').select("-password");
+        res.status(200).json(admins);
+    } catch (err) {
+        console.error("Error fetching admins:", err);
+        res.status(500).json({ message: "Error fetching admins" });
+    }
+};
+
+// Edit admin
+const editAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { email, village, status } = req.body;
+
+        const adminToEdit = await Admin.findById(id);
+        if (!adminToEdit) {
+            return res.status(404).json({ message: "Admin not found" });
+        }
+
+        // Permission checks
+        if (req.user.role === 'admin') {
+            // Village admin can only edit admins from their village
+            if (adminToEdit.village.toString() !== req.user.village.toString()) {
+                return res.status(403).json({ message: "Access denied" });
+            }
+            // Village admin cannot change status or village
+            if (status !== undefined || village !== undefined) {
+                return res.status(403).json({ message: "Cannot change status or village" });
+            }
+        }
+
+        // Prevent superadmin from being demoted
+        if (adminToEdit.role === 'superadmin' && req.user.role !== 'superadmin') {
+            return res.status(403).json({ message: "Cannot modify superadmin" });
+        }
+
+        const updateData = {};
+        if (email !== undefined) updateData.email = email;
+        if (village !== undefined && req.user.role === 'superadmin') updateData.village = village;
+        if (status !== undefined && req.user.role === 'superadmin') updateData.status = status;
+
+        const updatedAdmin = await Admin.findByIdAndUpdate(id, updateData, { new: true }).populate('village').select("-password");
+        res.status(200).json({ message: "Admin updated successfully", admin: updatedAdmin });
+    } catch (err) {
+        console.error("Error editing admin:", err);
+        res.status(500).json({ message: "Error editing admin" });
+    }
+};
+
+// Delete admin
+const deleteAdmin = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const adminToDelete = await Admin.findById(id);
+        if (!adminToDelete) {
+            return res.status(404).json({ message: "Admin not found" });
+        }
+
+        // Permission checks
+        if (req.user.role === 'admin') {
+            // Village admin can only delete admins from their village
+            if (adminToDelete.village.toString() !== req.user.village.toString()) {
+                return res.status(403).json({ message: "Access denied" });
+            }
+        }
+
+        // Prevent superadmin from being deleted
+        if (adminToDelete.role === 'superadmin') {
+            return res.status(403).json({ message: "Cannot delete superadmin" });
+        }
+
+        // Prevent self-deletion
+        if (adminToDelete._id.toString() === req.user.id) {
+            return res.status(403).json({ message: "Cannot delete your own account" });
+        }
+
+        await Admin.findByIdAndDelete(id);
+        res.status(200).json({ message: "Admin deleted successfully" });
+    } catch (err) {
+        console.error("Error deleting admin:", err);
+        res.status(500).json({ message: "Error deleting admin" });
+    }
+};
+
+// Get all officials (with role-based filtering)
+const getAllOfficials = async (req, res) => {
+    try {
+        let query = {};
+        if (req.user.role === 'admin') {
+            // Village admin can only see officials from their village
+            query.village = req.user.village;
+        }
+        // Superadmin can see all officials
+
+        const officials = await Officals.find(query).populate('village').select("-password");
+        res.status(200).json(officials);
+    } catch (err) {
+        console.error("Error fetching officials:", err);
+        res.status(500).json({ message: "Error fetching officials" });
+    }
+};
+
+// Edit official
+const editOfficial = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, phone, village, status } = req.body;
+
+        const officialToEdit = await Officals.findById(id);
+        if (!officialToEdit) {
+            return res.status(404).json({ message: "Official not found" });
+        }
+
+        // Permission checks
+        if (req.user.role === 'admin') {
+            // Village admin can only edit officials from their village
+            if (officialToEdit.village.toString() !== req.user.village.toString()) {
+                return res.status(403).json({ message: "Access denied" });
+            }
+        }
+
+        const updateData = {};
+        if (name !== undefined) updateData.name = name;
+        if (email !== undefined) updateData.email = email;
+        if (phone !== undefined) updateData.phone = phone;
+        if (village !== undefined && req.user.role === 'superadmin') updateData.village = village;
+        if (status !== undefined) updateData.status = status;
+
+        const updatedOfficial = await Officals.findByIdAndUpdate(id, updateData, { new: true }).populate('village').select("-password");
+        res.status(200).json({ message: "Official updated successfully", official: updatedOfficial });
+    } catch (err) {
+        console.error("Error editing official:", err);
+        res.status(500).json({ message: "Error editing official" });
+    }
+};
+
+// Delete official (keeping the existing one but adding permission checks)
+const deleteOfficialWithPermissions = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const officialToDelete = await Officals.findById(id);
+        if (!officialToDelete) {
+            return res.status(404).json({ message: "Official not found" });
+        }
+
+        // Permission checks
+        if (req.user.role === 'admin') {
+            // Village admin can only delete officials from their village
+            if (officialToDelete.village.toString() !== req.user.village.toString()) {
+                return res.status(403).json({ message: "Access denied" });
+            }
+        }
+
+        await Officals.findByIdAndDelete(id);
+        res.status(200).json({ message: "Official deleted successfully" });
+    } catch (err) {
+        console.error("Error deleting official:", err);
+        res.status(500).json({ message: "Error deleting official" });
+    }
+};
+
 module.exports = {
     registerAdmin,
     loginAdmin,
@@ -155,5 +328,11 @@ module.exports = {
     getPendingAdmins,
     approveAdmin,
     rejectAdmin,
-    getAdminMe
+    getAdminMe,
+    getAllAdmins,
+    editAdmin,
+    deleteAdmin,
+    getAllOfficials,
+    editOfficial,
+    deleteOfficialWithPermissions
 };

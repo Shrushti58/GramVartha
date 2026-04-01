@@ -39,11 +39,13 @@ const issueStorage = new CloudinaryStorage({
 
 const uploadNotice = multer({ storage: noticeStorage });
 const uploadProfile = multer({ storage: profileStorage });
+const uploadDocument = multer({ storage: profileStorage }); // reusing profile storage for official docs
 const uploadVillageDoc = multer({ storage: villageDocStorage });
 const uploadIssue = multer({ storage: issueStorage });
 
 module.exports = uploadNotice;
 module.exports.uploadNotice = uploadNotice;
 module.exports.uploadProfile = uploadProfile;
+module.exports.uploadDocument = uploadDocument;
 module.exports.uploadVillageDoc = uploadVillageDoc;
 module.exports.uploadIssue = uploadIssue;

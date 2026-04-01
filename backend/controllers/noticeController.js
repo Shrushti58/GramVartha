@@ -1,7 +1,7 @@
 const Notice = require("../models/Notice");
 const NoticeView = require("../models/NoticeView");
 const Citizen = require("../models/Citizens");
-const { sendSMS } = require('../service/smsService');
+const { notifyNewNotice } = require('../service/notificationService');
 
 const uploadNotice = async (req, res) => {
   try {
@@ -69,23 +69,20 @@ const uploadNotice = async (req, res) => {
       notice = new Notice(noticeData);
       await notice.save();
 
-      // ── SMS: notify all citizens of this village ──
-      //try {
-      //   const citizens = await Citizen.find({
-      //     village: req.user.village,
-      //     phone: { $exists: true, $ne: null }
-      //   });
+      // Send push notifications to all citizens of this village
+      try {
+        const citizens = await Citizen.find({
+          village: req.user.village
+        });
 
-      // const message = `📢 Gram Panchayat Notice: "${title}" has been published. Login to the portal to read it.`;
-
-      //  for (const citizen of citizens) {
-      //    await sendSMS(citizen.phone, message);
-      //  }
-      // console.log(`📨 SMS sent to ${citizens.length} citizens`);
-      //} catch (smsErr) {
-      // SMS failure should NOT fail the main request
-      // console.error("SMS notification error:", smsErr.message);
-      // }
+        if (citizens && citizens.length > 0) {
+          await notifyNewNotice(citizens, title, req.user.village);
+          console.log(`📬 Push notifications sent to ${citizens.length} citizens`);
+        }
+      } catch (notifErr) {
+        // Notification failure should NOT fail the main request
+        console.error("Push notification error:", notifErr.message);
+      }
     }
 
     await notice.populate('createdBy', 'name email');

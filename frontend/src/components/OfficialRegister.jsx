@@ -13,8 +13,15 @@ export default function OfficialRegister() {
     village: "",
     phone: "",
   });
+  const [documentProof, setDocumentProof] = useState(null);
+  const [documentPreview, setDocumentPreview] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [profilePreview, setProfilePreview] = useState(null);
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [phoneVerified, setPhoneVerified] = useState(false);
+  const [otpStatus, setOtpStatus] = useState({ text: "", success: false });
+  const [otpLoading, setOtpLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [showCpw, setShowCpw] = useState(false);
   const [message, setMessage] = useState({ text: "", success: false });
@@ -29,8 +36,14 @@ export default function OfficialRegister() {
       .catch(() => {});
   }, []);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData((p) => ({ ...p, [e.target.name]: e.target.value }));
+    if (e.target.name === 'phone') {
+      setPhoneVerified(false);
+      setOtpSent(false);
+      setOtpStatus({ text: '', success: false });
+    }
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0] || null;
@@ -46,6 +59,68 @@ export default function OfficialRegister() {
     }
   };
 
+  const handleDocumentChange = (e) => {
+    const file = e.target.files?.[0] || null;
+    setDocumentProof(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setDocumentPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setDocumentPreview(null);
+    }
+  };
+
+  const sendOtp = async () => {
+    if (!formData.phone) {
+      setOtpStatus({ text: "Enter your phone number first", success: false });
+      return;
+    }
+    setOtpLoading(true);
+    setOtpStatus({ text: "", success: false });
+
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/officials/send-otp`, {
+        phone: formData.phone,
+      });
+      setOtpSent(true);
+      setOtpStatus({ text: res.data.message, success: true });
+    } catch (err) {
+      setOtpStatus({
+        text: err.response?.data?.message || "OTP request failed",
+        success: false,
+      });
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
+  const verifyOtp = async () => {
+    if (!formData.phone || !otp) {
+      setOtpStatus({ text: "Phone and OTP are required", success: false });
+      return;
+    }
+    setOtpLoading(true);
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/officials/verify-otp`, {
+        phone: formData.phone,
+        otp,
+      });
+      setPhoneVerified(true);
+      setOtpStatus({ text: res.data.message, success: true });
+    } catch (err) {
+      setOtpStatus({
+        text: err.response?.data?.message || "OTP verification failed",
+        success: false,
+      });
+      setPhoneVerified(false);
+    } finally {
+      setOtpLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword)
@@ -55,15 +130,27 @@ export default function OfficialRegister() {
         text: "Profile photo is required for verification.",
         success: false,
       });
+    if (!documentProof)
+      return setMessage({
+        text: "Document proof is required for verification.",
+        success: false,
+      });
+    if (!phoneVerified)
+      return setMessage({
+        text: "Please verify your phone number via OTP before registering.",
+        success: false,
+      });
+
     setLoading(true);
     setMessage({ text: "", success: false });
     try {
       const fd = new FormData();
-      ["name", "email", "password", "village"].forEach((k) =>
+      ["name", "email", "password", "village", "phone"].forEach((k) =>
         fd.append(k, formData[k])
       );
-      if (formData.phone) fd.append("phone", formData.phone);
+      fd.append("phoneVerified", "true");
       fd.append("profileImage", profileImage);
+      fd.append("documentProof", documentProof);
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/officials/register`,
         fd,
@@ -294,6 +381,48 @@ export default function OfficialRegister() {
             </div>
           </div>
 
+          {/* Phone OTP Verification */}
+          <div className="grid grid-cols-3 gap-3 items-end">
+            <div className="col-span-2">
+              <label className={labelClass}>OTP Code</label>
+              <input
+                name="otp"
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
+                disabled={otpLoading || phoneVerified}
+                className={inputClass}
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={sendOtp}
+                disabled={otpLoading || !formData.phone}
+                className="inline-flex justify-center items-center rounded-xl px-3 py-2 text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 disabled:bg-primary-300"
+              >
+                {otpLoading ? 'Sending...' : otpSent ? 'Resend OTP' : 'Send OTP'}
+              </button>
+              <button
+                type="button"
+                onClick={verifyOtp}
+                disabled={otpLoading || !otp}
+                className="inline-flex justify-center items-center rounded-xl px-3 py-2 text-xs font-semibold text-white bg-secondary-600 hover:bg-secondary-700 disabled:bg-secondary-300"
+              >
+                {otpLoading ? 'Verifying...' : 'Verify'}
+              </button>
+            </div>
+            {otpStatus.text && (
+              <p className={`col-span-3 text-xs ${otpStatus.success ? 'text-green-600' : 'text-red-600'}`}>
+                {otpStatus.text}
+              </p>
+            )}
+            {phoneVerified && (
+              <p className="col-span-3 text-xs text-green-700">Phone verified ✅</p>
+            )}
+          </div>
+
           {/* Profile Photo - Enhanced */}
           <div>
             <label className={labelClass}>
@@ -352,6 +481,66 @@ export default function OfficialRegister() {
               accept="image/*"
               required
               onChange={handleImageChange}
+              disabled={loading}
+              className="hidden"
+            />
+          </div>
+
+          {/* Document Proof Upload */}
+          <div>
+            <label className={labelClass}>
+              ID Proof (Aadhar/Passport/BPL Card) <span className="text-primary-500 normal-case tracking-normal">*</span>
+            </label>
+            <div className="flex items-start gap-4">
+              <label
+                htmlFor="documentProof"
+                className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl border cursor-pointer bg-white dark:bg-dark-surface2 border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md transition-all duration-200 group"
+              >
+                <div className="w-7 h-7 bg-primary-100 dark:bg-primary-900/60 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/60 transition-colors">
+                  <svg
+                    className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <span className="flex-1 text-sm text-text-muted dark:text-dark-text-muted truncate">
+                  {documentProof ? (
+                    <span className="text-primary-600 dark:text-primary-400 font-medium">
+                      ✓ {documentProof.name}
+                    </span>
+                  ) : (
+                    "Click to upload document proof"
+                  )}
+                </span>
+                <span className="text-xs font-semibold text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-700 bg-primary-50 dark:bg-primary-900/40 rounded-lg px-2.5 py-1 flex-shrink-0">
+                  Browse
+                </span>
+              </label>
+              {documentPreview && (
+                <div className="flex-shrink-0 relative">
+                  <img
+                    src={documentPreview}
+                    alt="Document preview"
+                    className="w-12 h-12 rounded-lg object-cover border-2 border-primary-300 dark:border-primary-600 shadow-md"
+                  />
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full border-2 border-white dark:border-dark-surface animate-pulse" />
+                </div>
+              )}
+            </div>
+            <input
+              id="documentProof"
+              type="file"
+              accept="image/*,.pdf"
+              required
+              onChange={handleDocumentChange}
               disabled={loading}
               className="hidden"
             />
