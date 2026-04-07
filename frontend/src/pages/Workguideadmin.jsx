@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 // Get API URL from environment variables
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
@@ -75,9 +76,6 @@ const WORK_NAMES = {
     'Gram Sabha Meeting Request', 'RTI Application Help', 'General Query to Sarpanch',
   ],
 };
-
-// ─── Marathi Translations ─────────────────────────────────────────────────────
-
 
 // ─── Shared input style ───────────────────────────────────────────────────────
 
@@ -208,7 +206,7 @@ function WorkGuideItemSkeleton() {
 
 // ─── Notice Form (inline) ───────────────────────────────────────────────────
 
-function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
+function WorkGuideForm({ initial, editingId, onSave, onCancel, saving, t }) {
   const [form, setForm] = useState(initial || {
     category: 'Certificates & Documents',
     workName: '',
@@ -269,19 +267,19 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
   }
 
   const dayNames = {
-    Monday: translations.mon,
-    Tuesday: translations.tue,
-    Wednesday: translations.wed,
-    Thursday: translations.thu,
-    Friday: translations.fri,
-    Saturday: translations.sat,
+    Monday: t('workGuideForm.mon'),
+    Tuesday: t('workGuideForm.tue'),
+    Wednesday: t('workGuideForm.wed'),
+    Thursday: t('workGuideForm.thu'),
+    Friday: t('workGuideForm.fri'),
+    Saturday: t('workGuideForm.sat'),
   };
 
   return (
     <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden mb-4">
       <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2">
         <h3 className="text-sm font-bold text-text-primary dark:text-dark-text-primary">
-          {editingId ? translations.editEntryTitle : translations.newEntryTitle}
+          {editingId ? t('workGuideForm.editEntryTitle') : t('workGuideForm.newEntryTitle')}
         </h3>
         <button type="button" onClick={onCancel} className="p-1.5 rounded-lg hover:bg-border dark:hover:bg-dark-border text-text-muted dark:text-dark-text-muted transition-all">
           <IcoX />
@@ -293,7 +291,7 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         {/* Category */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-            {translations.category} <span className="text-red-400">*</span>
+            {t('workGuideForm.category')} <span className="text-red-400">*</span>
           </label>
           <select value={form.category} onChange={function(e) { onCategoryChange(e.target.value); }} className={inp}>
             {CATEGORIES.map(function(c) { return <option key={c} value={c}>{c}</option>; })}
@@ -303,23 +301,23 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         {/* Work Name */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-            {translations.workName} <span className="text-red-400">*</span>
+            {t('workGuideForm.workName')} <span className="text-red-400">*</span>
           </label>
           <select
             value={form.workName}
             onChange={function(e) { setForm(function(p) { return Object.assign({}, p, { workName: e.target.value, customWorkName: '' }); }); }}
             className={inp}
           >
-            <option value="">{translations.selectWorkType}</option>
+            <option value="">{t('workGuideForm.selectWorkType')}</option>
             {(WORK_NAMES[form.category] || []).map(function(w) { return <option key={w} value={w}>{w}</option>; })}
-            <option value="__custom__">{translations.other}</option>
+            <option value="__custom__">{t('workGuideForm.other')}</option>
           </select>
           {form.workName === '__custom__' && (
             <input
               type="text"
               value={form.customWorkName}
               onChange={function(e) { set('customWorkName', e.target.value); }}
-              placeholder={translations.typeWorkName}
+              placeholder={t('workGuideForm.typeWorkName')}
               className={`${inp} mt-2`}
             />
           )}
@@ -329,20 +327,20 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-              {translations.officerName} <span className="text-red-400">*</span>
+              {t('workGuideForm.officerName')} <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
               value={form.officerName}
               onChange={function(e) { set('officerName', e.target.value); }}
-              placeholder={translations.officerNamePlaceholder}
+              placeholder={t('workGuideForm.officerNamePlaceholder')}
               required
               className={inp}
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-              {translations.designation} <span className="text-red-400">*</span>
+              {t('workGuideForm.designation')} <span className="text-red-400">*</span>
             </label>
             <select value={form.designation} onChange={function(e) { set('designation', e.target.value); }} className={inp}>
               {DESIGNATIONS.map(function(d) { return <option key={d} value={d}>{d}</option>; })}
@@ -353,7 +351,7 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         {/* Available Days */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-2">
-            {translations.availableDays}
+            {t('workGuideForm.availableDays')}
           </label>
           <div className="flex flex-wrap gap-2">
             {ALL_DAYS.map(function(day) {
@@ -379,26 +377,26 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-              {translations.timing} <span className="text-red-400">*</span>
+              {t('workGuideForm.timing')} <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
               value={form.timing}
               onChange={function(e) { set('timing', e.target.value); }}
-              placeholder={translations.timingPlaceholder}
+              placeholder={t('workGuideForm.timingPlaceholder')}
               required
               className={inp}
             />
           </div>
           <div>
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-              {translations.location} <span className="text-red-400">*</span>
+              {t('workGuideForm.location')} <span className="text-red-400">*</span>
             </label>
             <input
               type="text"
               value={form.location}
               onChange={function(e) { set('location', e.target.value); }}
-              placeholder={translations.locationPlaceholder}
+              placeholder={t('workGuideForm.locationPlaceholder')}
               required
               className={inp}
             />
@@ -408,8 +406,8 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         {/* Documents */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-            {translations.documentsRequired}
-            <span className="text-text-muted dark:text-dark-text-muted font-normal ml-1">({translations.citizenMustBring})</span>
+            {t('workGuideForm.documentsRequired')}
+            <span className="text-text-muted dark:text-dark-text-muted font-normal ml-1">({t('workGuideForm.citizenMustBring')})</span>
           </label>
           <div className="flex gap-2 mb-2">
             <input
@@ -417,12 +415,12 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
               value={form.docInput}
               onChange={function(e) { set('docInput', e.target.value); }}
               onKeyDown={function(e) { if (e.key === 'Enter') { e.preventDefault(); addDoc(); } }}
-              placeholder={translations.documentPlaceholder}
+              placeholder={t('workGuideForm.documentPlaceholder')}
               className={`${inp} flex-1`}
             />
             <button type="button" onClick={addDoc}
               className="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all flex-shrink-0">
-              {translations.add}
+              {t('workGuideForm.add')}
             </button>
           </div>
           {form.documents.length > 0 && (
@@ -444,8 +442,8 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         {/* Search Keywords */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-            {translations.searchKeywords}
-            <span className="text-text-muted dark:text-dark-text-muted font-normal ml-1">{translations.searchKeywordsHelp}</span>
+            {t('workGuideForm.searchKeywords')}
+            <span className="text-text-muted dark:text-dark-text-muted font-normal ml-1">{t('workGuideForm.searchKeywordsHelp')}</span>
           </label>
           <div className="flex gap-2 mb-2">
             <input
@@ -453,12 +451,12 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
               value={form.kwInput}
               onChange={function(e) { set('kwInput', e.target.value); }}
               onKeyDown={function(e) { if (e.key === 'Enter') { e.preventDefault(); addKw(); } }}
-              placeholder={translations.keywordPlaceholder}
+              placeholder={t('workGuideForm.keywordPlaceholder')}
               className={`${inp} flex-1`}
             />
             <button type="button" onClick={addKw}
               className="px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all flex-shrink-0">
-              {translations.add}
+              {t('workGuideForm.add')}
             </button>
           </div>
           {form.searchKeywords.length > 0 && (
@@ -480,12 +478,12 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         {/* Note */}
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
-            {translations.note} <span className="text-text-muted dark:text-dark-text-muted font-normal">{translations.noteOptional}</span>
+            {t('workGuideForm.note')} <span className="text-text-muted dark:text-dark-text-muted font-normal">{t('workGuideForm.noteOptional')}</span>
           </label>
           <textarea
             value={form.note}
             onChange={function(e) { set('note', e.target.value); }}
-            placeholder={translations.notePlaceholder}
+            placeholder={t('workGuideForm.notePlaceholder')}
             rows={3}
             className={`${inp} resize-none`}
           />
@@ -500,8 +498,8 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
             <div className={`w-4 h-4 bg-white rounded-full absolute top-[3px] transition-all shadow-sm ${form.isActive ? 'left-[22px]' : 'left-[3px]'}`} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{translations.active}</p>
-            <p className="text-xs text-text-muted dark:text-dark-text-muted">{translations.activeDescription}</p>
+            <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('workGuideForm.active')}</p>
+            <p className="text-xs text-text-muted dark:text-dark-text-muted">{t('workGuideForm.activeDescription')}</p>
           </div>
         </div>
 
@@ -509,11 +507,11 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
         <div className="flex gap-3 pt-2">
           <button type="button" onClick={onCancel}
             className="flex-1 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
-            {translations.cancel}
+            {t('workGuideForm.cancel')}
           </button>
           <button type="submit" disabled={saving}
             className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex items-center justify-center gap-2">
-            {saving ? <><IcoSpinner /> {translations.saving}</> : editingId ? translations.saveChanges : translations.addEntry}
+            {saving ? <><IcoSpinner /> {t('workGuideForm.saving')}</> : editingId ? t('workGuideForm.saveChanges') : t('workGuideForm.addEntry')}
           </button>
         </div>
       </form>
@@ -523,27 +521,27 @@ function WorkGuideForm({ initial, editingId, onSave, onCancel, saving }) {
 
 // ─── Delete Confirm (inline) ──────────────────────────────────────────────────
 
-function DeleteConfirm({ onConfirm, onCancel }) {
+function DeleteConfirm({ onConfirm, onCancel, t }) {
   return (
     <div className="bg-white dark:bg-dark-surface border border-red-200 dark:border-red-800 rounded-2xl overflow-hidden mb-4">
       <div className="px-6 py-4 border-b border-red-100 dark:border-red-900/30 bg-red-50/60 dark:bg-red-900/10 flex items-center justify-between">
-        <p className="text-sm font-bold text-red-700 dark:text-red-400">{translations.deleteTitle}</p>
+        <p className="text-sm font-bold text-red-700 dark:text-red-400">{t('workGuideDelete.title')}</p>
         <button onClick={onCancel} className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-red-400 transition-all">
           <IcoX />
         </button>
       </div>
       <div className="p-6 flex items-center justify-between gap-4">
         <p className="text-sm text-text-muted dark:text-dark-text-muted">
-          {translations.deleteMessage}
+          {t('workGuideDelete.message')}
         </p>
         <div className="flex gap-3 flex-shrink-0">
           <button onClick={onCancel}
             className="px-4 py-2 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
-            {translations.cancel}
+            {t('workGuideDelete.cancel')}
           </button>
           <button onClick={onConfirm}
             className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-xl transition-all">
-            {translations.delete}
+            {t('workGuideDelete.delete')}
           </button>
         </div>
       </div>
@@ -554,6 +552,7 @@ function DeleteConfirm({ onConfirm, onCancel }) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function WorkGuideAdmin({ villageId }) {
+  const { t } = useTranslation();
   const [grouped, setGrouped] = useState([]);
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -575,7 +574,7 @@ export default function WorkGuideAdmin({ villageId }) {
       const data = Array.isArray(res.data) ? res.data : [];
       setGrouped(data);
       if (data.length > 0 && !expandedCat) setExpandedCat(data[0].category);
-    } catch(e) { toast.error(translations.loadFailed); }
+    } catch(e) { toast.error(t('workGuideErrors.loadFailed')); }
     finally { 
       setLoading(false);
       setInitialLoading(false);
@@ -583,12 +582,12 @@ export default function WorkGuideAdmin({ villageId }) {
   }
 
   async function handleSave(form) {
-    if (!form.officerName.trim()) { toast.error(translations.officerNameRequired); return; }
-    if (!form.timing.trim())      { toast.error(translations.timingRequired); return; }
-    if (!form.location.trim())    { toast.error(translations.locationRequired); return; }
+    if (!form.officerName.trim()) { toast.error(t('workGuideErrors.officerNameRequired')); return; }
+    if (!form.timing.trim())      { toast.error(t('workGuideErrors.timingRequired')); return; }
+    if (!form.location.trim())    { toast.error(t('workGuideErrors.locationRequired')); return; }
 
     const workName = form.workName === '__custom__' ? form.customWorkName.trim() : form.workName;
-    if (!workName) { toast.error(translations.workNameRequired); return; }
+    if (!workName) { toast.error(t('workGuideErrors.workNameRequired')); return; }
 
     const payload = {
       category: form.category, workName,
@@ -603,17 +602,17 @@ export default function WorkGuideAdmin({ villageId }) {
       setSaving(true);
       if (editingId) {
         await axios.put(`${API_BASE_URL}/workguide/${editingId}`, payload, { withCredentials: true });
-        toast.success(translations.updateSuccess);
+        toast.success(t('workGuideSuccess.updateSuccess'));
       } else {
         await axios.post(`${API_BASE_URL}/workguide`, payload, { withCredentials: true });
-        toast.success(translations.saveSuccess);
+        toast.success(t('workGuideSuccess.saveSuccess'));
       }
       setShowForm(false);
       setEditingId(null);
       setEditInitial(null);
       fetchGuides();
     } catch(err) {
-      toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : translations.saveFailed);
+      toast.error(err.response && err.response.data && err.response.data.message ? err.response.data.message : t('workGuideErrors.saveFailed'));
     } finally { setSaving(false); }
   }
 
@@ -621,10 +620,10 @@ export default function WorkGuideAdmin({ villageId }) {
     if (!deleteTarget) return;
     try {
       await axios.delete(`${API_BASE_URL}/workguide/${deleteTarget}`, { withCredentials: true });
-      toast.success(translations.deleteSuccess);
+      toast.success(t('workGuideSuccess.deleteSuccess'));
       setDeleteTarget(null);
       fetchGuides();
-    } catch(e) { toast.error(translations.deleteFailed); }
+    } catch(e) { toast.error(t('workGuideErrors.deleteFailed')); }
   }
 
   function openNew() {
@@ -682,25 +681,34 @@ export default function WorkGuideAdmin({ villageId }) {
     );
   };
 
+  const dayMap = {
+    Monday: t('workGuideForm.mon'),
+    Tuesday: t('workGuideForm.tue'),
+    Wednesday: t('workGuideForm.wed'),
+    Thursday: t('workGuideForm.thu'),
+    Friday: t('workGuideForm.fri'),
+    Saturday: t('workGuideForm.sat'),
+  };
+
   return (
     <div className="space-y-4">
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">{translations.workGuide}</h2>
+          <h2 className="text-2xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">{t('workGuide.title')}</h2>
           <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
             {isInitialLoading ? (
               <span className="inline-block h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
             ) : (
-              `${totalEntries} ${totalEntries === 1 ? translations.entry : translations.entries} ${translations.across} ${grouped.length} ${translations.categories}`
+              `${totalEntries} ${totalEntries === 1 ? t('workGuide.entry') : t('workGuide.entries')} ${t('workGuide.across')} ${grouped.length} ${t('workGuide.categories')}`
             )}
           </p>
         </div>
         {!showForm && !isInitialLoading && (
           <button onClick={openNew}
             className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft flex-shrink-0">
-            <IcoPlus /> {translations.addEntry}
+            <IcoPlus /> {t('workGuide.addEntry')}
           </button>
         )}
       </div>
@@ -713,6 +721,7 @@ export default function WorkGuideAdmin({ villageId }) {
           onSave={handleSave}
           onCancel={function() { setShowForm(false); setEditingId(null); setEditInitial(null); }}
           saving={saving}
+          t={t}
         />
       )}
 
@@ -721,6 +730,7 @@ export default function WorkGuideAdmin({ villageId }) {
         <DeleteConfirm
           onConfirm={handleDelete}
           onCancel={function() { setDeleteTarget(null); }}
+          t={t}
         />
       )}
 
@@ -734,13 +744,13 @@ export default function WorkGuideAdmin({ villageId }) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
           </div>
-          <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{translations.noEntries}</p>
+          <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('workGuide.noEntries')}</p>
           <p className="text-xs text-text-muted dark:text-dark-text-muted max-w-xs">
-            {translations.noEntriesDescription}
+            {t('workGuide.noEntriesDescription')}
           </p>
           <button onClick={openNew}
             className="mt-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
-            {translations.addFirstEntry}
+            {t('workGuide.addFirstEntry')}
           </button>
         </div>
       ) : (
@@ -781,7 +791,7 @@ export default function WorkGuideAdmin({ villageId }) {
                             <div className="flex items-center gap-2 flex-wrap mb-1">
                               <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary">{item.workName}</p>
                               {!item.isActive && (
-                                <span className="text-xs bg-border dark:bg-dark-border text-text-muted dark:text-dark-text-muted px-2 py-0.5 rounded-full font-medium">{translations.inactive}</span>
+                                <span className="text-xs bg-border dark:bg-dark-border text-text-muted dark:text-dark-text-muted px-2 py-0.5 rounded-full font-medium">{t('workGuideItem.inactive')}</span>
                               )}
                             </div>
                             <p className="text-xs text-text-secondary dark:text-dark-text-secondary">
@@ -789,17 +799,7 @@ export default function WorkGuideAdmin({ villageId }) {
                             </p>
                             {item.availableDays && item.availableDays.length > 0 && (
                               <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">
-                                {item.availableDays.map(day => {
-                                  const dayMap = {
-                                    Monday: translations.mon,
-                                    Tuesday: translations.tue,
-                                    Wednesday: translations.wed,
-                                    Thursday: translations.thu,
-                                    Friday: translations.fri,
-                                    Saturday: translations.sat,
-                                  };
-                                  return dayMap[day] || day;
-                                }).join(', ')}
+                                {item.availableDays.map(day => dayMap[day] || day).join(', ')}
                                 {item.timing ? ` · ${item.timing}` : ''}
                               </p>
                             )}
@@ -817,7 +817,7 @@ export default function WorkGuideAdmin({ villageId }) {
                                 })}
                                 {item.documents.length > 3 && (
                                   <span className="text-xs text-text-muted dark:text-dark-text-muted px-1 py-0.5">
-                                    +{item.documents.length - 3} {translations.more}
+                                    +{item.documents.length - 3} {t('workGuideItem.more')}
                                   </span>
                                 )}
                               </div>

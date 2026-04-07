@@ -1295,7 +1295,90 @@
   "village_rejected": "Village rejected",
   "admin_approved": "Admin approved",
   "village_deleted": "Village deleted successfully"
-}
+},
+ "workGuide": {
+    "title": "Work Guide",
+    "subtitle": "Help citizens find the right official for their work",
+    "entries": "entries",
+    "entry": "entry",
+    "across": "across",
+    "categories": "categories",
+    "addEntry": "Add Entry",
+    "addFirstEntry": "Add First Entry",
+    "noEntries": "No work guide entries yet",
+    "noEntriesDescription": "Add entries to help citizens find the right official for their work"
+  },
+  "workGuideForm": {
+    "newEntryTitle": "Add New Work Guide Entry",
+    "editEntryTitle": "Edit Work Guide Entry",
+    "category": "Category",
+    "workName": "Work Name",
+    "selectWorkType": "— Select a work type —",
+    "other": "Other (type your own)",
+    "typeWorkName": "Type the work name...",
+    "officerName": "Officer Name",
+    "officerNamePlaceholder": "e.g. Rajesh Patil",
+    "designation": "Designation",
+    "availableDays": "Available Days",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "timing": "Timing",
+    "timingPlaceholder": "e.g. 10:00 AM – 1:00 PM",
+    "location": "Location",
+    "locationPlaceholder": "e.g. Room 2, Panchayat Office",
+    "documentsRequired": "Documents Required",
+    "citizenMustBring": "citizen must bring",
+    "documentPlaceholder": "e.g. Aadhar Card",
+    "add": "Add",
+    "searchKeywords": "Search Keywords",
+    "searchKeywordsHelp": "(alternate names, local terms)",
+    "keywordPlaceholder": "e.g. janam, janm praman patra",
+    "note": "Note",
+    "noteOptional": "(optional)",
+    "notePlaceholder": "Any extra info for citizens...",
+    "active": "Active",
+    "activeDescription": "Citizens can see this entry",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "saving": "Saving..."
+  },
+  "workGuideDelete": {
+    "title": "Delete this entry?",
+    "message": "This cannot be undone. Citizens will no longer see this entry.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+  "workGuideItem": {
+    "inactive": "Inactive",
+    "more": "more",
+    "edit": "Edit",
+    "delete": "Delete",
+    "documents": {
+      "moreCount": "+{{count}} more"
+    }
+  },
+  "workGuideErrors": {
+    "loadFailed": "Failed to load work guide",
+    "officerNameRequired": "Officer name is required",
+    "timingRequired": "Timing is required",
+    "locationRequired": "Location is required",
+    "workNameRequired": "Work name is required",
+    "saveFailed": "Failed to save entry",
+    "deleteFailed": "Failed to delete entry",
+    "networkError": "Network error. Please try again"
+  },
+  "workGuideSuccess": {
+    "saveSuccess": "Entry saved successfully",
+    "updateSuccess": "Entry updated successfully",
+    "deleteSuccess": "Entry deleted successfully"
+  },
+  "workGuideSkeleton": {
+    "loading": "Loading..."
+  }
  
   
   
