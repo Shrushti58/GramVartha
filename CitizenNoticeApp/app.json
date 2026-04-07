@@ -20,7 +20,8 @@
         "monochromeImage": "./assets/images/gramvarthalogo.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.shrushti58.CitizenNoticeApp"
     },
     "web": {
       "output": "static",
