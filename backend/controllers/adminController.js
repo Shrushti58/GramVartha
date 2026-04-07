@@ -60,12 +60,12 @@ const loginAdmin = async (req, res) => {
         }
 
         const token = generateToken(admin);
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,       
-            sameSite: "lax",     
-            maxAge: 24 * 60 * 60 * 1000
-        });
+       res.cookie("token", token, {
+  httpOnly: true,
+  secure: true,          
+  sameSite: "none",      
+  maxAge: 24 * 60 * 60 * 1000
+});
 
         return res.status(200).json({ message: "Login successful" });
     } catch (error) {
