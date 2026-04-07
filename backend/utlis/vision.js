@@ -1,15 +1,20 @@
 const vision = require("@google-cloud/vision");
 
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: "gramvartha-0d3028ac535a.json",
+  credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS),
 });
 
 const analyzeImage = async (imageUrl) => {
-  const [result] = await client.labelDetection(imageUrl);
+  try {
+    const [result] = await client.labelDetection(imageUrl);
 
-  return result.labelAnnotations.map(label =>
-    label.description.toLowerCase()
-  );
+    return result.labelAnnotations.map(label =>
+      label.description.toLowerCase()
+    );
+  } catch (error) {
+    console.error("Vision Error:", error);
+    throw error;
+  }
 };
 
 module.exports = { analyzeImage };

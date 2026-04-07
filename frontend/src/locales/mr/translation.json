@@ -443,8 +443,7 @@
   "nav_admin_login": "प्रशासक लॉगिन",
   "login_portals": "लॉगिन पोर्टल्स",
   "serving_rural_communities": "ग्रामीण समुदायांना सेवा देत आहे",
-  "welcome_to": "स्वागत आहे",
-  "brand": "ग्रामवार्ता",
+ 
   "tagline": "तुमच्या गावाचा आवाज. सत्यापित स्थानिक बातम्या, तुमच्या नखात. कोणतेही लॉगिन नाही, कोणतेही अडथळे नाहीत — फक्त सत्य.",
   "scan_qr_view_notices": "सूचना पाहण्यासाठी QR स्कॅन करा",
   "register_village": "गाव नोंदणी करा",
@@ -1190,5 +1189,109 @@
       "admin_approved": "प्रशासक मंजूर झाले",
       "village_deleted": "गाव यशस्वीरित्या हटविले"
     }
+  },
+  "official": {
+    "login": {
+      "title": "अधिकारी लॉगिन",
+      "badge": "अधिकारी पोर्टल",
+      "welcome": "पुन्हा स्वागत आहे",
+      "subtitle": "तुमच्या डॅशबोर्डमध्ये प्रवेश करण्यासाठी तुमची क्रेडेन्शियल्स प्रविष्ट करा",
+      "email": "ईमेल पत्ता",
+      "email_placeholder": "अधिकारी@ग्रामवार्ता.इन",
+      "password": "पासवर्ड",
+      "password_placeholder": "तुमचा पासवर्ड प्रविष्ट करा",
+      "show_password": "पासवर्ड दाखवा",
+      "hide_password": "पासवर्ड लपवा",
+      "signing_in": "साइन इन होत आहे...",
+      "login_button": "डॅशबोर्डवर लॉगिन करा",
+      "or": "किंवा",
+      "register_link": "खाते नाही? येथे नोंदणी करा",
+      "secure_access": "सुरक्षित, एन्क्रिप्टेड अधिकारी प्रवेश",
+      "back_home": "मुख्यपृष्ठावर परत",
+      "success": "लॉगिन यशस्वी! पुनर्निर्देशित करत आहे...",
+      "error": "काहीतरी चूक झाली! कृपया पुन्हा प्रयत्न करा."
+    },
+    "register": {
+      "title": "अधिकारी नोंदणी",
+      "badge": "अधिकारी पोर्टल",
+      "full_name": "पूर्ण नाव",
+      "name_placeholder": "सरपंच / ग्रामसेवक",
+      "village": "गाव",
+      "select_village": "गाव निवडा",
+      "email": "ईमेल",
+      "email_placeholder": "अधिकारी@ग्रामवार्ता.इन",
+      "phone": "मोबाईल",
+      "phone_placeholder": "+९१ ९८७६५ ४३२१०",
+      "profile_photo": "प्रोफाइल फोटो",
+      "for_verification": "पडताळणीसाठी",
+      "click_to_upload_photo": "फोटो अपलोड करण्यासाठी क्लिक करा",
+      "click_to_upload_document": "दस्तऐवज पुरावा अपलोड करण्यासाठी क्लिक करा",
+      "browse": "निवडा",
+      "preview": "पूर्वावलोकन",
+      "id_proof": "ओळख पुरावा (आधार/पासपोर्ट/बीपीएल कार्ड)",
+      "document_preview": "दस्तऐवज पूर्वावलोकन",
+      "password": "पासवर्ड",
+      "password_placeholder": "पासवर्ड तयार करा",
+      "confirm_password": "पुष्टी करा",
+      "confirm_placeholder": "पुन्हा प्रविष्ट करा",
+      "creating_account": "खाते तयार होत आहे…",
+      "create_account": "अधिकारी खाते तयार करा",
+      "back_home": "मुख्यपृष्ठावर परत",
+      "secure_encrypted": "सुरक्षित आणि एन्क्रिप्टेड",
+      "login_instead": "लॉगिन करा →",
+      "password_mismatch": "पासवर्ड जुळत नाहीत!",
+      "photo_required": "पडताळणीसाठी प्रोफाइल फोटो आवश्यक आहे.",
+      "document_required": "पडताळणीसाठी दस्तऐवज पुरावा आवश्यक आहे.",
+      "phone_required": "मोबाईल नंबर आवश्यक आहे.",
+      "success": "नोंदणी यशस्वी! डॅशबोर्डवर पुनर्निर्देशित करत आहे...",
+      "error": "काहीतरी चूक झाली! कृपया पुन्हा प्रयत्न करा."
+    },
+    "profile": {
+      "title": "माझे प्रोफाइल",
+      "subtitle": "तुमचे अधिकारी खाते आणि प्रोफाइल फोटो व्यवस्थापित करा",
+      "dashboard": "डॅशबोर्ड",
+      "loading": "प्रोफाइल लोड होत आहे…",
+      "uploading": "अपलोड होत आहे…",
+      "change_photo": "प्रोफाइल फोटो बदला",
+      "file_requirements": "JPG, PNG · कमाल ५ MB",
+      "account_details": "खाते तपशील",
+      "personal_info": "वैयक्तिक माहिती",
+      "full_name": "पूर्ण नाव",
+      "email": "ईमेल पत्ता",
+      "account_status": "खाते स्थिती",
+      "department": "विभाग",
+      "role": "भूमिका",
+      "phone": "मोबाईल",
+      "member_since": "सदस्यत्वापासून",
+      "contact_admin": "खाते तपशील अद्यतनित करण्यासाठी तुमच्या प्रशासकाशी संपर्क साधा.",
+      "status": {
+        "approved": "मंजूर",
+        "pending": "प्रलंबित",
+        "rejected": "नाकारले"
+      },
+      "errors": {
+        "load_failed": "प्रोफाइल लोड करण्यात अयशस्वी",
+        "invalid_file": "कृपया वैध प्रतिमा फाइल निवडा",
+        "file_too_large": "प्रतिमा आकार ५ MB पेक्षा कमी असावा",
+        "upload_failed": "प्रतिमा अपलोड करण्यात अयशस्वी"
+      },
+      "success": {
+        "photo_updated": "प्रोफाइल फोटो अद्यतनित केला!"
+      }
+    },
+    "nav": {
+      "portal": "अधिकारी पोर्टल",
+      "village_qr": "गाव QR",
+      "profile": "प्रोफाइल",
+      "logout": "लॉगआउट"
+    }
+  },
+  
+  "success": {
+    "village_approved": "गाव मंजूर केले",
+    "village_rejected": "गाव नाकारले",
+    "admin_approved": "प्रशासक मंजूर केले",
+    "village_deleted": "गाव यशस्वीरित्या हटविले"
   }
+
 }

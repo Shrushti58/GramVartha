@@ -54,7 +54,7 @@
   "login_required": "लॉगिन आवश्यक",
   "login_required_message": "तक्रार करण्यासाठी आपण लॉगिन करणे आवश्यक आहे",
   "village_notices": "गाव सूचना",
-  "scan_once_stay_informed": "एकदा स्कॅन करा.\nमाहितगार राहा.",
+  "scan_once_stay_informed": "एकदा स्कॅन करा.\nनेहमी नवीन माहिती मिळवा.",
   "hero_description": "कोणत्याही गावाच्या QR कोडवर आपले कॅमेरा लावून त्वरित स्थानिक सूचना, घोषणा आणि अद्यतने मिळवा — कोणतीही नोंदणी आवश्यक नाही.",
   "digital_village_updates": "डिजिटल गाव अद्यतने",
   "how_app_works": "ग्रामवार्ता कसे कार्य करते",
@@ -784,5 +784,44 @@
     "empty_no_notices_desc": "या श्रेणीत कोणतीही नोटीस उपलब्ध नाही.",
     "empty_no_notices_yet_title": "अद्याप नोटीसा नाहीत",
     "empty_no_notices_yet_desc": "या गावात सध्या कोणतीही नोटीस नाही."
+  },
+  "official": {
+    "register": {
+      "title": "अधिकारी नोंदणी",
+      "badge": "अधिकृत नोंदणी",
+      "full_name": "पूर्ण नाव",
+      "name_placeholder": "आपले पूर्ण नाव प्रविष्ट करा",
+      "village": "गाव",
+      "select_village": "गाव निवडा",
+      "email": "ईमेल पत्ता",
+      "email_placeholder": "अधिकृत ईमेल",
+      "phone": "मोबाइल क्रमांक",
+      "phone_placeholder": "10 अंकी मोबाइल क्रमांक",
+      "profile_photo": "प्रोफाइल फोटो",
+      "for_verification": "पडताळणीसाठी",
+      "id_proof": "ओळख पुरावा",
+      "password": "पासवर्ड",
+      "password_placeholder": "किमान 6 वर्ण",
+      "confirm_password": "पासवर्डची पुष्टी करा",
+      "confirm_placeholder": "पासवर्ड पुन्हा प्रविष्ट करा",
+      "password_mismatch": "पासवर्ड जुळत नाहीत",
+      "photo_required": "कृपया प्रोफाइल फोटो अपलोड करा",
+      "document_required": "कृपया ओळख पुरावा अपलोड करा",
+      "phone_required": "कृपया मोबाइल क्रमांक प्रविष्ट करा",
+      "click_to_upload_photo": "प्रोफाइल फोटो अपलोड करण्यासाठी क्लिक करा",
+      "click_to_upload_document": "दस्तऐवज अपलोड करण्यासाठी क्लिक करा",
+      "browse": "ब्राउझ करा",
+      "preview": "प्रीव्यू",
+      "document_preview": "दस्तऐवज प्रीव्यू",
+      "create_account": "खाते तयार करा",
+      "creating_account": "खाते तयार होत आहे...",
+      "success": "नोंदणी यशस्वी! पुनर्निर्देशित होत आहे...",
+      "error": "नोंदणी अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
+      "back_home": "मुख्यपृष्ठावर परत",
+      "secure_encrypted": "सुरक्षित आणि एन्क्रिप्टेड",
+      "login_instead": "प्रवेश करा",
+      "account_created": "खाते यशस्वीरित्या तयार झाले"
+    }
   }
+
 }

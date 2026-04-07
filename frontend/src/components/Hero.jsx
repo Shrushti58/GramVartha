@@ -48,24 +48,41 @@ export default function Hero() {
               </p>
             </div>
 
-            {/* CTA */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-2">
-              <Link
-                to="/qr-scanner"
-                className="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 shadow-large dark:shadow-dark-large hover:-translate-y-0.5"
-              >
-                {t('scan_qr_view_notices')}
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <Link
-                to="/village/register"
-                className="inline-flex items-center justify-center gap-2 bg-white dark:bg-dark-surface2 hover:bg-primary-50 dark:hover:bg-dark-surface border border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 text-text-primary dark:text-dark-text-primary font-semibold px-8 py-4 rounded-xl transition-all duration-200"
-              >
-                {t('register_village')}
-              </Link>
-            </div>
+           {/* CTA Section */}
+<div className="flex flex-col sm:flex-row gap-4 pt-2">
+  {/* Primary CTA - Register Village */}
+  <Link
+    to="/village/register"
+    className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl dark:shadow-dark-lg hover:-translate-y-0.5 active:translate-y-0 overflow-hidden"
+  >
+    {/* Animated background effect */}
+    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+    
+    {/* Icon */}
+    <svg 
+      className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    </svg>
+    
+    <span>{t('register_village')}</span>
+    
+    {/* Arrow indicator */}
+    <svg 
+      className="w-4 h-4 transition-all duration-300 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0" 
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  </Link>
+
+  
+</div>
 
             {/* Stats */}
             <div className="flex gap-10 pt-4 border-t border-border dark:border-dark-border">
