@@ -1190,7 +1190,15 @@
       "village_deleted": "Village deleted successfully"
     }
   },
+  
   "official": {
+    "approve": "Approve",
+    "reject": "Reject",
+    "phone": "Phone",
+    "joined": "Joined",  
+    "village": "Village",
+    "document_proof": "Document Proof",
+    "remove": "Remove",
   "login": {
     "title": "Official Login",
     "badge": "Official Portal",
@@ -1344,7 +1352,159 @@
     "activeDescription": "Citizens can see this entry",
     "cancel": "Cancel",
     "saveChanges": "Save Changes",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "addEntry": "Add Entry"
+  },
+  "officials": {
+    "nav": {
+      "portal": "Official Portal",
+      "village_qr": "Village QR",
+      "profile": "Profile",
+      "logout": "Logout"
+    },
+    "tabs": {
+      "notices": "Notices",
+      "complaints": "Complaints"
+    },
+    "notices": {
+      "title": "Manage Notices",
+      "subtitle": "Create, manage and share village announcements",
+      "new_notice": "New Notice",
+      "no_notices": "No notices yet",
+      "no_notices_desc": "Create your first notice to keep villagers informed",
+      "publish_first": "Publish First Notice"
+    },
+    "stats": {
+      "total": "Total Notices",
+      "active": "Active",
+      "pinned": "Pinned",
+      "urgent": "Urgent"
+    },
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "pinned": "Pinned",
+      "urgent": "Urgent"
+    },
+    "notice_card": {
+      "pinned": "Pinned",
+      "urgent": "Urgent",
+      "file": "File",
+      "views": "views",
+      "edit": "Edit",
+      "view": "View",
+      "delete": "Delete"
+    },
+    "notice_form": {
+      "new_title": "Create New Notice",
+      "edit_title": "Edit Notice",
+      "title": "Title",
+      "title_placeholder": "Enter notice title",
+      "category": "Category",
+      "priority": "Priority",
+      "pin_to_top": "Pin to top",
+      "pin_description": "This notice will appear at the top of the list",
+      "description": "Description",
+      "description_placeholder": "Enter detailed description...",
+      "attachment": "Attachment (Optional)",
+      "attachment_placeholder": "Click to select file (PDF, Image, DOC)",
+      "fill_required": "Please fill title and description",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "publish": "Publish Notice",
+      "update": "Update Notice",
+      "delete": "Delete Notice"
+    },
+    "file_viewer": {
+      "attachment": "Attachment Preview",
+      "download": "Download File"
+    },
+    "qr": {
+      "title": "Village QR Code",
+      "no_village": "No village assigned",
+      "ready": "QR Code Ready",
+      "not_generated": "Not Generated Yet",
+      "download": "Download QR",
+      "waiting": "Generating..."
+    },
+    "delete_confirm": {
+      "title": "Delete Notice",
+      "message": "Are you sure you want to delete this notice? This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "footer": {
+      "portal": "Official Portal",
+      "village": "Village",
+      "notices": "notices",
+      "rights": "All rights reserved."
+    },
+    "categories": {
+      "development": "Development",
+      "health": "Health",
+      "education": "Education",
+      "agriculture": "Agriculture",
+      "employment": "Employment",
+      "social_welfare": "Social Welfare",
+      "tax_billing": "Tax & Billing",
+      "election": "Election",
+      "urgent": "Urgent",
+      "general": "General"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "success": {
+      "published": "Notice published successfully",
+      "updated": "Notice updated successfully",
+      "deleted": "Notice deleted successfully",
+      "shared": "QR Code shared successfully",
+      "downloaded": "QR Code downloaded",
+      "logged_out": "Logged out successfully"
+    },
+    "errors": {
+      "no_village": "No village assigned to your profile",
+      "load_failed": "Failed to load notices",
+      "save_failed": "Failed to save notice",
+      "delete_failed": "Failed to delete notice",
+      "qr_failed": "Failed to generate QR code",
+      "logout_failed": "Failed to logout"
+    },
+     "profile": {
+      "title": "Official Profile",
+      "subtitle": "Manage your account and personal information",
+      "dashboard": "Go to Dashboard",
+      "loading": "Loading profile...",
+      "change_photo": "Change Profile Photo",
+      "uploading": "Uploading...",
+      "file_requirements": "JPG, PNG up to 5MB",
+      "account_details": "Account Details",
+      "personal_info": "Personal Information",
+      "full_name": "Full Name",
+      "email": "Email Address",
+      "account_status": "Account Status",
+      "department": "Department",
+      "role": "Role",
+      "phone": "Phone Number",
+      "member_since": "Member Since",
+      "contact_admin": "Need to update information? Contact your administrator",
+      "status": {
+        "approved": "Approved",
+        "pending": "Pending Approval",
+        "rejected": "Rejected"
+      },
+      "success": {
+        "photo_updated": "Profile photo updated successfully"
+      },
+      "errors": {
+        "load_failed": "Failed to load profile",
+        "invalid_file": "Please select a valid image file",
+        "file_too_large": "File size must be less than 5MB",
+        "upload_failed": "Failed to upload photo"
+      }
+    }
   },
   "workGuideDelete": {
     "title": "Delete this entry?",

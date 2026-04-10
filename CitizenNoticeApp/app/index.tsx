@@ -12,6 +12,7 @@ import {
   ScrollView,
   Alert,
   Modal,
+  RefreshControl, // Added this import
 } from 'react-native';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -540,12 +541,12 @@ export default function HomeScreen() {
   const [recentVillages, setRecentVillages] = useState<ScannedVillage[]>([]);
   const [showInfoModal,  setShowInfoModal]  = useState(false);
   const [activeTab,      setActiveTab]      = useState('scan');
+  const [refreshing,     setRefreshing]     = useState(false); // Added state for pull-to-refresh
 
   const splashOpacity  = useRef(new Animated.Value(1)).current;
   const splashScale    = useRef(new Animated.Value(1)).current;
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide   = useRef(new Animated.Value(24)).current;
-
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -570,6 +571,13 @@ export default function HomeScreen() {
       if (stored) setRecentVillages((JSON.parse(stored) as ScannedVillage[]).slice(0, 5));
     } catch (e) { console.error(e); }
     finally { setIsDataLoading(false); }
+  };
+
+  // Pull-to-refresh handler
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadRecentVillages();
+    setRefreshing(false);
   };
 
   const handleCreateComplaint = async () => {
@@ -668,11 +676,21 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* ── Scrollable Content ───────────────────────────────────── */}
+        {/* ── Scrollable Content with Pull-to-Refresh ───────────────────────────────────── */}
         <ScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 24 }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colors.primary[500]]} // Android
+              tintColor={colors.primary[500]} // iOS
+              titleColor={colors.primary[500]} // iOS title color
+              title={t('common.pull_to_refresh', 'Pull to refresh')} // Optional: iOS only
+            />
+          }
         >
           {/* Hero */}
           <View style={styles.heroSection}>
