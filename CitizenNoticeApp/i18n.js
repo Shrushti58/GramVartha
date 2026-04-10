@@ -15,7 +15,7 @@ i18n
         translation: translationMR,
       },
     },
-    lng: 'mr', // default language
+    lng: 'en', // default language
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false, // React already does escaping

@@ -546,6 +546,7 @@ export default function HomeScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide   = useRef(new Animated.Value(24)).current;
 
+
   useEffect(() => {
     const timer = setTimeout(() => {
       Animated.parallel([

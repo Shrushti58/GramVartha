@@ -1,6 +1,11 @@
 {
   "brand": "ग्रामवार्ता",
   "home": "मुखपृष्ठ",
+  "home_pending": "प्रलंबित",
+  "home_in_progress": "प्रगतीत",
+  "home_resolved": "निराकरण",
+  "home_login_required": "लॉगिन आवश्यक",
+  "home_cancel": "रद्द करा",
   "notices": "सूचना",
   "complaints": "तक्रारी",
   "profile": "प्रोफाइल",
@@ -29,6 +34,10 @@
   "view_details": "तपशील पहा",
   "file_complaint": "तक्रार दाखल करा",
   "my_complaints": "माझ्या तक्रारी",
+  "my_complaints_filter_all": "सर्व",
+  "my_complaints_filter_pending": "प्रलंबित",
+  "my_complaints_filter_in_progress": "प्रगतीत",
+  "my_complaints_filter_resolved": "निराकरण",
   "all_complaints": "सर्व तक्रारी",
   "complaint_details": "तक्रार तपशील",
   "complaint_title": "तक्रार शीर्षक",
@@ -38,6 +47,8 @@
   "resolved": "निराकरण",
   "in_progress": "प्रगतीत",
   "notice_details": "सूचना तपशील",
+  "notice_details_village_notice": "गाव सूचना",
+  "notice_details_notice_details_title": "सूचना तपशील",
   "notice_title": "सूचना शीर्षक",
   "notice_content": "सूचना सामग्री",
   "published_date": "प्रकाशित तारीख",
@@ -76,7 +87,6 @@
   "enter_phone_password": "कृपया आपला फोन आणि पासवर्ड टाका.",
   "no_village_found": "गाव सापडले नाही",
   "scan_village_login": "कृपया प्रथम आपल्या गावाचा QR कोड स्कॅन करा.",
-  "welcome_back": "परत स्वागत!",
   "login_success": "यशस्वीरित्या लॉग इन झाले.",
   "login_failed": "लॉगिन अयशस्वी",
   "invalid_credentials": "अवैध फोन किंवा पासवर्ड.",
@@ -124,45 +134,7 @@
   "share_notice": "सूचना शेअर करा",
   "save_to_gallery": "गॅलरीत जतन करा",
   "notice_saved": "सूचना गॅलरीत जतन झाली",
-  "birth_certificate": "जन्म प्रमाणपत्र",
-  "death_certificate": "मृत्यु प्रमाणपत्र",
-  "residence_proof": "राहण्याचा पुरावा",
-  "caste_certificate": "जाती प्रमाणपत्र",
-  "income_certificate": "उत्पन्न प्रमाणपत्र",
-  "seven_twelve_land_record": "7/12 जमीन रेकॉर्ड",
-  "property_tax": "संपत्ती कर",
-  "ration_card": "रेशन कार्ड",
-  "pension_application": "पेन्शन अर्ज",
-  "nrega_job_card": "NREGA जॉब कार्ड",
-  "pm_awas_yojana": "PM आवास योजना",
-  "water_connection": "जल जोडणी",
-  "voter_id_help": "मतदार ID मदत",
-  "scholarship": "शिष्यवृत्ती",
-  "what_do_you_need": "आपल्याला काय आवश्यक आहे?",
-  "search_work_officer_document": "काम, अधिकारी, कागदपत्र शोधा…",
-  "result_found": "परिणाम सापडले",
-  "results_found": "परिणाम सापडले",
-  "no_results_for": "साठी कोणते परिणाम नाहीत",
-  "scan_village_qr_first": "प्रथम गाव QR स्कॅन करा",
-  "scan_village_to_access_guide": "कार्य मार्गदर्शक प्रवेश करण्यासाठी कृपया आपल्या गावाचा QR कोड स्कॅन करा.",
-  "scan_qr_code": "QR कोड स्कॅन करा",
-  "no_results_found": "कोणते परिणाम सापडले नाहीत",
-  "no_services_listed_yet": "अजून कोणती सेवा सूचीबद्ध नाहीत",
-  "try_different_word": "वेगळे शब्द प्रयत्न करा किंवा वर द्रुत क्रिया ब्राउज करा",
-  "admin_will_add_services": "गाव प्रशासक लवकरच सेवा जोडेल",
-  "clear_search": "शोध साफ करा",
-  "available_days": "उपलब्ध दिवस",
-  "timing": "वेळ",
-  "officer_name": "अधिकारी नाव",
-  "designation": "पद",
-  "documents_required": "आवश्यक कागदपत्र",
-  "monday": "सोमवार",
-  "tuesday": "मंगळवार",
-  "wednesday": "बुधवार",
-  "thursday": "गुरुवार",
-  "friday": "शुक्रवार",
-  "saturday": "शनिवार",
-  "sunday": "रविवार",
+
   "common": {
     "brand": "ग्रामवार्ता",
     "village_notices_on_demand": "गावाच्या सूचना मागणीनुसार",
@@ -177,8 +149,12 @@
     "citizen_portal": "नागरिक पोर्टल",
     "welcome_back": "वापसीवर स्वागत आहे 👋",
     "sign_in_account": "आपल्या गावाच्या खात्यात साइन इन करा",
-    "verified_qr": "✓ क्यूआर कोडद्वारे सत्यापित"
+    "verified_qr": "✓ क्यूआर कोडद्वारे सत्यापित",
+    "error": "त्रुटी",
+    "login": "लॉगिन",
+    "register": "नोंदणी"
   },
+
   "auth": {
     "phone_number": "फोन नंबर",
     "phone_placeholder": "आपला फोन नंबर प्रविष्ट करा",
@@ -194,6 +170,7 @@
     "welcome_back": "परत येण्याचे स्वागत आहे!",
     "unknown_village": "अज्ञात गाव"
   },
+
   "tabs": {
     "tab_notices": "सूचना",
     "tab_report": "तक्रार",
@@ -201,6 +178,7 @@
     "tab_guide": "मार्गदर्शक",
     "tab_recent": "अलीकडील"
   },
+
   "home": {
     "scan_qr_code": "क्यूआर कोड स्कॅन करा",
     "find_officials": "अधिकारी शोधा",
@@ -229,35 +207,29 @@
     "required_docs": "आवश्यक कागदपत्रे",
     "required_docs_desc": "प्रत्येक सेवेसाठी आवश्यक कागदपत्रांची संपूर्ण यादी - आता वारंवार ये-जा नाही",
     "track_complaints": "आपल्या तक्रारींचा मागोवा ठेवा",
-    "pending": "प्रलंबित",
-    "in_progress": "प्रगतीपथावर",
-    "resolved": "सोडविले",
     "tracking_note": "स्थिती बदलल्यास सूचना मिळवा. वास्तविक जबाबदारी, संपूर्ण पारदर्शकता.",
     "view_complaints": "तक्रारी पहा",
     "all_village_issues": "सर्व गावातील समस्या",
     "all_village_issues_desc": "आपल्या गावात नोंदवलेल्या सर्व तक्रारी आणि समस्या पहा",
-    "my_complaints": "माझ्या तक्रारी",
     "my_complaints_desc": "आपण नोंदवलेल्या तक्रारींच्या स्थितीचा मागोवा ठेवा",
-    "login_required": "लॉगिन आवश्यक",
     "login_required_message": "तक्रार नोंदवण्यासाठी कृपया लॉगिन किंवा नोंदणी करा",
-    "scan_first": "प्रथम गाव स्कॅन करा",
-    "scan_first_message": "सूचना पाहण्यासाठी कृपया गावाचा क्यूआर कोड स्कॅन करा",
-    "no_villages": "कोणतेही गाव स्कॅन केलेले नाही",
-    "scan_village_first": "कृपया प्रथम गावाचा क्यूआर कोड स्कॅन करा",
-    "no_village": "कोणतेही गाव निवडलेले नाही",
-    "scan_village_complaints": "तक्रारी पाहण्यासाठी कृपया गावाचा क्यूआर कोड स्कॅन करा",
-    "cancel": "रद्द करा",
-    "village": "गाव",
     "villages": "गावे",
-    "scan_qr": "क्यूआर कोड स्कॅन करा",
     "qrcode_scanner": "क्यूआर कोड स्कॅनर",
     "how_to_use": "कसे वापरावे",
     "how_to_use_title": "ग्रामवार्ता कसे वापरावे",
     "how_to_use_description": "आपल्या गाव पंचायतीतील कोणताही ग्रामवार्ता क्यूआर कोड स्कॅन करा सर्व गाव सेवांसाठी",
     "no_internet": "इंटरनेट कनेक्शन नाही",
     "no_internet_message": "कृपया आपले इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा",
-    "retry": "पुन्हा प्रयत्न करा"
+    "retry": "पुन्हा प्रयत्न करा",
+    "my_complaints": "माझ्या तक्रारी",
+    "pending": "प्रलंबित",
+    "in_progress": "प्रगतीत",
+    "resolved": "निराकरण",
+    "login_required": "लॉगिन आवश्यक",
+    "cancel": "रद्द करा",
+    "village": "गाव"
   },
+
   "modal": {
     "how_app_works": "ग्रामवार्ता कसे कार्य करते",
     "scan_access_section": "📱 स्कॅन आणि प्रवेश",
@@ -287,106 +259,110 @@
     "work_guide_item_4": "• प्रत्येक सेवेसाठी संपर्क माहिती",
     "modal_footer": "कोणतेही अ‍ॅप डाउनलोड नाही. कोणतीही नोंदणी नाही. फक्त आपल्या बोटांच्या टोकावर माहिती."
   },
+
   "complaint": {
-  "new_complaint": "नवीन तक्रार",
-  "report_issue_or_suggestion": "समस्या नोंदवा किंवा सूचना द्या",
-  "issue": "समस्या",
-  "suggestion": "सूचना",
-  "issue_hint": "समस्यांसाठी फोटो आणि GPS स्थान आवश्यक आहे.",
-  "suggestion_hint": "सूचना फक्त मजकूर आहेत. गाव सुधारण्यासाठी आपले विचार शेअर करा.",
-  "title": "शीर्षक",
-  "title_placeholder": "तक्रारीचे संक्षिप्त शीर्षक",
-  "description": "वर्णन",
-  "description_placeholder": "समस्या किंवा सूचना तपशीलवार वर्णन करा…",
-  "photo": "फोटो",
-  "required": "आवश्यक",
-  "camera_photo": "कॅमेरा फोटो",
-  "take_new_photo": "नवीन फोटो घ्या",
-  "take_photo": "फोटो घ्या",
-  "required_for_issue": "समस्या नोंदवण्यासाठी आवश्यक",
-  "location": "स्थान",
-  "gps_captured": "GPS कॅप्चर केले",
-  "refresh": "रिफ्रेश",
-  "capture_my_location": "माझे स्थान कॅप्चर करा",
-  "location_required_warning": "सत्यापनासाठी स्थान आवश्यक. स्वयंचलितपणे कॅप्चर होत आहे…",
-  "permission_needed": "परवानगी आवश्यक",
-  "allow_location_access": "कृपया समस्या नोंदवण्यासाठी स्थान परवानगी द्या.",
-  "allow_camera_access": "कृपया फोटो घेण्यासाठी कॅमेरा परवानगी द्या.",
-  "location_captured": "स्थान कॅप्चर केले",
-  "gps_coordinates_saved": "GPS कोऑर्डिनेट्स जतन केले.",
-  "location_failed": "स्थान मिळवण्यात अयशस्वी",
-  "could_not_get_location": "आपले स्थान मिळवू शकलो नाही.",
-  "camera_access_needed": "कॅमेरा प्रवेश आवश्यक",
-  "fill_all_fields": "कृपया सर्व फील्ड भरा.",
-  "photo_required": "फोटो आवश्यक",
-  "take_photo_of_issue": "कृपया समस्येचा फोटो घ्या.",
-  "location_required": "स्थान आवश्यक",
-  "capture_gps_location": "कृपया आपले GPS स्थान कॅप्चर करा.",
-  "already_reported": "आधीच नोंदवलेले",
-  "duplicate_issue_message": "समान समस्या जवळपास अस्तित्वात आहे. आम्ही आपली नोंद घेतली आहे.",
-  "submitted": "सबमिट केले!",
-  "complaint_submitted_success": "तक्रार यशस्वीरित्या सबमिट झाली!",
-  "submission_error": "सबमिशन अयशस्वी",
-  "try_again": "कृपया पुन्हा प्रयत्न करा.",
-  "submit_complaint": "तक्रार सबमिट करा",
-  "submit_suggestion": "सूचना सबमिट करा"
-},
-"qr_scanner": {
-  "village_found": "✓ गाव सापडले!",
-  "village_found_message": "{{villageName}} यशस्वीरित्या स्कॅन झाले आहे.",
-  "view_notices": "सूचना पहा",
-  "scan_another": "दुसरे स्कॅन करा",
-  "invalid_qr_error": "अवैध QR कोड. कृपया पुन्हा प्रयत्न करा.",
-  "not_recognized": "ओळखले गेले नाही",
-  "try_again": "पुन्हा प्रयत्न करा",
-  "required": "आवश्यक",
-  "enter_qr_code": "कृपया QR कोड किंवा गाव ID प्रविष्ट करा.",
-  "checking_permissions": "कॅमेरा परवानगी तपासत आहे…",
-  "camera_access_needed": "कॅमेरा प्रवेश आवश्यक",
-  "camera_access_description": "गाव QR कोड स्कॅन करण्यासाठी आम्हाला कॅमेरा प्रवेशाची आवश्यकता आहे. हे आपल्याला गाव सूचना आणि अद्यतने द्रुतपणे प्रवेश करण्यास मदत करते.",
-  "allow_camera_access": "कॅमेरा प्रवेश द्या",
-  "go_back": "मागे जा",
-  "back_to_scanner": "स्कॅनरवर परत",
-  "enter_village_code": "गाव कोड प्रविष्ट करा",
-  "enter_code_description": "आपल्या गाव सूचना फलकावरील QR कोड मूल्य किंवा गाव ID टाइप किंवा पेस्ट करा",
-  "qr_code_village_id": "QR कोड / गाव ID",
-  "code_placeholder": "उदा. VLG-MH-2024-0041",
-  "find_village": "गाव शोधा",
-  "or": "किंवा",
-  "use_camera_scanner": "कॅमेरा स्कॅनर वापरा",
-  "verifying": "सत्यापित करत आहे...",
-  "code_captured": "कोड कॅप्चर केला!",
-  "align_qr_code": "QR कोड फ्रेममध्ये संरेखित करा",
-  "checking_village": "गाव तपासत आहे...",
-  "scan_again": "पुन्हा स्कॅन करा",
-  "enter_code_manually": "कोड स्वहस्ते प्रविष्ट करा"
-},
-"development_category": "विकास",
-  "health_category": "आरोग्य",
-  "education_category": "शिक्षण",
-  "agriculture_category": "शेती",
-  "employment_category": "रोजगार",
-  "social_welfare_category": "समाज कल्याण",
-  "tax_billing_category": "कर आणि बिलिंग",
-  "election_category": "निवडणूक",
-  "meeting_category": "सभा",
-  "general_category": "सामान्य",
-  "high_priority": "उच्च प्राधान्य",
-  "normal_priority": "सामान्य प्राधान्य",
-  "general_priority": "सामान्य",
+    "new_complaint": "नवीन तक्रार",
+    "report_issue_or_suggestion": "समस्या नोंदवा किंवा सूचना द्या",
+    "issue": "समस्या",
+    "suggestion": "सूचना",
+    "issue_hint": "समस्यांसाठी फोटो आणि GPS स्थान आवश्यक आहे.",
+    "suggestion_hint": "सूचना फक्त मजकूर आहेत. गाव सुधारण्यासाठी आपले विचार शेअर करा.",
+    "title": "शीर्षक",
+    "title_placeholder": "तक्रारीचे संक्षिप्त शीर्षक",
+    "description": "वर्णन",
+    "description_placeholder": "समस्या किंवा सूचना तपशीलवार वर्णन करा…",
+    "photo": "फोटो",
+    "required": "आवश्यक",
+    "camera_photo": "कॅमेरा फोटो",
+    "take_new_photo": "नवीन फोटो घ्या",
+    "take_photo": "फोटो घ्या",
+    "required_for_issue": "समस्या नोंदवण्यासाठी आवश्यक",
+    "location": "स्थान",
+    "gps_captured": "GPS कॅप्चर केले",
+    "refresh": "रिफ्रेश",
+    "capture_my_location": "माझे स्थान कॅप्चर करा",
+    "location_required_warning": "सत्यापनासाठी स्थान आवश्यक. स्वयंचलितपणे कॅप्चर होत आहे…",
+    "permission_needed": "परवानगी आवश्यक",
+    "allow_location_access": "कृपया समस्या नोंदवण्यासाठी स्थान परवानगी द्या.",
+    "allow_camera_access": "कृपया फोटो घेण्यासाठी कॅमेरा परवानगी द्या.",
+    "location_captured": "स्थान कॅप्चर केले",
+    "gps_coordinates_saved": "GPS कोऑर्डिनेट्स जतन केले.",
+    "location_failed": "स्थान मिळवण्यात अयशस्वी",
+    "could_not_get_location": "आपले स्थान मिळवू शकलो नाही.",
+    "camera_access_needed": "कॅमेरा प्रवेश आवश्यक",
+    "fill_all_fields": "कृपया सर्व फील्ड भरा.",
+    "photo_required": "फोटो आवश्यक",
+    "take_photo_of_issue": "कृपया समस्येचा फोटो घ्या.",
+    "capture_gps_location": "कृपया आपले GPS स्थान कॅप्चर करा.",
+    "already_reported": "आधीच नोंदवलेले",
+    "duplicate_issue_message": "समान समस्या जवळपास अस्तित्वात आहे. आम्ही आपली नोंद घेतली आहे.",
+    "submitted": "सबमिट केले!",
+    "complaint_submitted_success": "तक्रार यशस्वीरित्या सबमिट झाली!",
+    "submission_error": "सबमिशन अयशस्वी",
+    "submit_complaint": "तक्रार सबमिट करा",
+    "submit_suggestion": "सूचना सबमिट करा"
+  },
+
+  "qr_scanner": {
+    "village_found": "✓ गाव सापडले!",
+    "village_found_message": "{{villageName}} यशस्वीरित्या स्कॅन झाले आहे.",
+    "view_notices": "सूचना पहा",
+    "scan_another": "दुसरे स्कॅन करा",
+    "invalid_qr_error": "अवैध QR कोड. कृपया पुन्हा प्रयत्न करा.",
+    "not_recognized": "ओळखले गेले नाही",
+    "required": "आवश्यक",
+    "enter_qr_code": "कृपया QR कोड किंवा गाव ID प्रविष्ट करा.",
+    "checking_permissions": "कॅमेरा परवानगी तपासत आहे…",
+    "camera_access_needed": "कॅमेरा प्रवेश आवश्यक",
+    "camera_access_description": "गाव QR कोड स्कॅन करण्यासाठी आम्हाला कॅमेरा प्रवेशाची आवश्यकता आहे. हे आपल्याला गाव सूचना आणि अद्यतने द्रुतपणे प्रवेश करण्यास मदत करते.",
+    "allow_camera_access": "कॅमेरा प्रवेश द्या",
+    "go_back": "मागे जा",
+    "back_to_scanner": "स्कॅनरवर परत",
+    "enter_village_code": "गाव कोड प्रविष्ट करा",
+    "enter_code_description": "आपल्या गाव सूचना फलकावरील QR कोड मूल्य किंवा गाव ID टाइप किंवा पेस्ट करा",
+    "qr_code_village_id": "QR कोड / गाव ID",
+    "code_placeholder": "उदा. VLG-MH-2024-0041",
+    "find_village": "गाव शोधा",
+    "or": "किंवा",
+    "use_camera_scanner": "कॅमेरा स्कॅनर वापरा",
+    "verifying": "सत्यापित करत आहे...",
+    "code_captured": "कोड कॅप्चर केला!",
+    "align_qr_code": "QR कोड फ्रेममध्ये संरेखित करा",
+    "checking_village": "गाव तपासत आहे...",
+    "scan_again": "पुन्हा स्कॅन करा",
+    "enter_code_manually": "कोड स्वहस्ते प्रविष्ट करा",
+    "try_again": "पुन्हा प्रयत्न करा"
+  },
+
+  "categories": {
+    "development": "विकास",
+    "health": "आरोग्य",
+    "education": "शिक्षण",
+    "agriculture": "कृषी",
+    "employment": "रोजगार",
+    "social_welfare": "सामाजिक कल्याण",
+    "tax_billing": "कर आणि बिलिंग",
+    "election": "निवडणूक",
+    "meeting": "बैठक",
+    "general": "सामान्य"
+  },
+
+  "priority": {
+    "high": "उच्च प्राधान्य",
+    "normal": "सामान्य",
+    "general": "सामान्य"
+  },
+
   "notice_details": {
     "loading": "सूचना लोड करत आहे…",
     "not_found": "सूचना सापडली नाही",
     "not_found_desc": "ही सूचना लोड करता आली नाही.",
-    "try_again": "पुन्हा प्रयत्न करा",
-    "village_notices": "गाव सूचना",
     "urgent_action": "तातडीचे — त्वरित कार्यवाही आवश्यक",
     "high_priority_label": "उच्च प्राधान्य",
     "posted_by": "प्रकाशित केले",
     "date_label": "दिनांक",
     "category_label": "श्रेणी",
     "priority_label": "प्राधान्यक्रम",
-    "notice_details_title": "सूचना तपशील",
     "attached_file": "संलग्न फाईल",
     "open_document": "दस्तऐवज उघडा",
     "tap_to_open": "उघडण्यासाठी टॅप करा",
@@ -397,12 +373,14 @@
     "open_file": "फाईल उघडा",
     "share": "शेअर करा",
     "save_to_device": "डिव्हाइसवर जतन करा",
-    "cancel": "रद्द करा",
     "share_file": "फाईल शेअर करा",
     "share_file_desc": "मेसेज, मेल किंवा इतर अ‍ॅपद्वारे पाठवा",
     "save_to_device_desc": "आपल्या गॅलरी किंवा फाईल्स अ‍ॅपमध्ये जतन करा",
-    "what_would_you_like": "आपण काय करू इच्छिता?"
+    "what_would_you_like": "आपण काय करू इच्छिता?",
+    "village_notice": "गाव सूचना",
+    "notice_details_title": "सूचना तपशील"
   },
+
   "download": {
     "preparing": "{{fileName}} डाउनलोड करण्याची तयारी करत आहे...",
     "downloading": "डाउनलोड करत आहे: {{fileName}}",
@@ -419,11 +397,13 @@
     "great_thanks": "छान, धन्यवाद!",
     "close": "बंद करा"
   },
+
   "share": {
     "title": "📢 {{title}}",
     "message_without_file": "{{description}}\n\n📅 {{date}}\n🏷️ श्रेणी: {{category}}\n👤 प्रकाशित केले: {{author}}\n🏢 विभाग: {{department}}",
     "message_with_file": "{{description}}\n\n📅 {{date}}\n🏷️ श्रेणी: {{category}}\n📎 संलग्न: {{fileName}}\n\nअधिक तपशीलांसाठी संपूर्ण सूचना पहा."
   },
+
   "complaint_details": {
     "title": "तक्रार तपशील",
     "header_title": "तक्रार तपशील",
@@ -453,192 +433,134 @@
     "detected_labels": "आढळलेले लेबल",
     "yes": "होय",
     "no": "नाही",
-    "score_unit": "/100",
-    "status": {
-      "pending": "प्रलंबित",
-      "in_progress": "प्रगतीपथावर",
-      "resolved": "निराकरण झाले",
-      "rejected": "नाकारले"
-    },
-    "type": {
-      "issue": "समस्या",
-      "complaint": "तक्रार",
-      "suggestion": "सूचना"
-    },
-    "image_source": {
-      "camera": "कॅमेरा",
-      "gallery": "गॅलरी"
-    }
+    "score_unit": "/100"
   },
-  "status": {
-    "pending": "प्रलंबित",
-    "in_progress": "प्रगतीपथावर",
-    "resolved": "निराकरण झाले",
-    "rejected": "नाकारले"
-  },
-  "type": {
-    "issue": "समस्या",
-    "complaint": "तक्रार",
-    "suggestion": "सूचना"
-  },
-  "errors": {
-    "load_complaint_failed": "तक्रार तपशील लोड करण्यात अयशस्वी.",
-    "complaint_not_found": "तक्रार सापडली नाही"
-  },
+
   "all_complaints": {
-    "title": "गावातील समस्या",
-    "subtitle": "सर्व नोंदवलेल्या तक्रारी आणि समस्या",
+    "title": "सर्व तक्रारी",
+    "subtitle": "गावातील अभिप्राय ट्रॅक आणि व्यवस्थापित करा",
     "village_services": "ग्रामसेवा",
-    "back": "मागे",
-    
-    "type_issue": "समस्या",
-    "type_complaint": "तक्रार",
-    "type_suggestion": "सूचना",
-    
-    "status_pending": "प्रलंबित",
-    "status_in_progress": "प्रगतीपथावर",
-    "status_resolved": "निराकरण",
-    "status_rejected": "नामंजूर",
-    
+    "citizen": "नागरिक",
+    "image_attached": "प्रतिमा संलग्न",
+    "search_icon": "🔍",
+    "search_placeholder": "शीर्षक, वर्णन किंवा नागरिकानुसार शोधा...",
+    "search_results_for": "साठी शोध परिणाम",
     "filter_all": "सर्व",
     "filter_pending": "प्रलंबित",
     "filter_in_progress": "प्रगतीपथावर",
-    "filter_resolved": "निराकरण",
-    
-    "search_placeholder": "तक्रारी शोधा...",
-    "search_icon": "🔍",
-    "clear_search": "साफ करा",
-    
-    "image_attached": "प्रतिमा संलग्न",
-    "citizen": "नागरिक",
-    
+    "filter_resolved": "निराकरण झाले",
     "complaints_count": "तक्रारी",
     "complaint_count_singular": "तक्रार",
-    "search_results_for": "साठी शोध परिणाम",
-    
-    "no_results": "कोणतेही परिणाम सापडले नाहीत",
-    "no_complaints": "तक्रारी आढळल्या नाहीत",
-    "no_results_desc": "\"{{query}}\" साठी काहीही सापडले नाही. वेगळे कीवर्ड वापरून पहा.",
-    "no_complaints_desc": "या गावात अद्याप कोणतीही तक्रार नोंदवली गेली नाही.",
-    "no_complaints_filter_desc": "या गावात {{filter}} तक्रारी नाहीत.",
-    
-    "login_required": "लॉगिन आवश्यक",
-    "login_required_desc": "तक्रारी पाहण्यासाठी तुम्हाला लॉगिन करणे आवश्यक आहे.",
-    "login_button": "लॉगिन",
-    "register_button": "नोंदणी",
-    
-    "no_village": "गाव निवडलेले नाही",
-    "no_village_desc": "गावातील तक्रारी पाहण्यासाठी कृपया प्रथम QR कोड स्कॅन करा.",
+    "no_complaints": "कोणतीही तक्रार सापडली नाही",
+    "no_complaints_desc": "या गावासाठी अद्याप प्रदर्शित करण्यासाठी कोणत्याही तक्रारी नाहीत.",
+    "no_complaints_filter_desc": "कोणतीही {{filter}} तक्रार सापडली नाही.",
+    "no_results": "कोणतेही जुळणारे परिणाम नाहीत",
+    "no_results_desc": "\"{{query}}\" शी जुळणारी कोणतीही तक्रार नाही",
+    "no_village": "कोणतेही गाव निवडलेले नाही",
+    "no_village_desc": "तक्रारी पाहण्यासाठी कृपया गावाचा QR कोड स्कॅन करा.",
     "scan_qr": "QR कोड स्कॅन करा",
-    
-    "loading": "तक्रारी लोड करत आहे...",
     "load_error": "तक्रारी लोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
-    
-    "page": "पान",
-    "of": "मधील",
-    
+    "loading": "तक्रारी लोड होत आहेत...",
     "pull_to_refresh": "रिफ्रेश करण्यासाठी खेचा",
-    "refreshing": "रिफ्रेश करत आहे..."
+    "login_required": "लॉगिन आवश्यक आहे",
+    "login_required_desc": "गावातील तक्रारी पाहण्यासाठी आणि व्यवस्थापित करण्यासाठी साइन इन करा",
+    "login_button": "लॉगिन करा",
+    "register_button": "खाते तयार करा",
+    "feature_submit": "तक्रार दाखल करा",
+    "feature_submit_desc": "गाव प्रशासनाला समस्या, तक्रारी किंवा सूचना कळवा",
+    "feature_track": "स्थिती ट्रॅक करा",
+    "feature_track_desc": "आपल्या सबमिशनची प्रगती रिअल-टाइममध्ये पहा",
+    "feature_real_time": "रिअल-टाइम अपडेट्स",
+    "feature_real_time_desc": "जेव्हा आपल्या तक्रारीची स्थिती बदलते तेव्हा त्वरित सूचना प्राप्त करा",
+    "get_started": "प्रारंभ करा",
+    "login_footer": "आपल्या गावाच्या तक्रार व्यवस्थापन प्रणालीमध्ये सुरक्षित प्रवेश"
   },
+
   "my_complaints": {
     "title": "माझ्या तक्रारी",
     "subtitle": "तुमच्या नोंदवलेल्या समस्यांची स्थिती पहा",
     "citizen_portal": "नागरिक पोर्टल",
     "back": "मागे",
     "new_complaint": "+ नवीन",
-    
-    "type_issue": "समस्या",
-    "type_complaint": "तक्रार",
-    "type_suggestion": "सूचना",
-    
-    "status_pending": "प्रलंबित",
-    "status_in_progress": "प्रगतीपथावर",
-    "status_resolved": "निराकरण",
-    "status_rejected": "नामंजूर",
-    
-    "filter_all": "सर्व",
-    "filter_pending": "प्रलंबित",
-    "filter_in_progress": "प्रगतीपथावर",
-    "filter_resolved": "निराकरण",
-    
     "search_placeholder": "तुमच्या तक्रारी शोधा…",
     "search_icon": "⌕",
     "clear_search": "साफ करा",
-    
     "image_evidence": "प्रतिमा पुरावा",
     "resolution_verified": "निराकरण सत्यापित",
-    
     "complaints_count": "तक्रारी",
     "complaint_count_singular": "तक्रार",
     "search_results_for": "साठी शोध परिणाम",
-    
     "no_results": "कोणतेही परिणाम सापडले नाहीत",
     "no_complaints": "अद्याप कोणतीही तक्रार नाही",
     "no_results_desc": "\"{{query}}\" साठी काहीही सापडले नाही. वेगळे कीवर्ड वापरून पहा.",
     "no_complaints_desc": "तुम्ही अद्याप कोणतीही तक्रार नोंदवलेली नाही.\nनवीन तक्रार नोंदवण्यासाठी + नवीन टॅप करा.",
     "no_complaints_filter_desc": "तुमच्याकडे {{filter}} तक्रारी नाहीत.",
-    
-    "login_required": "लॉगिन आवश्यक",
     "login_required_desc": "तुमच्या तक्रारी पाहण्यासाठी तुम्हाला लॉगिन करणे आवश्यक आहे.",
-    "login_button": "लॉगिन",
-    "register_button": "नोंदणी",
-    
-    "loading": "तुमच्या तक्रारी लोड करत आहे…",
     "load_error": "तुमच्या तक्रारी लोड करण्यात अयशस्वी. कृपया पुन्हा प्रयत्न करा.",
-    
-    "pull_to_refresh": "रिफ्रेश करण्यासाठी खेचा",
     "refreshing": "रिफ्रेश करत आहे…",
-    
     "complaint_id": "आयडी",
-    "reported_on": "नोंदविलेली तारीख"
+    "reported_on": "नोंदविलेली तारीख",
+    "filter_all": "सर्व",
+    "filter_pending": "प्रलंबित",
+    "filter_in_progress": "प्रगतीत",
+    "filter_resolved": "निराकरण"
   },
-   "register": {
+
+  "register_screen": {
     "title": "खाते तयार करा",
     "subtitle": "ग्रामसेवा वापरण्यासाठी नोंदणी करा",
     "citizen_portal": "नागरिक पोर्टल",
     "back": "मागे",
-    
     "village": "गाव",
     "verified_qr": "✓ QR कोडद्वारे सत्यापित",
-    
     "full_name": "पूर्ण नाव",
     "full_name_placeholder": "आपले पूर्ण नाव प्रविष्ट करा",
     "phone_number": "मोबाईल नंबर",
     "phone_placeholder": "10-अंकी मोबाईल नंबर प्रविष्ट करा",
     "password": "पासवर्ड",
     "password_placeholder": "पासवर्ड तयार करा",
-    
     "register_button": "नोंदणी करा",
     "registering": "खाते तयार करत आहे...",
-    
     "already_account": "आधीच खाते आहे?",
     "login_link": "लॉगिन",
-    
     "terms": "नोंदणी करून, आपण आपल्या डिव्हाइसवर गावातील सूचना आणि अपडेट्स प्राप्त करण्यास सहमती देत आहात.",
-    
-    "missing_fields": "आवश्यक माहिती रिकामी",
     "fill_all_fields": "कृपया सर्व फील्ड भरा",
     "no_village_found": "गाव सापडले नाही",
     "scan_village_login": "नोंदणी करण्यापूर्वी कृपया गावाचा QR कोड स्कॅन करा",
     "register_success": "खाते यशस्वीरित्या तयार झाले!",
     "register_error": "नोंदणी अयशस्वी",
-    "try_again": "कृपया पुन्हा प्रयत्न करा",
     "welcome": "स्वागत आहे!"
   },
+
+  "register": {
+    "citizen_portal": "नागरिक पोर्टल",
+    "title": "खाते तयार करा",
+    "subtitle": "ग्रामसेवा वापरण्यासाठी नोंदणी करा",
+    "village": "गाव",
+    "verified_qr": "✓ QR कोडद्वारे सत्यापित",
+    "full_name": "पूर्ण नाव",
+    "full_name_placeholder": "आपले पूर्ण नाव प्रविष्ट करा",
+    "phone_number": "मोबाईल नंबर",
+    "phone_placeholder": "10-अंकी मोबाईल नंबर प्रविष्ट करा",
+    "password": "पासवर्ड",
+    "password_placeholder": "पासवर्ड तयार करा",
+    "register_button": "नोंदणी करा",
+    "already_account": "आधीच खाते आहे?",
+    "login_link": "लॉगिन",
+    "terms": "नोंदणी करून, आपण आपल्या डिव्हाइसवर गावातील सूचना आणि अपडेट्स प्राप्त करण्यास सहमती देत आहात."
+  },
+
   "work_guide": {
     "title": "कार्य मार्गदर्शिका",
     "subtitle": "ग्रामसेवांसाठी चरण-दर-चरण मार्गदर्शिका",
     "village_services": "ग्रामसेवा",
     "back": "मागे",
     "your_village": "आपले गाव",
-    
     "what_do_you_need": "आपल्याला काय हवे आहे?",
     "search_placeholder": "काम, अधिकारी, दस्तऐवज शोधा…",
-    
     "result_found": "परिणाम सापडला",
     "results_found": "परिणाम सापडले",
     "no_results_for": "साठी कोणतेही परिणाम नाहीत",
-    
     "available_days": "उपलब्ध दिवस",
     "timing": "वेळ",
     "location": "स्थान",
@@ -647,23 +569,18 @@
     "reset_checklist": "यादी रीसेट करा",
     "all_documents_ready": "सर्व कागदपत्रे तयार आहेत — आता भेट देऊ शकता",
     "important_note": "महत्त्वाची सूचना",
-    
     "next_visit": "पुढील",
     "today": "आज",
     "tomorrow": "उद्या",
-    
     "scan_village_first": "प्रथम गाव QR कोड स्कॅन करा",
     "scan_village_desc": "कार्य मार्गदर्शिका वापरण्यासाठी कृपया आपल्या गावाचा QR कोड स्कॅन करा.",
     "scan_qr_code": "QR कोड स्कॅन करा",
-    
     "no_services": "अद्याप कोणतीही सेवा सूचीबद्ध नाही",
     "no_services_desc": "गाव प्रशासक लवकरच सेवा जोडतील",
     "no_results": "कोणतेही परिणाम सापडले नाहीत",
     "no_results_desc": "वेगळा शब्द वापरून पहा किंवा वरील द्रुत क्रिया ब्राउझ करा",
     "clear_search": "शोध साफ करा",
-    
     "loading": "कार्य मार्गदर्शिका लोड करत आहे…",
-    
     "birth_certificate": "जन्म दाखला",
     "death_certificate": "मृत्यू दाखला",
     "residence_proof": "निवासी पुरावा",
@@ -678,7 +595,6 @@
     "water_connection": "पाणी जोडणी",
     "voter_id_help": "मतदार ओळख पत्र सहाय्य",
     "scholarship": "शिष्यवृत्ती",
-    
     "monday": "सोम",
     "tuesday": "मंगळ",
     "wednesday": "बुध",
@@ -687,68 +603,7 @@
     "saturday": "शनि",
     "sunday": "रवि"
   },
-  "work_guide": {
-    "title": "कार्य मार्गदर्शक",
-    "subtitle": "गावसेवेसाठी चरण-दर-चरण मार्गदर्शक",
-    "village_services": "ग्रामसेवा",
-    "back": "मागे",
-    "your_village": "तुमचे गाव",
-    
-    "what_do_you_need": "तुम्हाला काय हवे आहे?",
-    "search_placeholder": "कार्य, अधिकारी, दस्तऐवज शोधा…",
-    
-    "result_found": "निकाल सापडला",
-    "results_found": "निकाल सापडले",
-    "no_results_for": "साठी कोणतेही परिणाम नाहीत",
-    
-    "available_days": "उपलब्ध दिवस",
-    "timing": "वेळ",
-    "location": "स्थान",
-    "next_available_visit": "पुढील उपलब्ध भेट",
-    "documents_to_bring": "आणावयाची कागदपत्रे",
-    "reset_checklist": "यादी रीसेट करा",
-    "all_documents_ready": "सर्व कागदपत्रे तयार आहेत — तुम्ही आत्ता भेट देऊ शकता",
-    "important_note": "महत्वाची सूचना",
-    
-    "next_visit": "पुढील",
-    "today": "आज",
-    "tomorrow": "उद्या",
-    
-    "scan_village_first": "प्रथम गावाचा क्यूआर स्कॅन करा",
-    "scan_village_desc": "कार्य मार्गदर्शकामध्ये प्रवेश करण्यासाठी कृपया तुमच्या गावाचा क्यूआर कोड स्कॅन करा.",
-    "scan_qr_code": "क्यूआर कोड स्कॅन करा",
-    
-    "no_services": "अद्याप कोणत्याही सेवा सूचीबद्ध नाहीत",
-    "no_services_desc": "गाव प्रशासक लवकरच सेवा जोडेल",
-    "no_results": "कोणतेही परिणाम सापडले नाहीत",
-    "no_results_desc": "भिन्न शब्द वापरून पहा किंवा वरील द्रुत क्रिया ब्राउझ करा",
-    "clear_search": "शोध साफ करा",
-    
-    "loading": "कार्य मार्गदर्शक लोड होत आहे…",
-    
-    "birth_certificate": "जन्म प्रमाणपत्र",
-    "death_certificate": "मृत्यू प्रमाणपत्र",
-    "residence_proof": "निवासाचा पुरावा",
-    "caste_certificate": "जात प्रमाणपत्र",
-    "income_certificate": "उत्पन्न प्रमाणपत्र",
-    "seven_twelve_land_record": "७/१२ जमीन अभिलेख",
-    "property_tax": "मालमत्ता कर",
-    "ration_card": "रेशन कार्ड",
-    "pension_application": "पेन्शन अर्ज",
-    "nrega_job_card": "नरेगा जॉब कार्ड",
-    "pm_awas_yojana": "पीएम आवास योजना",
-    "water_connection": "पाणी जोडणी",
-    "voter_id_help": "मतदार ओळखपत्र सहाय्य",
-    "scholarship": "शिष्यवृत्ती",
-    
-    "monday": "सोम",
-    "tuesday": "मंगळ",
-    "wednesday": "बुध",
-    "thursday": "गुरु",
-    "friday": "शुक्र",
-    "saturday": "शनि",
-    "sunday": "रवि"
-  },
+
   "notices": {
     "search_placeholder": "नोटीस शोधा...",
     "loading": "नोटीसा लोड होत आहेत...",
@@ -765,7 +620,6 @@
     "priority_medium": "मध्यम",
     "priority_low": "कमी",
     "scan": "स्कॅन",
-    
     "category_all": "सर्व",
     "category_urgent": "तातडीचे",
     "category_development": "विकास",
@@ -777,7 +631,6 @@
     "category_tax_billing": "कर आणि बिलिंग",
     "category_election": "निवडणूक",
     "category_general": "सामान्य",
-    
     "empty_no_results_title": "कोणतेही परिणाम सापडले नाहीत",
     "empty_no_results_desc": "तुमच्या शोधाशी जुळणारी कोणतीही नोटीस नाही. वेगळे शब्द वापरून पहा.",
     "empty_no_notices_title": "नोटीसा नाहीत",
@@ -785,6 +638,25 @@
     "empty_no_notices_yet_title": "अद्याप नोटीसा नाहीत",
     "empty_no_notices_yet_desc": "या गावात सध्या कोणतीही नोटीस नाही."
   },
+
+  "type": {
+    "issue": "समस्या",
+    "complaint": "तक्रार",
+    "suggestion": "सूचना"
+  },
+
+  "status": {
+    "pending": "प्रलंबित",
+    "in_progress": "प्रगतीपथावर",
+    "resolved": "निराकरण झाले",
+    "rejected": "नाकारले"
+  },
+
+  "errors": {
+    "load_complaint_failed": "तक्रार तपशील लोड करण्यात अयशस्वी.",
+    "complaint_not_found": "तक्रार सापडली नाही"
+  },
+
   "official": {
     "register": {
       "title": "अधिकारी नोंदणी",
@@ -822,89 +694,5 @@
       "login_instead": "प्रवेश करा",
       "account_created": "खाते यशस्वीरित्या तयार झाले"
     }
-  },
-  "workGuide": {
-    "title": "कार्य मार्गदर्शक",
-    "subtitle": "नागरिकांना त्यांच्या कामासाठी योग्य अधिकारी शोधण्यात मदत करा",
-    "entries": "प्रविष्ट्या",
-    "entry": "प्रविष्टी",
-    "across": "पैकी",
-    "categories": "श्रेण्या",
-    "addEntry": "प्रविष्टी जोडा",
-    "addFirstEntry": "पहिली प्रविष्टी जोडा",
-    "noEntries": "अद्याप कार्य मार्गदर्शक प्रविष्ट्या नाहीत",
-    "noEntriesDescription": "नागरिकांना त्यांच्या कामासाठी योग्य अधिकारी शोधण्यात मदत करण्यासाठी प्रविष्ट्या जोडा"
-  },
-  "workGuideForm": {
-    "newEntryTitle": "नवीन कार्य मार्गदर्शक प्रविष्टी",
-    "editEntryTitle": "कार्य मार्गदर्शक प्रविष्टी संपादित करा",
-    "category": "श्रेणी",
-    "workName": "कार्याचे नाव",
-    "selectWorkType": "— कार्य प्रकार निवडा —",
-    "other": "इतर (स्वतःचे टाइप करा)",
-    "typeWorkName": "कार्याचे नाव टाइप करा...",
-    "officerName": "अधिकाऱ्याचे नाव",
-    "officerNamePlaceholder": "उदा. राजेश पाटील",
-    "designation": "पदनाम",
-    "availableDays": "उपलब्ध दिवस",
-    "mon": "सोम",
-    "tue": "मंगळ",
-    "wed": "बुध",
-    "thu": "गुरु",
-    "fri": "शुक्र",
-    "sat": "शनि",
-    "timing": "वेळ",
-    "timingPlaceholder": "उदा. 10:00 AM – 1:00 PM",
-    "location": "स्थान",
-    "locationPlaceholder": "उदा. पंचायत कार्यालय, खोली क्र. 2",
-    "documentsRequired": "आवश्यक दस्तऐवज",
-    "citizenMustBring": "नागरिकांनी आणावयाचे",
-    "documentPlaceholder": "उदा. आधार कार्ड",
-    "add": "जोडा",
-    "searchKeywords": "शोध कीवर्ड",
-    "searchKeywordsHelp": "(पर्यायी नावे, स्थानिक शब्द)",
-    "keywordPlaceholder": "उदा. जन्म, जन्म प्रमाणपत्र",
-    "note": "सूचना",
-    "noteOptional": "(पर्यायी)",
-    "notePlaceholder": "नागरिकांसाठी अतिरिक्त माहिती...",
-    "active": "सक्रिय",
-    "activeDescription": "नागरिक ही प्रविष्टी पाहू शकतात",
-    "cancel": "रद्द करा",
-    "saveChanges": "बदल जतन करा",
-    "saving": "जतन होत आहे..."
-  },
-  "workGuideDelete": {
-    "title": "ही प्रविष्टी हटवायची?",
-    "message": "हे पूर्ववत करता येणार नाही. नागरिकांना ही प्रविष्टी पुन्हा दिसणार नाही.",
-    "cancel": "रद्द करा",
-    "delete": "हटवा"
-  },
-  "workGuideItem": {
-    "inactive": "निष्क्रिय",
-    "more": "अधिक",
-    "edit": "संपादित करा",
-    "delete": "हटवा",
-    "documents": {
-      "moreCount": "+{{count}} अधिक"
-    }
-  },
-  "workGuideErrors": {
-    "loadFailed": "कार्य मार्गदर्शक लोड करण्यात अयशस्वी",
-    "officerNameRequired": "अधिकाऱ्याचे नाव आवश्यक आहे",
-    "timingRequired": "वेळ आवश्यक आहे",
-    "locationRequired": "स्थान आवश्यक आहे",
-    "workNameRequired": "कार्याचे नाव आवश्यक आहे",
-    "saveFailed": "प्रविष्टी जतन करण्यात अयशस्वी",
-    "deleteFailed": "प्रविष्टी हटवण्यात अयशस्वी",
-    "networkError": "नेटवर्क त्रुटी. कृपया पुन्हा प्रयत्न करा"
-  },
-  "workGuideSuccess": {
-    "saveSuccess": "प्रविष्टी यशस्वीरित्या जतन केली",
-    "updateSuccess": "प्रविष्टी यशस्वीरित्या अद्यतनित केली",
-    "deleteSuccess": "प्रविष्टी यशस्वीरित्या हटविली"
-  },
-  "workGuideSkeleton": {
-    "loading": "लोड होत आहे..."
   }
-
 }

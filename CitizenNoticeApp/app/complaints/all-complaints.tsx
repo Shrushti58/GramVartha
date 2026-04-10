@@ -300,47 +300,166 @@ const Pagination = ({ page, totalPages, onPress, colors, isDark, t }: any) => (
   </View>
 );
 
-// ─── Login Prompt ─────────────────────────────────────────────────────────────
-const LoginPrompt = ({ colors, isDark, t }: any) => (
-  <View style={[styles.root, { backgroundColor: colors.background }]}>
-    <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-    <View style={styles.emptyWrap}>
-      <View
+// ─── Login Prompt (Redesigned) ─────────────────────────────────────────────────────────────
+const LoginPrompt = ({ colors, isDark, t }: any) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
+    ]).start();
+  }, []);
+
+  const headerBg = isDark ? colors.primary[900] : colors.primary[700];
+
+  return (
+    <View style={[styles.root, { backgroundColor: colors.background }]}>
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={headerBg} />
+      
+      {/* Decorative Header */}
+      <LinearGradient
+        colors={isDark ? [colors.primary[800], colors.primary[900]] : [colors.primary[600], colors.primary[700]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.loginHeader}
+      >
+        <View style={[styles.accentCircle1, { backgroundColor: isDark ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.06)' }]} />
+        <View style={[styles.accentCircle2, { backgroundColor: isDark ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)' }]} />
+        
+        <TouchableOpacity 
+          onPress={() => router.back()} 
+          style={[styles.loginBackBtn, { backgroundColor: isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.15)' }]}
+          activeOpacity={0.7}
+        >
+          <Text style={[styles.loginBackBtnTxt, { color: '#fff' }]}>←</Text>
+        </TouchableOpacity>
+        
+        <View style={styles.loginHeaderContent}>
+          <View style={styles.loginIconContainer}>
+            <LinearGradient
+              colors={[colors.primary[400], colors.primary[600]]}
+              style={styles.loginIconGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <Text style={styles.loginIconText}>🔒</Text>
+            </LinearGradient>
+          </View>
+          <Text style={styles.loginHeaderTitle}>{t('all_complaints.login_required')}</Text>
+          <Text style={styles.loginHeaderSubtitle}>
+            {t('all_complaints.login_required_desc')}
+          </Text>
+        </View>
+      </LinearGradient>
+
+      {/* Content */}
+      <Animated.View 
         style={[
-          styles.emptyIconBox,
+          styles.loginContent,
           {
-            backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50],
-            borderColor: isDark ? `${colors.primary[500]}30` : colors.primary[200],
-          },
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          }
         ]}
       >
-        <Text style={styles.emptyGlyph}>🔒</Text>
-      </View>
-      <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-        {t('all_complaints.login_required')}
-      </Text>
-      <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
-        {t('all_complaints.login_required_desc')}
-      </Text>
-      <View style={styles.loginButtons}>
-        <TouchableOpacity
-          style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
-          onPress={() => router.push('/auth/login' as any)}
-          activeOpacity={0.82}
-        >
-          <Text style={styles.emptyBtnText}>{t('all_complaints.login_button')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.emptyBtn, { backgroundColor: colors.secondary || colors.primary[500] }]}
-          onPress={() => router.push('/auth/register' as any)}
-          activeOpacity={0.82}
-        >
-          <Text style={styles.emptyBtnText}>{t('all_complaints.register_button')}</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={[styles.loginCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <View style={styles.loginFeatures}>
+            <View style={styles.loginFeature}>
+              <View style={[styles.loginFeatureIcon, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50] }]}>
+                <Text style={styles.loginFeatureIconText}>📝</Text>
+              </View>
+              <View style={styles.loginFeatureText}>
+                <Text style={[styles.loginFeatureTitle, { color: colors.text.primary }]}>
+                  {t('all_complaints.feature_submit')}
+                </Text>
+                <Text style={[styles.loginFeatureDesc, { color: colors.text.secondary }]}>
+                  {t('all_complaints.feature_submit_desc')}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.loginFeature}>
+              <View style={[styles.loginFeatureIcon, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50] }]}>
+                <Text style={styles.loginFeatureIconText}>🔍</Text>
+              </View>
+              <View style={styles.loginFeatureText}>
+                <Text style={[styles.loginFeatureTitle, { color: colors.text.primary }]}>
+                  {t('all_complaints.feature_track')}
+                </Text>
+                <Text style={[styles.loginFeatureDesc, { color: colors.text.secondary }]}>
+                  {t('all_complaints.feature_track_desc')}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.loginFeature}>
+              <View style={[styles.loginFeatureIcon, { backgroundColor: isDark ? `${colors.primary[500]}15` : colors.primary[50] }]}>
+                <Text style={styles.loginFeatureIconText}>⚡</Text>
+              </View>
+              <View style={styles.loginFeatureText}>
+                <Text style={[styles.loginFeatureTitle, { color: colors.text.primary }]}>
+                  {t('all_complaints.feature_real_time')}
+                </Text>
+                <Text style={[styles.loginFeatureDesc, { color: colors.text.secondary }]}>
+                  {t('all_complaints.feature_real_time_desc')}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.loginDivider}>
+            <View style={[styles.loginDividerLine, { backgroundColor: colors.border }]} />
+            <Text style={[styles.loginDividerText, { color: colors.text.muted }]}>
+              {t('all_complaints.get_started')}
+            </Text>
+            <View style={[styles.loginDividerLine, { backgroundColor: colors.border }]} />
+          </View>
+
+          <View style={styles.loginButtonsContainer}>
+            <TouchableOpacity
+              style={[styles.loginPrimaryBtn, { backgroundColor: colors.primary[700] }]}
+              onPress={() => router.push('/auth/login' as any)}
+              activeOpacity={0.82}
+            >
+              <LinearGradient
+                colors={[colors.primary[600], colors.primary[800]]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.loginPrimaryBtnGradient}
+              >
+                <Text style={styles.loginPrimaryBtnText}>
+                  {t('all_complaints.login_button')} →
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.loginSecondaryBtn,
+                {
+                  backgroundColor: isDark ? 'transparent' : colors.primary[50],
+                  borderColor: colors.primary[200],
+                }
+              ]}
+              onPress={() => router.push('/auth/register' as any)}
+              activeOpacity={0.82}
+            >
+              <Text style={[styles.loginSecondaryBtnText, { color: colors.primary[700] }]}>
+                {t('all_complaints.register_button')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <Text style={[styles.loginFooterText, { color: colors.text.muted }]}>
+            {t('all_complaints.login_footer')}
+          </Text>
+        </View>
+      </Animated.View>
     </View>
-  </View>
-);
+  );
+};
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export default function AllComplaintsScreen() {
@@ -910,4 +1029,174 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pageBtnTxt: { fontSize: 13 },
+
+  // Login Prompt Styles
+  loginHeader: {
+    paddingTop: 48,
+    paddingBottom: 32,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  loginBackBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 16,
+    marginTop: 8,
+  },
+  loginBackBtnTxt: {
+    fontSize: 20,
+    lineHeight: 24,
+    fontWeight: '600',
+  },
+  loginHeaderContent: {
+    alignItems: 'center',
+    marginTop: 8,
+    paddingHorizontal: 20,
+  },
+  loginIconContainer: {
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  loginIconGradient: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loginIconText: {
+    fontSize: 40,
+  },
+  loginHeaderTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#fff',
+    letterSpacing: -0.5,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  loginHeaderSubtitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'rgba(255,255,255,0.8)',
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 20,
+  },
+  loginContent: {
+    flex: 1,
+    marginTop: -20,
+    paddingHorizontal: 16,
+  },
+  loginCard: {
+    borderRadius: 24,
+    borderWidth: 1,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  loginFeatures: {
+    gap: 20,
+    marginBottom: 24,
+  },
+  loginFeature: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+  loginFeatureIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loginFeatureIconText: {
+    fontSize: 24,
+  },
+  loginFeatureText: {
+    flex: 1,
+  },
+  loginFeatureTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  loginFeatureDesc: {
+    fontSize: 12,
+    lineHeight: 17,
+    fontWeight: '500',
+  },
+  loginDivider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 24,
+  },
+  loginDividerLine: {
+    flex: 1,
+    height: 1,
+  },
+  loginDividerText: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+  },
+  loginButtonsContainer: {
+    gap: 12,
+    marginBottom: 20,
+  },
+  loginPrimaryBtn: {
+    borderRadius: 14,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  loginPrimaryBtnGradient: {
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loginPrimaryBtnText: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#fff',
+    letterSpacing: 0.3,
+  },
+  loginSecondaryBtn: {
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loginSecondaryBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  loginFooterText: {
+    fontSize: 11,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
 });

@@ -30,7 +30,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
-  const [villageName, setVillageName] = useState<string>("Loading…");
+  const [villageName, setVillageName] = useState<string>(t('loading'));
 
   useEffect(() => {
     // Setup notification listeners when component mounts
@@ -47,19 +47,19 @@ export default function Login() {
     AsyncStorage.getItem("scannedVillage").then((str) => {
       try {
         const obj = JSON.parse(str || "{}");
-        setVillageName(obj.villageName || "Unknown Village");
+        setVillageName(obj.villageName || t('no_village_found'));
       } catch {
-        setVillageName("Unknown Village");
+        setVillageName(t('no_village_found'));
       }
     });
-  }, []);
+  }, [t]);
 
   const handleLogin = async () => {
     if (!phone.trim() || !password.trim()) {
       Toast.show({
         type: "error",
-        text1: t('missing_fields'),
-        text2: t('enter_phone_password'),
+        text1: t('common.error'),
+        text2: t('auth.missing_fields'),
       });
       return;
     }
@@ -70,8 +70,8 @@ export default function Login() {
     if (!villageObj.villageId) {
       Toast.show({
         type: "error",
-        text1: t('no_village_found'),
-        text2: t('scan_village_login'),
+        text1: t('auth.no_village_found'),
+        text2: t('auth.scan_village_login'),
       });
       return;
     }
@@ -89,15 +89,15 @@ export default function Login() {
 
       Toast.show({
         type: "success",
-        text1: t('welcome_back'),
-        text2: t('login_success'),
+        text1: t('common.welcome_back'),
+        text2: t('auth.login_success'),
       });
       setTimeout(() => router.replace("/complaints/my-complaints"), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: t('login_failed'),
-        text2: err.response?.data?.message || t('invalid_credentials'),
+        text1: t('auth.login_failed'),
+        text2: err.response?.data?.message || t('auth.invalid_credentials'),
       });
     } finally {
       setLoading(false);
@@ -107,8 +107,8 @@ export default function Login() {
   const fields = [
     {
       key: "phone",
-      label: "Phone Number",
-      placeholder: "Enter your phone number",
+      label: t('auth.phone_number'),
+      placeholder: t('auth.phone_placeholder'),
       secure: false,
       value: phone,
       onChange: setPhone,
@@ -116,8 +116,8 @@ export default function Login() {
     },
     {
       key: "password",
-      label: "Password",
-      placeholder: "Enter your password",
+      label: t('auth.password'),
+      placeholder: t('auth.password_placeholder'),
       secure: true,
       value: password,
       onChange: setPassword,
@@ -163,13 +163,13 @@ export default function Login() {
 
         <View style={styles.headerTitleBlock}>
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-            CITIZEN PORTAL
+            {t('common.citizen_portal').toUpperCase()}
           </Text>
-          <Text style={[styles.headerTitle, { color: headerTextColor }]}>Welcome Back 👋</Text>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>{t('common.welcome_back')}</Text>
           <View style={styles.headerBreadcrumb}>
             <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              Sign in to your village account
+              {t('common.sign_in_account')}
             </Text>
           </View>
         </View>
@@ -193,10 +193,10 @@ export default function Login() {
             <Text style={styles.villageIcon}>🏘️</Text>
           </View>
           <View style={styles.villageTextBlock}>
-            <Text style={[styles.villageLabel, { color: colors.text.muted }]}>VILLAGE</Text>
+            <Text style={[styles.villageLabel, { color: colors.text.muted }]}>{t('register.village')}</Text>
             <Text style={[styles.villageName, { color: colors.text.primary }]}>{villageName}</Text>
             <Text style={[styles.villageVerified, { color: colors.primary[500] }]}>
-              ✓ Verified via QR Code
+              ✓ {t('register.verified_qr')}
             </Text>
           </View>
         </View>
@@ -265,7 +265,7 @@ export default function Login() {
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <Text style={[styles.loginBtnTxt, { color: "#fff" }]}>
-              Login
+              {t('common.login')}
             </Text>
           )}
         </TouchableOpacity>
@@ -273,20 +273,20 @@ export default function Login() {
         {/* ── Register redirect ── */}
         <View style={styles.registerRow}>
           <Text style={[styles.registerHint, { color: colors.text.secondary }]}>
-            Don't have an account?
+            {t('register.already_account')}
           </Text>
           <TouchableOpacity
             onPress={() => router.replace({ pathname: "/auth/register" } as any)}
             activeOpacity={0.7}
           >
             <Text style={[styles.registerLink, { color: colors.primary[500] }]}>
-              {" "}Register
+              {" "}{t('register.login_link')}
             </Text>
           </TouchableOpacity>
         </View>
 
         <Text style={[styles.terms, { color: colors.text.muted }]}>
-          Access is restricted to verified village citizens only.
+          {t('register.terms')}
         </Text>
       </ScrollView>
 

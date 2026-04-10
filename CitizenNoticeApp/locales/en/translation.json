@@ -1,6 +1,11 @@
 {
   "brand": "GramVartha",
   "home": "Home",
+  "home_pending": "Pending",
+  "home_in_progress": "In Progress",
+  "home_resolved": "Resolved",
+  "home_login_required": "Login Required",
+  "home_cancel": "Cancel",
   "notices": "Notices",
   "complaints": "Complaints",
   "profile": "Profile",
@@ -16,7 +21,6 @@
   "phone": "Phone",
   "village": "Village",
   "submit": "Submit",
-  "cancel": "Cancel",
   "save": "Save",
   "edit": "Edit",
   "delete": "Delete",
@@ -29,6 +33,10 @@
   "view_details": "View Details",
   "file_complaint": "File Complaint",
   "my_complaints": "My Complaints",
+  "my_complaints_filter_all": "All",
+  "my_complaints_filter_pending": "Pending",
+  "my_complaints_filter_in_progress": "In Progress",
+  "my_complaints_filter_resolved": "Resolved",
   "all_complaints": "All Complaints",
   "complaint_details": "Complaint Details",
   "complaint_title": "Complaint Title",
@@ -38,6 +46,8 @@
   "resolved": "Resolved",
   "in_progress": "In Progress",
   "notice_details": "Notice Details",
+  "notice_details_village_notice": "Village Notice",
+  "notice_details_notice_details_title": "Notice Details",
   "notice_title": "Notice Title",
   "notice_content": "Notice Content",
   "published_date": "Published Date",
@@ -68,7 +78,6 @@
   "no_village_found": "No village found",
   "scan_village_first": "Please scan your village QR code first.",
   "scan_village_login": "Please scan your village QR code first.",
-  "welcome_back": "Welcome back!",
   "login_success": "Logged in successfully.",
   "login_failed": "Login failed",
   "invalid_credentials": "Invalid phone or password.",
@@ -113,6 +122,7 @@
   "friday": "Friday",
   "saturday": "Saturday",
   "sunday": "Sunday",
+
   "common": {
     "brand": "GramVartha",
     "village_notices_on_demand": "Village Notices on Demand",
@@ -127,8 +137,12 @@
     "citizen_portal": "CITIZEN PORTAL",
     "welcome_back": "Welcome Back 👋",
     "sign_in_account": "Sign in to your village account",
-    "verified_qr": "✓ Verified via QR Code"
+    "verified_qr": "✓ Verified via QR Code",
+    "error": "Error",
+    "login": "Login",
+    "register": "Register"
   },
+
   "auth": {
     "phone_number": "Phone Number",
     "phone_placeholder": "Enter your phone number",
@@ -144,6 +158,7 @@
     "welcome_back": "Welcome back!",
     "unknown_village": "Unknown Village"
   },
+
   "tabs": {
     "tab_notices": "Notices",
     "tab_report": "Report",
@@ -151,6 +166,7 @@
     "tab_guide": "Guide",
     "tab_recent": "Recent"
   },
+
   "home": {
     "scan_qr_code": "Scan QR Code",
     "find_officials": "Find Officials",
@@ -179,35 +195,34 @@
     "required_docs": "Required Documents",
     "required_docs_desc": "Complete list of documents needed for each service - no more back and forth",
     "track_complaints": "Track Your Complaints",
-    "pending": "Pending",
-    "in_progress": "In Progress",
-    "resolved": "Resolved",
     "tracking_note": "Get notified when status changes. Real accountability, complete transparency.",
     "view_complaints": "View Complaints",
     "all_village_issues": "All Village Issues",
     "all_village_issues_desc": "See all complaints & issues reported in your village",
-    "my_complaints": "My Complaints",
     "my_complaints_desc": "Track the status of your reported complaints",
-    "login_required": "Login Required",
     "login_required_message": "Please login or register to file a complaint",
     "scan_first": "Scan a Village First",
     "scan_first_message": "Please scan a village QR code to view notices",
     "no_villages": "No Villages Scanned",
-    "scan_village_first": "Please scan a village QR code first",
     "no_village": "No Village Selected",
     "scan_village_complaints": "Please scan a village QR code to view complaints",
-    "cancel": "Cancel",
-    "village": "Village",
     "villages": "Villages",
-    "scan_qr": "Scan QR Code",
     "qrcode_scanner": "QR Code Scanner",
     "how_to_use": "How to Use",
     "how_to_use_title": "How to Use GramVartha",
     "how_to_use_description": "Scan any GramVartha QR code at your village panchayat to access all village services",
     "no_internet": "No Internet Connection",
     "no_internet_message": "Please check your internet connection and try again",
-    "retry": "Retry"
+    "retry": "Retry",
+    "my_complaints": "My Complaints",
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "resolved": "Resolved",
+    "login_required": "Login Required",
+    "cancel": "Cancel",
+    "village":"Village"
   },
+
   "modal": {
     "how_app_works": "How GramVartha Works",
     "scan_access_section": "📱 Scan & Access",
@@ -237,106 +252,111 @@
     "work_guide_item_4": "• Contact information for each service",
     "modal_footer": "No app download. No registration. Just information at your fingertips."
   },
+
   "complaint": {
-  "new_complaint": "New Complaint",
-  "report_issue_or_suggestion": "Report an issue or share a suggestion",
-  "issue": "Issue",
-  "suggestion": "Suggestion",
-  "issue_hint": "Issues require a photo and your GPS location to verify and locate the problem.",
-  "suggestion_hint": "Suggestions are text-only. Share your ideas to improve the village.",
-  "title": "Title",
-  "title_placeholder": "Brief title of your complaint",
-  "description": "Description",
-  "description_placeholder": "Describe the issue or suggestion in detail…",
-  "photo": "Photo",
-  "required": "REQUIRED",
-  "camera_photo": "Camera Photo",
-  "take_new_photo": "Take New Photo",
-  "take_photo": "Take Photo",
-  "required_for_issue": "Required for issue reports",
-  "location": "Location",
-  "gps_captured": "GPS captured",
-  "refresh": "Refresh",
-  "capture_my_location": "Capture My Location",
-  "location_required_warning": "Location required for verification. Capturing automatically…",
-  "permission_needed": "Permission needed",
-  "allow_location_access": "Please allow location access to submit issue.",
-  "allow_camera_access": "Please allow camera access to take a photo.",
-  "location_captured": "Location captured",
-  "gps_coordinates_saved": "GPS coordinates saved.",
-  "location_failed": "Location failed",
-  "could_not_get_location": "Could not get your location.",
-  "camera_access_needed": "Camera access needed",
-  "fill_all_fields": "Please fill all fields.",
-  "photo_required": "Photo required",
-  "take_photo_of_issue": "Please take a photo of the issue.",
-  "location_required": "Location required",
-  "capture_gps_location": "Please capture your GPS location.",
-  "already_reported": "Already reported",
-  "duplicate_issue_message": "A similar issue exists nearby. We've noted your report.",
-  "submitted": "Submitted!",
-  "complaint_submitted_success": "Complaint submitted successfully!",
-  "submission_error": "Submission Failed",
-  "try_again": "Please try again.",
-  "submit_complaint": "Submit Complaint",
-  "submit_suggestion": "Submit Suggestion"
-},
-"qr_scanner": {
-  "village_found": "✓ Village Found!",
-  "village_found_message": "{{villageName}} has been scanned successfully.",
-  "view_notices": "View Notices",
-  "scan_another": "Scan Another",
-  "invalid_qr_error": "Invalid QR code. Please try again.",
-  "not_recognized": "Not Recognized",
-  "try_again": "Try Again",
-  "required": "Required",
-  "enter_qr_code": "Please enter a QR code or village ID.",
-  "checking_permissions": "Checking camera permissions…",
-  "camera_access_needed": "Camera Access Needed",
-  "camera_access_description": "We need camera access to scan village QR codes. This helps you quickly access village notices and updates.",
-  "allow_camera_access": "Allow Camera Access",
-  "go_back": "Go Back",
-  "back_to_scanner": "Back to Scanner",
-  "enter_village_code": "Enter Village Code",
-  "enter_code_description": "Type or paste the QR code value or village ID from your village notice board",
-  "qr_code_village_id": "QR CODE / VILLAGE ID",
-  "code_placeholder": "e.g. VLG-MH-2024-0041",
-  "find_village": "Find Village",
-  "or": "or",
-  "use_camera_scanner": "Use Camera Scanner",
-  "verifying": "Verifying...",
-  "code_captured": "Code captured!",
-  "align_qr_code": "Align QR code within frame",
-  "checking_village": "Checking village...",
-  "scan_again": "Scan Again",
-  "enter_code_manually": "Enter code manually"
-},
-"development_category": "Development",
-  "health_category": "Health",
-  "education_category": "Education",
-  "agriculture_category": "Agriculture",
-  "employment_category": "Employment",
-  "social_welfare_category": "Social Welfare",
-  "tax_billing_category": "Tax & Billing",
-  "election_category": "Election",
-  "meeting_category": "Meeting",
-  "general_category": "General",
-  "high_priority": "High Priority",
-  "normal_priority": "Normal Priority",
-  "general_priority": "General",
+    "new_complaint": "New Complaint",
+    "report_issue_or_suggestion": "Report an issue or share a suggestion",
+    "issue": "Issue",
+    "suggestion": "Suggestion",
+    "issue_hint": "Issues require a photo and your GPS location to verify and locate the problem.",
+    "suggestion_hint": "Suggestions are text-only. Share your ideas to improve the village.",
+    "title": "Title",
+    "title_placeholder": "Brief title of your complaint",
+    "description": "Description",
+    "description_placeholder": "Describe the issue or suggestion in detail…",
+    "photo": "Photo",
+    "required": "REQUIRED",
+    "camera_photo": "Camera Photo",
+    "take_new_photo": "Take New Photo",
+    "take_photo": "Take Photo",
+    "required_for_issue": "Required for issue reports",
+    "location": "Location",
+    "gps_captured": "GPS captured",
+    "refresh": "Refresh",
+    "capture_my_location": "Capture My Location",
+    "location_required_warning": "Location required for verification. Capturing automatically…",
+    "permission_needed": "Permission needed",
+    "allow_location_access": "Please allow location access to submit issue.",
+    "allow_camera_access": "Please allow camera access to take a photo.",
+    "location_captured": "Location captured",
+    "gps_coordinates_saved": "GPS coordinates saved.",
+    "location_failed": "Location failed",
+    "could_not_get_location": "Could not get your location.",
+    "camera_access_needed": "Camera access needed",
+    "fill_all_fields": "Please fill all fields.",
+    "photo_required": "Photo required",
+    "take_photo_of_issue": "Please take a photo of the issue.",
+    "location_required": "Location required",
+    "capture_gps_location": "Please capture your GPS location.",
+    "already_reported": "Already reported",
+    "duplicate_issue_message": "A similar issue exists nearby. We've noted your report.",
+    "submitted": "Submitted!",
+    "complaint_submitted_success": "Complaint submitted successfully!",
+    "submission_error": "Submission Failed",
+    "submit_complaint": "Submit Complaint",
+    "submit_suggestion": "Submit Suggestion"
+  },
+
+  "qr_scanner": {
+    "village_found": "✓ Village Found!",
+    "village_found_message": "{{villageName}} has been scanned successfully.",
+    "view_notices": "View Notices",
+    "scan_another": "Scan Another",
+    "invalid_qr_error": "Invalid QR code. Please try again.",
+    "not_recognized": "Not Recognized",
+    "required": "Required",
+    "enter_qr_code": "Please enter a QR code or village ID.",
+    "checking_permissions": "Checking camera permissions…",
+    "camera_access_needed": "Camera Access Needed",
+    "camera_access_description": "We need camera access to scan village QR codes. This helps you quickly access village notices and updates.",
+    "allow_camera_access": "Allow Camera Access",
+    "go_back": "Go Back",
+    "back_to_scanner": "Back to Scanner",
+    "enter_village_code": "Enter Village Code",
+    "enter_code_description": "Type or paste the QR code value or village ID from your village notice board",
+    "qr_code_village_id": "QR CODE / VILLAGE ID",
+    "code_placeholder": "e.g. VLG-MH-2024-0041",
+    "find_village": "Find Village",
+    "or": "or",
+    "use_camera_scanner": "Use Camera Scanner",
+    "verifying": "Verifying...",
+    "code_captured": "Code captured!",
+    "align_qr_code": "Align QR code within frame",
+    "checking_village": "Checking village...",
+    "scan_again": "Scan Again",
+    "enter_code_manually": "Enter code manually",
+    "try_again": "Try Again"
+  },
+
+  "categories": {
+    "development": "Development",
+    "health": "Health",
+    "education": "Education",
+    "agriculture": "Agriculture",
+    "employment": "Employment",
+    "social_welfare": "Social Welfare",
+    "tax_billing": "Tax & Billing",
+    "election": "Election",
+    "meeting": "Meeting",
+    "general": "General"
+  },
+
+  "priority": {
+    "high": "High Priority",
+    "normal": "Normal Priority",
+    "general": "General"
+  },
+
   "notice_details": {
     "loading": "Loading notice…",
     "not_found": "Notice not found",
     "not_found_desc": "This notice could not be loaded.",
-    "try_again": "Try Again",
-    "village_notices": "VILLAGE NOTICES",
     "urgent_action": "Urgent — Immediate Action Required",
     "high_priority_label": "High Priority",
     "posted_by": "Posted by",
     "date_label": "Date",
     "category_label": "Category",
     "priority_label": "Priority",
-    "notice_details_title": "Notice Details",
     "attached_file": "Attached File",
     "open_document": "Open document",
     "tap_to_open": "Tap to open",
@@ -347,12 +367,14 @@
     "open_file": "Open File",
     "share": "Share",
     "save_to_device": "Save to Device",
-    "cancel": "Cancel",
     "share_file": "Share File",
     "share_file_desc": "Send via Messages, Mail, or other apps",
     "save_to_device_desc": "Save to your Gallery or Files app",
-    "what_would_you_like": "What would you like to do?"
+    "what_would_you_like": "What would you like to do?",
+    "village_notice": "Village Notice",
+    "notice_details_title": "Notice Details"
   },
+
   "download": {
     "preparing": "Preparing to download {{fileName}}...",
     "downloading": "Downloading: {{fileName}}",
@@ -369,12 +391,14 @@
     "great_thanks": "Great, thanks!",
     "close": "Close"
   },
+
   "share": {
     "title": "📢 {{title}}",
     "message_without_file": "{{description}}\n\n📅 {{date}}\n🏷️ Category: {{category}}\n👤 Posted by: {{author}}\n🏢 Department: {{department}}",
     "message_with_file": "{{description}}\n\n📅 {{date}}\n🏷️ Category: {{category}}\n📎 Attached: {{fileName}}\n\nView full notice for more details."
   },
-   "complaint_details": {
+
+  "complaint_details": {
     "title": "Complaint Details",
     "header_title": "COMPLAINT DETAILS",
     "loading": "Loading complaint details...",
@@ -403,192 +427,135 @@
     "detected_labels": "Detected Labels",
     "yes": "Yes",
     "no": "No",
-    "score_unit": "/100",
-    "status": {
-      "pending": "Pending",
-      "in_progress": "In Progress",
-      "resolved": "Resolved",
-      "rejected": "Rejected"
-    },
-    "type": {
-      "issue": "Issue",
-      "complaint": "Complaint",
-      "suggestion": "Suggestion"
-    },
-    "image_source": {
-      "camera": "Camera",
-      "gallery": "Gallery"
-    }
+    "score_unit": "/100"
   },
-  "status": {
-    "pending": "Pending",
-    "in_progress": "In Progress",
-    "resolved": "Resolved",
-    "rejected": "Rejected"
-  },
-  "type": {
-    "issue": "Issue",
-    "complaint": "Complaint",
-    "suggestion": "Suggestion"
-  },
-  "errors": {
-    "load_complaint_failed": "Failed to load complaint details.",
-    "complaint_not_found": "Complaint not found"
-  },
+
   "all_complaints": {
-    "title": "Village Issues",
-    "subtitle": "All reported complaints & issues",
+    "title": "All Complaints",
+    "subtitle": "Track and manage village feedback",
     "village_services": "VILLAGE SERVICES",
-    "back": "Back",
-    
-    "type_issue": "Issue",
-    "type_complaint": "Complaint",
-    "type_suggestion": "Suggestion",
-    
-    "status_pending": "Pending",
-    "status_in_progress": "In Progress",
-    "status_resolved": "Resolved",
-    "status_rejected": "Rejected",
-    
+    "citizen": "Citizen",
+    "image_attached": "Image Attached",
+    "search_icon": "🔍",
+    "search_placeholder": "Search by title, description, or citizen...",
+    "search_results_for": "Search results for",
     "filter_all": "All",
     "filter_pending": "Pending",
     "filter_in_progress": "In Progress",
     "filter_resolved": "Resolved",
-    
-    "search_placeholder": "Search complaints...",
-    "search_icon": "🔍",
-    "clear_search": "Clear",
-    
-    "image_attached": "Image attached",
-    "citizen": "Citizen",
-    
     "complaints_count": "complaints",
     "complaint_count_singular": "complaint",
-    "search_results_for": "Search results for",
-    
-    "no_results": "No results found",
     "no_complaints": "No complaints found",
-    "no_results_desc": "Nothing matched \"{{query}}\". Try different keywords.",
-    "no_complaints_desc": "No complaints have been reported in this village yet.",
-    "no_complaints_filter_desc": "No {{filter}} complaints in this village.",
-    
-    "login_required": "Login Required",
-    "login_required_desc": "You need to be logged in to view complaints.",
-    "login_button": "Login",
-    "register_button": "Register",
-    
+    "no_complaints_desc": "There are no complaints to display for this village yet.",
+    "no_complaints_filter_desc": "No {{filter}} complaints found.",
+    "no_results": "No matching results",
+    "no_results_desc": "No complaints match \"{{query}}\"",
     "no_village": "No Village Selected",
-    "no_village_desc": "Please scan a QR code first to view village complaints.",
+    "no_village_desc": "Please scan a village QR code to view complaints.",
     "scan_qr": "Scan QR Code",
-    
-    "loading": "Loading complaints...",
     "load_error": "Failed to load complaints. Please try again.",
-    
-    "page": "Page",
-    "of": "of",
-    
+    "loading": "Loading complaints...",
     "pull_to_refresh": "Pull to refresh",
-    "refreshing": "Refreshing..."
+    "login_required": "Login Required",
+    "login_required_desc": "Sign in to view and manage village complaints",
+    "login_button": "Login",
+    "register_button": "Create Account",
+    "feature_submit": "Submit Complaints",
+    "feature_submit_desc": "Report issues, complaints, or suggestions to your village administration",
+    "feature_track": "Track Status",
+    "feature_track_desc": "Monitor the progress of your submissions in real-time",
+    "feature_real_time": "Real-time Updates",
+    "feature_real_time_desc": "Get instant notifications when your complaint status changes",
+    "get_started": "GET STARTED",
+    "login_footer": "Secure access to your village's grievance management system"
   },
+
   "my_complaints": {
     "title": "My Complaints",
     "subtitle": "Track your reported issues",
     "citizen_portal": "CITIZEN PORTAL",
     "back": "Back",
     "new_complaint": "+ New",
-    
-    "type_issue": "Issue",
-    "type_complaint": "Complaint",
-    "type_suggestion": "Suggestion",
-    
-    "status_pending": "Pending",
-    "status_in_progress": "In Progress",
-    "status_resolved": "Resolved",
-    "status_rejected": "Rejected",
-    
-    "filter_all": "All",
-    "filter_pending": "Pending",
-    "filter_in_progress": "In Progress",
-    "filter_resolved": "Resolved",
-    
     "search_placeholder": "Search your complaints…",
     "search_icon": "⌕",
     "clear_search": "Clear",
-    
     "image_evidence": "Image evidence",
     "resolution_verified": "Resolution verified",
-    
     "complaints_count": "complaints",
     "complaint_count_singular": "complaint",
     "search_results_for": "Search results for",
-    
     "no_results": "No results found",
     "no_complaints": "No complaints yet",
     "no_results_desc": "Nothing matched \"{{query}}\". Try different keywords.",
     "no_complaints_desc": "You haven't reported any complaints yet.\nTap + New to report an issue.",
     "no_complaints_filter_desc": "You have no {{filter}} complaints.",
-    
-    "login_required": "Login Required",
     "login_required_desc": "You need to be logged in to view your complaints.",
-    "login_button": "Login",
-    "register_button": "Register",
-    
-    "loading": "Loading your complaints…",
     "load_error": "Failed to load your complaints. Please try again.",
-    
-    "pull_to_refresh": "Pull to refresh",
     "refreshing": "Refreshing…",
-    
     "complaint_id": "ID",
-    "reported_on": "Reported on"
+    "reported_on": "Reported on",
+    "filter_all": "All",
+    "filter_pending": "Pending",
+    "filter_in_progress": "In Progress",
+    "filter_resolved": "Resolved"
   },
-   "register": {
+
+  "register_screen": {
     "title": "Create Account",
     "subtitle": "Register to access your village services",
     "citizen_portal": "CITIZEN PORTAL",
     "back": "Back",
-    
     "village": "VILLAGE",
     "verified_qr": "✓ Verified via QR Code",
-    
     "full_name": "Full Name",
     "full_name_placeholder": "Enter your full name",
     "phone_number": "Phone Number",
     "phone_placeholder": "Enter 10-digit mobile number",
     "password": "Password",
     "password_placeholder": "Create a password",
-    
     "register_button": "Register",
     "registering": "Creating account...",
-    
     "already_account": "Already have an account?",
     "login_link": "Login",
-    
     "terms": "By registering, you agree to receive village notices and updates on your device.",
-    
     "missing_fields": "Missing Fields",
     "fill_all_fields": "Please fill all fields",
     "no_village_found": "No Village Found",
     "scan_village_login": "Please scan a village QR code before registering",
     "register_success": "Account created successfully!",
     "register_error": "Registration Failed",
-    "try_again": "Please try again",
     "welcome": "Welcome!"
   },
+
+  "register": {
+    "citizen_portal": "CITIZEN PORTAL",
+    "title": "Create Account",
+    "subtitle": "Register to access your village services",
+    "village": "VILLAGE",
+    "verified_qr": "✓ Verified via QR Code",
+    "full_name": "Full Name",
+    "full_name_placeholder": "Enter your full name",
+    "phone_number": "Phone Number",
+    "phone_placeholder": "Enter 10-digit mobile number",
+    "password": "Password",
+    "password_placeholder": "Create a password",
+    "register_button": "Register",
+    "already_account": "Already have an account?",
+    "login_link": "Login",
+    "terms": "By registering, you agree to receive village notices and updates on your device."
+  },
+
   "work_guide": {
     "title": "Work Guide",
     "subtitle": "Step-by-step guides for village services",
     "village_services": "VILLAGE SERVICES",
     "back": "Back",
     "your_village": "Your Village",
-    
     "what_do_you_need": "What do you need?",
     "search_placeholder": "Search work, officer, document…",
-    
     "result_found": "result found",
     "results_found": "results found",
     "no_results_for": "No results for",
-    
     "available_days": "AVAILABLE DAYS",
     "timing": "TIMING",
     "location": "LOCATION",
@@ -597,23 +564,18 @@
     "reset_checklist": "Reset checklist",
     "all_documents_ready": "All documents ready — you can visit now",
     "important_note": "IMPORTANT NOTE",
-    
     "next_visit": "Next",
     "today": "Today",
     "tomorrow": "Tomorrow",
-    
     "scan_village_first": "Scan Village QR First",
     "scan_village_desc": "Please scan your village QR code to access the work guide.",
     "scan_qr_code": "Scan QR Code",
-    
     "no_services": "No services listed yet",
     "no_services_desc": "The village admin will add services soon",
     "no_results": "No results found",
     "no_results_desc": "Try a different word or browse quick actions above",
     "clear_search": "Clear Search",
-    
     "loading": "Loading work guide…",
-    
     "birth_certificate": "Birth Certificate",
     "death_certificate": "Death Certificate",
     "residence_proof": "Residence Proof",
@@ -628,7 +590,6 @@
     "water_connection": "Water Connection",
     "voter_id_help": "Voter ID Help",
     "scholarship": "Scholarship",
-    
     "monday": "Mon",
     "tuesday": "Tue",
     "wednesday": "Wed",
@@ -637,68 +598,7 @@
     "saturday": "Sat",
     "sunday": "Sun"
   },
-  "work_guide": {
-    "title": "Work Guide",
-    "subtitle": "Step-by-step guides for village services",
-    "village_services": "VILLAGE SERVICES",
-    "back": "Back",
-    "your_village": "Your Village",
-    
-    "what_do_you_need": "What do you need?",
-    "search_placeholder": "Search work, officer, document…",
-    
-    "result_found": "result found",
-    "results_found": "results found",
-    "no_results_for": "No results for",
-    
-    "available_days": "AVAILABLE DAYS",
-    "timing": "TIMING",
-    "location": "LOCATION",
-    "next_available_visit": "Next Available Visit",
-    "documents_to_bring": "Documents to Bring",
-    "reset_checklist": "Reset checklist",
-    "all_documents_ready": "All documents ready — you can visit now",
-    "important_note": "IMPORTANT NOTE",
-    
-    "next_visit": "Next",
-    "today": "Today",
-    "tomorrow": "Tomorrow",
-    
-    "scan_village_first": "Scan Village QR First",
-    "scan_village_desc": "Please scan your village QR code to access the work guide.",
-    "scan_qr_code": "Scan QR Code",
-    
-    "no_services": "No services listed yet",
-    "no_services_desc": "The village admin will add services soon",
-    "no_results": "No results found",
-    "no_results_desc": "Try a different word or browse quick actions above",
-    "clear_search": "Clear Search",
-    
-    "loading": "Loading work guide…",
-    
-    "birth_certificate": "Birth Certificate",
-    "death_certificate": "Death Certificate",
-    "residence_proof": "Residence Proof",
-    "caste_certificate": "Caste Certificate",
-    "income_certificate": "Income Certificate",
-    "seven_twelve_land_record": "7/12 Land Record",
-    "property_tax": "Property Tax",
-    "ration_card": "Ration Card",
-    "pension_application": "Pension Application",
-    "nrega_job_card": "NREGA Job Card",
-    "pm_awas_yojana": "PM Awas Yojana",
-    "water_connection": "Water Connection",
-    "voter_id_help": "Voter ID Help",
-    "scholarship": "Scholarship",
-    
-    "monday": "Mon",
-    "tuesday": "Tue",
-    "wednesday": "Wed",
-    "thursday": "Thu",
-    "friday": "Fri",
-    "saturday": "Sat",
-    "sunday": "Sun"
-  },
+
   "notices": {
     "search_placeholder": "Search notices...",
     "loading": "Loading notices...",
@@ -715,7 +615,6 @@
     "priority_medium": "Medium",
     "priority_low": "Low",
     "scan": "Scan",
-    
     "category_all": "All",
     "category_urgent": "Urgent",
     "category_development": "Development",
@@ -727,12 +626,29 @@
     "category_tax_billing": "Tax & Billing",
     "category_election": "Election",
     "category_general": "General",
-    
     "empty_no_results_title": "No Results Found",
     "empty_no_results_desc": "No notices match your search. Try different words.",
     "empty_no_notices_title": "No Notices",
     "empty_no_notices_desc": "No notices available in this category.",
     "empty_no_notices_yet_title": "No Notices Yet",
     "empty_no_notices_yet_desc": "This village has no notices at the moment."
+  },
+
+  "type": {
+    "issue": "Issue",
+    "complaint": "Complaint",
+    "suggestion": "Suggestion"
+  },
+
+  "status": {
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "resolved": "Resolved",
+    "rejected": "Rejected"
+  },
+
+  "errors": {
+    "load_complaint_failed": "Failed to load complaint details.",
+    "complaint_not_found": "Complaint not found"
   }
 }
