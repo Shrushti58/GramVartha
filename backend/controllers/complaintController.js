@@ -260,37 +260,44 @@ const createComplaint = async (req, res) => {
       description,
       imageSource = null,
       timestamp = null,
+      village,  // ← GET VILLAGE FROM REQUEST BODY
     } = req.body;
 
+    // Validation
     if (!type || !title?.trim() || !description?.trim()) {
       return res.status(400).json({ message: "Missing required fields: type, title, description" });
     }
     if (!["issue", "suggestion"].includes(type)) {
       return res.status(400).json({ message: "Invalid type. Must be 'issue' or 'suggestion'" });
     }
-
-    if (type === "suggestion") {
-      const complaint = await Complaint.create({
-        citizen: req.user.id, village: req.user.village,
-        type, title: title.trim(), description: description.trim(),
-        imageUrl: null, location: null, imageSource: null,
-        timestamp: null, aiVerification: undefined,
-      });
-
-      // ── SMS: confirm suggestion received ──
-      //try {
-      //  const citizen = await Citizen.findById(req.user.id);
-      //  if (citizen?.phone) {
-      //    const message = `📝 Your suggestion "${title.trim()}" has been submitted to Gram Panchayat. We will review it shortly.`;
-      //    await sendSMS(citizen.phone, message);
-      //  }
-      //} catch (smsErr) {
-      //  console.error("SMS error [createComplaint - suggestion]:", smsErr.message);
-      //}
-
-      return res.status(201).json({ message: "Complaint submitted successfully", complaint });
+    
+    // ← ADD VILLAGE VALIDATION
+    if (!village) {
+      return res.status(400).json({ message: "Village ID is required" });
     }
 
+    // Handle suggestion
+    if (type === "suggestion") {
+      const complaint = await Complaint.create({
+        citizen: req.user.id,
+        village: village,  // ← USE VILLAGE FROM REQUEST
+        type,
+        title: title.trim(),
+        description: description.trim(),
+        imageUrl: null,
+        location: null,
+        imageSource: null,
+        timestamp: null,
+        aiVerification: undefined,
+      });
+
+      return res.status(201).json({ 
+        message: "Complaint submitted successfully", 
+        complaint 
+      });
+    }
+
+    // Handle issue
     if (!req.file) {
       return res.status(400).json({ message: "Issue requires a photo" });
     }
@@ -303,6 +310,7 @@ const createComplaint = async (req, res) => {
       return res.status(400).json({ message: "Invalid or missing GPS coordinates" });
     }
 
+    // AI Analysis
     let rawLabels = [];
     try {
       rawLabels = await analyzeImage(imageUrl);
@@ -312,9 +320,14 @@ const createComplaint = async (req, res) => {
 
     const labels = normalizeLabels(rawLabels);
     const { isValidIssue, fraudScore, remarks } = runFraudCheck({
-      labels, imageSource, lat, lng, timestamp,
+      labels,
+      imageSource,
+      lat,
+      lng,
+      timestamp,
     });
 
+    // Check for duplicate nearby issues
     const nearbyIssue = await Complaint.findOne({
       type: "issue",
       status: { $ne: "resolved" },
@@ -329,27 +342,24 @@ const createComplaint = async (req, res) => {
       });
     }
 
+    // Create complaint with village from request
     const complaint = await Complaint.create({
-      citizen: req.user.id, village: req.user.village,
-      type, title: title.trim(), description: description.trim(),
-      imageUrl, location: { lat, lng },
+      citizen: req.user.id,
+      village: village,  // ← USE VILLAGE FROM REQUEST
+      type,
+      title: title.trim(),
+      description: description.trim(),
+      imageUrl,
+      location: { lat, lng },
       imageSource: imageSource ?? "camera",
       timestamp: timestamp ? new Date(timestamp) : new Date(),
       aiVerification: { isValidIssue, labels, fraudScore, remarks },
     });
 
-    // ── SMS: confirm issue complaint received ──
-    //try {
-    // const citizen = await Citizen.findById(req.user.id);
-    // if (citizen?.phone) {
-    // const message = `📋 Your complaint "${title.trim()}" (#${complaint._id}) has been submitted to Gram Panchayat. We will look into it soon.`;
-    //  await sendSMS(citizen.phone, message);
-    // }
-    //} catch (smsErr) {
-    //  console.error("SMS error [createComplaint - issue]:", smsErr.message);
-    // }
-
-    return res.status(201).json({ message: "Complaint submitted successfully", complaint });
+    return res.status(201).json({ 
+      message: "Complaint submitted successfully", 
+      complaint 
+    });
   } catch (err) {
     console.error("[createComplaint]", err);
     return res.status(500).json({ message: "Internal server error" });
@@ -444,4 +454,12 @@ const getComplaintsByVillage = async (req, res) => {
   }
 };
 
-module.exports = { getComplaints, updateStatus, resolveComplaint, createComplaint, getMyComplaints, getComplaintById, getComplaintsByVillage };
+module.exports = { 
+  getComplaints, 
+  updateStatus, 
+  resolveComplaint, 
+  createComplaint, 
+  getMyComplaints, 
+  getComplaintById, 
+  getComplaintsByVillage 
+};

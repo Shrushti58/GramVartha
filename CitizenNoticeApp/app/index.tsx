@@ -548,6 +548,7 @@ export default function HomeScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide   = useRef(new Animated.Value(24)).current;
 
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       Animated.parallel([
@@ -906,6 +907,44 @@ export default function HomeScreen() {
                 <View style={styles.quickAccessContent}>
                   <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>{t('home.my_complaints')}</Text>
                   <Text style={[styles.quickAccessDesc,  { color: colors.text.muted }]}>{t('home.my_complaints_desc')}</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.quickAccessButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => router.push('/schemes' as any)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.accent.teal}15` }]}>
+                  <Ionicons name="library-outline" size={24} color={colors.accent.teal} />
+                </View>
+                <View style={styles.quickAccessContent}>
+                  <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>
+                    {t('home.gov_schemes', 'Government Schemes')}
+                  </Text>
+                  <Text style={[styles.quickAccessDesc, { color: colors.text.muted }]}>
+                    {t('home.gov_schemes_desc', 'Browse schemes and check eligibility details')}
+                  </Text>
+                </View>
+                <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.quickAccessButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                onPress={() => router.push('/farming-assistant' as any)}
+                activeOpacity={0.7}
+              >
+                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.accent.green}15` }]}>
+                  <Ionicons name="rainy-outline" size={24} color={colors.accent.green} />
+                </View>
+                <View style={styles.quickAccessContent}>
+                  <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>
+                    {t('home.farming_advisor', 'Smart Farming Weather')}
+                  </Text>
+                  <Text style={[styles.quickAccessDesc, { color: colors.text.muted }]}>
+                    {t('home.farming_advisor_desc', 'Location-based irrigation advice for crops')}
+                  </Text>
                 </View>
                 <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
               </TouchableOpacity>

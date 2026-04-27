@@ -12,7 +12,7 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
 import Toast from "react-native-toast-message";
@@ -21,6 +21,7 @@ import { router } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ComplaintType = "issue" | "suggestion";
@@ -59,9 +60,10 @@ export default function Complaint() {
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
   const [timestamp, setTimestamp] = useState<string | null>(null);
-
-  // Derived warning list
-  const warnings = buildWarnings(location, t);
+  const [villageId, setVillageId] = useState<string | null>(null);
+  const [villageName, setVillageName] = useState<string>("");
+  const [isVillageLoaded, setIsVillageLoaded] = useState(false);
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
   // Dynamic colors based on dark mode
   const headerBg = isDark ? colors.primary[900] : colors.primary[700];
@@ -69,6 +71,74 @@ export default function Complaint() {
   const headerSubColor = isDark ? colors.primary[200] : "rgba(255,255,255,0.8)";
   const headerEyebrowColor = isDark ? colors.primary[300] : "rgba(255,255,255,0.6)";
   const backBtnBg = isDark ? `${colors.primary[500]}40` : "rgba(255,255,255,0.15)";
+
+  // Derived warning list
+  const warnings = buildWarnings(location, t);
+
+  // ── Load village data from AsyncStorage with extensive debugging ────────────
+  useEffect(() => {
+    loadVillageData();
+  }, []);
+
+  const loadVillageData = async () => {
+    try {
+      console.log('================== LOADING VILLAGE DATA ==================');
+      
+      // Check all AsyncStorage keys
+      const allKeys = await AsyncStorage.getAllKeys();
+      console.log('All AsyncStorage keys:', allKeys);
+      
+      const villageStr = await AsyncStorage.getItem("scannedVillage");
+      console.log('Raw village string from storage:', villageStr);
+      
+      if (villageStr) {
+        const villageData = JSON.parse(villageStr);
+        console.log('Parsed village data:', JSON.stringify(villageData, null, 2));
+        console.log('All fields in villageData:', Object.keys(villageData));
+        
+        // Try different possible field names
+        const vid = villageData.villageId || villageData._id || villageData.id;
+        const vname = villageData.villageName || villageData.name;
+        
+        console.log('Extracted villageId:', vid);
+        console.log('Extracted villageName:', vname);
+        console.log('villageData.villageId:', villageData.villageId);
+        console.log('villageData._id:', villageData._id);
+        console.log('villageData.id:', villageData.id);
+        
+        if (vid && vid !== 'undefined' && vid !== 'null') {
+          setVillageId(vid);
+          setVillageName(vname || "Unknown Village");
+          setIsVillageLoaded(true);
+          setDebugInfo(`✅ Loaded: ${vname} (${vid})`);
+          console.log('✅ SUCCESS: Village set successfully!');
+          console.log('   Village ID:', vid);
+          console.log('   Village Name:', vname);
+        } else {
+          console.error('❌ Invalid village ID extracted:', vid);
+          setDebugInfo(`❌ Invalid village ID: ${vid}`);
+          setIsVillageLoaded(false);
+        }
+      } else {
+        console.error('❌ No "scannedVillage" key found in AsyncStorage');
+        setDebugInfo('❌ No village found. Please scan QR code first.');
+        setIsVillageLoaded(false);
+        
+        // Try to find if village data is stored under a different key
+        for (const key of allKeys) {
+          if (key.includes('village') || key.includes('Village')) {
+            const value = await AsyncStorage.getItem(key);
+            console.log(`Found potential village data in key "${key}":`, value);
+          }
+        }
+      }
+      console.log('=======================================================');
+    } catch (error) {
+      console.error('❌ Error loading village data:', error);
+      setDebugInfo(`❌ Error: ${error}`);
+      setIsVillageLoaded(false);
+    }
+  };
 
   // ── Auto-capture location after image is selected ─────────────────────────
   const autoCaptureLocation = useCallback(async () => {
@@ -125,7 +195,6 @@ export default function Complaint() {
       setPhoto(result.assets[0].uri);
       setPhotoFile({ uri: result.assets[0].uri, name: "photo.jpg", type: "image/jpeg" });
       setTimestamp(new Date().toISOString());
-      // Auto-trigger location after taking photo
       autoCaptureLocation();
     }
   };
@@ -170,8 +239,63 @@ export default function Complaint() {
     }
   };
 
-  // ── Submit ─────────────────────────────────────────────────────────────────
+  // ── Manual reload village data ─────────────────────────────────────────────
+  const handleReloadVillage = async () => {
+    Toast.show({ type: "info", text1: "Reloading Village Data..." });
+    await loadVillageData();
+    if (villageId) {
+      Toast.show({ 
+        type: "success", 
+        text1: "Village Loaded", 
+        text2: `${villageName} (${villageId})` 
+      });
+    } else {
+      Toast.show({ 
+        type: "error", 
+        text1: "No Village Found", 
+        text2: "Please scan a QR code first" 
+      });
+    }
+  };
+
+  // ── Submit with extensive debugging ────────────────────────────────────────
   const handleSubmit = async () => {
+    console.log('================== SUBMITTING COMPLAINT ==================');
+    console.log('Current villageId state:', villageId);
+    console.log('Current villageName:', villageName);
+    console.log('isVillageLoaded:', isVillageLoaded);
+    console.log('Type:', type);
+    console.log('Title:', title);
+    console.log('Description length:', description.length);
+    
+    // Double-check from storage directly
+    const freshStorage = await AsyncStorage.getItem("scannedVillage");
+    console.log('Fresh from storage:', freshStorage);
+    
+    let finalVillageId = villageId;
+    
+    if (!finalVillageId && freshStorage) {
+      const freshData = JSON.parse(freshStorage);
+      finalVillageId = freshData.villageId || freshData._id || freshData.id;
+      console.log('Using fresh village ID from storage:', finalVillageId);
+      
+      if (finalVillageId) {
+        setVillageId(finalVillageId);
+        setVillageName(freshData.villageName || freshData.name);
+        setIsVillageLoaded(true);
+      }
+    }
+    
+    if (!finalVillageId) {
+      console.error('❌ CRITICAL: No village ID available for submission!');
+      Toast.show({ 
+        type: "error", 
+        text1: "No Village Found", 
+        text2: "Please scan a village QR code first" 
+      });
+      return;
+    }
+    
     if (!title.trim() || !description.trim()) {
       Toast.show({ 
         type: "error", 
@@ -207,6 +331,14 @@ export default function Complaint() {
       formData.append("type", type);
       formData.append("title", title.trim());
       formData.append("description", description.trim());
+      formData.append("village", finalVillageId); // IMPORTANT: Using 'village' field
+      
+      console.log('📤 FormData contents:');
+      console.log('  - type:', type);
+      console.log('  - title:', title.trim());
+      console.log('  - description:', description.trim());
+      console.log('  - village:', finalVillageId);
+      console.log('  - village type:', typeof finalVillageId);
 
       if (type === "issue") {
         formData.append("image", photoFile as any);
@@ -214,9 +346,14 @@ export default function Complaint() {
         formData.append("lng", String(location!.lng));
         formData.append("timestamp", timestamp ?? new Date().toISOString());
         formData.append("imageSource", "camera");
+        console.log('  - lat:', location!.lat);
+        console.log('  - lng:', location!.lng);
+        console.log('  - timestamp:', timestamp);
       }
 
+      console.log('🚀 Sending request to API...');
       const res = await apiService.createComplaint(formData);
+      console.log('✅ API Response:', JSON.stringify(res, null, 2));
 
       if (res.duplicateOf) {
         Toast.show({
@@ -231,17 +368,21 @@ export default function Complaint() {
       Toast.show({ 
         type: "success", 
         text1: t('complaint.submitted'), 
-        text2: t('complaint.complaint_submitted_success') 
+        text2: `Complaint submitted for ${villageName}` 
       });
+      console.log('✅ Complaint submitted successfully for village:', finalVillageId);
       setTimeout(() => router.back(), 1200);
     } catch (err: any) {
+      console.error('❌ Submission error:', err);
+      console.error('Error response:', err.response?.data);
       Toast.show({
         type: "error",
         text1: t('complaint.submission_error'),
-        text2: err.response?.data?.message || t('complaint.try_again'),
+        text2: err.response?.data?.message || err.message || t('complaint.try_again'),
       });
     } finally {
       setLoading(false);
+      console.log('================== SUBMISSION END ==================');
     }
   };
 
@@ -252,6 +393,13 @@ export default function Complaint() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <StatusBar barStyle={isDark ? "light-content" : "dark-content"} backgroundColor={headerBg} />
+
+      {/* Debug Banner */}
+      <View style={[styles.debugBanner, { backgroundColor: isDark ? '#333' : '#f0f0f0' }]}>
+        <Text style={[styles.debugText, { color: villageId ? '#4CAF50' : '#f44336', fontSize: 10 }]}>
+          {villageId ? `✅ ${villageName} (${villageId.substring(0, 8)}...)` : debugInfo || '⚠️ No Village Loaded'}
+        </Text>
+      </View>
 
       {/* ── Header with Gradient ── */}
       <LinearGradient
@@ -273,6 +421,15 @@ export default function Complaint() {
           >
             <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
           </TouchableOpacity>
+          
+          {/* Reload Village Button */}
+          <TouchableOpacity 
+            onPress={handleReloadVillage} 
+            style={[styles.reloadBtn, { backgroundColor: backBtnBg }]} 
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.reloadBtnTxt, { color: headerTextColor }]}>🔄</Text>
+          </TouchableOpacity>
         </View>
         
         <View style={styles.headerTitleBlock}>
@@ -290,6 +447,26 @@ export default function Complaint() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
+        {/* Village Info Card */}
+        {villageId && (
+          <View style={[
+            styles.villageCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.primary[500],
+            }
+          ]}>
+            <View style={[styles.villageIconWrap, { backgroundColor: isDark ? `${colors.primary[500]}20` : colors.primary[100] }]}>
+              <Text style={styles.villageIcon}>🏘️</Text>
+            </View>
+            <View style={styles.villageTextBlock}>
+              <Text style={[styles.villageLabel, { color: colors.text.muted }]}>Reporting for Village</Text>
+              <Text style={[styles.villageName, { color: colors.text.primary, fontWeight: 'bold' }]}>{villageName}</Text>
+              <Text style={[styles.villageId, { color: colors.text.muted, fontSize: 10 }]}>ID: {villageId}</Text>
+            </View>
+          </View>
+        )}
+
         {/* ── Type toggle ── */}
         <View style={[
           styles.toggleWrap,
@@ -416,7 +593,6 @@ export default function Complaint() {
               </Text>
 
               {photo ? (
-                /* ── Preview + retake ── */
                 <View style={styles.photoPreviewWrap}>
                   <Image source={{ uri: photo }} style={styles.photoPreview} resizeMode="cover" />
                   <View style={[
@@ -438,7 +614,6 @@ export default function Complaint() {
                   </TouchableOpacity>
                 </View>
               ) : (
-                /* ── Camera button only ── */
                 <TouchableOpacity
                   style={[
                     styles.cameraBtn,
@@ -460,7 +635,6 @@ export default function Complaint() {
                 </TouchableOpacity>
               )}
 
-              {/* ── Warning messages ── */}
               {warnings.length > 0 && (
                 <View style={styles.warningWrap}>
                   {warnings.map((w, i) => (
@@ -552,17 +726,17 @@ export default function Complaint() {
           style={[
             styles.submitBtn,
             { backgroundColor: colors.button?.primary || colors.primary.DEFAULT },
-            loading && styles.submitBtnDisabled
+            (loading || !isVillageLoaded) && styles.submitBtnDisabled
           ]}
           onPress={handleSubmit}
           activeOpacity={0.82}
-          disabled={loading}
+          disabled={loading || !isVillageLoaded}
         >
           {loading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
             <Text style={[styles.submitBtnTxt, { color: "#fff" }]}>
-              {type === "issue" ? t('complaint.submit_complaint') : t('complaint.submit_suggestion')}
+              {!isVillageLoaded ? "Loading Village..." : (type === "issue" ? t('complaint.submit_complaint') : t('complaint.submit_suggestion'))}
             </Text>
           )}
         </TouchableOpacity>
@@ -573,11 +747,20 @@ export default function Complaint() {
   );
 }
 
-// ─── Styles remain the same as before ─────────────────────────────────────────
+// ─── Styles ─────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   root: { flex: 1 },
 
-  // ── Header ────────────────────────────────────────────────────────────────
+  debugBanner: {
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    alignItems: 'center',
+  },
+  debugText: {
+    fontSize: 10,
+    fontWeight: '500',
+  },
+
   headerShell: {
     paddingBottom: 28,
     overflow: "hidden",
@@ -597,12 +780,24 @@ const styles = StyleSheet.create({
     width: 130, height: 130, borderRadius: 65,
     bottom: -30, left: 30,
   },
-  headerNavRow: { paddingTop: 54, paddingHorizontal: 16, paddingBottom: 18 },
+  headerNavRow: {
+    paddingTop: 54,
+    paddingHorizontal: 16,
+    paddingBottom: 18,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   backBtn: {
     width: 38, height: 38, borderRadius: 12,
     justifyContent: "center", alignItems: "center",
   },
   backBtnTxt: { fontSize: 20, lineHeight: 24, fontWeight: "600" },
+  reloadBtn: {
+    width: 38, height: 38, borderRadius: 12,
+    justifyContent: "center", alignItems: "center",
+  },
+  reloadBtnTxt: { fontSize: 20, lineHeight: 24 },
   headerTitleBlock: { paddingHorizontal: 18, gap: 4 },
   headerEyebrow: {
     fontSize: 10, fontWeight: "800",
@@ -618,7 +813,6 @@ const styles = StyleSheet.create({
   },
   headerSub: { fontSize: 12, fontWeight: "500" },
 
-  // ── Scroll ────────────────────────────────────────────────────────────────
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 20,
@@ -626,7 +820,41 @@ const styles = StyleSheet.create({
     gap: 12,
   },
 
-  // ── Type toggle ───────────────────────────────────────────────────────────
+  villageCard: {
+    borderRadius: 14,
+    borderWidth: 1.5,
+    padding: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  villageIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  villageIcon: { fontSize: 22 },
+  villageTextBlock: { flex: 1, gap: 2 },
+  villageLabel: {
+    fontSize: 9,
+    fontWeight: "800",
+    letterSpacing: 1.5,
+  },
+  villageName: {
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  villageId: {
+    fontSize: 10,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+  },
+
   toggleWrap: {
     flexDirection: "row",
     borderRadius: 14,
@@ -650,7 +878,6 @@ const styles = StyleSheet.create({
   },
   toggleBtnTxtActive: {},
 
-  // ── Hint box ──────────────────────────────────────────────────────────────
   hintBox: {
     borderRadius: 10,
     paddingHorizontal: 14,
@@ -662,7 +889,6 @@ const styles = StyleSheet.create({
     lineHeight: 18, fontWeight: "500",
   },
 
-  // ── Card ──────────────────────────────────────────────────────────────────
   card: {
     borderRadius: 18,
     borderWidth: 1,
@@ -686,7 +912,6 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
 
-  // ── Inputs ────────────────────────────────────────────────────────────────
   inputRow: {
     flexDirection: "row", alignItems: "center",
     borderRadius: 12,
@@ -712,7 +937,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 
-  // ── Camera button ─────────────────────────────────────────────────────────
   cameraBtn: {
     borderRadius: 12,
     borderWidth: 1.5,
@@ -729,7 +953,6 @@ const styles = StyleSheet.create({
     fontSize: 11, fontWeight: "500",
   },
 
-  // ── Photo preview ─────────────────────────────────────────────────────────
   photoPreviewWrap: { gap: 8 },
   photoPreview: {
     width: "100%", height: 200,
@@ -752,7 +975,6 @@ const styles = StyleSheet.create({
   },
   photoRemoveTxt: { fontSize: 12, fontWeight: "700" },
 
-  // ── Warning ────────────────────────────────────────────────────────────────
   warningWrap: {
     marginTop: 10,
     gap: 6,
@@ -774,7 +996,6 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
 
-  // ── Location ──────────────────────────────────────────────────────────────
   locCaptureBtn: {
     borderRadius: 12,
     borderWidth: 1.5,
@@ -816,7 +1037,6 @@ const styles = StyleSheet.create({
     fontSize: 11, fontWeight: "700",
   },
 
-  // ── Submit ────────────────────────────────────────────────────────────────
   submitBtn: {
     borderRadius: 14,
     paddingVertical: 16,

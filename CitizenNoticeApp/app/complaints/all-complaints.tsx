@@ -500,23 +500,80 @@ export default function AllComplaintsScreen() {
     setSearchQuery('');
   }, [selectedFilter]);
 
-  const fetchComplaints = async () => {
-    if (!villageId) return;
-    try {
-      setLoading(true);
-      const filterObj = COMPLAINT_FILTERS.find(f => f.id === selectedFilter);
-      const response = await apiService.getComplaintsByVillage(villageId, page, 10, {
-        status: filterObj?.status,
-      });
-      setAllComplaints(response.complaints || response);
-      setTotalPages(response.pages || 1);
-    } catch {
-      Alert.alert(t('common.error') || 'Error', t('all_complaints.load_error'));
-    } finally {
-      setLoading(false);
+const fetchComplaints = async () => {
+  if (!villageId) {
+    console.log('No villageId provided');
+    return;
+  }
+  
+  try {
+    setLoading(true);
+    const filterObj = COMPLAINT_FILTERS.find(f => f.id === selectedFilter);
+    
+    console.log('=== Fetching Complaints ===');
+    console.log('Village ID:', villageId);
+    console.log('Page:', page);
+    console.log('Filter status:', filterObj?.status);
+    
+    const response = await apiService.getComplaintsByVillage(villageId, page, 10, {
+      status: filterObj?.status,
+    });
+    
+    console.log('Full API Response:', JSON.stringify(response, null, 2));
+    
+    // Handle the response based on your actual API structure
+    let complaints = [];
+    let totalPagesCount = 1;
+    
+    // Your API returns { complaints: [], total: 0, page: 1, pages: 0 }
+    if (response && response.complaints && Array.isArray(response.complaints)) {
+      complaints = response.complaints;
+      totalPagesCount = response.pages || response.totalPages || 1;
+      console.log(`Found ${complaints.length} complaints out of ${response.total} total`);
+    } 
+    // Alternative structures (keep for safety)
+    else if (response?.data?.complaints && Array.isArray(response.data.complaints)) {
+      complaints = response.data.complaints;
+      totalPagesCount = response.data.pages || response.data.totalPages || 1;
     }
-  };
-
+    else if (Array.isArray(response)) {
+      complaints = response;
+      totalPagesCount = 1;
+    }
+    else {
+      console.warn('Unexpected response structure:', Object.keys(response));
+      // Try to find any array in the response
+      for (const key in response) {
+        if (Array.isArray(response[key])) {
+          complaints = response[key];
+          console.log(`Found array in key "${key}" with ${complaints.length} items`);
+          break;
+        }
+      }
+    }
+    
+    console.log('Final complaints count:', complaints.length);
+    if (complaints.length === 0) {
+      console.log('No complaints found for village:', villageId);
+      console.log('This could mean:');
+      console.log('1. No complaints exist for this village');
+      console.log('2. The village ID is incorrect');
+      console.log('3. The complaints exist but status filter is excluding them');
+    }
+    
+    setAllComplaints(complaints);
+    setTotalPages(totalPagesCount);
+    
+  } catch (error) {
+    console.error('Fetch complaints error details:', error);
+    Alert.alert(
+      t('common.error') || 'Error', 
+      t('all_complaints.load_error') || 'Failed to load complaints. Please try again.'
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   const onRefresh = async () => {
     setRefreshing(true);
     await fetchComplaints();

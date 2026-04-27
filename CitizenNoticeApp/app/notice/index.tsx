@@ -303,6 +303,8 @@ export default function QRNoticesScreen() {
   const [searchQuery,       setSearchQuery]        = useState('');
   const [sort,              setSort]               = useState<SortState>({ field: 'date', dir: 'desc' });
 
+
+
   useEffect(() => { loadScannedVillageInfo(); fetchNotices(); }, [villageId, selectedCategory, page]);
   useEffect(() => { setSearchQuery(''); }, [selectedCategory]);
 
