@@ -15,8 +15,9 @@ import {
   RefreshControl, // Added this import
 } from 'react-native';
 import { router } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isLoggedIn } from "../utils/auth";
+import { getRecentVillages } from "../utils/recentVillages";
+import { HOME_TABS as TABS, ScannedVillage } from "../constants/home";
 import { useTheme } from '../context/ThemeContext';
 import { ThemedView } from '../components/ThemedView';
 import { ThemedCard } from '../components/ThemedCard';
@@ -28,24 +29,6 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
-
-interface ScannedVillage {
-  villageId: string;
-  villageName: string;
-  district: string;
-  state: string;
-  pincode: string;
-  scannedAt: string;
-  qrCodeId: string;
-}
-
-const TABS = [
-  { key: 'notices',   labelKey: 'tabs.tab_notices',  icon: 'document-text-outline' as const,  activeIcon: 'document-text' as const },
-  { key: 'complaint', labelKey: 'tabs.tab_report',   icon: 'alert-circle-outline' as const,   activeIcon: 'alert-circle' as const },
-  { key: 'scan',      labelKey: 'tabs.tab_scan',     icon: 'qr-code-outline' as const,        activeIcon: 'qr-code' as const },
-  { key: 'workguide', labelKey: 'tabs.tab_guide',    icon: 'book-outline' as const,           activeIcon: 'book' as const },
-  { key: 'villages',  labelKey: 'tabs.tab_recent',   icon: 'time-outline' as const,           activeIcon: 'time' as const },
-];
 
 // ─── Skeleton ────────────────────────────────────────────────────────────────
 const Skeleton = ({ width: w, height: h, borderRadius = 12, style }: any) => {
@@ -363,6 +346,7 @@ const SplashScreen = ({ exitOpacity, exitScale }: { exitOpacity: Animated.Value;
 
   return (
     <Animated.View
+      pointerEvents="none"
       style={[
         styles.splash,
         { backgroundColor: colors.primary[700], opacity: exitOpacity, transform: [{ scale: exitScale }] },
@@ -438,7 +422,7 @@ const SplashScreen = ({ exitOpacity, exitScale }: { exitOpacity: Animated.Value;
 const TabItem = ({
   tab, isActive, onPress, colors, isScan,
 }: {
-  tab: typeof TABS[0]; isActive: boolean; onPress: () => void; colors: any; isScan?: boolean;
+  tab: typeof TABS[number]; isActive: boolean; onPress: () => void; colors: any; isScan?: boolean;
 }) => {
   const { t } = useTranslation();
   const scaleAnim  = useRef(new Animated.Value(1)).current;
@@ -568,8 +552,7 @@ export default function HomeScreen() {
   const loadRecentVillages = async () => {
     setIsDataLoading(true);
     try {
-      const stored = await AsyncStorage.getItem('recentVillages');
-      if (stored) setRecentVillages((JSON.parse(stored) as ScannedVillage[]).slice(0, 5));
+      setRecentVillages(await getRecentVillages());
     } catch (e) { console.error(e); }
     finally { setIsDataLoading(false); }
   };
@@ -624,8 +607,10 @@ export default function HomeScreen() {
     <ThemedView style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary[700]} />
 
-      {/* Splash — always mounted, fades out */}
-      <SplashScreen exitOpacity={splashOpacity} exitScale={splashScale} />
+      {/* Splash — conditionally rendered, unmounts after animation */}
+      {isLoading && (
+        <SplashScreen exitOpacity={splashOpacity} exitScale={splashScale} />
+      )}
 
       {/* Main content fades in underneath */}
       <Animated.View style={[{ flex: 1 }, { opacity: contentOpacity, transform: [{ translateY: contentSlide }] }]}>

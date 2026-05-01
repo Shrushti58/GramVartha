@@ -13,6 +13,7 @@
       "supportsTablet": true
     },
     "android": {
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/gramvarthalogo.png",
@@ -49,9 +50,9 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "58fb3296-0de7-440c-8507-924142c73659"
+        "projectId": "e4e223ed-3fb3-480a-a521-076bf5f26aeb"
       }
     },
-    "owner": "shrushti58"
+    "owner": "gramvartha"
   }
 }

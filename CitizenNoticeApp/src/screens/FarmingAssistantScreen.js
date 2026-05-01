@@ -7,24 +7,27 @@ import {
   Text,
   View,
 } from "react-native";
-import WeatherCard from "../components/WeatherCard";
-import { useWeather } from "../hooks/useWeather";
+import AdviceCard from "../components/AdviceCard";
+import { useFarming } from "../hooks/useFarming";
 
 const FarmingAssistantScreen = () => {
-  const { loading, data, error, reload } = useWeather();
+  const { loading, data, error, reload } = useFarming({
+    crop: "wheat",
+    soilType: "black",
+  });
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.heading}>Smart Farming Assistant</Text>
         <Text style={styles.subheading}>
-          Weather-based irrigation advice for your current location
+          Advanced irrigation, spraying, and disease insights from live forecast
         </Text>
 
         {loading && (
           <View style={styles.centered}>
             <ActivityIndicator size="large" color="#0F766E" />
-            <Text style={styles.stateText}>Fetching latest weather advice...</Text>
+            <Text style={styles.stateText}>Analyzing farming conditions...</Text>
           </View>
         )}
 
@@ -38,7 +41,7 @@ const FarmingAssistantScreen = () => {
           </View>
         ) : null}
 
-        {!loading && !error && data ? <WeatherCard weather={data} /> : null}
+        {!loading && !error && data ? <AdviceCard data={data} /> : null}
       </View>
     </SafeAreaView>
   );

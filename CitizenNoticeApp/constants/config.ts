@@ -6,7 +6,7 @@
 import { Platform } from 'react-native';
 
 // Get API URL from environment variables
-const API_BASE_URL = 'http://192.168.1.11:3000';
+const API_BASE_URL =process.env.EXPO_PUBLIC_API_BASE_URL;;
 
 export const Config = {
   API_BASE_URL: API_BASE_URL,

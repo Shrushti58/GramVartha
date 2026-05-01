@@ -13,6 +13,9 @@ backend/.env.local
 backend/.env.development.local
 backend/.env.test.local
 backend/.env.production.local
+backend/.env.*
+!backend/.env.example
+!backend/.env.example.*
 
 # Logs (backend)
 backend/logs/
@@ -41,6 +44,9 @@ frontend/.env.local
 frontend/.env.development.local
 frontend/.env.test.local
 frontend/.env.production.local
+frontend/.env.*
+!frontend/.env.example
+!frontend/.env.example.*
 
 
 # React build
@@ -70,6 +76,9 @@ CitizenNoticeApp/.env.local
 CitizenNoticeApp/.env.development.local
 CitizenNoticeApp/.env.test.local
 CitizenNoticeApp/.env.production.local
+CitizenNoticeApp/.env.*
+!CitizenNoticeApp/.env.example
+!CitizenNoticeApp/.env.example.*
 
 # Native builds (Expo Managed Workflow)
 CitizenNoticeApp/android/
@@ -102,3 +111,23 @@ Thumbs.db
 *.tmp
 
 backend/gramvartha-0d3028ac535a.json
+
+# ======================
+# Secrets / Credentials (Global)
+# ======================
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+*.kdbx
+*service-account*.json
+*service_account*.json
+*credentials*.json
+*credential*.json
+*secret*.json
+*secrets*.json
+*private*.json

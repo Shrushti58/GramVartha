@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const adminController = require('../controllers/adminController');
 const { verifyToken } = require("../utlis/jwt");
+const { authLimiter } = require("../src/middleware/rateLimiter");
 
-router.post('/register', adminController.registerAdmin);
-router.post('/login', adminController.loginAdmin);
+router.post('/register', authLimiter, adminController.registerAdmin);
+router.post('/login', authLimiter, adminController.loginAdmin);
 router.post('/logout', adminController.logoutAdmin);
 router.get('/me', verifyToken, adminController.getAdminMe);
 

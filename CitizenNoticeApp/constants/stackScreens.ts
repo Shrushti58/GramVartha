@@ -1,0 +1,18 @@
+export const STACK_SCREENS = [
+  { name: "index", options: { headerShown: false } },
+  { name: "complaint", options: { title: "File Complaint", headerShown: false } },
+  { name: "qr-scanner", options: { title: "QR Scanner", headerShown: false } },
+  { name: "notice", options: { headerShown: false } },
+  { name: "auth/login", options: { headerShown: false } },
+  { name: "auth/register", options: { headerShown: false } },
+  { name: "qr-notices/workguide", options: { headerShown: false } },
+  { name: "qr-notices/[villageId]", options: { headerShown: false } },
+  { name: "farming-assistant", options: { headerShown: false } },
+  { name: "notice/[id]", options: { headerShown: false } },
+  { name: "complaints", options: { headerShown: false } },
+  { name: "complaints/all-complaints", options: { headerShown: false } },
+  { name: "complaints/my-complaints", options: { headerShown: false } },
+  { name: "complaints/[id]", options: { headerShown: false } },
+  { name: "qr-notices", options: { headerShown: false } },
+  { name: "schemes", options: { headerShown: false } },
+] as const;
