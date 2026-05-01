@@ -15,16 +15,28 @@ const authMemoryLimiter = new RateLimiterMemory({
   duration: 15 * 60,
 });
 
-const globalRateLimiter = new RateLimiterRedis({
-  storeClient: redis,
+const createRedisLimiter = ({ keyPrefix, points, duration, insuranceLimiter }) => {
+  if (!redis) {
+    return insuranceLimiter;
+  }
+
+  return new RateLimiterRedis({
+    storeClient: redis,
+    keyPrefix,
+    points,
+    duration,
+    insuranceLimiter,
+  });
+};
+
+const globalRateLimiter = createRedisLimiter({
   keyPrefix: "gramvartha_global",
   points: 100,
   duration: 15 * 60,
   insuranceLimiter: globalMemoryLimiter,
 });
 
-const authRateLimiter = new RateLimiterRedis({
-  storeClient: redis,
+const authRateLimiter = createRedisLimiter({
   keyPrefix: "gramvartha_auth",
   points: 5,
   duration: 15 * 60,

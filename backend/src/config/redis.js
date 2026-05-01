@@ -1,10 +1,19 @@
 const Redis = require("ioredis");
 const logger = require("../../utlis/logger");
 
-const redis = new Redis(process.env.REDIS_URL || "redis://127.0.0.1:6379", {
+const redisUrl = process.env.REDIS_URL;
+
+if (!redisUrl) {
+  logger.info("REDIS_URL not configured. Using in-memory rate limiter fallback.");
+  module.exports = null;
+  return;
+}
+
+const redis = new Redis(redisUrl, {
   lazyConnect: true,
   enableOfflineQueue: false,
   maxRetriesPerRequest: 1,
+  retryStrategy: null,
 });
 
 redis.on("connect", () => {
