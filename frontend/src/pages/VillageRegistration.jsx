@@ -128,7 +128,7 @@ export default function VillageRegistration() {
   };
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl border " +
+    "w-full px-3.5 py-2.5 rounded-xl border " +
     "bg-white dark:bg-dark-surface2 " +
     "border-border dark:border-dark-border " +
     "text-text-primary dark:text-dark-text-primary " +
@@ -140,31 +140,31 @@ export default function VillageRegistration() {
     "disabled:opacity-50 disabled:cursor-not-allowed";
 
   const labelClass =
-    "block text-xs font-semibold uppercase tracking-wider " +
-    "text-text-secondary dark:text-dark-text-muted mb-1.5";
+    "block text-[11px] font-semibold uppercase tracking-wider " +
+    "text-text-secondary dark:text-dark-text-muted mb-1";
 
   const EyeIcon = ({ open }) => open ? (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
     </svg>
   ) : (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
     </svg>
   );
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
+    <div className="h-screen w-screen overflow-auto flex items-start justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background py-6 px-4 sm:py-8">
       
       {/* Animated Gradient Background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
         
-        {/* Floating Orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
-        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
+        {/* Floating Orbs - hidden on mobile */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow hidden sm:block" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium hidden md:block" />
+        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast hidden lg:block" />
         
         {/* Mesh Gradient Pattern */}
         <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
@@ -180,20 +180,20 @@ export default function VillageRegistration() {
         <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-10 left-10 w-24 h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000" />
+      {/* Decorative Elements - hidden on mobile */}
+      <div className="fixed top-10 left-10 w-20 h-20 sm:w-24 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
+      <div className="fixed bottom-10 right-10 w-24 h-24 sm:w-32 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
       
       {/* Card */}
-      <div className="relative z-10 w-full max-w-2xl mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-3xl shadow-2xl dark:shadow-dark-2xl p-7 animate-fade-in-up">
+      <div className="relative z-10 w-full max-w-2xl mx-auto bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-5 sm:p-6 md:p-7 animate-fade-in-up">
         
         {/* Card Header Glow Effect */}
-        <div className="absolute -top-3 -right-3 w-20 h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
+        <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 w-14 h-14 sm:w-20 sm:h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 relative">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 relative">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
               <img
                 src="/gramvarthalogo.png"
                 alt="GramVartha"
@@ -201,29 +201,29 @@ export default function VillageRegistration() {
               />
             </div>
             <div>
-              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
+              <p className="text-[10px] sm:text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
                 GramVartha
               </p>
-              <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+              <h1 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
                 {t('village.register.title')}
               </h1>
             </div>
           </div>
-          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
+          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[9px] sm:text-xs font-medium shadow-sm self-start sm:self-auto">
             <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
             {t('village.register.badge')}
           </div>
         </div>
 
         {/* Divider with Gradient */}
-        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-6" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-5" />
 
         {/* Step Indicators */}
-        <div className="mb-6">
+        <div className="mb-5">
           <div className="flex items-center gap-2 mb-3">
             {STEPS.map((s, i) => (
               <React.Fragment key={s.id}>
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all flex-shrink-0 ${
+                <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all flex-shrink-0 ${
                   step > s.id 
                     ? 'bg-primary-500 text-white' 
                     : step === s.id 
@@ -238,15 +238,15 @@ export default function VillageRegistration() {
               </React.Fragment>
             ))}
           </div>
-          <p className="text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-0.5">
+          <p className="text-[10px] sm:text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-0.5">
             {t('village.register.step')} {step} {t('village.register.of')} {STEPS.length}
           </p>
-          <h2 className="text-lg font-semibold text-text-primary dark:text-dark-text-primary">
+          <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-dark-text-primary">
             {step === 1 && t('village.register.steps.village_info')}
             {step === 2 && t('village.register.steps.admin_account')}
             {step === 3 && t('village.register.steps.document_proof')}
           </h2>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">
+          <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-1">
             {step === 1 && t('village.register.step_descriptions.village_info')}
             {step === 2 && t('village.register.step_descriptions.admin_account')}
             {step === 3 && t('village.register.step_descriptions.document_proof')}
@@ -270,7 +270,7 @@ export default function VillageRegistration() {
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className={labelClass}>{t('village.register.district')}</label>
                 <input
@@ -308,19 +308,19 @@ export default function VillageRegistration() {
             </div>
             
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary dark:text-dark-text-muted">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1.5">
+                <label className="block text-[11px] font-semibold uppercase tracking-wider text-text-secondary dark:text-dark-text-muted">
                   {t('village.register.coordinates')} <span className="text-primary-500">*</span>
                 </label>
                 <button
                   type="button"
                   onClick={handleDetectLocation}
                   disabled={locating}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 border border-primary-200 dark:border-primary-700 px-2.5 py-1 rounded-lg transition-all disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 border border-primary-200 dark:border-primary-700 px-2 py-1 rounded-lg transition-all disabled:opacity-60"
                 >
                   {locating ? (
                     <>
-                      <svg className="animate-spin w-3 h-3" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
@@ -328,7 +328,7 @@ export default function VillageRegistration() {
                     </>
                   ) : (
                     <>
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -361,11 +361,11 @@ export default function VillageRegistration() {
             
             <button
               onClick={handleNext}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 mt-2 relative overflow-hidden group"
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 mt-2 relative overflow-hidden group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               {t('village.register.continue')}
-              <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -399,7 +399,7 @@ export default function VillageRegistration() {
                   value={formData.requesterPassword}
                   onChange={handleChange}
                   placeholder={t('village.register.password_placeholder')}
-                  className={inputClass + " pr-10"}
+                  className={inputClass + " pr-9"}
                 />
                 <button
                   type="button"
@@ -423,7 +423,7 @@ export default function VillageRegistration() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder={t('village.register.confirm_placeholder')}
-                  className={inputClass + " pr-10"}
+                  className={inputClass + " pr-9"}
                 />
                 <button
                   type="button"
@@ -439,20 +439,20 @@ export default function VillageRegistration() {
             <div className="flex gap-3 mt-2">
               <button
                 onClick={handleBack}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 {t('village.register.back')}
               </button>
               <button
                 onClick={handleNext}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden group"
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {t('village.register.continue')}
-                <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -462,7 +462,7 @@ export default function VillageRegistration() {
 
         {step === 3 && (
           <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="text-xs text-text-muted dark:text-dark-text-muted leading-relaxed">
+            <p className="text-[11px] sm:text-xs text-text-muted dark:text-dark-text-muted leading-relaxed">
               {t('village.register.document_description')}
             </p>
 
@@ -471,7 +471,7 @@ export default function VillageRegistration() {
                 <img
                   src={documentPreview}
                   alt={t('village.register.preview')}
-                  className="max-w-full max-h-36 rounded-xl border border-border dark:border-dark-border object-contain"
+                  className="max-w-full max-h-32 rounded-xl border border-border dark:border-dark-border object-contain"
                 />
                 <button
                   type="button"
@@ -485,25 +485,25 @@ export default function VillageRegistration() {
             ) : (
               <div
                 onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 bg-gray-50 dark:bg-dark-surface2 hover:bg-primary-50/50 dark:hover:bg-primary-900/20 rounded-xl p-6 text-center cursor-pointer transition-all duration-200"
+                className="border-2 border-dashed border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 bg-gray-50 dark:bg-dark-surface2 hover:bg-primary-50/50 dark:hover:bg-primary-900/20 rounded-xl p-4 sm:p-6 text-center cursor-pointer transition-all duration-200"
               >
-                <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-100 dark:border-primary-800 flex items-center justify-center mx-auto mb-2">
-                  <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-100 dark:border-primary-800 flex items-center justify-center mx-auto mb-2">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                 </div>
                 <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('village.register.click_to_upload')}</p>
-                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('village.register.file_requirements')}</p>
+                <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('village.register.file_requirements')}</p>
               </div>
             )}
 
             {documentFile && (
-              <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-gray-50 dark:bg-dark-surface2 border border-border dark:border-dark-border text-sm">
-                <span className="text-text-primary dark:text-dark-text-primary font-medium truncate max-w-[200px] text-xs">
+              <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 dark:bg-dark-surface2 border border-border dark:border-dark-border text-sm">
+                <span className="text-text-primary dark:text-dark-text-primary font-medium truncate max-w-[150px] sm:max-w-[200px] text-xs">
                   {documentFile.name}
                 </span>
-                <div className="flex items-center gap-3 flex-shrink-0">
-                  <span className="text-text-muted dark:text-dark-text-muted text-xs">
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <span className="text-text-muted dark:text-dark-text-muted text-[10px] sm:text-xs">
                     {(documentFile.size / 1024).toFixed(0)} KB
                   </span>
                   <button
@@ -527,8 +527,8 @@ export default function VillageRegistration() {
               disabled={loading}
             />
 
-            <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 text-xs text-primary-700 dark:text-primary-300">
-              <svg className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 text-[10px] sm:text-xs text-primary-700 dark:text-primary-300">
+              <svg className="w-3 h-3 mt-0.5 flex-shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               {t('village.register.review_note')}
@@ -539,9 +539,9 @@ export default function VillageRegistration() {
                 type="button"
                 onClick={handleBack}
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 {t('village.register.back')}
@@ -549,12 +549,12 @@ export default function VillageRegistration() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 relative overflow-hidden group"
+                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 relative overflow-hidden group"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 {loading ? (
                   <>
-                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
@@ -563,7 +563,7 @@ export default function VillageRegistration() {
                 ) : (
                   <>
                     {t('village.register.submit')}
-                    <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </>
@@ -574,18 +574,18 @@ export default function VillageRegistration() {
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-border dark:border-dark-border">
-          <div className="flex items-center gap-2 text-xs text-text-light dark:text-dark-text-muted">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-border dark:border-dark-border">
+          <div className="flex items-center gap-2 text-[10px] sm:text-xs text-text-light dark:text-dark-text-muted">
+            <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             {t('village.register.secure_access')}
           </div>
           <Link
             to="/"
-            className="flex items-center gap-1 text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200"
+            className="flex items-center gap-1 text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             {t('village.register.back_home')}
@@ -640,6 +640,13 @@ export default function VillageRegistration() {
         }
         .bg-gradient-radial {
           background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
+        }
+        
+        /* Mobile responsive */
+        @media (max-width: 640px) {
+          input, button, select {
+            font-size: 14px;
+          }
         }
       `}</style>
     </div>

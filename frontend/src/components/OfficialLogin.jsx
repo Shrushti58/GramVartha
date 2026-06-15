@@ -42,7 +42,7 @@ export default function OfficialLogin({ onLogin }) {
   };
 
   const inputClass =
-    "w-full px-4 py-3.5 rounded-xl border " +
+    "w-full px-3.5 py-2.5 rounded-xl border " +
     "bg-white dark:bg-dark-surface2 " +
     "border-border dark:border-dark-border " +
     "text-text-primary dark:text-dark-text-primary " +
@@ -54,20 +54,20 @@ export default function OfficialLogin({ onLogin }) {
     "disabled:opacity-50 disabled:cursor-not-allowed";
 
   const labelClass =
-    "block text-xs font-semibold uppercase tracking-wider " +
-    "text-text-secondary dark:text-dark-text-muted mb-1.5";
+    "block text-[11px] font-semibold uppercase tracking-wider " +
+    "text-text-secondary dark:text-dark-text-muted mb-1";
 
   return (
-    <div className="min-h-screen w-screen overflow-x-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background py-6 sm:py-0">
+    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
       
       {/* Animated Gradient Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
         
-        {/* Floating Orbs */}
-        <div className="absolute top-1/4 left-1/4 hidden sm:block w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/3 right-1/4 hidden sm:block w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
-        <div className="absolute top-2/3 left-1/2 hidden sm:block w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
+        {/* Floating Orbs - hidden on mobile */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow hidden sm:block" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium hidden md:block" />
+        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast hidden lg:block" />
         
         {/* Mesh Gradient Pattern */}
         <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
@@ -83,20 +83,20 @@ export default function OfficialLogin({ onLogin }) {
         <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-6 sm:top-10 left-6 sm:left-10 w-16 sm:w-24 h-16 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
-      <div className="absolute bottom-6 sm:bottom-10 right-6 sm:right-10 w-20 sm:w-32 h-20 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
+      {/* Decorative Elements - hidden on mobile */}
+      <div className="absolute top-10 left-10 w-20 h-20 sm:w-24 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
+      <div className="absolute bottom-10 right-10 w-24 h-24 sm:w-32 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
       
       {/* Card */}
-      <div className="relative z-10 w-full max-w-md mx-3 sm:mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-4 sm:p-6 animate-fade-in-up">
+      <div className="relative z-10 w-full max-w-[92%] sm:max-w-md mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-5 sm:p-7 animate-fade-in-up">
         
         {/* Card Header Glow Effect */}
-        <div className="absolute -top-3 -right-3 w-20 h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
+        <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 w-14 h-14 sm:w-20 sm:h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
         
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5 relative flex-wrap sm:flex-nowrap">
-          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-5 sm:mb-6 relative">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
               <img
                 src="/gramvarthalogo.png"
                 alt="GramVartha"
@@ -104,7 +104,7 @@ export default function OfficialLogin({ onLogin }) {
               />
             </div>
             <div>
-              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider hidden sm:block">
+              <p className="text-[10px] sm:text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
                 GramVartha
               </p>
               <h1 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
@@ -112,22 +112,21 @@ export default function OfficialLogin({ onLogin }) {
               </h1>
             </div>
           </div>
-          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-medium shadow-sm flex-shrink-0">
-            <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-            <span className="hidden sm:inline">{t('official.login.badge')}</span>
-            <span className="sm:hidden">Live</span>
+          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium shadow-sm self-start sm:self-auto">
+            <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
+            {t('official.login.badge')}
           </div>
         </div>
 
         {/* Divider with Gradient */}
-        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-3 sm:mb-5" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-5 sm:mb-6" />
 
         {/* Heading */}
-        <div className="mb-3 sm:mb-5">
+        <div className="mb-5 sm:mb-6">
           <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-dark-text-primary">
             {t('official.login.welcome')}
           </h2>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5 sm:mt-1">
+          <p className="text-[11px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-1">
             {t('official.login.subtitle')}
           </p>
         </div>
@@ -135,14 +134,14 @@ export default function OfficialLogin({ onLogin }) {
         {/* Status message */}
         {message.text && (
           <div
-            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs border mb-6 animate-slide-down ${
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs border mb-5 animate-slide-down ${
               message.success
                 ? "bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
             }`}
           >
             <svg
-              className="w-3.5 h-3.5 flex-shrink-0"
+              className="w-3 h-3 flex-shrink-0"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -168,7 +167,7 @@ export default function OfficialLogin({ onLogin }) {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className={labelClass}>
               {t('official.login.email')}
@@ -200,12 +199,12 @@ export default function OfficialLogin({ onLogin }) {
                 onChange={handleChange}
                 placeholder={t('official.login.password_placeholder')}
                 disabled={loading}
-                className={inputClass + " pr-9 sm:pr-10"}
+                className={inputClass + " pr-9"}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-1 sm:p-0"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 tabIndex={-1}
                 aria-label={showPassword ? t('official.login.hide_password') : t('official.login.show_password')}
               >
@@ -218,13 +217,13 @@ export default function OfficialLogin({ onLogin }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-xs sm:text-sm px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-1 sm:mt-2 relative overflow-hidden group"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-1 relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             {loading ? (
               <>
                 <svg
-                  className="animate-spin w-4 h-4"
+                  className="animate-spin w-3.5 h-3.5"
                   fill="none"
                   viewBox="0 0 24 24"
                 >
@@ -248,7 +247,7 @@ export default function OfficialLogin({ onLogin }) {
               <>
                 {t('official.login.login_button')}
                 <svg
-                  className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
+                  className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -266,26 +265,26 @@ export default function OfficialLogin({ onLogin }) {
         </form>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-3 sm:my-5">
+        <div className="flex items-center gap-3 my-5 sm:my-6">
           <div className="flex-1 h-px bg-border dark:bg-dark-border" />
-          <span className="text-xs text-text-light dark:text-dark-text-muted font-medium">{t('official.login.or')}</span>
+          <span className="text-[11px] sm:text-xs text-text-light dark:text-dark-text-muted font-medium">{t('official.login.or')}</span>
           <div className="flex-1 h-px bg-border dark:bg-dark-border" />
         </div>
 
         {/* Footer Links */}
-        <div className="text-center space-y-1.5 sm:space-y-3">
+        <div className="text-center space-y-3 sm:space-y-4">
           <Link
             to="/officials/register"
             className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
           >
             {t('official.login.register_link')}
-            <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
           
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-xs text-text-light dark:text-dark-text-muted">
-            <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-text-light dark:text-dark-text-muted">
+            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             {t('official.login.secure_access')}
@@ -295,10 +294,10 @@ export default function OfficialLogin({ onLogin }) {
         {/* Back Link */}
         <Link
           to="/"
-          className="flex items-center justify-center gap-1.5 text-xs sm:text-sm text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-3 sm:mt-5 pt-2.5 sm:pt-3 border-t border-border dark:border-dark-border"
+          className="flex items-center justify-center gap-1.5 text-xs sm:text-sm text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-5 sm:mt-6 pt-4 border-t border-border dark:border-dark-border"
         >
           <svg
-            className="w-3 sm:w-4 h-3 sm:h-4"
+            className="w-3.5 h-3.5 sm:w-4 sm:h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -375,6 +374,13 @@ export default function OfficialLogin({ onLogin }) {
         .bg-gradient-radial {
           background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
         }
+        
+        /* Mobile responsive */
+        @media (max-width: 640px) {
+          input, button {
+            font-size: 14px;
+          }
+        }
       `}</style>
     </div>
   );
@@ -382,7 +388,7 @@ export default function OfficialLogin({ onLogin }) {
 
 function EyeIcon({ open }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       {open ? (
         <>
           <path

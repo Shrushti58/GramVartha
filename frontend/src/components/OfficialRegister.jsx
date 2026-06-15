@@ -40,29 +40,39 @@ export default function OfficialRegister() {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files?.[0] || null;
-    setProfileImage(file);
+    const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage({ text: "Profile image should be less than 5MB", success: false });
+        return;
+      }
+      setProfileImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfilePreview(reader.result);
       };
       reader.readAsDataURL(file);
     } else {
+      setProfileImage(null);
       setProfilePreview(null);
     }
   };
 
   const handleDocumentChange = (e) => {
-    const file = e.target.files?.[0] || null;
-    setDocumentProof(file);
+    const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setMessage({ text: "Document should be less than 5MB", success: false });
+        return;
+      }
+      setDocumentProof(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setDocumentPreview(reader.result);
       };
       reader.readAsDataURL(file);
     } else {
+      setDocumentProof(null);
       setDocumentPreview(null);
     }
   };
@@ -105,7 +115,9 @@ export default function OfficialRegister() {
         }
       );
       setMessage({ text: res.data.message || t('official.register.success'), success: true });
-      if (res.data.official) navigate("/officials/dashboard");
+      setTimeout(() => {
+        if (res.data.official) navigate("/officials/dashboard");
+      }, 1500);
     } catch (err) {
       setMessage({
         text: err.response?.data?.message || t('official.register.error'),
@@ -133,16 +145,16 @@ export default function OfficialRegister() {
     "text-text-secondary dark:text-dark-text-muted mb-1.5";
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
+    <div className="h-screen w-screen overflow-auto flex items-start justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background py-6 px-4 sm:py-8">
       
       {/* Animated Gradient Background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
         
         {/* Floating Orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
-        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow hidden sm:block" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium hidden md:block" />
+        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast hidden lg:block" />
         
         {/* Mesh Gradient Pattern */}
         <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
@@ -159,17 +171,17 @@ export default function OfficialRegister() {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-10 left-10 w-24 h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000" />
+      <div className="fixed top-10 left-10 w-20 h-20 sm:w-24 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
+      <div className="fixed bottom-10 right-10 w-24 h-24 sm:w-32 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
       
       {/* Card */}
-      <div className="relative z-10 w-full max-w-xl mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-3xl shadow-2xl dark:shadow-dark-2xl p-7 animate-fade-in-up">
+      <div className="relative z-10 w-full max-w-xl mx-auto bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-5 sm:p-6 md:p-7 animate-fade-in-up">
         
         {/* Card Header with Glow Effect */}
-        <div className="absolute -top-3 -right-3 w-20 h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
+        <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 w-14 h-14 sm:w-20 sm:h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-5 relative">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 relative">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
               <img
@@ -179,15 +191,15 @@ export default function OfficialRegister() {
               />
             </div>
             <div>
-              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
+              <p className="text-[10px] sm:text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
                 GramVartha
               </p>
-              <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+              <h1 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
                 {t('official.register.title')}
               </h1>
             </div>
           </div>
-          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
+          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-medium shadow-sm self-start sm:self-auto">
             <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
             {t('official.register.badge')}
           </div>
@@ -199,9 +211,9 @@ export default function OfficialRegister() {
         {/* Alert */}
         {message.text && (
           <div
-            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs border mb-4 animate-slide-down ${
+            className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-xs border mb-5 animate-slide-down ${
               message.success
-                ? "bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300"
+                ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
             }`}
           >
@@ -234,7 +246,7 @@ export default function OfficialRegister() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Row 1: Name + Village */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="name" className={labelClass}>
                 {t('official.register.full_name')}
@@ -291,7 +303,7 @@ export default function OfficialRegister() {
           </div>
 
           {/* Row 2: Email + Phone */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="email" className={labelClass}>
                 {t('official.register.email')}
@@ -326,15 +338,15 @@ export default function OfficialRegister() {
             </div>
           </div>
 
-          {/* Profile Photo - Enhanced */}
+          {/* Profile Photo Upload */}
           <div>
             <label className={labelClass}>
               {t('official.register.profile_photo')} <span className="text-primary-500 normal-case tracking-normal">*</span>
-              <span className="normal-case tracking-normal font-normal text-text-light dark:text-dark-text-muted ml-1">
+              <span className="normal-case tracking-normal font-normal text-text-light dark:text-dark-text-muted ml-1 text-[11px]">
                 ({t('official.register.for_verification')})
               </span>
             </label>
-            <div className="flex items-start gap-4">
+            <div className="flex flex-col sm:flex-row items-start gap-3">
               <label
                 htmlFor="profileImage"
                 className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl border cursor-pointer bg-white dark:bg-dark-surface2 border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md transition-all duration-200 group"
@@ -357,7 +369,7 @@ export default function OfficialRegister() {
                 <span className="flex-1 text-sm text-text-muted dark:text-dark-text-muted truncate">
                   {profileImage ? (
                     <span className="text-primary-600 dark:text-primary-400 font-medium">
-                      ✓ {profileImage.name}
+                      ✓ {profileImage.name.length > 30 ? profileImage.name.substring(0, 27) + '...' : profileImage.name}
                     </span>
                   ) : (
                     t('official.register.click_to_upload_photo')
@@ -371,33 +383,48 @@ export default function OfficialRegister() {
                 <div className="flex-shrink-0 relative">
                   <img
                     src={profilePreview}
-                    alt={t('official.register.preview')}
+                    alt="Profile preview"
                     className="w-12 h-12 rounded-full object-cover border-2 border-primary-300 dark:border-primary-600 shadow-md"
                   />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full border-2 border-white dark:border-dark-surface animate-pulse" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileImage(null);
+                      setProfilePreview(null);
+                      document.getElementById('profileImage').value = '';
+                    }}
+                    className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white flex items-center justify-center hover:bg-red-600 transition-colors text-[10px]"
+                  >
+                    ×
+                  </button>
                 </div>
               )}
             </div>
             <input
               id="profileImage"
               type="file"
-              accept="image/*"
-              required
+              accept="image/jpeg,image/png,image/jpg,image/webp"
               onChange={handleImageChange}
               disabled={loading}
               className="hidden"
             />
+            <p className="text-[10px] text-text-light dark:text-dark-text-muted mt-1 ml-1">
+              JPG, PNG, WEBP (Max 5MB)
+            </p>
           </div>
 
-          {/* Document Proof Upload */}
+          {/* Document Proof Upload - FIXED (contained in box) */}
           <div>
             <label className={labelClass}>
               {t('official.register.id_proof')} <span className="text-primary-500 normal-case tracking-normal">*</span>
+              <span className="normal-case tracking-normal font-normal text-text-light dark:text-dark-text-muted ml-1 text-[11px]">
+                (Aadhar, PAN, Voter ID, etc.)
+              </span>
             </label>
-            <div className="flex items-start gap-4">
+            <div className="w-full">
               <label
                 htmlFor="documentProof"
-                className="flex-1 flex items-center gap-3 px-3.5 py-2.5 rounded-xl border cursor-pointer bg-white dark:bg-dark-surface2 border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md transition-all duration-200 group"
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl border cursor-pointer bg-white dark:bg-dark-surface2 border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-600 hover:shadow-md transition-all duration-200 group"
               >
                 <div className="w-7 h-7 bg-primary-100 dark:bg-primary-900/60 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-primary-200 dark:group-hover:bg-primary-800/60 transition-colors">
                   <svg
@@ -410,14 +437,14 @@ export default function OfficialRegister() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
                 </div>
                 <span className="flex-1 text-sm text-text-muted dark:text-dark-text-muted truncate">
                   {documentProof ? (
                     <span className="text-primary-600 dark:text-primary-400 font-medium">
-                      ✓ {documentProof.name}
+                      ✓ {documentProof.name.length > 35 ? documentProof.name.substring(0, 32) + '...' : documentProof.name}
                     </span>
                   ) : (
                     t('official.register.click_to_upload_document')
@@ -427,30 +454,65 @@ export default function OfficialRegister() {
                   {t('official.register.browse')}
                 </span>
               </label>
+              
+              {/* Preview section - now below the upload button and contained */}
               {documentPreview && (
-                <div className="flex-shrink-0 relative">
-                  <img
-                    src={documentPreview}
-                    alt={t('official.register.document_preview')}
-                    className="w-12 h-12 rounded-lg object-cover border-2 border-primary-300 dark:border-primary-600 shadow-md"
-                  />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full border-2 border-white dark:border-dark-surface animate-pulse" />
+                <div className="mt-3 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-xl border border-primary-100 dark:border-primary-800">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {documentProof?.type?.startsWith('image/') ? (
+                        <img
+                          src={documentPreview}
+                          alt="Document preview"
+                          className="w-12 h-12 rounded-lg object-cover border border-primary-200 dark:border-primary-700"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-primary-100 dark:bg-primary-800 flex items-center justify-center">
+                          <svg className="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                          </svg>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-text-primary dark:text-dark-text-primary">
+                          {documentProof?.name}
+                        </p>
+                        <p className="text-xs text-text-muted dark:text-dark-text-muted">
+                          {(documentProof?.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDocumentProof(null);
+                        setDocumentPreview(null);
+                        document.getElementById('documentProof').value = '';
+                      }}
+                      className="px-2.5 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
             <input
               id="documentProof"
+              name="documentProof"
               type="file"
-              accept="image/*,.pdf"
-              required
+              accept="image/jpeg,image/png,image/jpg,application/pdf"
               onChange={handleDocumentChange}
               disabled={loading}
               className="hidden"
             />
+            <p className="text-[10px] text-text-light dark:text-dark-text-muted mt-2 ml-1">
+              JPG, PNG, PDF (Max 5MB)
+            </p>
           </div>
 
           {/* Row 3: Password + Confirm */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label htmlFor="password" className={labelClass}>
                 {t('official.register.password')}
@@ -505,7 +567,7 @@ export default function OfficialRegister() {
             </div>
           </div>
 
-          {/* Submit */}
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
@@ -557,7 +619,7 @@ export default function OfficialRegister() {
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between mt-5 pt-4 border-t border-border dark:border-dark-border">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-border dark:border-dark-border">
           <Link
             to="/"
             className="flex items-center gap-1 text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 group"
@@ -577,7 +639,7 @@ export default function OfficialRegister() {
             </svg>
             {t('official.register.back_home')}
           </Link>
-          <div className="flex items-center gap-2 text-xs text-text-light dark:text-dark-text-muted">
+          <div className="flex items-center gap-2 text-[11px] text-text-light dark:text-dark-text-muted">
             <svg
               className="w-3 h-3"
               fill="none"
@@ -629,6 +691,16 @@ export default function OfficialRegister() {
             transform: translateY(0);
           }
         }
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
         .animate-float-slow {
           animation: float-slow 12s ease-in-out infinite;
         }
@@ -643,6 +715,9 @@ export default function OfficialRegister() {
         }
         .animate-slide-down {
           animation: slide-down 0.3s ease-out;
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.5s ease-out;
         }
         .animation-delay-1000 {
           animation-delay: 1s;

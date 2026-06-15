@@ -8,61 +8,61 @@ import { useTranslation } from 'react-i18next';
 // ─── Skeleton Components ──────────────────────────────────────────────────────
 
 const LoginFormSkeleton = () => (
-  <div className="space-y-5 animate-pulse">
+  <div className="space-y-4 animate-pulse">
     <div>
-      <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-      <div className="h-12 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+      <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-1.5" />
+      <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
     </div>
     <div>
-      <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-      <div className="h-12 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
+      <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-1.5" />
+      <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
     </div>
-    <div className="h-12 w-full bg-gray-200 dark:bg-gray-700 rounded-xl mt-2" />
+    <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl mt-2" />
   </div>
 );
 
 const HeaderSkeleton = () => (
-  <div className="flex items-center justify-between mb-6 relative animate-pulse">
-    <div className="flex items-center gap-3">
-      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+  <div className="flex items-center justify-between mb-5 relative animate-pulse">
+    <div className="flex items-center gap-2.5">
+      <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl" />
       <div>
-        <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
-        <div className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+        <div className="h-2.5 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+        <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded" />
       </div>
     </div>
-    <div className="h-8 w-32 bg-gray-200 dark:bg-gray-700 rounded-full" />
+    <div className="h-7 w-28 bg-gray-200 dark:bg-gray-700 rounded-full" />
   </div>
 );
 
 const HeadingSkeleton = () => (
-  <div className="mb-6 animate-pulse">
-    <div className="h-7 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-    <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded" />
+  <div className="mb-5 animate-pulse">
+    <div className="h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-1.5" />
+    <div className="h-3 w-56 bg-gray-200 dark:bg-gray-700 rounded" />
   </div>
 );
 
 const DividerSkeleton = () => (
-  <div className="flex items-center gap-3 my-6 animate-pulse">
+  <div className="flex items-center gap-3 my-5 animate-pulse">
     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-    <div className="h-4 w-8 bg-gray-200 dark:bg-gray-700 rounded" />
+    <div className="h-3 w-7 bg-gray-200 dark:bg-gray-700 rounded" />
     <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
   </div>
 );
 
 const ToggleButtonSkeleton = () => (
-  <div className="text-center space-y-4 animate-pulse">
-    <div className="h-5 w-48 bg-gray-200 dark:bg-gray-700 rounded mx-auto" />
+  <div className="text-center space-y-3 animate-pulse">
+    <div className="h-4 w-44 bg-gray-200 dark:bg-gray-700 rounded mx-auto" />
     <div className="flex items-center justify-center gap-2">
-      <div className="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded" />
-      <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+      <div className="h-3.5 w-3.5 bg-gray-200 dark:bg-gray-700 rounded" />
+      <div className="h-3.5 w-28 bg-gray-200 dark:bg-gray-700 rounded" />
     </div>
   </div>
 );
 
 const BackLinkSkeleton = () => (
-  <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-border dark:border-dark-border animate-pulse">
-    <div className="h-4 w-4 bg-gray-200 dark:bg-gray-700 rounded" />
-    <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+  <div className="flex items-center justify-center gap-2 mt-5 pt-4 border-t border-border dark:border-dark-border animate-pulse">
+    <div className="h-3.5 w-3.5 bg-gray-200 dark:bg-gray-700 rounded" />
+    <div className="h-3.5 w-28 bg-gray-200 dark:bg-gray-700 rounded" />
   </div>
 );
 
@@ -70,7 +70,7 @@ const BackLinkSkeleton = () => (
 
 function EyeIcon({ open }) {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       {open ? (
         <>
           <path
@@ -158,7 +158,7 @@ const LoginPage = () => {
   };
 
   const inputClass =
-    "w-full px-4 py-3.5 rounded-xl border " +
+    "w-full px-3.5 py-2.5 rounded-xl border " +
     "bg-white dark:bg-dark-surface2 " +
     "border-border dark:border-dark-border " +
     "text-text-primary dark:text-dark-text-primary " +
@@ -170,18 +170,19 @@ const LoginPage = () => {
     "disabled:opacity-50 disabled:cursor-not-allowed";
 
   const labelClass =
-    "block text-xs font-semibold uppercase tracking-wider " +
-    "text-text-secondary dark:text-dark-text-muted mb-1.5";
+    "block text-[11px] font-semibold uppercase tracking-wider " +
+    "text-text-secondary dark:text-dark-text-muted mb-1";
 
   const isInitialLoading = initialLoading;
 
   return (
-    <div className="min-h-screen w-screen overflow-x-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background py-6 sm:py-0">
+    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
+      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
-        <div className="absolute top-1/4 left-1/4 hidden sm:block w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/3 right-1/4 hidden sm:block w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
-        <div className="absolute top-2/3 left-1/2 hidden sm:block w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow hidden sm:block" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium hidden md:block" />
+        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast hidden lg:block" />
         <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern id="mesh-admin" patternUnits="userSpaceOnUse" width="40" height="40">
@@ -193,47 +194,48 @@ const LoginPage = () => {
         <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
       </div>
 
-      <div className="absolute top-6 sm:top-10 left-6 sm:left-10 w-16 sm:w-24 h-16 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
-      <div className="absolute bottom-6 sm:bottom-10 right-6 sm:right-10 w-20 sm:w-32 h-20 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
+      {/* Decorative circles */}
+      <div className="absolute top-10 left-10 w-24 h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
+      <div className="absolute bottom-10 right-10 w-32 h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
 
-      <div className="relative z-10 w-full max-w-md mx-3 sm:mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-4 sm:p-6 animate-fade-in-up">
-        <div className="absolute -top-3 -right-3 w-20 h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
+      {/* Main Card */}
+      <div className="relative z-10 w-full max-w-md mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl shadow-2xl dark:shadow-dark-2xl p-5 animate-fade-in-up">
+        <div className="absolute -top-2 -right-2 w-16 h-16 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
 
         {isInitialLoading ? (
           <HeaderSkeleton />
         ) : (
-          <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5 relative flex-wrap sm:flex-nowrap">
-            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
+          <div className="flex items-center justify-between mb-5 relative">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
                 <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider hidden sm:block">
+                <p className="text-[11px] font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
                   GramVartha
                 </p>
-                <h1 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+                <h1 className="text-sm font-bold text-text-primary dark:text-dark-text-primary leading-tight">
                   {isRegisterMode ? t('register.title') : t('login.title')}
                 </h1>
               </div>
             </div>
-            <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-medium shadow-sm flex-shrink-0">
-              <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-              <span className="hidden sm:inline">{t('login.secure_portal')}</span>
-              <span className="sm:hidden">Secure</span>
+            <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2.5 py-1 rounded-full text-[10px] font-medium shadow-sm">
+              <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
+              {t('login.secure_portal')}
             </div>
           </div>
         )}
 
-        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-3 sm:mb-5" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-5" />
 
         {isInitialLoading ? (
           <HeadingSkeleton />
         ) : (
-          <div className="mb-3 sm:mb-5">
-            <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-dark-text-primary">
+          <div className="mb-5">
+            <h2 className="text-base font-semibold text-text-primary dark:text-dark-text-primary">
               {isRegisterMode ? t('register.heading') : t('login.heading')}
             </h2>
-            <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5 sm:mt-1">
+            <p className="text-[11px] text-text-muted dark:text-dark-text-muted mt-1">
               {isRegisterMode ? t('register.subheading') : t('login.subheading')}
             </p>
           </div>
@@ -242,27 +244,54 @@ const LoginPage = () => {
         {isInitialLoading ? (
           <LoginFormSkeleton />
         ) : (
-          <form onSubmit={isRegisterMode ? handleRegister : handleLogin} className="space-y-2 sm:space-y-4">
+          <form onSubmit={isRegisterMode ? handleRegister : handleLogin} className="space-y-4">
             <div>
               <label htmlFor="email" className={labelClass}>{t('login.email')}</label>
-              <input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('login.email_placeholder')} disabled={isLoading} className={inputClass} />
+              <input 
+                id="email" 
+                type="email" 
+                required 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                placeholder={t('login.email_placeholder')} 
+                disabled={isLoading} 
+                className={inputClass}
+              />
             </div>
 
             <div>
               <label htmlFor="password" className={labelClass}>{t('login.password')}</label>
               <div className="relative">
-                <input id="password" type={showPassword ? "text" : "password"} required value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('login.password_placeholder')} disabled={isLoading} className={inputClass + " pr-9 sm:pr-10"} />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-1 sm:p-0" tabIndex={-1}>
+                <input 
+                  id="password" 
+                  type={showPassword ? "text" : "password"} 
+                  required 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder={t('login.password_placeholder')} 
+                  disabled={isLoading} 
+                  className={inputClass + " pr-9"}
+                />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)} 
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  tabIndex={-1}
+                >
                   <EyeIcon open={showPassword} />
                 </button>
               </div>
             </div>
 
-            <button type="submit" disabled={isLoading} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-xs sm:text-sm px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-1 sm:mt-2 relative overflow-hidden group">
+            <button 
+              type="submit" 
+              disabled={isLoading} 
+              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-1 relative overflow-hidden group"
+            >
               <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               {isLoading ? (
                 <>
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
@@ -271,7 +300,7 @@ const LoginPage = () => {
               ) : (
                 <>
                   {isRegisterMode ? t('register.button') : t('login.button')}
-                  <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </>
@@ -283,9 +312,9 @@ const LoginPage = () => {
         {isInitialLoading ? (
           <DividerSkeleton />
         ) : (
-          <div className="flex items-center gap-3 my-3 sm:my-5">
+          <div className="flex items-center gap-3 my-5">
             <div className="flex-1 h-px bg-border dark:bg-dark-border" />
-            <span className="text-xs text-text-light dark:text-dark-text-muted font-medium">{t('common.or')}</span>
+            <span className="text-[11px] text-text-light dark:text-dark-text-muted font-medium">{t('common.or')}</span>
             <div className="flex-1 h-px bg-border dark:bg-dark-border" />
           </div>
         )}
@@ -293,16 +322,24 @@ const LoginPage = () => {
         {isInitialLoading ? (
           <ToggleButtonSkeleton />
         ) : (
-          <div className="text-center space-y-1.5 sm:space-y-3">
-            <button type="button" onClick={() => setIsRegisterMode(!isRegisterMode)} className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200">
+          <div className="text-center space-y-3">
+            <button 
+              type="button" 
+              onClick={() => {
+                setIsRegisterMode(!isRegisterMode);
+                setEmail('');
+                setPassword('');
+              }} 
+              className="inline-flex items-center gap-1.5 text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
+            >
               {isRegisterMode ? t('login.switch') : t('register.switch')}
-              <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-xs text-text-light dark:text-dark-text-muted">
-              <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center justify-center gap-2 text-[11px] text-text-light dark:text-dark-text-muted">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
               {t('login.secure_access')}
@@ -313,8 +350,11 @@ const LoginPage = () => {
         {isInitialLoading ? (
           <BackLinkSkeleton />
         ) : (
-          <Link to="/" className="flex items-center justify-center gap-1.5 text-xs sm:text-sm text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-3 sm:mt-5 pt-2.5 sm:pt-3 border-t border-border dark:border-dark-border">
-            <svg className="w-3 sm:w-4 h-3 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <Link 
+            to="/" 
+            className="flex items-center justify-center gap-1.5 text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-5 pt-4 border-t border-border dark:border-dark-border"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             {t('common.back_home')}
@@ -327,16 +367,26 @@ const LoginPage = () => {
         @keyframes float-medium {0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-15px,15px) scale(1.05);}}
         @keyframes float-fast {0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(10px,-10px) scale(1.08);}}
         @keyframes pulse-slow {0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:0.5;transform:scale(1.05);}}
-        @keyframes slide-down {from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
         @keyframes fade-in-up {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+        
         .animate-float-slow{animation:float-slow 12s ease-in-out infinite;}
         .animate-float-medium{animation:float-medium 10s ease-in-out infinite;}
         .animate-float-fast{animation:float-fast 8s ease-in-out infinite;}
         .animate-pulse-slow{animation:pulse-slow 4s ease-in-out infinite;}
-        .animate-slide-down{animation:slide-down 0.3s ease-out;}
         .animate-fade-in-up{animation:fade-in-up 0.5s ease-out;}
         .animation-delay-1000{animation-delay:1s;}
         .bg-gradient-radial{background-image: radial-gradient(circle at center, var(--tw-gradient-stops));}
+        
+        /* Mobile responsive */
+        @media (max-width: 640px) {
+          .max-w-md {
+            max-width: 92%;
+          }
+          
+          input, button {
+            font-size: 14px;
+          }
+        }
       `}</style>
     </div>
   );
