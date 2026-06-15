@@ -28,6 +28,8 @@ const Icons = {
   sun:      <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>,
   moon:     <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>,
   location: <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>,
+  menu:     <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+  close:    <svg fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
 };
 
 function Ico({ name, cls = 'w-4 h-4' }) {
@@ -41,272 +43,6 @@ function Ico({ name, cls = 'w-4 h-4' }) {
 function fmt(d) {
   if (!d) return '';
   return new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-}
-
-// ─── Skeleton Components ──────────────────────────────────────────────────────
-
-function SkeletonHeroCard() {
-  const { t } = useTranslation();
-  return (
-    <div className="relative rounded-2xl overflow-hidden bg-primary-800 dark:bg-primary-900 p-8 animate-pulse">
-      <div className="absolute top-0 right-0 w-72 h-72 bg-primary-600/20 rounded-full blur-3xl" />
-      <div className="relative z-10 flex items-start justify-between gap-6">
-        <div className="space-y-4 flex-1">
-          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 mb-2">
-            <div className="w-1.5 h-1.5 bg-primary-400 rounded-full" />
-            <div className="w-32 h-3 bg-white/20 rounded" />
-          </div>
-          <div className="w-32 h-4 bg-white/20 rounded" />
-          <div className="w-48 h-8 bg-white/20 rounded" />
-          <div className="flex items-center gap-1.5">
-            <div className="w-3.5 h-3.5 bg-white/20 rounded" />
-            <div className="w-40 h-3 bg-white/20 rounded" />
-          </div>
-        </div>
-        <div className="w-20 h-20 bg-amber-400/30 rounded-2xl animate-pulse" />
-      </div>
-    </div>
-  );
-}
-
-function SkeletonStatCard() {
-  return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 animate-pulse">
-      <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800 mb-4" />
-      <div className="w-16 h-8 bg-primary-200 dark:bg-primary-800 rounded mb-1.5" />
-      <div className="w-20 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-    </div>
-  );
-}
-
-function SkeletonStatsGrid() {
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {[1, 2, 3, 4].map((i) => (
-        <SkeletonStatCard key={i} />
-      ))}
-    </div>
-  );
-}
-
-function SkeletonPendingCard() {
-  return (
-    <div className="bg-white dark:bg-dark-surface border border-amber-200 dark:border-amber-800 rounded-2xl overflow-hidden animate-pulse">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-amber-100 dark:border-amber-900/30 bg-amber-50/60 dark:bg-amber-900/10">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-amber-400 rounded-full" />
-          <div className="w-32 h-4 bg-amber-200 dark:bg-amber-800/50 rounded" />
-        </div>
-        <div className="w-12 h-4 bg-amber-200 dark:bg-amber-800/50 rounded" />
-      </div>
-      <div className="divide-y divide-border dark:divide-dark-border">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-center gap-4 px-6 py-4">
-            <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800" />
-            <div className="flex-1 space-y-2">
-              <div className="w-32 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-              <div className="w-48 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-            </div>
-            <div className="flex gap-2">
-              <div className="w-20 h-8 bg-primary-200 dark:bg-primary-800 rounded-xl" />
-              <div className="w-8 h-8 bg-primary-200 dark:bg-primary-800 rounded-xl" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SkeletonRecentNotices() {
-  return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border">
-        <div className="w-32 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-        <div className="flex gap-3">
-          <div className="w-16 h-7 bg-primary-200 dark:bg-primary-800 rounded-xl" />
-          <div className="w-8 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-        </div>
-      </div>
-      <div className="divide-y divide-border dark:divide-dark-border">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex items-center gap-4 px-6 py-4">
-            <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800" />
-            <div className="flex-1 space-y-1">
-              <div className="w-48 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-              <div className="w-24 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-            </div>
-            <div className="w-4 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SkeletonOfficialCard() {
-  return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
-      <div className="flex items-center gap-4 p-5">
-        <div className="w-11 h-11 rounded-xl bg-primary-200 dark:bg-primary-800" />
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-32 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-            <div className="w-16 h-5 bg-primary-200 dark:bg-primary-800 rounded-full" />
-          </div>
-          <div className="w-48 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-        </div>
-        <div className="w-4 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-      </div>
-    </div>
-  );
-}
-
-function SkeletonNoticeCard() {
-  return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
-      <div className="flex items-center gap-4 p-5">
-        <div className="w-10 h-10 rounded-xl bg-primary-200 dark:bg-primary-800" />
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-48 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-            <div className="w-12 h-4 bg-primary-200 dark:bg-primary-800 rounded-full" />
-          </div>
-          <div className="w-24 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-        </div>
-        <div className="w-4 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-      </div>
-    </div>
-  );
-}
-
-function SkeletonQRCard() {
-  return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
-      <div className="p-6 border-b border-border dark:border-dark-border flex items-center justify-between">
-        <div className="space-y-2">
-          <div className="w-32 h-5 bg-primary-200 dark:bg-primary-800 rounded" />
-          <div className="w-48 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-        </div>
-        <div className="w-10 h-10 rounded-xl bg-primary-200 dark:bg-primary-800" />
-      </div>
-      <div className="p-6 flex flex-col sm:flex-row items-center gap-8">
-        <div className="w-40 h-40 rounded-2xl bg-primary-200 dark:bg-primary-800" />
-        <div className="flex-1 space-y-4 w-full">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <div className="w-12 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-              <div className="w-24 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-            </div>
-            <div className="space-y-2">
-              <div className="w-12 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-              <div className="w-24 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <div className="flex-1 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl" />
-            <div className="flex-1 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl" />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SkeletonOverview() {
-  return (
-    <div className="space-y-6">
-      <SkeletonHeroCard />
-      <SkeletonStatsGrid />
-      <SkeletonPendingCard />
-      <SkeletonRecentNotices />
-    </div>
-  );
-}
-
-function SkeletonPendingList() {
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
-        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
-      </div>
-      <div className="space-y-3">
-        {[1, 2, 3, 4].map((i) => (
-          <SkeletonOfficialCard key={i} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SkeletonOfficialsList() {
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
-        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
-      </div>
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <SkeletonOfficialCard key={i} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SkeletonNoticesList() {
-  return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4 mb-6">
-        <div className="space-y-2">
-          <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
-          <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
-        </div>
-        <div className="w-32 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl animate-pulse" />
-      </div>
-      <div className="space-y-3">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <SkeletonNoticeCard key={i} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function SkeletonQR() {
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
-        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
-      </div>
-      <SkeletonQRCard />
-    </div>
-  );
-}
-
-function SkeletonWorkGuide() {
-  return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <div className="w-48 h-7 bg-primary-200 dark:bg-primary-800 rounded animate-pulse" />
-        <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
-      </div>
-      <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-6 space-y-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="flex gap-4">
-            <div className="w-8 h-8 rounded-lg bg-primary-200 dark:bg-primary-800 animate-pulse" />
-            <div className="flex-1 space-y-2">
-              <div className="w-48 h-4 bg-primary-200 dark:bg-primary-800 rounded" />
-              <div className="w-full h-16 bg-primary-100 dark:bg-primary-800/50 rounded" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 }
 
 // ─── Status Badge ─────────────────────────────────────────────────────────────
@@ -325,7 +61,7 @@ function StatusBadge({ status }) {
     rejected: t('status.rejected'),
   };
   return (
-    <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${s[status] || s.pending}`}>
+    <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full capitalize ${s[status] || s.pending}`}>
       <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${d[status] || d.pending}`} />
       {statusText[status] || status}
     </span>
@@ -335,7 +71,7 @@ function StatusBadge({ status }) {
 // ─── Avatar ───────────────────────────────────────────────────────────────────
 
 function Avatar({ name = '', img, size = 'md' }) {
-  const sz = { sm: 'w-9 h-9 text-xs', md: 'w-11 h-11 text-sm', lg: 'w-16 h-16 text-xl' }[size];
+  const sz = { sm: 'w-8 h-8 text-xs', md: 'w-10 h-10 text-sm', lg: 'w-14 h-14 text-lg' }[size];
   const letters = name.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().slice(0, 2) || '?';
   if (img) return <img src={img} alt={name} className={`${sz} rounded-xl object-cover flex-shrink-0 border-2 border-border dark:border-dark-border`} />;
   return (
@@ -349,9 +85,9 @@ function Avatar({ name = '', img, size = 'md' }) {
 
 function InfoTile({ label, value }) {
   return (
-    <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3">
-      <p className="text-xs text-text-muted dark:text-dark-text-muted mb-1">{label}</p>
-      <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{value || 'N/A'}</p>
+    <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-2.5 sm:p-3">
+      <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mb-0.5 sm:mb-1">{label}</p>
+      <p className="text-xs sm:text-sm font-semibold text-text-primary dark:text-dark-text-primary truncate">{value || 'N/A'}</p>
     </div>
   );
 }
@@ -360,8 +96,8 @@ function InfoTile({ label, value }) {
 
 function Empty({ title, sub, children }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 gap-2 text-center">
-      <div className="w-12 h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-1">
+    <div className="flex flex-col items-center justify-center py-12 sm:py-16 gap-2 text-center px-4">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-1">
         <Ico name="check" cls="w-5 h-5 text-primary-500 dark:text-primary-400" />
       </div>
       <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{title}</p>
@@ -375,10 +111,10 @@ function Empty({ title, sub, children }) {
 
 function PageHeader({ title, sub, action }) {
   return (
-    <div className="flex items-start justify-between gap-4 mb-6">
+    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4 mb-6">
       <div>
-        <h2 className="text-2xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">{title}</h2>
-        {sub && <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{sub}</p>}
+        <h2 className="text-xl sm:text-2xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">{title}</h2>
+        {sub && <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">{sub}</p>}
       </div>
       {action && <div className="flex-shrink-0">{action}</div>}
     </div>
@@ -395,7 +131,7 @@ function ThemeToggle() {
       aria-label="Toggle theme"
       className="p-2 rounded-xl border border-white/20 hover:bg-white/10 text-white/60 hover:text-white transition-all duration-200"
     >
-      {dark ? <Ico name="sun" cls="w-4 h-4" /> : <Ico name="moon" cls="w-4 h-4" />}
+      {dark ? <Ico name="sun" cls="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Ico name="moon" cls="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
     </button>
   );
 }
@@ -413,23 +149,23 @@ function Footer({ village, officials, notices, pending }) {
         />
       </svg>
       <div className="bg-primary-800 dark:bg-primary-900">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
               <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
             </div>
             <div>
-              <p className="text-sm font-bold text-white">GramVartha</p>
-              <p className="text-xs text-primary-300">{village ? village.name : t('dashboard.village')} {t('dashboard.admin_panel')}</p>
+              <p className="text-xs sm:text-sm font-bold text-white leading-none">GramVartha</p>
+              <p className="text-[10px] text-primary-300 mt-0.5">{village ? (village.name.length > 20 ? village.name.substring(0, 17) + '...' : village.name) : t('dashboard.village')} {t('dashboard.admin_panel')}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
-            <span className="w-2 h-2 bg-primary-400 rounded-full animate-pulse flex-shrink-0" />
-            <span className="text-xs text-white/60 font-medium whitespace-nowrap">
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
+            <span className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-pulse flex-shrink-0" />
+            <span className="text-[9px] sm:text-xs text-white/60 font-medium whitespace-nowrap">
               {officials.length} {t('dashboard.officials')} · {notices.length} {t('dashboard.notices')} · {pending.length} {t('dashboard.pending')}
             </span>
           </div>
-          <p className="text-xs text-white/30 whitespace-nowrap">© {new Date().getFullYear()} GramVartha. {t('dashboard.all_rights')}</p>
+          <p className="text-[9px] sm:text-xs text-white/30 whitespace-nowrap">© {new Date().getFullYear()} GramVartha. {t('dashboard.all_rights')}</p>
         </div>
       </div>
     </footer>
@@ -438,7 +174,7 @@ function Footer({ village, officials, notices, pending }) {
 
 // ─── Notice Form ──────────────────────────────────────────────────────────────
 
-const inp = "w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10";
+const inp = "w-full px-3.5 py-2.5 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10";
 
 function NoticeForm({ initial, onSave, onCancel, saving }) {
   const { t } = useTranslation();
@@ -482,16 +218,16 @@ function NoticeForm({ initial, onSave, onCancel, saving }) {
   ];
 
   return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden mb-4">
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2">
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl overflow-hidden mb-4">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2">
         <h3 className="text-sm font-bold text-text-primary dark:text-dark-text-primary">
           {initial ? t('notice.edit_title') : t('notice.new_title')}
         </h3>
         <button type="button" onClick={onCancel} className="p-1.5 rounded-lg hover:bg-border dark:hover:bg-dark-border text-text-muted dark:text-dark-text-muted transition-all">
-          <Ico name="x" cls="w-4 h-4" />
+          <Ico name="x" cls="w-3.5 h-3.5" />
         </button>
       </div>
-      <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('notice.title')} *</label>
           <input value={form.title} onChange={function(e) { set('title', e.target.value); }} placeholder={t('notice.title_placeholder')} required className={inp} />
@@ -521,28 +257,28 @@ function NoticeForm({ initial, onSave, onCancel, saving }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <input id="pin-notice" type="checkbox" checked={form.isPinned} onChange={function(e) { set('isPinned', e.target.checked); }} className="accent-primary-600 w-4 h-4" />
-          <label htmlFor="pin-notice" className="text-sm text-text-secondary dark:text-dark-text-secondary cursor-pointer">{t('notice.pin_notice')}</label>
+          <input id="pin-notice" type="checkbox" checked={form.isPinned} onChange={function(e) { set('isPinned', e.target.checked); }} className="accent-primary-600 w-3.5 h-3.5" />
+          <label htmlFor="pin-notice" className="text-xs sm:text-sm text-text-secondary dark:text-dark-text-secondary cursor-pointer">{t('notice.pin_notice')}</label>
         </div>
         <div>
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('notice.attachment')}</label>
-          <label htmlFor="nfile" className="flex items-center gap-3 w-full px-4 py-3 rounded-xl border border-dashed border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2 hover:border-primary-400 cursor-pointer transition-all group">
-            <Ico name="upload" cls="w-5 h-5 text-text-muted group-hover:text-primary-600 dark:group-hover:text-primary-400" />
-            <span className={`text-sm ${file ? 'text-text-primary dark:text-dark-text-primary font-medium' : 'text-text-muted dark:text-dark-text-muted'}`}>
-              {file ? file.name : t('notice.click_to_attach')}
+          <label htmlFor="nfile" className="flex items-center gap-2 sm:gap-3 w-full px-3.5 py-2.5 rounded-xl border border-dashed border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2 hover:border-primary-400 cursor-pointer transition-all group">
+            <Ico name="upload" cls="w-4 h-4 text-text-muted group-hover:text-primary-600 dark:group-hover:text-primary-400" />
+            <span className={`text-xs sm:text-sm ${file ? 'text-text-primary dark:text-dark-text-primary font-medium' : 'text-text-muted dark:text-dark-text-muted'} truncate flex-1`}>
+              {file ? (file.name.length > 30 ? file.name.substring(0, 27) + '...' : file.name) : t('notice.click_to_attach')}
             </span>
             <input id="nfile" type="file" className="hidden" onChange={function(e) { setFile(e.target.files[0]); }} />
           </label>
         </div>
         <div className="flex gap-3 pt-2">
-          <button type="button" onClick={onCancel} className="flex-1 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
+          <button type="button" onClick={onCancel} className="flex-1 py-2 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
             {t('common.cancel')}
           </button>
-          <button type="submit" disabled={saving} className="flex-1 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex items-center justify-center gap-2">
+          <button type="submit" disabled={saving} className="flex-1 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex items-center justify-center gap-2">
             {saving ? (
-              <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+              <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
             ) : (
-              <Ico name={initial ? 'edit' : 'plus'} cls="w-4 h-4" />
+              <Ico name={initial ? 'edit' : 'plus'} cls="w-3.5 h-3.5" />
             )}
             {saving ? t('notice.saving') : initial ? t('notice.save_changes') : t('notice.publish')}
           </button>
@@ -558,50 +294,50 @@ function NoticeCard({ notice, onDelete, onEdit }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden hover:border-primary-200 dark:hover:border-primary-800 transition-all duration-200">
-      <button onClick={function() { setOpen(function(p) { return !p; }); }} className="w-full flex items-center gap-4 p-5 text-left hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-colors duration-200">
-        <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
-          <Ico name="doc" cls="w-5 h-5 text-primary-600 dark:text-primary-400" />
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary-200 dark:hover:border-primary-800 transition-all duration-200">
+      <button onClick={function() { setOpen(function(p) { return !p; }); }} className="w-full flex items-center gap-3 sm:gap-4 p-4 text-left hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-colors duration-200">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary-100 dark:bg-primary-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+          <Ico name="doc" cls="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary truncate">{notice.title || 'Untitled'}</p>
             {notice.isPinned && (
-              <span className="text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 px-2 py-0.5 rounded-full font-semibold flex-shrink-0">{t('notice.pinned')}</span>
+              <span className="text-[9px] sm:text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0">{t('notice.pinned')}</span>
             )}
           </div>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{fmt(notice.createdAt)}</p>
+          <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{fmt(notice.createdAt)}</p>
         </div>
         <div className={`transition-transform duration-200 flex-shrink-0 ${open ? 'rotate-90' : ''}`}>
-          <Ico name="chevron" cls="w-4 h-4 text-text-muted dark:text-dark-text-muted" />
+          <Ico name="chevron" cls="w-3.5 h-3.5 text-text-muted dark:text-dark-text-muted" />
         </div>
       </button>
       {open && (
-        <div className="border-t border-border dark:border-dark-border p-5 space-y-4 bg-accent-mist dark:bg-dark-surface2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="border-t border-border dark:border-dark-border p-4 space-y-3 bg-accent-mist dark:bg-dark-surface2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             <InfoTile label={t('notice.category')} value={t(`category.${notice.category}`) || notice.category} />
             <InfoTile label={t('notice.priority')} value={t(`priority.${notice.priority}`) || notice.priority} />
             <InfoTile label={t('notice.status')} value={t(`status.${notice.status}`) || notice.status} />
           </div>
           {(notice.description || notice.summary || notice.content) && (
-            <div className="bg-white dark:bg-dark-surface rounded-xl p-4">
-              <p className="text-xs text-text-muted dark:text-dark-text-muted mb-2">{t('notice.content')}</p>
-              <p className="text-sm text-text-secondary dark:text-dark-text-secondary leading-relaxed whitespace-pre-wrap">
+            <div className="bg-white dark:bg-dark-surface rounded-xl p-3 sm:p-4">
+              <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mb-1.5">{t('notice.content')}</p>
+              <p className="text-xs sm:text-sm text-text-secondary dark:text-dark-text-secondary leading-relaxed whitespace-pre-wrap break-words">
                 {notice.description || notice.summary || notice.content}
               </p>
             </div>
           )}
           {notice.fileUrl && (
-            <a href={notice.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline">
-              <Ico name="link" cls="w-4 h-4" /> {t('notice.view_attachment')}
+            <a href={notice.fileUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-primary-600 dark:text-primary-400 hover:underline break-all">
+              <Ico name="link" cls="w-3.5 h-3.5" /> {t('notice.view_attachment')}
             </a>
           )}
           <div className="flex gap-3 pt-1">
-            <button onClick={function() { onEdit(notice); }} className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
-              <Ico name="edit" cls="w-4 h-4" /> {t('common.edit')}
+            <button onClick={function() { onEdit(notice); }} className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-2 sm:px-5 sm:py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
+              <Ico name="edit" cls="w-3.5 h-3.5" /> {t('common.edit')}
             </button>
-            <button onClick={function() { onDelete(notice._id); }} className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
-              <Ico name="trash" cls="w-4 h-4" /> {t('common.delete')}
+            <button onClick={function() { onDelete(notice._id); }} className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-2 sm:px-5 sm:py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
+              <Ico name="trash" cls="w-3.5 h-3.5" /> {t('common.delete')}
             </button>
           </div>
         </div>
@@ -616,50 +352,50 @@ function OfficialCard({ official, isPending, onApprove, onReject, onDelete, onEd
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden hover:border-primary-200 dark:hover:border-primary-800 transition-all duration-200">
-      <button onClick={function() { setOpen(function(p) { return !p; }); }} className="w-full flex items-center gap-4 p-5 text-left hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-colors duration-200">
-        <Avatar name={official.name} img={official.profileImage} size="md" />
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl overflow-hidden hover:border-primary-200 dark:hover:border-primary-800 transition-all duration-200">
+      <button onClick={function() { setOpen(function(p) { return !p; }); }} className="w-full flex items-center gap-3 sm:gap-4 p-4 text-left hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-colors duration-200">
+        <Avatar name={official.name} img={official.profileImage} size="sm" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary truncate">{official.name}</p>
             <StatusBadge status={isPending ? 'pending' : (official.status || 'pending')} />
           </div>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5 truncate">{official.email}</p>
+          <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5 truncate">{official.email}</p>
         </div>
         <div className={`transition-transform duration-200 flex-shrink-0 ${open ? 'rotate-90' : ''}`}>
-          <Ico name="chevron" cls="w-4 h-4 text-text-muted dark:text-dark-text-muted" />
+          <Ico name="chevron" cls="w-3.5 h-3.5 text-text-muted dark:text-dark-text-muted" />
         </div>
       </button>
       {open && (
-        <div className="border-t border-border dark:border-dark-border p-5 space-y-4 bg-accent-mist dark:bg-dark-surface2">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="border-t border-border dark:border-dark-border p-4 space-y-3 bg-accent-mist dark:bg-dark-surface2">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3">
             {official.phone && <InfoTile label={t('official.phone')} value={official.phone} />}
             {official.createdAt && <InfoTile label={t('official.joined')} value={fmt(official.createdAt)} />}
-            {official.village && official.village.name && <InfoTile label={t('official.village')} value={official.village.name} />}
+            {official.village && official.village.name && <InfoTile label={t('official.village')} value={official.village.name.length > 20 ? official.village.name.substring(0, 17) + '...' : official.village.name} />}
           </div>
           {official.documentProof && (
             <div>
-              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted mb-2">{t('official.document_proof')}</p>
-              <img src={official.documentProof} alt="Doc" className="w-full max-h-52 object-contain rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface" />
+              <p className="text-[10px] sm:text-xs font-semibold text-text-muted dark:text-dark-text-muted mb-1.5">{t('official.document_proof')}</p>
+              <img src={official.documentProof} alt="Doc" className="w-full max-h-40 sm:max-h-52 object-contain rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface" />
             </div>
           )}
           <div className="flex gap-3 pt-1">
             {isPending ? (
               <div className="flex gap-3 w-full">
-                <button onClick={function() { onApprove(official._id); }} className="flex-1 inline-flex items-center justify-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
-                  <Ico name="check" cls="w-4 h-4" /> {t('official.approve')}
+                <button onClick={function() { onApprove(official._id); }} className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-2 sm:px-5 sm:py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
+                  <Ico name="check" cls="w-3.5 h-3.5" /> {t('official.approve')}
                 </button>
-                <button onClick={function() { onReject(official._id); }} className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
-                  <Ico name="x" cls="w-4 h-4" /> {t('official.reject')}
+                <button onClick={function() { onReject(official._id); }} className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-2 sm:px-5 sm:py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
+                  <Ico name="x" cls="w-3.5 h-3.5" /> {t('official.reject')}
                 </button>
               </div>
             ) : (
               <div className="flex gap-3 w-full">
-                <button onClick={function() { onEdit(official); }} className="flex-1 inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 text-white rounded-xl transition-all shadow-soft">
-                  <Ico name="edit" cls="w-4 h-4" /> {t('common.edit')}
+                <button onClick={function() { onEdit(official); }} className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-2 sm:px-5 sm:py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 text-white rounded-xl transition-all shadow-soft">
+                  <Ico name="edit" cls="w-3.5 h-3.5" /> {t('common.edit')}
                 </button>
-                <button onClick={function() { onDelete(official._id); }} className="flex-1 inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
-                  <Ico name="trash" cls="w-4 h-4" /> {t('official.remove')}
+                <button onClick={function() { onDelete(official._id); }} className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-2 sm:px-5 sm:py-2.5 border border-border dark:border-dark-border hover:border-red-300 dark:hover:border-red-700 text-text-secondary dark:text-dark-text-secondary hover:text-red-500 rounded-xl transition-all">
+                  <Ico name="trash" cls="w-3.5 h-3.5" /> {t('official.remove')}
                 </button>
               </div>
             )}
@@ -675,12 +411,12 @@ function OfficialCard({ official, isPending, onApprove, onReject, onDelete, onEd
 // ══════════════════════════════════════════════════════════════════════════════
 
 const TABS = [
-  { key: 'overview',  icon: 'home',  countKey: null },
-  { key: 'pending',   icon: 'clock', countKey: 'pending' },
-  { key: 'officials', icon: 'users', countKey: 'officials' },
-  { key: 'notices',   icon: 'doc',   countKey: 'notices' },
-  { key: 'qr',        icon: 'qr',    countKey: null },
-  { key: 'workguide', icon: 'guide', countKey: null },
+  { key: 'overview',  icon: 'home',  label: 'Overview' },
+  { key: 'pending',   icon: 'clock', label: 'Pending' },
+  { key: 'officials', icon: 'users', label: 'Officials' },
+  { key: 'notices',   icon: 'doc',   label: 'Notices' },
+  { key: 'qr',        icon: 'qr',    label: 'QR Code' },
+  { key: 'workguide', icon: 'guide', label: 'Work Guide' },
 ];
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -702,6 +438,7 @@ export default function VillageAdminDashboard() {
   const [saving, setSaving]         = useState(false);
   const [editModal, setEditModal]   = useState(false);
   const [editTarget, setEditTarget] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(function() { load(); }, []);
 
@@ -831,81 +568,20 @@ export default function VillageAdminDashboard() {
     try { await api.adminLogout(); navigate('/'); } catch(e) {}
   }
 
-  // Render skeleton based on current tab
-  const renderSkeleton = () => {
-    switch(tab) {
-      case 'overview':
-        return <SkeletonOverview />;
-      case 'pending':
-        return <SkeletonPendingList />;
-      case 'officials':
-        return <SkeletonOfficialsList />;
-      case 'notices':
-        return <SkeletonNoticesList />;
-      case 'qr':
-        return <SkeletonQR />;
-      case 'workguide':
-        return <SkeletonWorkGuide />;
-      default:
-        return <SkeletonOverview />;
-    }
-  };
-
+  // Simplified skeleton render
   if (loading) {
     return (
-      <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
-        {/* Navbar skeleton */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-primary-900 transition-colors duration-300 shadow-large">
-          <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-white/20 animate-pulse" />
-              <div className="hidden sm:block space-y-1">
-                <div className="w-24 h-3 bg-white/20 rounded animate-pulse" />
-                <div className="w-16 h-2 bg-white/10 rounded animate-pulse" />
-              </div>
-            </div>
-            <div className="hidden md:flex items-center gap-1 bg-white/5 rounded-xl p-1">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="w-16 h-8 bg-white/20 rounded-lg animate-pulse" />
-              ))}
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
-              <div className="w-16 h-8 bg-white/20 rounded-xl animate-pulse" />
-            </div>
+      <div className="min-h-screen bg-background dark:bg-dark-background">
+        <div className="h-14 sm:h-16 bg-primary-900 animate-pulse" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8">
+          <div className="w-48 h-8 bg-primary-200 dark:bg-primary-800 rounded animate-pulse mb-6" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+            {[1,2,3,4].map(i => <div key={i} className="bg-white dark:bg-dark-surface border border-border rounded-xl p-4 animate-pulse"><div className="w-8 h-8 bg-primary-200 rounded-xl mb-3"/><div className="w-12 h-6 bg-primary-200 rounded mb-1"/><div className="w-16 h-2 bg-primary-100 rounded"/></div>)}
           </div>
-          <div className="md:hidden border-t border-white/10 flex overflow-x-auto gap-2 p-2">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <div key={i} className="w-16 h-10 bg-white/20 rounded-lg animate-pulse flex-shrink-0" />
-            ))}
+          <div className="space-y-3">
+            {[1,2,3].map(i => <div key={i} className="bg-white dark:bg-dark-surface border border-border rounded-xl p-4 animate-pulse"><div className="flex gap-3"><div className="w-10 h-10 bg-primary-200 rounded-xl"/><div className="flex-1"><div className="w-32 h-4 bg-primary-200 rounded mb-2"/><div className="w-48 h-3 bg-primary-100 rounded"/></div><div className="w-16 h-8 bg-primary-200 rounded-xl"/></div></div>)}
           </div>
-        </nav>
-
-        <div className="h-[116px] md:h-16 flex-shrink-0" />
-
-        <main className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 py-8">
-          {renderSkeleton()}
-        </main>
-
-        {/* Footer skeleton */}
-        <footer className="w-full mt-auto">
-          <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" className="w-full block -mb-1">
-            <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1380,20 1440,40 L1440,80 L0,80 Z" className="fill-primary-800 dark:fill-primary-900" />
-          </svg>
-          <div className="bg-primary-800 dark:bg-primary-900">
-            <div className="max-w-7xl mx-auto px-6 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-white/10 animate-pulse" />
-                <div>
-                  <div className="w-24 h-4 bg-white/20 rounded animate-pulse mb-1" />
-                  <div className="w-32 h-3 bg-white/10 rounded animate-pulse" />
-                </div>
-              </div>
-              <div className="w-48 h-8 bg-white/10 rounded-full animate-pulse" />
-              <div className="w-36 h-3 bg-white/10 rounded animate-pulse" />
-            </div>
-          </div>
-        </footer>
+        </div>
       </div>
     );
   }
@@ -917,25 +593,26 @@ export default function VillageAdminDashboard() {
   const counts     = { pending: pending.length, officials: officials.length, notices: notices.length };
 
   return (
-    <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
+    <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col overflow-x-hidden">
 
-      {/* ── Fixed Nav ── */}
+      {/* ── Fixed Nav with Hamburger ── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-primary-900 transition-colors duration-300 shadow-large">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
 
-          <Link to="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden">
+          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden">
               <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
             </div>
             <div className="hidden sm:block">
               <p className="text-sm font-bold text-white leading-none">GramVartha</p>
-              <p className="text-xs text-white/40 mt-0.5">{village ? village.name : t('dashboard.admin_portal')}</p>
+              <p className="text-[10px] text-white/40 mt-0.5">{village ? (village.name.length > 20 ? village.name.substring(0, 17) + '...' : village.name) : t('dashboard.admin_portal')}</p>
             </div>
           </Link>
 
+          {/* Desktop tabs - hidden on mobile */}
           <div className="hidden md:flex items-center gap-1 bg-white/5 rounded-xl p-1">
             {TABS.map(function(tabItem) {
-              const count = tabItem.countKey ? counts[tabItem.countKey] : 0;
+              const count = ['pending', 'officials', 'notices'].includes(tabItem.key) ? counts[tabItem.key] : 0;
               return (
                 <button key={tabItem.key} onClick={function() { setTab(tabItem.key); }}
                   className={`relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
@@ -943,7 +620,7 @@ export default function VillageAdminDashboard() {
                   }`}
                 >
                   <Ico name={tabItem.icon} cls="w-3.5 h-3.5" />
-                  {t(`dashboard.tab_${tabItem.key}`)}
+                  {tabItem.label}
                   {count > 0 && (
                     <span className={`text-[9px] font-bold min-w-[15px] h-3.5 px-1 flex items-center justify-center rounded-full ${
                       tab === tabItem.key ? 'bg-primary-900 text-white' : 'bg-primary-400/30 text-white'
@@ -954,71 +631,98 @@ export default function VillageAdminDashboard() {
             })}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
-            <button onClick={logout} className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/20 hover:bg-white/10 text-white/60 hover:text-white text-xs font-medium transition-all">
-              <Ico name="logout" cls="w-4 h-4" />
-              <span className="hidden sm:block">{t('dashboard.logout')}</span>
+            
+            {/* Hamburger button - mobile only */}
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden flex items-center justify-center w-8 h-8 rounded-xl border border-white/20 hover:bg-white/10 text-white/60 hover:text-white transition-all"
+            >
+              <Ico name={mobileMenuOpen ? 'close' : 'menu'} cls="w-4 h-4" />
+            </button>
+            
+            <button onClick={logout} className="hidden sm:flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border border-white/20 hover:bg-white/10 text-white/60 hover:text-white text-[10px] sm:text-xs font-medium transition-all">
+              <Ico name="logout" cls="w-3 h-3 sm:w-4 sm:h-4" />
+              <span>{t('dashboard.logout')}</span>
             </button>
           </div>
         </div>
 
-        {/* Mobile tab bar */}
-        <div className="md:hidden border-t border-white/10 flex overflow-x-auto">
-          {TABS.map(function(tabItem) {
-            const count = tabItem.countKey ? counts[tabItem.countKey] : 0;
-            return (
-              <button key={tabItem.key} onClick={function() { setTab(tabItem.key); }}
-                className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2.5 relative transition-all text-xs font-medium ${
-                  tab === tabItem.key ? 'text-white' : 'text-white/40'
-                }`}
-              >
-                <Ico name={tabItem.icon} cls="w-4 h-4" />
-                {t(`dashboard.tab_${tabItem.key}`)}
-                {tab === tabItem.key && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-6 h-0.5 bg-primary-400 rounded-full" />}
-                {count > 0 && <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-amber-400 text-white text-[9px] font-bold rounded-full flex items-center justify-center">{count}</span>}
-              </button>
-            );
-          })}
+        {/* Mobile menu - slide down */}
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${mobileMenuOpen ? 'max-h-96 border-t border-white/10' : 'max-h-0'}`}>
+          <div className="flex flex-col py-2 bg-primary-800">
+            {TABS.map(function(tabItem) {
+              const count = ['pending', 'officials', 'notices'].includes(tabItem.key) ? counts[tabItem.key] : 0;
+              return (
+                <button 
+                  key={tabItem.key} 
+                  onClick={function() { 
+                    setTab(tabItem.key); 
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-all ${
+                    tab === tabItem.key ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10'
+                  }`}
+                >
+                  <Ico name={tabItem.icon} cls="w-4 h-4" />
+                  <span>{tabItem.label}</span>
+                  {count > 0 && (
+                    <span className="ml-auto w-5 h-5 bg-amber-400 text-amber-900 text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+            <div className="border-t border-white/10 my-2" />
+            <button 
+              onClick={function() { logout(); setMobileMenuOpen(false); }}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-medium text-white/70 hover:bg-white/10 transition-all"
+            >
+              <Ico name="logout" cls="w-4 h-4" />
+              <span>{t('dashboard.logout')}</span>
+            </button>
+          </div>
         </div>
       </nav>
 
-      {/* ── Nav spacer: 64px nav + 52px mobile tabs on small, just 64px on md+ ── */}
-      <div className="h-[116px] md:h-16 flex-shrink-0" />
+      {/* Nav spacer */}
+      <div className="h-14 sm:h-16 flex-shrink-0" />
 
-      {/* ── Main ── */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-5 sm:px-8 py-8">
+      {/* Main content */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-8 py-6 sm:py-8 overflow-x-hidden">
 
         {/* OVERVIEW */}
         {tab === 'overview' && (
-          <div className="space-y-6">
-            <div className="relative rounded-2xl overflow-hidden bg-primary-800 dark:bg-primary-900 p-8">
-              <div className="absolute top-0 right-0 w-72 h-72 bg-primary-600/20 rounded-full blur-3xl pointer-events-none" />
-              <div className="relative z-10 flex items-start justify-between gap-6">
+          <div className="space-y-5 sm:space-y-6">
+            <div className="relative rounded-xl sm:rounded-2xl overflow-hidden bg-primary-800 dark:bg-primary-900 p-5 sm:p-8">
+              <div className="absolute top-0 right-0 w-48 h-48 sm:w-72 sm:h-72 bg-primary-600/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative z-10 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
-                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 mb-5">
+                  <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-2.5 py-1 sm:px-3 sm:py-1.5 mb-3 sm:mb-5">
                     <span className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-pulse" />
-                    <span className="text-xs text-white/70 font-medium">{t('dashboard.village_admin_portal')}</span>
+                    <span className="text-[9px] sm:text-xs text-white/70 font-medium">{t('dashboard.village_admin_portal')}</span>
                   </div>
-                  <p className="text-white/60 text-sm mb-1">{t(greetingKey)}</p>
-                  <h1 className="text-3xl font-bold text-white tracking-tight">{adminName}</h1>
+                  <p className="text-white/60 text-xs sm:text-sm mb-0.5">{t(greetingKey)}</p>
+                  <h1 className="text-xl sm:text-3xl font-bold text-white tracking-tight">{adminName}</h1>
                   {village && (
-                    <p className="text-white/50 text-sm mt-3 flex items-center gap-1.5">
-                      <Ico name="location" cls="w-3.5 h-3.5" />
-                      {village.name}{village.district ? `, ${village.district}` : ''}
+                    <p className="text-white/50 text-[11px] sm:text-sm mt-2 sm:mt-3 flex items-center gap-1.5 break-words">
+                      <Ico name="location" cls="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+                      <span className="break-words">{village.name}{village.district ? `, ${village.district}` : ''}</span>
                     </p>
                   )}
                 </div>
                 {pending.length > 0 && (
-                  <button onClick={function() { setTab('pending'); }} className="flex-shrink-0 bg-amber-400 hover:bg-amber-500 text-amber-900 rounded-2xl px-6 py-4 text-center transition-all shadow-large hover:-translate-y-0.5">
-                    <p className="text-3xl font-bold leading-none">{pending.length}</p>
-                    <p className="text-xs font-semibold mt-1">{t('dashboard.pending_review_label')}</p>
+                  <button onClick={function() { setTab('pending'); }} className="self-start sm:self-auto flex-shrink-0 bg-amber-400 hover:bg-amber-500 text-amber-900 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-6 sm:py-4 text-center transition-all shadow-large hover:-translate-y-0.5">
+                    <p className="text-2xl sm:text-3xl font-bold leading-none">{pending.length}</p>
+                    <p className="text-[9px] sm:text-xs font-semibold mt-1">{t('dashboard.pending_review_label')}</p>
                   </button>
                 )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {[
                 { label: t('dashboard.total_officials'), val: officials.length, icon: 'users', key: 'officials', warn: false },
                 { label: t('dashboard.pending_review'),  val: pending.length,   icon: 'clock', key: 'pending',   warn: pending.length > 0 },
@@ -1027,44 +731,44 @@ export default function VillageAdminDashboard() {
               ].map(function(s) {
                 return (
                   <button key={s.label} onClick={function() { setTab(s.key); }}
-                    className={`bg-white dark:bg-dark-surface border rounded-2xl p-5 text-left hover:shadow-medium dark:hover:shadow-dark-medium hover:-translate-y-0.5 transition-all duration-200 ${
+                    className={`bg-white dark:bg-dark-surface border rounded-xl sm:rounded-2xl p-3 sm:p-5 text-left hover:shadow-medium dark:hover:shadow-dark-medium hover:-translate-y-0.5 transition-all duration-200 ${
                       s.warn ? 'border-amber-200 dark:border-amber-800' : 'border-border dark:border-dark-border hover:border-primary-200 dark:hover:border-primary-700'
                     }`}
                   >
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${s.warn ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-accent-mist dark:bg-dark-surface2'}`}>
-                      <Ico name={s.icon} cls={`w-4 h-4 ${s.warn ? 'text-amber-600 dark:text-amber-400' : 'text-primary-600 dark:text-primary-400'}`} />
+                    <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center mb-2 sm:mb-4 ${s.warn ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-accent-mist dark:bg-dark-surface2'}`}>
+                      <Ico name={s.icon} cls={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${s.warn ? 'text-amber-600 dark:text-amber-400' : 'text-primary-600 dark:text-primary-400'}`} />
                     </div>
-                    <p className={`text-3xl font-bold ${s.warn ? 'text-amber-500 dark:text-amber-400' : 'text-text-primary dark:text-dark-text-primary'}`}>{s.val}</p>
-                    <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">{s.label}</p>
+                    <p className={`text-xl sm:text-3xl font-bold ${s.warn ? 'text-amber-500 dark:text-amber-400' : 'text-text-primary dark:text-dark-text-primary'}`}>{s.val}</p>
+                    <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-1 font-medium">{s.label}</p>
                   </button>
                 );
               })}
             </div>
 
             {pending.length > 0 && (
-              <div className="bg-white dark:bg-dark-surface border border-amber-200 dark:border-amber-800 rounded-2xl overflow-hidden">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-amber-100 dark:border-amber-900/30 bg-amber-50/60 dark:bg-amber-900/10">
+              <div className="bg-white dark:bg-dark-surface border border-amber-200 dark:border-amber-800 rounded-xl sm:rounded-2xl overflow-hidden">
+                <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-amber-100 dark:border-amber-900/30 bg-amber-50/60 dark:bg-amber-900/10">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-amber-400 rounded-full animate-pulse" />
-                    <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary">{t('dashboard.needs_approval')}</p>
+                    <span className="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse" />
+                    <p className="text-xs sm:text-sm font-bold text-text-primary dark:text-dark-text-primary">{t('dashboard.needs_approval')}</p>
                   </div>
-                  <button onClick={function() { setTab('pending'); }} className="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline">{t('dashboard.see_all')}</button>
+                  <button onClick={function() { setTab('pending'); }} className="text-[10px] sm:text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline">{t('dashboard.see_all')}</button>
                 </div>
                 <div className="divide-y divide-border dark:divide-dark-border">
                   {pending.slice(0, 3).map(function(o) {
                     return (
-                      <div key={o._id} className="flex items-center gap-4 px-6 py-4 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
+                      <div key={o._id} className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 sm:px-6 py-3 sm:py-4 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
                         <Avatar name={o.name} img={o.profileImage} size="sm" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary truncate">{o.name}</p>
-                          <p className="text-xs text-text-muted dark:text-dark-text-muted truncate">{o.email}</p>
+                          <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary break-words">{o.name}</p>
+                          <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted break-all">{o.email}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <button onClick={function() { approve(o._id); }} className="flex items-center gap-1.5 px-4 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-xs font-semibold rounded-xl transition-all shadow-soft">
+                          <button onClick={function() { approve(o._id); }} className="flex items-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-[10px] sm:text-xs font-semibold rounded-xl transition-all shadow-soft">
                             <Ico name="check" cls="w-3 h-3" /> {t('official.approve')}
                           </button>
-                          <button onClick={function() { reject(o._id); }} className="w-8 h-8 rounded-xl border border-border dark:border-dark-border hover:border-red-300 flex items-center justify-center text-text-muted dark:text-dark-text-muted hover:text-red-500 transition-all">
-                            <Ico name="x" cls="w-3.5 h-3.5" />
+                          <button onClick={function() { reject(o._id); }} className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl border border-border dark:border-dark-border hover:border-red-300 flex items-center justify-center text-text-muted dark:text-dark-text-muted hover:text-red-500 transition-all">
+                            <Ico name="x" cls="w-3 h-3" />
                           </button>
                         </div>
                       </div>
@@ -1074,21 +778,21 @@ export default function VillageAdminDashboard() {
               </div>
             )}
 
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border">
-                <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary">{t('dashboard.recent_notices')}</p>
+            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl overflow-hidden">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 px-4 sm:px-6 py-3 sm:py-4 border-b border-border dark:border-dark-border">
+                <p className="text-xs sm:text-sm font-bold text-text-primary dark:text-dark-text-primary">{t('dashboard.recent_notices')}</p>
                 <div className="flex items-center gap-3">
                   <button onClick={function() { setNoticeForm('new'); setTab('notices'); }}
-                    className="flex items-center gap-1.5 text-xs font-semibold text-primary-600 dark:text-primary-400 bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border px-3 py-1.5 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-all">
+                    className="flex items-center gap-1.5 text-[10px] sm:text-xs font-semibold text-primary-600 dark:text-primary-400 bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-all">
                     <Ico name="plus" cls="w-3 h-3" /> {t('common.new')}
                   </button>
-                  <button onClick={function() { setTab('notices'); }} className="text-xs text-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors">{t('dashboard.all')}</button>
+                  <button onClick={function() { setTab('notices'); }} className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 font-medium transition-colors">{t('dashboard.all')}</button>
                 </div>
               </div>
               {notices.length === 0 ? (
-                <div className="px-6 py-12 text-center">
-                  <p className="text-sm text-text-muted dark:text-dark-text-muted">{t('dashboard.no_notices_yet')}</p>
-                  <button onClick={function() { setNoticeForm('new'); setTab('notices'); }} className="mt-2 text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline">
+                <div className="px-4 py-8 sm:px-6 sm:py-12 text-center">
+                  <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted">{t('dashboard.no_notices_yet')}</p>
+                  <button onClick={function() { setNoticeForm('new'); setTab('notices'); }} className="mt-2 text-xs sm:text-sm font-semibold text-primary-600 dark:text-primary-400 hover:underline">
                     {t('dashboard.publish_first_notice')}
                   </button>
                 </div>
@@ -1097,15 +801,15 @@ export default function VillageAdminDashboard() {
                   {notices.slice(0, 4).map(function(n) {
                     return (
                       <button key={n._id} onClick={function() { setTab('notices'); }}
-                        className="w-full flex items-center gap-4 px-6 py-4 hover:bg-accent-mist dark:hover:bg-dark-surface2 text-left transition-all group">
-                        <div className="w-9 h-9 rounded-xl bg-accent-mist dark:bg-dark-surface2 group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 flex items-center justify-center flex-shrink-0 transition-all">
-                          <Ico name="doc" cls="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                        className="w-full flex items-center gap-3 px-4 sm:px-6 py-3 sm:py-4 hover:bg-accent-mist dark:hover:bg-dark-surface2 text-left transition-all group">
+                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-accent-mist dark:bg-dark-surface2 group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40 flex items-center justify-center flex-shrink-0 transition-all">
+                          <Ico name="doc" cls="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-600 dark:text-primary-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary truncate">{n.title || 'Untitled'}</p>
-                          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{fmt(n.createdAt)}</p>
+                          <p className="text-xs sm:text-sm font-semibold text-text-primary dark:text-dark-text-primary break-words">{n.title || 'Untitled'}</p>
+                          <p className="text-[9px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{fmt(n.createdAt)}</p>
                         </div>
-                        <Ico name="chevron" cls="w-4 h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0" />
+                        <Ico name="chevron" cls="w-3 h-3 sm:w-4 sm:h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0" />
                       </button>
                     );
                   })}
@@ -1122,7 +826,7 @@ export default function VillageAdminDashboard() {
             {pending.length === 0 ? (
               <Empty title={t('dashboard.all_caught_up')} sub={t('dashboard.no_pending')} />
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {pending.map(function(o) {
                   return <OfficialCard key={o._id} official={o} isPending={true} onApprove={approve} onReject={reject} onDelete={delOfficial} onEdit={editOfficial} />;
                 })}
@@ -1138,7 +842,7 @@ export default function VillageAdminDashboard() {
             {officials.length === 0 ? (
               <Empty title={t('dashboard.no_officials')} sub={t('dashboard.no_officials_sub')} />
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {officials.map(function(o) {
                   return <OfficialCard key={o._id} official={o} isPending={false} onApprove={approve} onReject={reject} onDelete={delOfficial} onEdit={editOfficial} />;
                 })}
@@ -1155,8 +859,8 @@ export default function VillageAdminDashboard() {
               sub={t('dashboard.notices_sub', { count: notices.length })}
               action={noticeForm === null ? (
                 <button onClick={function() { setNoticeForm('new'); }}
-                  className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
-                  <Ico name="plus" cls="w-4 h-4" /> {t('dashboard.new_notice')}
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-1.5 sm:px-5 sm:py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
+                  <Ico name="plus" cls="w-3 h-3 sm:w-4 sm:h-4" /> {t('dashboard.new_notice')}
                 </button>
               ) : null}
             />
@@ -1171,12 +875,12 @@ export default function VillageAdminDashboard() {
             {notices.length === 0 && noticeForm === null ? (
               <Empty title={t('dashboard.no_notices')} sub={t('dashboard.no_notices_sub')}>
                 <button onClick={function() { setNoticeForm('new'); }}
-                  className="mt-3 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
+                  className="mt-3 px-4 py-2 sm:px-5 sm:py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
                   {t('dashboard.publish_notice')}
                 </button>
               </Empty>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {notices.map(function(n) {
                   return (
                     <NoticeCard key={n._id} notice={n} onDelete={delNotice}
@@ -1193,50 +897,50 @@ export default function VillageAdminDashboard() {
         {tab === 'qr' && (
           <div>
             <PageHeader title={t('dashboard.qr_title')} sub={t('dashboard.qr_sub')} />
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden">
-              <div className="p-6 border-b border-border dark:border-dark-border flex items-center justify-between">
+            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl overflow-hidden">
+              <div className="p-4 sm:p-6 border-b border-border dark:border-dark-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div>
                   <h3 className="text-base font-bold text-text-primary dark:text-dark-text-primary">{t('dashboard.village_qr')}</h3>
-                  <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('dashboard.qr_description')}</p>
+                  <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('dashboard.qr_description')}</p>
                 </div>
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/40 rounded-xl flex items-center justify-center">
-                  <Ico name="qr" cls="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary-100 dark:bg-primary-900/40 rounded-xl flex items-center justify-center">
+                  <Ico name="qr" cls="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
                 </div>
               </div>
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {qrData && qrData.imageUrl ? (
-                  <div className="flex flex-col sm:flex-row items-center gap-8">
-                    <div className="p-5 bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border rounded-2xl flex-shrink-0">
-                      <img src={qrData.imageUrl} alt="QR Code" className="w-40 h-40 object-contain" />
+                  <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8">
+                    <div className="p-4 bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border rounded-xl flex-shrink-0">
+                      <img src={qrData.imageUrl} alt="QR Code" className="w-32 h-32 sm:w-40 sm:h-40 object-contain" />
                     </div>
                     <div className="flex-1 space-y-3 w-full">
-                      <div className="grid grid-cols-2 gap-3">
-                        <InfoTile label={t('dashboard.village')} value={village ? village.name : 'N/A'} />
+                      <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                        <InfoTile label={t('dashboard.village')} value={village ? (village.name.length > 20 ? village.name.substring(0, 17) + '...' : village.name) : 'N/A'} />
                         {qrData.generatedAt && <InfoTile label={t('dashboard.generated')} value={fmt(qrData.generatedAt)} />}
                       </div>
                       <div className="flex gap-3 pt-2">
                         <a href={qrData.imageUrl} target="_blank" rel="noopener noreferrer"
-                          className="flex-1 text-center text-sm font-semibold px-4 py-2.5 border border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-700 text-text-secondary dark:text-dark-text-secondary rounded-xl transition-all">
+                          className="flex-1 text-center text-xs sm:text-sm font-semibold px-3 py-2 sm:px-4 sm:py-2.5 border border-border dark:border-dark-border hover:border-primary-300 dark:hover:border-primary-700 text-text-secondary dark:text-dark-text-secondary rounded-xl transition-all">
                           {t('dashboard.open_full')}
                         </a>
                         <button onClick={shareQr}
-                          className="flex-1 inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
-                          <Ico name="share" cls="w-4 h-4" /> {t('dashboard.share')}
+                          className="flex-1 inline-flex items-center justify-center gap-1.5 text-xs sm:text-sm font-semibold px-3 py-2 sm:px-4 sm:py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
+                          <Ico name="share" cls="w-3 h-3 sm:w-4 sm:h-4" /> {t('dashboard.share')}
                         </button>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center py-10 gap-4">
-                    <div className="w-20 h-20 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center">
-                      <Ico name="qr" cls="w-10 h-10 text-text-muted dark:text-dark-text-muted" />
+                  <div className="flex flex-col items-center py-8 sm:py-10 gap-3 sm:gap-4">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center">
+                      <Ico name="qr" cls="w-8 h-8 sm:w-10 sm:h-10 text-text-muted dark:text-dark-text-muted" />
                     </div>
-                    <p className="text-sm text-text-muted dark:text-dark-text-muted text-center max-w-xs">
+                    <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted text-center max-w-xs px-4">
                       {t('dashboard.qr_generate_prompt')}
                     </p>
                     <button onClick={generateQr}
-                      className="inline-flex items-center gap-2 text-sm font-semibold px-6 py-3 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
-                      <Ico name="qr" cls="w-4 h-4" /> {t('dashboard.generate_qr')}
+                      className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold px-4 py-2 sm:px-6 sm:py-3 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
+                      <Ico name="qr" cls="w-3.5 h-3.5" /> {t('dashboard.generate_qr')}
                     </button>
                   </div>
                 )}
@@ -1255,38 +959,37 @@ export default function VillageAdminDashboard() {
 
       </main>
 
-      {/* ── Footer always at bottom ── */}
       <Footer village={village} officials={officials} notices={notices} pending={pending} />
 
       {/* Edit Official Modal */}
       {editModal && editTarget && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl w-full max-w-md shadow-large max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border dark:border-dark-border">
-              <h3 className="text-lg font-bold text-text-primary dark:text-dark-text-primary">{t('dashboard.edit_official')}</h3>
-              <button onClick={function() { setEditModal(false); setEditTarget(null); }} className="p-1.5 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted transition-all">
-                <Ico name="x" cls="w-5 h-5" />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl w-full max-w-md shadow-large max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border dark:border-dark-border sticky top-0 bg-white dark:bg-dark-surface">
+              <h3 className="text-base sm:text-lg font-bold text-text-primary dark:text-dark-text-primary">{t('dashboard.edit_official')}</h3>
+              <button onClick={function() { setEditModal(false); setEditTarget(null); }} className="p-1 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted transition-all">
+                <Ico name="close" cls="w-4 h-4" />
               </button>
             </div>
             <form onSubmit={function(e) {
               e.preventDefault();
               const formData = new FormData(e.target);
               saveOfficialEdit(formData);
-            }} className="p-6 space-y-4">
+            }} className="p-4 sm:p-6 space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.name')} *</label>
+                <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.name')} *</label>
                 <input name="name" defaultValue={editTarget.name} required className={inp} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.email')} *</label>
+                <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.email')} *</label>
                 <input name="email" type="email" defaultValue={editTarget.email} required className={inp} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.phone')} *</label>
+                <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.phone')} *</label>
                 <input name="phone" type="tel" defaultValue={editTarget.phone} required className={inp} />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.status')}</label>
+                <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">{t('official.status')}</label>
                 <select name="status" defaultValue={editTarget.status || 'approved'} className={inp}>
                   <option value="pending">{t('status.pending')}</option>
                   <option value="approved">{t('status.approved')}</option>
@@ -1294,10 +997,10 @@ export default function VillageAdminDashboard() {
                 </select>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={function() { setEditModal(false); setEditTarget(null); }} className="flex-1 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
+                <button type="button" onClick={function() { setEditModal(false); setEditTarget(null); }} className="flex-1 py-2 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-secondary text-sm font-semibold rounded-xl hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all">
                   {t('common.cancel')}
                 </button>
-                <button type="submit" className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
+                <button type="submit" className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
                   {t('dashboard.update_official')}
                 </button>
               </div>

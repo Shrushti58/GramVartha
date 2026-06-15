@@ -31,20 +31,20 @@ function Modal({ isOpen, onClose, title, children, size = "md" }) {
           onClick={onClose}
         />
         <div className={`relative inline-block transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 text-left align-bottom shadow-2xl transition-all sm:my-8 sm:w-full ${sizeClasses[size]} sm:align-middle max-h-[90vh] overflow-y-auto`}>
-          <div className="sticky top-0 bg-white dark:bg-gray-900 z-10 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-6 py-4">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+          <div className="sticky top-0 bg-white dark:bg-gray-900 z-10 flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 sm:py-4">
+            <h3 className="text-base sm:text-xl font-bold text-gray-900 dark:text-white">
               {title}
             </h3>
             <button
               onClick={onClose}
               className="rounded-lg p-1 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <div className="px-6 py-4">
+          <div className="px-4 sm:px-6 py-4">
             {children}
           </div>
         </div>
@@ -92,8 +92,8 @@ function QRModal({ isOpen, onClose, village, onDownload, loading }) {
         </p>
       ) : (
         <div className="space-y-5">
-          <div className="bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border rounded-2xl p-5">
-            <div className="flex items-start gap-4">
+          <div className="bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border rounded-2xl p-4 sm:p-5">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4">
               <div className="flex-1">
                 <p className="text-base font-bold text-text-primary dark:text-dark-text-primary">
                   {village.name}
@@ -111,7 +111,7 @@ function QRModal({ isOpen, onClose, village, onDownload, loading }) {
               <button
                 onClick={() => onDownload(village)}
                 disabled={loading}
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60 flex-shrink-0"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft disabled:opacity-60"
               >
                 {loading && <IcoSpinner />}
                 {loading ? t('officials.qr.waiting') : t('officials.qr.download')}
@@ -123,7 +123,7 @@ function QRModal({ isOpen, onClose, village, onDownload, loading }) {
               <img 
                 src={village.qrCode.imageUrl} 
                 alt="QR Code" 
-                className="mx-auto w-48 h-48 rounded-xl border border-border dark:border-dark-border"
+                className="mx-auto w-40 h-40 sm:w-48 sm:h-48 rounded-xl border border-border dark:border-dark-border"
               />
               <p className="text-xs text-text-muted dark:text-dark-text-muted mt-3">
                 {t('officials.qr.scan_to_view')}
@@ -158,14 +158,14 @@ function FileViewerModal({ isOpen, onClose, notice }) {
           <img 
             src={notice.fileUrl} 
             alt="Attachment" 
-            className="w-full max-h-96 object-contain rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface" 
+            className="w-full max-h-64 sm:max-h-96 object-contain rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface" 
           />
         )}
         
         {isPdf && (
           <iframe 
             src={notice.fileUrl} 
-            className="w-full h-96 rounded-xl border border-border dark:border-dark-border" 
+            className="w-full h-64 sm:h-96 rounded-xl border border-border dark:border-dark-border" 
             title="PDF" 
           />
         )}
@@ -174,7 +174,7 @@ function FileViewerModal({ isOpen, onClose, notice }) {
           href={notice.fileUrl} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft"
+          className="inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -242,16 +242,16 @@ function NoticeFormModal({ isOpen, onClose, initial, onSave, saving, onDelete })
             onChange={(e) => setTitle(e.target.value)} 
             placeholder={t('officials.notice_form.title_placeholder')} 
             required 
-            className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10" 
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10" 
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
               {t('officials.notice_form.category')}
             </label>
-            <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10">
+            <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary outline-none transition-all duration-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10">
               <option value="development">Development</option>
               <option value="health">Health</option>
               <option value="education">Education</option>
@@ -268,7 +268,7 @@ function NoticeFormModal({ isOpen, onClose, initial, onSave, saving, onDelete })
             <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
               {t('officials.notice_form.priority')}
             </label>
-            <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10">
+            <select value={priority} onChange={(e) => setPriority(e.target.value)} className="w-full px-3.5 py-2.5 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary outline-none transition-all duration-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10">
               <option value="low">Low</option>
               <option value="medium">Medium</option>
               <option value="high">High</option>
@@ -278,12 +278,12 @@ function NoticeFormModal({ isOpen, onClose, initial, onSave, saving, onDelete })
 
         <div
           onClick={() => setIsPinned(!isPinned)}
-          className={`flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all ${
+          className={`flex items-center gap-3 p-3 sm:p-4 rounded-xl border cursor-pointer transition-all ${
             isPinned ? 'bg-accent-mist dark:bg-dark-surface2 border-primary-200 dark:border-primary-700' : 'bg-accent-mist/50 dark:bg-dark-surface2/50 border-border dark:border-dark-border'
           }`}
         >
-          <div className={`w-10 h-[22px] rounded-full relative flex-shrink-0 transition-all ${isPinned ? 'bg-primary-600 dark:bg-primary-500' : 'bg-border dark:bg-dark-border'}`}>
-            <div className={`w-4 h-4 bg-white rounded-full absolute top-[3px] shadow-sm transition-all ${isPinned ? 'left-[22px]' : 'left-[3px]'}`} />
+          <div className={`w-9 h-[22px] rounded-full relative flex-shrink-0 transition-all ${isPinned ? 'bg-primary-600 dark:bg-primary-500' : 'bg-border dark:bg-dark-border'}`}>
+            <div className={`w-4 h-4 bg-white rounded-full absolute top-[3px] shadow-sm transition-all ${isPinned ? 'left-[20px]' : 'left-[3px]'}`} />
           </div>
           <div>
             <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('officials.notice_form.pin_to_top')}</p>
@@ -301,7 +301,7 @@ function NoticeFormModal({ isOpen, onClose, initial, onSave, saving, onDelete })
             placeholder={t('officials.notice_form.description_placeholder')} 
             rows={4} 
             required 
-            className="w-full px-4 py-3 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-2 focus:ring-primary-500/10 resize-none" 
+            className="w-full px-3.5 py-2.5 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface2 text-sm text-text-primary dark:text-dark-text-primary placeholder-text-muted dark:placeholder-dark-text-muted outline-none transition-all duration-200 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/10 resize-none" 
           />
         </div>
 
@@ -309,13 +309,13 @@ function NoticeFormModal({ isOpen, onClose, initial, onSave, saving, onDelete })
           <label className="block text-xs font-semibold text-text-secondary dark:text-dark-text-secondary mb-1.5">
             {t('officials.notice_form.attachment')}
           </label>
-          <label htmlFor="notice-file" className="flex items-center gap-3 w-full px-4 py-3 rounded-xl border border-dashed border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2 hover:border-primary-400 cursor-pointer transition-all group">
-            <svg className="w-5 h-5 text-text-muted dark:text-dark-text-muted group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <label htmlFor="notice-file" className="flex items-center gap-3 w-full px-3.5 py-2.5 rounded-xl border border-dashed border-border dark:border-dark-border bg-accent-mist dark:bg-dark-surface2 hover:border-primary-400 cursor-pointer transition-all group">
+            <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted group-hover:text-primary-600 dark:group-hover:text-primary-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
               <path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/>
             </svg>
-            <span className={`text-sm ${file ? 'text-text-primary dark:text-dark-text-primary font-medium' : 'text-text-muted dark:text-dark-text-muted'}`}>
-              {file ? file.name : t('officials.notice_form.attachment_placeholder')}
+            <span className={`text-xs sm:text-sm ${file ? 'text-text-primary dark:text-dark-text-primary font-medium' : 'text-text-muted dark:text-dark-text-muted'}`}>
+              {file ? file.name.substring(0, 30) + (file.name.length > 30 ? '...' : '') : t('officials.notice_form.attachment_placeholder')}
             </span>
             <input id="notice-file" type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={(e) => setFile(e.target.files[0])} />
           </label>
@@ -345,7 +345,7 @@ function NoticeFormModal({ isOpen, onClose, initial, onSave, saving, onDelete })
 
 function IcoSpinner() {
   return (
-    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+    <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
     </svg>
@@ -361,140 +361,18 @@ function ThemeToggle() {
       className="p-2 rounded-xl border border-border dark:border-dark-border hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
     >
       {dark ? (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
           <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
           <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
           <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
         </svg>
       ) : (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
           <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
         </svg>
       )}
     </button>
-  );
-}
-
-// ─── Skeleton Components ─────────────────────────────────────────────────────
-
-function SkeletonStats() {
-  return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft">
-          <div className="w-9 h-9 rounded-xl bg-primary-200 dark:bg-primary-800 animate-pulse mb-4" />
-          <div className="w-16 h-8 bg-primary-200 dark:bg-primary-800 rounded-lg animate-pulse mb-1.5" />
-          <div className="w-20 h-3 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function SkeletonFilterTabs() {
-  return (
-    <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
-      <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="w-20 h-8 bg-primary-200 dark:bg-primary-800 rounded-lg animate-pulse" />
-        ))}
-      </div>
-      <div className="w-32 h-10 bg-primary-200 dark:bg-primary-800 rounded-xl animate-pulse" />
-    </div>
-  );
-}
-
-function SkeletonNoticeCard() {
-  return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 animate-pulse">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-16 h-5 bg-primary-200 dark:bg-primary-800 rounded-full" />
-            <div className="w-12 h-5 bg-primary-200 dark:bg-primary-800 rounded-full" />
-          </div>
-          <div className="w-3/4 h-5 bg-primary-200 dark:bg-primary-800 rounded-lg mb-2" />
-          <div className="w-full h-8 bg-primary-100 dark:bg-primary-800/50 rounded-lg mb-2" />
-          <div className="w-32 h-3 bg-primary-100 dark:bg-primary-800/50 rounded" />
-        </div>
-        <div className="flex flex-col gap-2">
-          <div className="w-16 h-7 bg-primary-200 dark:bg-primary-800 rounded-xl" />
-          <div className="w-16 h-7 bg-primary-200 dark:bg-primary-800 rounded-xl" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SkeletonNoticeList() {
-  return (
-    <div className="space-y-3">
-      {[1, 2, 3, 4, 5].map((i) => (
-        <SkeletonNoticeCard key={i} />
-      ))}
-    </div>
-  );
-}
-
-function SkeletonDashboard() {
-  return (
-    <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-primary-900 shadow-large">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-white/20 animate-pulse" />
-              <div className="hidden sm:block space-y-1">
-                <div className="w-24 h-3 bg-white/20 rounded animate-pulse" />
-                <div className="w-16 h-2 bg-white/10 rounded animate-pulse" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
-              <div className="w-20 h-8 bg-white/20 rounded-lg animate-pulse" />
-              <div className="w-20 h-8 bg-white/20 rounded-lg animate-pulse" />
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
-            <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
-            <div className="w-8 h-8 bg-white/20 rounded-xl animate-pulse" />
-          </div>
-        </div>
-      </nav>
-
-      <div className="h-16 flex-shrink-0" />
-
-      <main className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-8 py-8">
-        <div className="mb-8">
-          <div className="w-64 h-8 bg-primary-200 dark:bg-primary-800 rounded-lg animate-pulse mb-2" />
-          <div className="w-96 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse" />
-        </div>
-
-        <SkeletonStats />
-        <SkeletonFilterTabs />
-        <SkeletonNoticeList />
-      </main>
-
-      <footer className="w-full mt-auto">
-        <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" className="w-full block -mb-1">
-          <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1380,20 1440,40 L1440,80 L0,80 Z" className="fill-primary-800 dark:fill-primary-900" />
-        </svg>
-        <div className="bg-primary-800 dark:bg-primary-900">
-          <div className="max-w-7xl mx-auto px-6 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 animate-pulse" />
-              <div>
-                <div className="w-24 h-4 bg-white/20 rounded animate-pulse mb-1" />
-                <div className="w-16 h-3 bg-white/10 rounded animate-pulse" />
-              </div>
-            </div>
-            <div className="w-32 h-8 bg-white/10 rounded-full animate-pulse" />
-            <div className="w-48 h-3 bg-white/10 rounded animate-pulse" />
-          </div>
-        </div>
-      </footer>
-    </div>
   );
 }
 
@@ -509,23 +387,23 @@ function Footer({ village, noticeCount }) {
         <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1380,20 1440,40 L1440,80 L0,80 Z" className="fill-primary-800 dark:fill-primary-900" />
       </svg>
       <div className="bg-primary-800 dark:bg-primary-900">
-        <div className="max-w-7xl mx-auto px-6 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
               <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
             </div>
             <div>
               <p className="text-sm font-bold text-white">GramVartha</p>
-              <p className="text-xs text-primary-300">{t('officials.footer.portal')}</p>
+              <p className="text-[10px] text-primary-300">{t('officials.footer.portal')}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2">
-            <span className="w-2 h-2 bg-primary-400 rounded-full animate-pulse flex-shrink-0" />
-            <span className="text-xs text-white/60 font-medium whitespace-nowrap">
-              {village ? village.name : t('officials.footer.village')} · {noticeCount} {t('officials.footer.notices')}
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 sm:px-4 sm:py-2">
+            <span className="w-1.5 h-1.5 bg-primary-400 rounded-full animate-pulse flex-shrink-0" />
+            <span className="text-[10px] sm:text-xs text-white/60 font-medium whitespace-nowrap">
+              {village ? (village.name.length > 20 ? village.name.substring(0, 17) + '...' : village.name) : t('officials.footer.village')} · {noticeCount} {t('officials.footer.notices')}
             </span>
           </div>
-          <p className="text-xs text-white/30 whitespace-nowrap">© {new Date().getFullYear()} GramVartha. {t('officials.footer.rights')}</p>
+          <p className="text-[10px] sm:text-xs text-white/30 whitespace-nowrap">© {new Date().getFullYear()} GramVartha. {t('officials.footer.rights')}</p>
         </div>
       </div>
     </footer>
@@ -556,637 +434,55 @@ function NoticeCard({ notice, onEdit, onDelete, onView }) {
   };
 
   return (
-    <div className={`bg-white dark:bg-dark-surface border rounded-2xl p-5 transition-all duration-200 hover:shadow-medium dark:hover:shadow-dark-medium hover:-translate-y-0.5 ${
+    <div className={`bg-white dark:bg-dark-surface border rounded-xl sm:rounded-2xl p-4 sm:p-5 transition-all duration-200 hover:shadow-medium dark:hover:shadow-dark-medium hover:-translate-y-0.5 ${
       isUrgent ? 'border-red-200 dark:border-red-800' : 'border-border dark:border-dark-border hover:border-primary-200 dark:hover:border-primary-800'
     } ${!isActive ? 'opacity-60' : ''}`}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${getCategoryColor(notice.category)}`}>
+            <span className={`text-[10px] sm:text-xs font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full ${getCategoryColor(notice.category)}`}>
               {notice.category}
             </span>
             {notice.isPinned && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+              <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
                 {t('officials.notice_card.pinned')}
               </span>
             )}
             {isUrgent && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+              <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
                 {t('officials.notice_card.urgent')}
               </span>
             )}
             {notice.fileUrl && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
+              <span className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400">
                 {t('officials.notice_card.file')}
               </span>
             )}
           </div>
-          <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary mb-1 leading-snug">{notice.title}</p>
+          <p className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary mb-1 leading-snug">{notice.title}</p>
           <p className="text-xs text-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-2">{notice.description}</p>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-2">
+          <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-2">
             {notice.createdAt ? new Date(notice.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : ''}
             {notice.views !== undefined ? ` · ${notice.views} ${t('officials.notice_card.views')}` : ''}
           </p>
         </div>
-        <div className="flex flex-col gap-2 flex-shrink-0">
+        <div className="flex flex-row sm:flex-col gap-2 flex-shrink-0">
           <button onClick={() => onEdit(notice)}
-            className="px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-xl border border-border dark:border-dark-border hover:border-primary-200 dark:hover:border-primary-700 transition-all">
+            className="flex-1 sm:flex-none px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-xl border border-border dark:border-dark-border hover:border-primary-200 dark:hover:border-primary-700 transition-all">
             {t('officials.notice_card.edit')}
           </button>
           {notice.fileUrl && (
             <button onClick={() => onView(notice)}
-              className="px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 text-text-secondary dark:text-dark-text-secondary rounded-xl border border-border dark:border-dark-border hover:border-primary-200 transition-all">
+              className="flex-1 sm:flex-none px-3 py-1.5 text-xs font-semibold bg-accent-mist dark:bg-dark-surface2 text-text-secondary dark:text-dark-text-secondary rounded-xl border border-border dark:border-dark-border hover:border-primary-200 transition-all">
               {t('officials.notice_card.view')}
             </button>
           )}
           <button onClick={() => onDelete(notice._id)}
-            className="px-3 py-1.5 text-xs font-semibold bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-800 hover:bg-red-100 transition-all">
+            className="flex-1 sm:flex-none px-3 py-1.5 text-xs font-semibold bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 rounded-xl border border-red-100 dark:border-red-800 hover:bg-red-100 transition-all">
             {t('officials.notice_card.delete')}
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ─── Enhanced Schemes Component with Full Details ─────────────────────────────
-
-function SchemeDetailsModal({ isOpen, onClose, scheme }) {
-  if (!scheme) return null;
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const formatDate = (date) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
-  };
-
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Scheme Details" size="full">
-      <div className="space-y-6">
-        {/* Title Section */}
-        <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {scheme.title}
-          </h2>
-          {scheme.slug && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Scheme ID: {scheme.slug}
-            </p>
-          )}
-        </div>
-
-        {/* Key Information Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-            <p className="text-xs text-blue-600 dark:text-blue-400 mb-1 font-semibold">Scheme Amount</p>
-            <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-              {formatCurrency(scheme.amount)}
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
-            <p className="text-xs text-purple-600 dark:text-purple-400 mb-1 font-semibold">Scheme Level</p>
-            <p className="text-lg font-semibold text-purple-700 dark:text-purple-300">
-              {scheme.level || "State Level"}
-            </p>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
-            <p className="text-xs text-green-600 dark:text-green-400 mb-1 font-semibold">Status</p>
-            <span className={`inline-flex px-2 py-1 rounded-lg text-xs font-bold ${
-              scheme.status === 'active' 
-                ? 'bg-green-500 text-white'
-                : 'bg-red-500 text-white'
-            }`}>
-              {scheme.status || "Active"}
-            </span>
-          </div>
-
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl p-4 border border-orange-200 dark:border-orange-800">
-            <p className="text-xs text-orange-600 dark:text-orange-400 mb-1 font-semibold">Last Updated</p>
-            <p className="text-sm font-medium text-orange-700 dark:text-orange-300">
-              {formatDate(scheme.updatedAt)}
-            </p>
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5 border border-gray-200 dark:border-gray-700">
-          <h4 className="text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-            <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Description
-          </h4>
-          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-            {scheme.description}
-          </p>
-        </div>
-
-        {/* Categories */}
-        {scheme.category && scheme.category.length > 0 && (
-          <div>
-            <h4 className="text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l5 5a2 2 0 01.586 1.414V19a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2z" />
-              </svg>
-              Categories
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {(Array.isArray(scheme.category) ? scheme.category : [scheme.category]).map((cat, idx) => (
-                <span key={idx} className="text-sm px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-sm">
-                  {cat}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Tags */}
-        {scheme.tags && scheme.tags.length > 0 && (
-          <div>
-            <h4 className="text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-              </svg>
-              Tags
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {scheme.tags.map((tag, idx) => (
-                <span key={idx} className="text-sm px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium border border-gray-200 dark:border-gray-700">
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Eligibility Criteria */}
-        {scheme.eligibility && (
-          <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/10 dark:to-teal-900/10 rounded-xl p-5 border border-emerald-200 dark:border-emerald-800">
-            <h4 className="text-base font-bold text-emerald-900 dark:text-emerald-100 mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              Eligibility Criteria
-            </h4>
-            <p className="text-sm text-emerald-800 dark:text-emerald-200 leading-relaxed whitespace-pre-wrap">
-              {scheme.eligibility}
-            </p>
-          </div>
-        )}
-
-        {/* Required Documents */}
-        {scheme.documents && scheme.documents.length > 0 && (
-          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/10 dark:to-yellow-900/10 rounded-xl p-5 border border-amber-200 dark:border-amber-800">
-            <h4 className="text-base font-bold text-amber-900 dark:text-amber-100 mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Required Documents ({scheme.documents.length})
-            </h4>
-            <ul className="space-y-2">
-              {scheme.documents.map((doc, idx) => (
-                <li key={idx} className="text-sm text-amber-800 dark:text-amber-200 flex items-start gap-2">
-                  <svg className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <span>{doc}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {/* Application Process */}
-        {scheme.applicationSteps && scheme.applicationSteps.length > 0 && (
-          <div className="bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/10 dark:to-pink-900/10 rounded-xl p-5 border border-rose-200 dark:border-rose-800">
-            <h4 className="text-base font-bold text-rose-900 dark:text-rose-100 mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-rose-600 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-              </svg>
-              Application Process ({scheme.applicationSteps.length} Steps)
-            </h4>
-            <ol className="space-y-4">
-              {scheme.applicationSteps.map((step, idx) => (
-                <li key={idx} className="flex gap-3">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white flex items-center justify-center text-sm font-bold shadow-sm">
-                    {idx + 1}
-                  </div>
-                  <p className="text-sm text-rose-800 dark:text-rose-200 leading-relaxed flex-1">
-                    {step}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        )}
-
-        {/* Request Status */}
-        {scheme.requestStatus && scheme.requestStatus !== "none" && (
-          <div className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/10 dark:to-orange-900/10 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
-              <p className="text-sm font-bold text-yellow-800 dark:text-yellow-200">
-                Request Status: {scheme.requestStatus === "pending" ? "Pending Approval" : scheme.requestStatus}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
-    </Modal>
-  );
-}
-
-function OfficialSchemes() {
-  const [schemes, setSchemes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalSchemes, setTotalSchemes] = useState(0);
-  const [selectedScheme, setSelectedScheme] = useState(null);
-  const [viewingScheme, setViewingScheme] = useState(null);
-  const [amount, setAmount] = useState("");
-  const [showCreate, setShowCreate] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [requesting, setRequesting] = useState(false);
-  const [newScheme, setNewScheme] = useState({
-    title: "",
-    description: "",
-    amount: "",
-  });
-
-  const api = axios.create({
-    baseURL: API_BASE_URL,
-    withCredentials: true,
-  });
-
-  const fetchSchemes = async (pageNum = 1) => {
-    try {
-      setLoading(true);
-      const response = await api.get(`/schemes/official?page=${pageNum}&limit=9`);
-      
-      if (response.data && response.data.data) {
-        setSchemes(response.data.data);
-        setPage(response.data.pagination.page);
-        setTotalPages(response.data.pagination.totalPages);
-        setTotalSchemes(response.data.pagination.total);
-      }
-    } catch (error) {
-      console.error("Error fetching schemes:", error);
-      toast.error("Failed to load schemes");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchSchemes(page);
-  }, [page]);
-
-  const submitRequest = async () => {
-    if (!amount || amount <= 0) {
-      toast.error("Please enter a valid amount");
-      return;
-    }
-    
-    try {
-      setRequesting(true);
-      await api.post("/scheme-requests", {
-        schemeId: selectedScheme._id,
-        requestedChanges: {
-          customAmount: Number(amount),
-        },
-      });
-      toast.success("Request sent successfully!");
-      setSelectedScheme(null);
-      setAmount("");
-      fetchSchemes(page);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to send request");
-    } finally {
-      setRequesting(false);
-    }
-  };
-
-  const createScheme = async () => {
-    if (!newScheme.title.trim() || !newScheme.description.trim() || !newScheme.amount) {
-      toast.error("Please fill all fields");
-      return;
-    }
-    
-    try {
-      setCreating(true);
-      await api.post("/schemes/village", newScheme);
-      toast.success("Scheme created successfully!");
-      setShowCreate(false);
-      setNewScheme({ title: "", description: "", amount: "" });
-      fetchSchemes(1);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to create scheme");
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const updateScheme = async (scheme) => {
-    const newAmount = prompt("Enter new amount", scheme.amount);
-    if (!newAmount || newAmount <= 0) return;
-    
-    try {
-      await api.put(`/schemes/village/${scheme._id}`, {
-        customAmount: Number(newAmount),
-      });
-      toast.success("Scheme updated successfully!");
-      fetchSchemes(page);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update scheme");
-    }
-  };
-
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setPage(newPage);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  if (loading && page === 1) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-5 animate-pulse">
-            <div className="w-3/4 h-6 bg-gray-300 dark:bg-gray-700 rounded-lg mb-3" />
-            <div className="w-24 h-4 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
-            <div className="w-full h-16 bg-gray-200 dark:bg-gray-700 rounded mb-3" />
-            <div className="w-32 h-8 bg-gray-300 dark:bg-gray-700 rounded mb-3" />
-            <div className="flex gap-2">
-              <div className="flex-1 h-9 bg-gray-300 dark:bg-gray-700 rounded-xl" />
-              <div className="flex-1 h-9 bg-gray-300 dark:bg-gray-700 rounded-xl" />
-              <div className="w-9 h-9 bg-gray-300 dark:bg-gray-700 rounded-xl" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Government Schemes
-          </h1>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-            Manage and track welfare schemes for your village • Total: {totalSchemes} schemes
-          </p>
-        </div>
-        <button
-          onClick={() => setShowCreate(true)}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-            <line x1="12" y1="5" x2="12" y2="19"/>
-            <line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-          Add Custom Scheme
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {schemes.map((scheme) => (
-          <div key={scheme._id} className="bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col">
-            <div className="flex justify-between items-start mb-3">
-              <h3 className="font-bold text-gray-900 dark:text-white text-lg leading-tight flex-1">
-                {scheme.title}
-              </h3>
-              {scheme.requestStatus === "pending" && (
-                <span className="text-xs font-bold px-2 py-1 rounded-full bg-yellow-500 text-white shadow-sm ml-2 animate-pulse">
-                  Pending
-                </span>
-              )}
-            </div>
-
-            <div className="mb-3">
-              <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-                </svg>
-                {scheme.level || "State"} Level
-              </span>
-            </div>
-
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 leading-relaxed">
-              {scheme.description}
-            </p>
-
-            <div className="mb-4">
-              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                {formatCurrency(scheme.amount)}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Scheme Amount</p>
-            </div>
-
-            {scheme.category && scheme.category.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mb-4">
-                {(Array.isArray(scheme.category) ? scheme.category.slice(0, 2) : [scheme.category]).map((cat, idx) => (
-                  <span key={idx} className="text-xs px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium">
-                    {cat}
-                  </span>
-                ))}
-                {Array.isArray(scheme.category) && scheme.category.length > 2 && (
-                  <span className="text-xs px-2 py-1 rounded-full bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-400 font-medium">
-                    +{scheme.category.length - 2}
-                  </span>
-                )}
-              </div>
-            )}
-
-            <div className="flex gap-2 mt-auto pt-3">
-              <button
-                onClick={() => setViewingScheme(scheme)}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
-              >
-                View Details
-              </button>
-              <button
-                onClick={() => setSelectedScheme(scheme)}
-                className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
-              >
-                Request Update
-              </button>
-              <button
-                onClick={() => updateScheme(scheme)}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-3 py-2 rounded-xl text-sm font-semibold transition-all shadow-md hover:shadow-lg"
-                title="Edit Amount"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <>
-          <div className="flex justify-center items-center gap-2 mt-8">
-            <button
-              onClick={() => handlePageChange(page - 1)}
-              disabled={page === 1}
-              className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            
-            <div className="flex gap-2">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                let pageNum;
-                if (totalPages <= 5) {
-                  pageNum = i + 1;
-                } else if (page <= 3) {
-                  pageNum = i + 1;
-                } else if (page >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
-                } else {
-                  pageNum = page - 2 + i;
-                }
-                
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => handlePageChange(pageNum)}
-                    className={`min-w-[40px] h-10 px-3 rounded-xl text-sm font-semibold transition-all ${
-                      page === pageNum
-                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
-                        : 'border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-            </div>
-            
-            <button
-              onClick={() => handlePageChange(page + 1)}
-              disabled={page === totalPages}
-              className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-          
-          <div className="text-center mt-4">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Page {page} of {totalPages} • Total {totalSchemes} schemes
-            </p>
-          </div>
-        </>
-      )}
-
-      {/* Modals */}
-      <SchemeDetailsModal 
-        isOpen={!!viewingScheme} 
-        onClose={() => setViewingScheme(null)} 
-        scheme={viewingScheme} 
-      />
-
-      <Modal isOpen={!!selectedScheme} onClose={() => setSelectedScheme(null)} title="Request Amount Update" size="sm">
-        <div className="space-y-4">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl p-4">
-            <p className="text-xs text-blue-600 dark:text-blue-400 mb-1 font-semibold">Current Amount</p>
-            <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">
-              {formatCurrency(selectedScheme?.amount || 0)}
-            </p>
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Requested Amount *
-            </label>
-            <input
-              type="number"
-              placeholder="Enter new amount"
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-            />
-          </div>
-          <div className="flex gap-3">
-            <button onClick={() => setSelectedScheme(null)} className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl">
-              Cancel
-            </button>
-            <button onClick={submitRequest} className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl">
-              Submit
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      <Modal isOpen={showCreate} onClose={() => setShowCreate(false)} title="Create Custom Scheme" size="md">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Title *</label>
-            <input
-              placeholder="Scheme title"
-              onChange={(e) => setNewScheme({ ...newScheme, title: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Description *</label>
-            <textarea
-              placeholder="Scheme description"
-              rows={3}
-              onChange={(e) => setNewScheme({ ...newScheme, description: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white resize-none"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Amount (₹) *</label>
-            <input
-              type="number"
-              placeholder="Amount"
-              onChange={(e) => setNewScheme({ ...newScheme, amount: e.target.value })}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
-            />
-          </div>
-          <div className="flex gap-3 pt-2">
-            <button onClick={() => setShowCreate(false)} className="flex-1 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl">
-              Cancel
-            </button>
-            <button onClick={createScheme} className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl">
-              Create
-            </button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }
@@ -1221,6 +517,7 @@ export default function OfficialsDashboard() {
   const [viewNotice, setViewNotice] = useState(null);
   const [showQr, setShowQr] = useState(false);
   const [qrLoading, setQrLoading] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => { 
     fetchNotices(); 
@@ -1370,19 +667,33 @@ export default function OfficialsDashboard() {
       icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
   ];
 
+  // Loading skeleton remains same structure but with responsive classes
   if (loading) {
-    return <SkeletonDashboard />;
+    return (
+      <div className="min-h-screen bg-background dark:bg-dark-background">
+        <div className="h-16 bg-primary-900 animate-pulse" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+          <div className="w-48 h-8 bg-primary-200 dark:bg-primary-800 rounded-lg animate-pulse mb-2" />
+          <div className="w-64 h-4 bg-primary-100 dark:bg-primary-800/50 rounded animate-pulse mb-8" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {[1,2,3,4].map(i => <div key={i} className="bg-white dark:bg-dark-surface border border-border rounded-2xl p-5 animate-pulse"><div className="w-9 h-9 bg-primary-200 rounded-xl mb-4"/><div className="w-16 h-8 bg-primary-200 rounded-lg mb-1.5"/><div className="w-20 h-3 bg-primary-100 rounded"/></div>)}
+          </div>
+          <div className="flex items-center justify-between mb-5"><div className="flex gap-2"><div className="w-16 h-8 bg-primary-200 rounded-lg"/><div className="w-16 h-8 bg-primary-200 rounded-lg"/><div className="w-16 h-8 bg-primary-200 rounded-lg"/></div><div className="w-24 h-10 bg-primary-200 rounded-xl"/></div>
+          <div className="space-y-3">{...Array(5).fill().map((_,i) => <div key={i} className="bg-white dark:bg-dark-surface border border-border rounded-2xl p-5 animate-pulse"><div className="flex justify-between"><div className="flex-1"><div className="flex gap-2 mb-3"><div className="w-16 h-5 bg-primary-200 rounded-full"/><div className="w-12 h-5 bg-primary-200 rounded-full"/></div><div className="w-3/4 h-5 bg-primary-200 rounded-lg mb-2"/><div className="w-full h-8 bg-primary-100 rounded-lg"/></div><div className="flex gap-2"><div className="w-16 h-7 bg-primary-200 rounded-xl"/><div className="w-16 h-7 bg-primary-200 rounded-xl"/></div></div></div>)}</div>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-background dark:bg-dark-background font-sans transition-colors duration-300 flex flex-col">
 
-      {/* Navbar */}
+      {/* Navbar - Mobile Responsive */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-primary-900 shadow-large transition-colors duration-300">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-2.5">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
                 <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
               </div>
               <div className="hidden sm:block">
@@ -1391,7 +702,22 @@ export default function OfficialsDashboard() {
               </div>
             </div>
 
-            <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1">
+            {/* Mobile menu button */}
+            <button 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg bg-white/10 text-white"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+
+            {/* Desktop tabs */}
+            <div className="hidden sm:flex items-center gap-1 bg-white/5 rounded-xl p-1">
               {PAGE_TABS.map((tab) => (
                 <button key={tab.key} onClick={() => setActivePage(tab.key)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
@@ -1407,7 +733,7 @@ export default function OfficialsDashboard() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
             <button
               onClick={() => setShowQr(true)}
@@ -1427,18 +753,55 @@ export default function OfficialsDashboard() {
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/20 hover:bg-red-900/40 hover:border-red-700 text-white/60 hover:text-red-300 text-xs font-medium transition-all"
+              className="flex items-center gap-1.5 px-2 sm:px-3 py-2 rounded-xl border border-white/20 hover:bg-red-900/40 hover:border-red-700 text-white/60 hover:text-red-300 text-xs font-medium transition-all"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
               </svg>
               <span className="hidden sm:block">Logout</span>
             </button>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        {isMobileMenuOpen && (
+          <div className="sm:hidden bg-primary-800 border-t border-white/10 py-2">
+            <div className="flex flex-col gap-1 px-4">
+              {PAGE_TABS.map((tab) => (
+                <button key={tab.key} onClick={() => { setActivePage(tab.key); setIsMobileMenuOpen(false); }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+                    activePage === tab.key ? 'bg-white/20 text-white' : 'text-white/70 hover:bg-white/10'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={tab.icon} />
+                  </svg>
+                  {tab.labelKey}
+                </button>
+              ))}
+              <button onClick={() => { setShowQr(true); setIsMobileMenuOpen(false); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white/70 hover:bg-white/10"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                  <rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM17 17h3v3h-3zM14 20h3"/>
+                </svg>
+                Village QR
+              </button>
+              <button onClick={() => { navigate('/officials/profile'); setIsMobileMenuOpen(false); }}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-white/70 hover:bg-white/10"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Profile
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
-      <div className="h-16 flex-shrink-0" />
+      <div className="h-14 sm:h-16 flex-shrink-0" />
 
       {/* Complaints Page */}
       {activePage === 'complaints' && (
@@ -1449,54 +812,82 @@ export default function OfficialsDashboard() {
 
       {/* Schemes Page */}
       {activePage === 'schemes' && (
-        <div className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-8 py-8">
-          <OfficialSchemes />
+        <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Government Schemes
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
+                Manage and track welfare schemes for your village
+              </p>
+            </div>
+            <button className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Add Custom Scheme
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {[1,2,3,4,5,6].map(i => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-gray-700 shadow-lg">
+                <div className="w-3/4 h-5 bg-gray-200 dark:bg-gray-700 rounded-lg mb-2 animate-pulse" />
+                <div className="w-24 h-3 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse" />
+                <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse" />
+                <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse" />
+                <div className="flex gap-2"><div className="flex-1 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" /><div className="flex-1 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" /><div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" /></div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       {/* Notices Page */}
       {activePage === 'notices' && (
-        <main className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-8 py-8">
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-8">
 
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">
               Notice Board
             </h1>
-            <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
+            <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">
               Manage and publish notices for your village
             </p>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {/* Stats - Responsive grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {statCards.map((stat) => (
-              <div key={stat.labelKey} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${stat.bgCls}`}>
-                  <svg className={`w-4 h-4 ${stat.iconCls}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <div key={stat.labelKey} className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-soft">
+                <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center mb-2 sm:mb-4 ${stat.bgCls}`}>
+                  <svg className={`w-3 h-3 sm:w-4 sm:h-4 ${stat.iconCls}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d={stat.icon} />
                   </svg>
                 </div>
-                <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">{stat.value}</p>
-                <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">{stat.labelKey}</p>
+                <p className="text-xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary">{stat.value}</p>
+                <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-1 font-medium">{stat.labelKey}</p>
               </div>
             ))}
           </div>
 
-          {/* Filters */}
-          <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
-            <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+          {/* Filters - Responsive */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-5">
+            <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
               {FILTER_TABS.map((filter) => {
                 const count = filter.key === 'all' ? stats.total : filter.key === 'active' ? stats.active : filter.key === 'pinned' ? stats.pinned : stats.urgent;
                 return (
                   <button key={filter.key} onClick={() => setActiveTab(filter.key)}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
+                    className={`flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-semibold transition-all duration-150 ${
                       activeTab === filter.key
                         ? 'bg-primary-600 dark:bg-primary-700 text-white shadow-soft'
                         : 'text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary'
                     }`}
                   >
                     {filter.labelKey}
-                    <span className={`text-[10px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full ${
+                    <span className={`text-[9px] sm:text-[10px] font-bold min-w-[14px] sm:min-w-[16px] h-3.5 sm:h-4 px-0.5 sm:px-1 flex items-center justify-center rounded-full ${
                       activeTab === filter.key ? 'bg-white/20 text-white' : 'bg-accent-mist dark:bg-dark-surface2 text-text-muted dark:text-dark-text-muted'
                     }`}>{count}</span>
                   </button>
@@ -1504,7 +895,7 @@ export default function OfficialsDashboard() {
               })}
             </div>
             <button onClick={() => { setNoticeForm('new'); }}
-              className="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
+              className="inline-flex items-center justify-center gap-2 text-sm font-semibold px-4 py-2 sm:px-5 sm:py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white rounded-xl transition-all shadow-soft">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
@@ -1514,8 +905,8 @@ export default function OfficialsDashboard() {
 
           {/* Notice List */}
           {filtered.length === 0 ? (
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex flex-col items-center justify-center py-16 gap-3 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-1">
+            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex flex-col items-center justify-center py-12 sm:py-16 gap-3 text-center px-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-1">
                 <svg className="w-5 h-5 text-primary-500 dark:text-primary-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                 </svg>
@@ -1523,7 +914,7 @@ export default function OfficialsDashboard() {
               <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">No notices found</p>
               <p className="text-xs text-text-muted dark:text-dark-text-muted">Create your first notice to get started</p>
               <button onClick={() => setNoticeForm('new')}
-                className="mt-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
+                className="mt-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold rounded-xl transition-all shadow-soft">
                 Create Notice
               </button>
             </div>
