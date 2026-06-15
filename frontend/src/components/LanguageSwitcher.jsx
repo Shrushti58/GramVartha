@@ -32,10 +32,21 @@ export default function LanguageSwitcher() {
 
   return (
     <div className="relative">
-      {/* Dropdown Trigger Button */}
+      {/* Mobile Button — Icon only */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-200"
+        className="sm:hidden flex items-center justify-center w-8 h-8 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-200"
+        aria-label="Select language"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+      >
+        <span className="text-base">{currentLang.flag}</span>
+      </button>
+
+      {/* Desktop Button — Full text */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="hidden sm:flex items-center gap-2 px-3 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition-all duration-200"
         aria-label="Select language"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
@@ -59,7 +70,7 @@ export default function LanguageSwitcher() {
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 overflow-hidden">
+          <div className="absolute right-0 mt-2 w-40 sm:w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-20 overflow-hidden">
             <div className="py-1" role="listbox">
               {languages.map((lang) => (
                 <button

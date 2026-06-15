@@ -58,16 +58,16 @@ export default function OfficialLogin({ onLogin }) {
     "text-text-secondary dark:text-dark-text-muted mb-1.5";
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
+    <div className="min-h-screen w-screen overflow-x-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background py-6 sm:py-0">
       
       {/* Animated Gradient Background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
         
         {/* Floating Orbs */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
-        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
+        <div className="absolute top-1/4 left-1/4 hidden sm:block w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow" />
+        <div className="absolute bottom-1/3 right-1/4 hidden sm:block w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium" />
+        <div className="absolute top-2/3 left-1/2 hidden sm:block w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast" />
         
         {/* Mesh Gradient Pattern */}
         <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
@@ -84,19 +84,19 @@ export default function OfficialLogin({ onLogin }) {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-10 left-10 w-24 h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000" />
+      <div className="absolute top-6 sm:top-10 left-6 sm:left-10 w-16 sm:w-24 h-16 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
+      <div className="absolute bottom-6 sm:bottom-10 right-6 sm:right-10 w-20 sm:w-32 h-20 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
       
       {/* Card */}
-      <div className="relative z-10 w-full max-w-md mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-3xl shadow-2xl dark:shadow-dark-2xl p-7 animate-fade-in-up">
+      <div className="relative z-10 w-full max-w-md mx-3 sm:mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-4 sm:p-6 animate-fade-in-up">
         
         {/* Card Header Glow Effect */}
         <div className="absolute -top-3 -right-3 w-20 h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-6 relative">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
+        <div className="flex items-center justify-between gap-3 mb-4 sm:mb-5 relative flex-wrap sm:flex-nowrap">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+            <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-lg sm:rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
               <img
                 src="/gramvarthalogo.png"
                 alt="GramVartha"
@@ -104,29 +104,30 @@ export default function OfficialLogin({ onLogin }) {
               />
             </div>
             <div>
-              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
+              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider hidden sm:block">
                 GramVartha
               </p>
-              <h1 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+              <h1 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
                 {t('official.login.title')}
               </h1>
             </div>
           </div>
-          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-3 py-1.5 rounded-full text-xs font-medium shadow-sm">
-            <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-            {t('official.login.badge')}
+          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs font-medium shadow-sm flex-shrink-0">
+            <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
+            <span className="hidden sm:inline">{t('official.login.badge')}</span>
+            <span className="sm:hidden">Live</span>
           </div>
         </div>
 
         {/* Divider with Gradient */}
-        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-6" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-3 sm:mb-5" />
 
         {/* Heading */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold text-text-primary dark:text-dark-text-primary">
+        <div className="mb-3 sm:mb-5">
+          <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-dark-text-primary">
             {t('official.login.welcome')}
           </h2>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">
+          <p className="text-xs text-text-muted dark:text-dark-text-muted mt-0.5 sm:mt-1">
             {t('official.login.subtitle')}
           </p>
         </div>
@@ -167,7 +168,7 @@ export default function OfficialLogin({ onLogin }) {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4">
           <div>
             <label htmlFor="email" className={labelClass}>
               {t('official.login.email')}
@@ -199,12 +200,12 @@ export default function OfficialLogin({ onLogin }) {
                 onChange={handleChange}
                 placeholder={t('official.login.password_placeholder')}
                 disabled={loading}
-                className={inputClass + " pr-10"}
+                className={inputClass + " pr-9 sm:pr-10"}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-1 sm:p-0"
                 tabIndex={-1}
                 aria-label={showPassword ? t('official.login.hide_password') : t('official.login.show_password')}
               >
@@ -217,7 +218,7 @@ export default function OfficialLogin({ onLogin }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-6 py-3.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-2 relative overflow-hidden group"
+            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-xs sm:text-sm px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-1 sm:mt-2 relative overflow-hidden group"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             {loading ? (
@@ -265,26 +266,26 @@ export default function OfficialLogin({ onLogin }) {
         </form>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-6">
+        <div className="flex items-center gap-3 my-3 sm:my-5">
           <div className="flex-1 h-px bg-border dark:bg-dark-border" />
           <span className="text-xs text-text-light dark:text-dark-text-muted font-medium">{t('official.login.or')}</span>
           <div className="flex-1 h-px bg-border dark:bg-dark-border" />
         </div>
 
         {/* Footer Links */}
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-1.5 sm:space-y-3">
           <Link
             to="/officials/register"
-            className="inline-flex items-center gap-1.5 text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
           >
             {t('official.login.register_link')}
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </Link>
           
-          <div className="flex items-center justify-center gap-2 text-xs text-text-light dark:text-dark-text-muted">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-xs text-text-light dark:text-dark-text-muted">
+            <svg className="w-3 sm:w-3.5 h-3 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
             {t('official.login.secure_access')}
@@ -294,10 +295,10 @@ export default function OfficialLogin({ onLogin }) {
         {/* Back Link */}
         <Link
           to="/"
-          className="flex items-center justify-center gap-1.5 text-sm text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-6 pt-4 border-t border-border dark:border-dark-border"
+          className="flex items-center justify-center gap-1.5 text-xs sm:text-sm text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-3 sm:mt-5 pt-2.5 sm:pt-3 border-t border-border dark:border-dark-border"
         >
           <svg
-            className="w-4 h-4"
+            className="w-3 sm:w-4 h-3 sm:h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"

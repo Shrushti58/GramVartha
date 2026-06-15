@@ -41,19 +41,19 @@ export default function Navbar() {
             : "bg-white/90 dark:bg-dark-surface/90 backdrop-blur-md border-b border-border/60 dark:border-dark-border/60"
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
 
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-9 h-9 rounded-lg overflow-hidden border border-primary-200 dark:border-primary-700 flex items-center justify-center bg-accent-mist dark:bg-dark-surface2">
+            <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 md:space-x-3 group flex-shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-lg overflow-hidden border border-primary-200 dark:border-primary-700 flex items-center justify-center bg-accent-mist dark:bg-dark-surface2 flex-shrink-0">
                 <img
                   src="/gramvarthalogo.png"
                   alt="GramVartha Logo"
                   className="w-full h-full object-contain"
                 />
               </div>
-              <span className="text-lg font-bold tracking-tight text-text-primary dark:text-dark-text-primary group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200">
+              <span className="text-sm sm:text-base md:text-lg font-bold tracking-tight text-text-primary dark:text-dark-text-primary group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200 line-clamp-1">
                 GramVartha
               </span>
             </Link>
@@ -62,13 +62,13 @@ export default function Navbar() {
             <div className="hidden md:flex items-center space-x-1">
               <button
                 onClick={() => handleNavClick("about")}
-                className="text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
+                className="text-xs sm:text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
                 {t('nav_about')}
               </button>
               <button
                 onClick={() => handleNavClick("features")}
-                className="text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
+                className="text-xs sm:text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
                 {t('nav_features')}
               </button>
@@ -103,29 +103,29 @@ export default function Navbar() {
 
               <Link
                 to="/officials/login"
-                className="text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
+                className="text-xs sm:text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
                 {t('nav_officials_login')}
               </Link>
               <Link
                 to="/admin/login"
-                className="text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
+                className="text-xs sm:text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
                 {t('nav_admin_login')}
               </Link>
               <Link
                 to="/village/register"
-                className="text-sm font-semibold text-white px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-all duration-200 shadow-soft"
+                className="text-xs sm:text-sm font-semibold text-white px-4 sm:px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-all duration-200 shadow-soft"
               >
                 {t('register_village')}
               </Link>
             </div>
 
             {/* Mobile Right — Theme Toggle + Language Switcher + Hamburger */}
-            <div className="md:hidden flex items-center gap-2">
+            <div className="md:hidden flex items-center gap-1.5 sm:gap-2">
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg border border-border dark:border-dark-border hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted transition-all duration-200"
+                className="p-1.5 sm:p-2 rounded-lg border border-border dark:border-dark-border hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted transition-all duration-200"
                 aria-label="Toggle theme"
               >
                 {dark ? (
@@ -147,7 +147,7 @@ export default function Navbar() {
 
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-lg text-text-secondary dark:text-dark-text-secondary hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
+                className="p-1.5 sm:p-2 rounded-lg text-text-secondary dark:text-dark-text-secondary hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
                 aria-label="Toggle menu"
               >
                 {isMenuOpen ? (
@@ -166,62 +166,62 @@ export default function Navbar() {
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ${
-            isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-out ${
+            isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="bg-white dark:bg-dark-surface border-t border-border dark:border-dark-border px-6 py-4 space-y-1">
+          <div className="bg-white dark:bg-dark-surface border-t border-border dark:border-dark-border px-4 sm:px-6 py-3 sm:py-4 space-y-1.5 sm:space-y-2">
             <button
               onClick={() => handleNavClick("about")}
-              className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-4 py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
+              className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
             >
               {t('nav_about')}
             </button>
             <button
               onClick={() => handleNavClick("features")}
-              className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-4 py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
+              className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
             >
               {t('nav_features')}
             </button>
 
-            <div className="pt-2 border-t border-border dark:border-dark-border space-y-2 mt-2">
-              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider px-4 pb-1">
+            <div className="pt-2 sm:pt-3 border-t border-border dark:border-dark-border space-y-2 mt-2 sm:mt-3">
+              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider px-3 sm:px-4 pb-1 sm:pb-2">
                 {t('login_portals')}
               </p>
               <Link
                 to="/officials/login"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
+                className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
                 <span>{t('nav_officials_login')}</span>
-                <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
               <Link
                 to="/admin/login"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-4 py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
+                className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
               >
                 <span>{t('nav_admin_login')}</span>
-                <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
               <Link
                 to="/village/register"
                 onClick={() => setIsMenuOpen(false)}
-                className="block text-sm font-semibold text-white text-center px-4 py-3 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-all duration-200"
+                className="block text-sm font-semibold text-white text-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-all duration-200 w-full"
               >
-                Register Village
+                {t('register_village')}
               </Link>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Spacer */}
-      <div className="h-16" />
+      {/* Spacer — matches navbar height */}
+      <div className="h-14 sm:h-16" />
     </>
   );
 }

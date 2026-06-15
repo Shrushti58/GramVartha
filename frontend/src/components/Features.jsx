@@ -105,25 +105,25 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="py-20 lg:py-28 bg-white dark:bg-dark-background font-sans transition-colors duration-300"
+      className="py-12 sm:py-16 md:py-20 lg:py-28 bg-white dark:bg-dark-background font-sans transition-colors duration-300"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
-        <div className="max-w-xl mb-12">
-          <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 text-sm font-semibold uppercase tracking-wider mb-4">
-            <span className="w-6 h-px bg-primary-600 dark:bg-primary-400" />
+        <div className="max-w-xl mb-8 sm:mb-10 md:mb-12">
+          <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-3 sm:mb-4">
+            <span className="w-4 sm:w-6 h-px bg-primary-600 dark:bg-primary-400" />
             {t('features_header')}
           </span>
-          <h2 className="text-4xl lg:text-5xl font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary dark:text-dark-text-primary leading-tight">
             {t('features_title')}
           </h2>
         </div>
 
         {/* Cinematic Carousel */}
         <div
-          className="relative rounded-3xl overflow-hidden"
-          style={{ minHeight: "520px" }}
+          className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
+          style={{ minHeight: "280px" }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
         >
@@ -154,43 +154,43 @@ export default function Features() {
 
               {/* Content */}
               <div
-                className="absolute inset-0 flex flex-col justify-end p-10 lg:p-16 transition-all duration-700"
+                className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-12 lg:p-16 transition-all duration-700"
                 style={{
                   opacity: index === active && !transitioning ? 1 : 0,
                   transform: index === active && !transitioning ? "translateY(0)" : "translateY(24px)",
                 }}
               >
                 {/* Tag */}
-                <span className="inline-flex items-center gap-2 bg-primary-400/20 border border-primary-400/30 text-primary-300 text-xs font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full w-fit mb-6">
+                <span className="inline-flex items-center gap-2 bg-primary-400/20 border border-primary-400/30 text-primary-300 text-xs font-semibold uppercase tracking-wider px-2 sm:px-3 py-1 sm:py-1.5 rounded-full w-fit mb-4 sm:mb-6">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary-400" />
                   {t(feature.tagKey)}
                 </span>
 
                 {/* Icon + Title */}
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center text-white flex-shrink-0">
+                <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
+                  <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white/10 border border-white/20 rounded-lg sm:rounded-xl flex items-center justify-center text-white flex-shrink-0">
                     {feature.icon}
                   </div>
-                  <h3 className="text-3xl lg:text-4xl font-bold text-white leading-tight">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
                     {t(feature.titleKey)}
                   </h3>
                 </div>
 
                 {/* Description */}
-                <p className="text-white/65 text-base leading-relaxed max-w-lg mb-8">
+                <p className="text-white/65 text-sm sm:text-base leading-relaxed max-w-lg mb-6 sm:mb-8">
                   {t(feature.descKey)}
                 </p>
 
                 {/* Bottom controls row */}
-                <div className="flex items-center justify-between gap-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-6 w-full">
 
                   {/* Feature tabs */}
-                  <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap w-full sm:w-auto order-2 sm:order-1">
                     {features.map((f, i) => (
                       <button
                         key={i}
                         onClick={() => goTo(i)}
-                        className={`text-xs font-medium px-4 py-2 rounded-full border transition-all duration-300 ${
+                        className={`text-xs font-medium px-2.5 sm:px-4 py-1 sm:py-2 rounded-full border transition-all duration-300 whitespace-nowrap ${
                           i === active
                             ? "bg-white text-primary-800 border-white"
                             : "bg-white/10 text-white/60 border-white/20 hover:bg-white/20 hover:text-white"
@@ -202,20 +202,20 @@ export default function Features() {
                   </div>
 
                   {/* Arrows */}
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 order-1 sm:order-2">
                     <button
                       onClick={prevSlide}
-                      className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center"
+                      className="w-7 sm:w-10 h-7 sm:h-10 rounded-lg sm:rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center flex-shrink-0"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 sm:w-4 h-3 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                       </svg>
                     </button>
                     <button
                       onClick={next}
-                      className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center"
+                      className="w-7 sm:w-10 h-7 sm:h-10 rounded-lg sm:rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center flex-shrink-0"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3 sm:w-4 h-3 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </button>

@@ -21,12 +21,12 @@ export default function Hero() {
       </div>
 
       {/* Decorative blobs */}
-      <div className="absolute top-20 right-10 w-96 h-96 bg-primary-200/30 dark:bg-primary-900/30 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-20 left-10 w-72 h-72 bg-accent-lime/10 dark:bg-accent-lime/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-20 right-10 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-primary-200/30 dark:bg-primary-900/30 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 sm:bottom-20 sm:left-10 w-64 sm:w-72 h-64 sm:h-72 bg-accent-lime/10 dark:bg-accent-lime/5 rounded-full blur-3xl pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 w-full py-24">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16 sm:py-20 md:py-24 lg:py-28">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
 
           {/* Left */}
           <div className="space-y-8 animate-fade-in-up">
@@ -38,12 +38,12 @@ export default function Hero() {
             </div>
 
             {/* Heading */}
-            <div className="space-y-4">
-              <h1 className="text-5xl lg:text-6xl xl:text-7xl font-bold text-text-primary dark:text-dark-text-primary leading-[1.05] tracking-tight">
+            <div className="space-y-3 sm:space-y-4">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-text-primary dark:text-dark-text-primary leading-[1.1] sm:leading-[1.08] lg:leading-[1.05] tracking-tight">
                 {t('welcome_to')}<br />
                 <span className="text-primary-600 dark:text-primary-400">{t('brand')}</span>
               </h1>
-              <p className="text-lg text-text-secondary dark:text-dark-text-secondary max-w-lg leading-relaxed font-light">
+              <p className="text-base sm:text-lg text-text-secondary dark:text-dark-text-secondary max-w-lg leading-relaxed font-light">
                 {t('tagline')}
               </p>
             </div>
@@ -85,29 +85,29 @@ export default function Hero() {
 </div>
 
             {/* Stats */}
-            <div className="flex gap-10 pt-4 border-t border-border dark:border-dark-border">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-10 pt-4 border-t border-border dark:border-dark-border">
               <div>
-                <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">10,000+</p>
-                <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('active_readers')}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary">10,000+</p>
+                <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('active_readers')}</p>
               </div>
-              <div className="w-px bg-border dark:bg-dark-border" />
+              <div className="hidden sm:block w-px bg-border dark:bg-dark-border" />
               <div>
-                <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">50+</p>
-                <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('villages_served')}</p>
+                <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary">50+</p>
+                <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('villages_served')}</p>
               </div>
-              <div className="w-px bg-border dark:bg-dark-border" />
+              <div className="hidden sm:block w-px bg-border dark:bg-dark-border" />
               <div>
-                <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">500+</p>
-                <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">Notices Published</p>
+                <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary">500+</p>
+                <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">Notices Published</p>
               </div>
             </div>
           </div>
 
           {/* Right — floating cards */}
-          <div className="hidden lg:flex flex-col gap-4 items-end">
+          <div className="hidden lg:flex flex-col gap-3 xl:gap-4 items-end">
 
             {/* Card 1 */}
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 w-64 hover:-translate-y-1 transition-all duration-300 shadow-medium dark:shadow-dark-medium">
+            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-4 xl:p-5 w-56 xl:w-64 hover:-translate-y-1 transition-all duration-300 shadow-medium dark:shadow-dark-medium">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/60 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@ export default function Hero() {
             </div>
 
             {/* Card 2 */}
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 w-64 hover:-translate-y-1 transition-all duration-300 shadow-medium dark:shadow-dark-medium">
+            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-4 xl:p-5 w-56 xl:w-64 hover:-translate-y-1 transition-all duration-300 shadow-medium dark:shadow-dark-medium">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/60 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@ export default function Hero() {
             </div>
 
             {/* Card 3 */}
-            <div className="bg-primary-600 dark:bg-primary-800 border border-primary-500 dark:border-primary-700 rounded-2xl p-5 w-64 hover:-translate-y-1 transition-all duration-300 shadow-large dark:shadow-dark-large">
+            <div className="bg-primary-600 dark:bg-primary-800 border border-primary-500 dark:border-primary-700 rounded-2xl p-4 xl:p-5 w-56 xl:w-64 hover:-translate-y-1 transition-all duration-300 shadow-large dark:shadow-dark-large">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
                   <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
