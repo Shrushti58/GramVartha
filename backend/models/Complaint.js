@@ -16,7 +16,7 @@ const ComplaintSchema = new mongoose.Schema(
 
   type: {
     type: String,
-    enum: ["issue", "complaint"],
+enum: ["issue", "suggestion"],
     required: true
   },
 
@@ -60,22 +60,22 @@ const ComplaintSchema = new mongoose.Schema(
   },
 
   aiVerification: {
-    isValidIssue: {
-      type: Boolean,
-      default: true
-    },
-
-    labels: [String],
-
-    fraudScore: {
-      type: Number,
-      default: 0
-    },
-
-    remarks: {
-      type: String
-    }
+  isValidIssue: { type: Boolean, default: true },
+  confidence: { type: Number, default: 0 },
+  category: String,
+  labels: [String],
+  fraudScore: { type: Number, default: 0 },
+  language: String,
+  englishRemarks: String,
+  marathiRemarks: String,
+  priority: {
+    type: String,
+    enum: ["low", "medium", "high", "urgent"],
+    default: "medium"
   },
+  remarks: String,
+  analyzedAt: Date
+},
 
   resolvedImageUrl: {
     type: String

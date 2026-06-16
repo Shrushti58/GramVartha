@@ -13,6 +13,7 @@ backend/.env.local
 backend/.env.development.local
 backend/.env.test.local
 backend/.env.production.local
+backend/config/google-vision-key.json
 
 # Logs (backend)
 backend/logs/

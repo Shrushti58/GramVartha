@@ -1,6 +1,70 @@
 const Complaint = require("../models/Complaint");
 const { analyzeImage } = require("../utlis/vision");
 const Citizen = require("../models/Citizens");
+const { verifyComplaintWithGemini } = require("../service/geminiComplaint.service");
+
+const verifyComplaintInBackground = async (complaintId, data) => {
+  try {
+    let rawLabels = [];
+
+    try {
+      rawLabels = await analyzeImage(data.imageUrl);
+    } catch (err) {
+      console.warn("[Vision background error]", err.message);
+    }
+
+    const labels = normalizeLabels(rawLabels);
+
+    const localFraudResult = runFraudCheck({
+      labels,
+      imageSource: data.imageSource,
+      lat: data.lat,
+      lng: data.lng,
+      timestamp: data.timestamp,
+    });
+
+    let geminiResult = null;
+
+    try {
+      geminiResult = await verifyComplaintWithGemini({
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        labels,
+      });
+    } catch (err) {
+      console.warn("[Gemini background error]", err.message);
+    }
+
+    const finalIsValid =
+      geminiResult?.isValidIssue ?? localFraudResult.isValidIssue;
+
+    await Complaint.findByIdAndUpdate(complaintId, {
+      status: finalIsValid ? "pending" : "rejected",
+      aiVerification: {
+        isValidIssue: finalIsValid,
+        labels,
+        fraudScore: geminiResult?.fraudScore ?? localFraudResult.fraudScore,
+        remarks:
+          geminiResult?.englishRemarks ||
+          geminiResult?.remarks ||
+          localFraudResult.remarks,
+
+        confidence: geminiResult?.confidence ?? 0,
+        category: geminiResult?.category ?? "other",
+        language: geminiResult?.language ?? "unknown",
+        englishRemarks: geminiResult?.englishRemarks ?? "",
+        marathiRemarks: geminiResult?.marathiRemarks ?? "",
+        priority: geminiResult?.priority ?? "medium",
+        analyzedAt: new Date(),
+      },
+    });
+
+    console.log("[AI verification completed]", complaintId);
+  } catch (err) {
+    console.error("[AI background verification failed]", err.message);
+  }
+};
 
 const VALID_STATUSES = ["pending", "in-progress", "resolved", "rejected"];
 
@@ -254,43 +318,42 @@ const createComplaint = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const {
-      type,
-      title,
-      description,
-      imageSource = null,
-      timestamp = null,
-    } = req.body;
+    const { type, title, description, imageSource = null, timestamp = null } = req.body;
 
     if (!type || !title?.trim() || !description?.trim()) {
-      return res.status(400).json({ message: "Missing required fields: type, title, description" });
-    }
-    if (!["issue", "suggestion"].includes(type)) {
-      return res.status(400).json({ message: "Invalid type. Must be 'issue' or 'suggestion'" });
+      return res.status(400).json({
+        message: "Missing required fields: type, title, description",
+      });
     }
 
+    if (!["issue", "suggestion"].includes(type)) {
+      return res.status(400).json({
+        message: "Invalid type. Must be 'issue' or 'suggestion'",
+      });
+    }
+
+    // Suggestion: save directly, no photo/GPS/AI
     if (type === "suggestion") {
       const complaint = await Complaint.create({
-        citizen: req.user.id, village: req.user.village,
-        type, title: title.trim(), description: description.trim(),
-        imageUrl: null, location: null, imageSource: null,
-        timestamp: null, aiVerification: undefined,
+        citizen: req.user.id,
+        village: req.user.village,
+        type,
+        title: title.trim(),
+        description: description.trim(),
+        imageUrl: null,
+        location: null,
+        imageSource: null,
+        timestamp: null,
+        aiVerification: undefined,
       });
 
-      // ── SMS: confirm suggestion received ──
-      //try {
-      //  const citizen = await Citizen.findById(req.user.id);
-      //  if (citizen?.phone) {
-      //    const message = `📝 Your suggestion "${title.trim()}" has been submitted to Gram Panchayat. We will review it shortly.`;
-      //    await sendSMS(citizen.phone, message);
-      //  }
-      //} catch (smsErr) {
-      //  console.error("SMS error [createComplaint - suggestion]:", smsErr.message);
-      //}
-
-      return res.status(201).json({ message: "Complaint submitted successfully", complaint });
+      return res.status(201).json({
+        message: "Suggestion submitted successfully",
+        complaint,
+      });
     }
 
+    // Issue: photo + GPS required
     if (!req.file) {
       return res.status(400).json({ message: "Issue requires a photo" });
     }
@@ -300,21 +363,12 @@ const createComplaint = async (req, res) => {
     const lng = Number(req.body.lng);
 
     if (isNaN(lat) || isNaN(lng)) {
-      return res.status(400).json({ message: "Invalid or missing GPS coordinates" });
+      return res.status(400).json({
+        message: "Invalid or missing GPS coordinates",
+      });
     }
 
-    let rawLabels = [];
-    try {
-      rawLabels = await analyzeImage(imageUrl);
-    } catch (visionErr) {
-      console.warn("[Vision API error - create]", visionErr.message);
-    }
-
-    const labels = normalizeLabels(rawLabels);
-    const { isValidIssue, fraudScore, remarks } = runFraudCheck({
-      labels, imageSource, lat, lng, timestamp,
-    });
-
+    // Duplicate nearby issue check BEFORE creating
     const nearbyIssue = await Complaint.findOne({
       type: "issue",
       status: { $ne: "resolved" },
@@ -329,27 +383,51 @@ const createComplaint = async (req, res) => {
       });
     }
 
+    // Save complaint first
     const complaint = await Complaint.create({
-      citizen: req.user.id, village: req.user.village,
-      type, title: title.trim(), description: description.trim(),
-      imageUrl, location: { lat, lng },
+      citizen: req.user.id,
+      village: req.user.village,
+      type,
+      title: title.trim(),
+      description: description.trim(),
+      imageUrl,
+      location: { lat, lng },
       imageSource: imageSource ?? "camera",
       timestamp: timestamp ? new Date(timestamp) : new Date(),
-      aiVerification: { isValidIssue, labels, fraudScore, remarks },
+      status: "pending",
+
+      aiVerification: {
+        isValidIssue: true,
+        labels: [],
+        fraudScore: 0,
+        remarks: "AI verification pending",
+        confidence: 0,
+        category: "other",
+        language: "unknown",
+        englishRemarks: "AI verification pending",
+        marathiRemarks: "एआय पडताळणी प्रलंबित आहे",
+        priority: "medium",
+      },
     });
 
-    // ── SMS: confirm issue complaint received ──
-    //try {
-    // const citizen = await Citizen.findById(req.user.id);
-    // if (citizen?.phone) {
-    // const message = `📋 Your complaint "${title.trim()}" (#${complaint._id}) has been submitted to Gram Panchayat. We will look into it soon.`;
-    //  await sendSMS(citizen.phone, message);
-    // }
-    //} catch (smsErr) {
-    //  console.error("SMS error [createComplaint - issue]:", smsErr.message);
-    // }
+    // Run AI after response cycle starts
+    setImmediate(() => {
+      verifyComplaintInBackground(complaint._id, {
+        title: title.trim(),
+        description: description.trim(),
+        type,
+        imageUrl,
+        imageSource: imageSource ?? "camera",
+        lat,
+        lng,
+        timestamp,
+      });
+    });
 
-    return res.status(201).json({ message: "Complaint submitted successfully", complaint });
+    return res.status(201).json({
+      message: "Complaint submitted successfully. AI verification is running.",
+      complaint,
+    });
   } catch (err) {
     console.error("[createComplaint]", err);
     return res.status(500).json({ message: "Internal server error" });
