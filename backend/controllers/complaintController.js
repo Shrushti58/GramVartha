@@ -318,7 +318,13 @@ const createComplaint = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const { type, title, description, imageSource = null, timestamp = null } = req.body;
+    const {
+      type,
+      title,
+      description,
+      imageSource = null,
+      timestamp = null,
+    } = req.body;
 
     if (!type || !title?.trim() || !description?.trim()) {
       return res.status(400).json({
@@ -355,7 +361,9 @@ const createComplaint = async (req, res) => {
 
     // Issue: photo + GPS required
     if (!req.file) {
-      return res.status(400).json({ message: "Issue requires a photo" });
+      return res.status(400).json({
+        message: "Issue requires a photo",
+      });
     }
 
     const imageUrl = req.file.path;
@@ -372,8 +380,14 @@ const createComplaint = async (req, res) => {
     const nearbyIssue = await Complaint.findOne({
       type: "issue",
       status: { $ne: "resolved" },
-      "location.lat": { $gte: lat - 0.0005, $lte: lat + 0.0005 },
-      "location.lng": { $gte: lng - 0.0005, $lte: lng + 0.0005 },
+      "location.lat": {
+        $gte: lat - 0.0005,
+        $lte: lat + 0.0005,
+      },
+      "location.lng": {
+        $gte: lng - 0.0005,
+        $lte: lng + 0.0005,
+      },
     });
 
     if (nearbyIssue) {
@@ -383,7 +397,7 @@ const createComplaint = async (req, res) => {
       });
     }
 
-    // Save complaint first
+    // Save complaint WITHOUT Gemini verification
     const complaint = await Complaint.create({
       citizen: req.user.id,
       village: req.user.village,
@@ -400,17 +414,18 @@ const createComplaint = async (req, res) => {
         isValidIssue: true,
         labels: [],
         fraudScore: 0,
-        remarks: "AI verification pending",
+        remarks: "AI verification disabled",
         confidence: 0,
         category: "other",
         language: "unknown",
-        englishRemarks: "AI verification pending",
-        marathiRemarks: "एआय पडताळणी प्रलंबित आहे",
+        englishRemarks: "AI verification is currently disabled",
+        marathiRemarks: "एआय पडताळणी सध्या बंद आहे",
         priority: "medium",
       },
     });
 
-    // Run AI after response cycle starts
+    // Gemini verification disabled
+    /*
     setImmediate(() => {
       verifyComplaintInBackground(complaint._id, {
         title: title.trim(),
@@ -423,14 +438,17 @@ const createComplaint = async (req, res) => {
         timestamp,
       });
     });
+    */
 
     return res.status(201).json({
-      message: "Complaint submitted successfully. AI verification is running.",
+      message: "Complaint submitted successfully.",
       complaint,
     });
   } catch (err) {
     console.error("[createComplaint]", err);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({
+      message: "Internal server error",
+    });
   }
 };
 
