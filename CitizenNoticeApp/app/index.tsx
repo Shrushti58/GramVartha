@@ -21,6 +21,7 @@ import { useTheme } from '../context/ThemeContext';
 import { ThemedView } from '../components/ThemedView';
 import { ThemedCard } from '../components/ThemedCard';
 import { ThemeToggle } from '../components/ThemeToggle';
+import WeatherCard from "../components/WeatherCard";
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
@@ -771,6 +772,7 @@ export default function HomeScreen() {
               ))}
             </View>
           </View>
+          <WeatherCard />
 
           {/* Recent Villages */}
           {!isDataLoading && recentVillages.length > 0 && (

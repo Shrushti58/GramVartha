@@ -650,5 +650,35 @@
   "errors": {
     "load_complaint_failed": "Failed to load complaint details.",
     "complaint_not_found": "Complaint not found"
-  }
+  },
+
+ "weather_advisory": {
+    "weather_services": "WEATHER SERVICES",
+    "title": "Crop Weather Advisory",
+    "crop_weather": "Crop Weather",
+    "get_detailed_advice": "Get detailed advice",
+    "enter_crop_details": "Enter crop details to get more accurate irrigation, spraying and fertilizer suggestions.",
+    "crop_name": "Crop name",
+    "crop_placeholder": "Example: sugarcane",
+    "growth_stage": "Growth stage",
+    "stage_placeholder": "Example: growth / flowering / harvest",
+    "soil_type": "Soil type",
+    "soil_black": "Black Soil",
+    "soil_red": "Red Soil",
+    "soil_sandy": "Sandy Soil",
+    "soil_mixed": "Mixed Soil",
+    "soil_dont_know": "Don't Know",
+    "last_irrigation_days": "Last irrigation before how many days?",
+    "days_placeholder": "Example: 4",
+    "get_advisory": "Get Advisory",
+    "rain": "Rain",
+    "wind": "Wind",
+    "temp": "Temp",
+    "humidity": "Humidity",
+    "missing_details": "Missing details",
+    "enter_crop_stage": "Please enter crop and growth stage",
+    "no_village": "No village found",
+    "scan_village_first": "Please scan village QR first",
+    "error": "Error",
+    "failed_generate": "Failed to generate crop advisory"}
 }

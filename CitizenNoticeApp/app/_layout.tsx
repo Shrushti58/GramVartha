@@ -52,6 +52,10 @@ function RootLayoutContent() {
           name="qr-notices/[villageId]"
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="weather/weather-advisory"
+          options={{ headerShown: false }}
+        />
         <Stack.Screen name="notice/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="complaints" options={{ headerShown: false }} />
         <Stack.Screen name="complaints/all-complaints" options={{ headerShown: false }} />

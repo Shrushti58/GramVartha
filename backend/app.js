@@ -54,7 +54,7 @@ app.use("/citizen", require("./routes/citizenAuth"));
 app.use("/complaints", require("./routes/complaintsRoutes"));
 app.use("/workguide", require("./routes/workGuideRoutes"));
 app.use("/schemes", require("./routes/schemeRoutes"));
-
+app.use("/weather", require("./routes/weatherRoutes"));
 
 /* ========================
    HEALTH CHECK

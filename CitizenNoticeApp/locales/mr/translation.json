@@ -694,5 +694,35 @@
       "login_instead": "प्रवेश करा",
       "account_created": "खाते यशस्वीरित्या तयार झाले"
     }
+  },
+  "weather_advisory": {
+    "weather_services": "हवामान सेवा",
+    "title": "पीक हवामान सल्ला",
+    "crop_weather": "पीक हवामान",
+    "get_detailed_advice": "तपशीलवार सल्ला मिळवा",
+    "enter_crop_details": "अधिक अचूक सिंचन, फवारणी आणि खत सूचना मिळवण्यासाठी पिकाचा तपशील प्रविष्ट करा.",
+    "crop_name": "पिकाचे नाव",
+    "crop_placeholder": "उदाहरण: ऊस",
+    "growth_stage": "वाढीचा टप्पा",
+    "stage_placeholder": "उदाहरण: वाढ / फुलोरा / कापणी",
+    "soil_type": "जमिनीचा प्रकार",
+    "soil_black": "काळी माती",
+    "soil_red": "लाल माती",
+    "soil_sandy": "वालुकामय माती",
+    "soil_mixed": "मिश्र माती",
+    "soil_dont_know": "माहित नाही",
+    "last_irrigation_days": "शेवटची सिंचन किती दिवसांपूर्वी?",
+    "days_placeholder": "उदाहरण: ४",
+    "get_advisory": "सल्ला घ्या",
+    "rain": "पाऊस",
+    "wind": "वारा",
+    "temp": "तापमान",
+    "humidity": "आर्द्रता",
+    "missing_details": "तपशील हरवला",
+    "enter_crop_stage": "कृपया पीक आणि वाढीचा टप्पा प्रविष्ट करा",
+    "no_village": "गाव सापडले नाही",
+    "scan_village_first": "कृपया प्रथम गाव QR स्कॅन करा",
+    "error": "त्रुटी",
+    "failed_generate": "पीक सल्ला निर्माण करण्यात अयशस्वी"
   }
 }
