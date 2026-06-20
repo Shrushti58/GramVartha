@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { officialLogin } from "../services/api";
 
 export default function OfficialLogin({ onLogin }) {
   const { dark } = useTheme();
@@ -24,11 +22,7 @@ export default function OfficialLogin({ onLogin }) {
     setLoading(true);
     setMessage({ text: "", success: false });
     try {
-      const res = await axios.post(
-        `${API_BASE_URL}/officials/login`,
-        formData,
-        { withCredentials: true }
-      );
+      const res = await officialLogin(formData.email, formData.password);
       setMessage({ text: res.data.message || t('official.login.success'), success: true });
       if (res.data.official) navigate("/officials/dashboard");
     } catch (err) {

@@ -63,7 +63,7 @@ const loginAdmin = async (req, res) => {
         const token = generateToken(admin);
         res.cookie("token", token, tokenCookieOptions);
 
-        return res.status(200).json({ message: "Login successful" });
+        return res.status(200).json({ message: "Login successful", token });
     } catch (error) {
         console.error("Login error:", error.message);
         return res.status(500).json({ message: "Internal server error" });

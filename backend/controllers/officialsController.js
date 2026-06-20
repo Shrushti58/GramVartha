@@ -81,6 +81,7 @@ const loginOfficial = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
+      token,
       official: { 
         id: official._id, 
         name: official.name, 

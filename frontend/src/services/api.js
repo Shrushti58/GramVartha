@@ -1,11 +1,54 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const AUTH_TOKEN_KEY = 'gramvarthaAuthToken';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true
 });
+
+const getStoredToken = () => localStorage.getItem(AUTH_TOKEN_KEY);
+
+const setAuthToken = (token) => {
+  if (token) {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
+    delete api.defaults.headers.common.Authorization;
+    delete axios.defaults.headers.common.Authorization;
+  }
+};
+
+setAuthToken(getStoredToken());
+
+api.interceptors.request.use((config) => {
+  const token = getStoredToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => {
+    if (response.data?.token) {
+      setAuthToken(response.data.token);
+    }
+    return response;
+  },
+  (error) => {
+    if (
+      error.response?.status === 401 ||
+      (error.response?.status === 403 && error.response?.data?.message === "Invalid token")
+    ) {
+      setAuthToken(null);
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Auth APIs
 export const adminRegister = (email, password, village = null) => {
@@ -17,7 +60,7 @@ export const adminLogin = (email, password) => {
 };
 
 export const adminLogout = () => {
-  return api.post('/admin/logout');
+  return api.post('/admin/logout').finally(() => setAuthToken(null));
 };
 
 export const getAdminProfile = () => {
@@ -222,7 +265,7 @@ export const officialLogin = (email, password) => {
 };
 
 export const officialLogout = () => {
-  return api.post('/officials/logout');
+  return api.post('/officials/logout').finally(() => setAuthToken(null));
 };
 
 export const getCurrentOfficial = () => {
@@ -266,3 +309,4 @@ export const getNoticesByVillage = (villageId, params = {}) => {
 };
 
 export default api;
+export { setAuthToken };
