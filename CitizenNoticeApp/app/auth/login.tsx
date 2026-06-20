@@ -21,7 +21,9 @@ import { ThemedView } from "../../components/ThemedView";
 import { ThemedText } from "../../components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-import { getOrCreatePushToken, setupNotificationListeners } from "../../utils/pushNotifications";
+import { saveToken } from "../../utils/auth";
+import { getOrCreatePushToken } from "../../utils/pushNotifications";
+import { parseJsonObject } from "../../utils/safeJson";
 
 export default function Login() {
   const { colors, isDark } = useTheme();
@@ -33,24 +35,9 @@ export default function Login() {
   const [villageName, setVillageName] = useState<string>(t('loading'));
 
   useEffect(() => {
-    // Setup notification listeners when component mounts
-    const unsubscribe = setupNotificationListeners();
-    
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     AsyncStorage.getItem("scannedVillage").then((str) => {
-      try {
-        const obj = JSON.parse(str || "{}");
-        setVillageName(obj.villageName || t('no_village_found'));
-      } catch {
-        setVillageName(t('no_village_found'));
-      }
+      const obj = parseJsonObject(str);
+      setVillageName(obj?.villageName || t('no_village_found'));
     });
   }, [t]);
 
@@ -65,9 +52,9 @@ export default function Login() {
     }
 
     const villageStr = await AsyncStorage.getItem("scannedVillage");
-    const villageObj = JSON.parse(villageStr || "{}");
+    const villageObj = parseJsonObject(villageStr);
 
-    if (!villageObj.villageId) {
+    if (!villageObj?.villageId) {
       Toast.show({
         type: "error",
         text1: t('auth.no_village_found'),
@@ -79,7 +66,7 @@ export default function Login() {
     try {
       setLoading(true);
       const res = await apiService.loginCitizen({ phone, password });
-      await AsyncStorage.setItem("token", res.token);
+      await saveToken(res.token);
 
       // Register for push notifications after successful login
       const pushToken = await getOrCreatePushToken();
@@ -97,7 +84,7 @@ export default function Login() {
       Toast.show({
         type: "error",
         text1: t('auth.login_failed'),
-        text2: err.response?.data?.message || t('auth.invalid_credentials'),
+        text2: apiService.getErrorMessage(err, t('auth.invalid_credentials')),
       });
     } finally {
       setLoading(false);

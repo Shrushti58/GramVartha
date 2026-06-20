@@ -1,4 +1,5 @@
 // app/_layout.tsx
+import { useEffect } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import Toast from "react-native-toast-message";
@@ -6,11 +7,14 @@ import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import "../i18n"; // Initialize i18n
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
+import { setupNotificationListeners } from "../utils/pushNotifications";
 
 
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
+
+  useEffect(() => setupNotificationListeners(), []);
 
   return (
     <>

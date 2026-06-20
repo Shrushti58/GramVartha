@@ -121,9 +121,10 @@ export default function Complaint() {
       aspect: [4, 3],
       exif: true,
     });
-    if (!result.canceled && result.assets[0]) {
-      setPhoto(result.assets[0].uri);
-      setPhotoFile({ uri: result.assets[0].uri, name: "photo.jpg", type: "image/jpeg" });
+    const asset = result.assets?.[0];
+    if (!result.canceled && asset?.uri) {
+      setPhoto(asset.uri);
+      setPhotoFile({ uri: asset.uri, name: "photo.jpg", type: "image/jpeg" });
       setTimestamp(new Date().toISOString());
       // Auto-trigger location after taking photo
       autoCaptureLocation();
@@ -238,7 +239,7 @@ export default function Complaint() {
       Toast.show({
         type: "error",
         text1: t('complaint.submission_error'),
-        text2: err.response?.data?.message || t('complaint.try_again'),
+        text2: apiService.getErrorMessage(err, t('complaint.try_again')),
       });
     } finally {
       setLoading(false);

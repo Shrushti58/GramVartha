@@ -662,7 +662,8 @@ const AttachmentCard = ({ notice, onView, colors, isDark, t }: {
 export default function NoticeDetailsScreen() {
   const { colors, isDark } = useTheme();
   const { t }              = useTranslation();
-  const { id }             = useLocalSearchParams<{ id: string }>();
+  const { id }             = useLocalSearchParams<{ id?: string | string[] }>();
+  const noticeId           = Array.isArray(id) ? id[0] : id;
 
   const [notice,   setNotice]   = useState<Notice | null>(null);
   const [loading,  setLoading]  = useState(true);
@@ -679,7 +680,15 @@ export default function NoticeDetailsScreen() {
   const slide1 = useRef(new Animated.Value(18)).current;
   const slide2 = useRef(new Animated.Value(18)).current;
 
-  useEffect(() => { if (id) fetchNotice(); }, [id]);
+  useEffect(() => {
+    if (!noticeId) {
+      setError(t('notice_details.not_found_desc'));
+      setLoading(false);
+      return;
+    }
+
+    fetchNotice(noticeId);
+  }, [noticeId]);
 
   const animIn = (fade: Animated.Value, slide: Animated.Value, delay: number) =>
     Animated.parallel([
@@ -687,10 +696,10 @@ export default function NoticeDetailsScreen() {
       Animated.timing(slide, { toValue: 0, duration: 360, delay, useNativeDriver: true }),
     ]);
 
-  const fetchNotice = async () => {
+  const fetchNotice = async (targetId: string) => {
     try {
       setLoading(true); setError(null);
-      const data = await apiService.fetchNoticeById(id as string);
+      const data = await apiService.fetchNoticeById(targetId);
       setNotice(data);
       Animated.stagger(90, [animIn(fade0, slide0, 0), animIn(fade1, slide1, 0), animIn(fade2, slide2, 0)]).start();
     } catch {
@@ -703,9 +712,9 @@ export default function NoticeDetailsScreen() {
   const getSafeName = useCallback(() => {
     if (!notice) return 'file';
     const ft  = getFileType(notice.fileUrl ?? '', notice.fileName ?? '');
-    const raw = notice.fileName ?? `notice_${(notice as any)._id ?? id}.${ft}`;
+    const raw = notice.fileName ?? `notice_${(notice as any)._id ?? noticeId ?? 'file'}.${ft}`;
     return raw.replace(/[^a-zA-Z0-9._-]/g, '_');
-  }, [notice, id]);
+  }, [notice, noticeId]);
 
   const handleDownload = useCallback(async () => {
     if (!notice?.fileUrl) return;
@@ -881,7 +890,11 @@ export default function NoticeDetailsScreen() {
           </View>
           <Text style={[S.emptyTitle, { color: textPri }]}>{t('notice_details.not_found')}</Text>
           <Text style={[S.emptyDesc,  { color: textSec }]}>{error ?? t('notice_details.not_found_desc')}</Text>
-          <TouchableOpacity onPress={fetchNotice} style={[S.emptyBtn, { backgroundColor: colors.primary[700] }]} activeOpacity={0.82}>
+          <TouchableOpacity
+            onPress={() => noticeId && fetchNotice(noticeId)}
+            style={[S.emptyBtn, { backgroundColor: colors.primary[700] }]}
+            activeOpacity={0.82}
+          >
             <Text style={S.emptyBtnText}>{t('notice_details.try_again')}</Text>
           </TouchableOpacity>
         </View>

@@ -9,7 +9,9 @@ const {
 const {
   registerCitizen,
   loginCitizen,
-  registerPushToken
+  registerPushToken,
+  unregisterPushToken,
+  deleteCitizenAccount
 } = require("../controllers/citizenAuth");
 
 router.use(rejectMongoOperators);
@@ -17,6 +19,8 @@ router.use(rejectMongoOperators);
 router.post("/register", authValidators.citizenRegister, validateRequest, registerCitizen);
 router.post("/login", authValidators.citizenLogin, validateRequest, loginCitizen);
 router.post("/register-push-token", authValidators.pushToken, validateRequest, verifyToken, registerPushToken);
+router.post("/unregister-push-token", authValidators.pushToken, validateRequest, verifyToken, unregisterPushToken);
+router.delete("/me", verifyToken, deleteCitizenAccount);
 
 router.get("/me", verifyToken, (req, res) => {
   console.log("Decoded user from token:", req.user); // Debug log

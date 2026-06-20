@@ -27,6 +27,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { parseJsonArray, parseJsonObject } from '../utils/safeJson';
 
 const { width, height } = Dimensions.get('window');
 
@@ -45,7 +46,7 @@ const TABS = [
   { key: 'complaint', labelKey: 'tabs.tab_report',   icon: 'alert-circle-outline' as const,   activeIcon: 'alert-circle' as const },
   { key: 'scan',      labelKey: 'tabs.tab_scan',     icon: 'qr-code-outline' as const,        activeIcon: 'qr-code' as const },
   { key: 'workguide', labelKey: 'tabs.tab_guide',    icon: 'book-outline' as const,           activeIcon: 'book' as const },
-  { key: 'villages',  labelKey: 'tabs.tab_recent',   icon: 'time-outline' as const,           activeIcon: 'time' as const },
+  { key: 'assistant', labelKey: 'tabs.tab_schemes',  icon: 'ribbon-outline' as const,         activeIcon: 'ribbon' as const },
 ];
 
 // ─── Skeleton ────────────────────────────────────────────────────────────────
@@ -236,8 +237,8 @@ const QRIcon = ({ size = 36, color = '#fff' }: { size?: number; color?: string }
 };
 
 // ─── Village Card ─────────────────────────────────────────────────────────────
-const VillageCard = ({ item, onPress, index, colors }: {
-  item: ScannedVillage; onPress: () => void; index: number; colors: any;
+const VillageCard = ({ item, onPress, onRemove, index, colors }: {
+  item: ScannedVillage; onPress: () => void; onRemove: () => void; index: number; colors: any;
 }) => {
   const slideAnim = useRef(new Animated.Value(20)).current;
   const fadeAnim  = useRef(new Animated.Value(0)).current;
@@ -258,9 +259,26 @@ const VillageCard = ({ item, onPress, index, colors }: {
           <Text style={[styles.villageAvatarText, { color: colors.primary.DEFAULT }]}>{initials}</Text>
         </View>
         <View style={styles.villageCardBody}>
-          <Text style={[styles.villageCardName, { color: colors.text.primary }]}>{item.villageName}</Text>
+          <View style={styles.villageCardTitleRow}>
+            <Text style={[styles.villageCardName, { color: colors.text.primary }]} numberOfLines={1}>{item.villageName}</Text>
+          </View>
           <Text style={[styles.villageCardMeta, { color: colors.text.secondary }]}>{item.district} · {item.state}</Text>
         </View>
+        <TouchableOpacity
+          onPress={onRemove}
+          style={[
+            styles.removeVillageButton,
+            {
+              backgroundColor: `${colors.status.error}10`,
+              borderColor: `${colors.status.error}24`,
+            },
+          ]}
+          activeOpacity={0.72}
+          accessibilityRole="button"
+          accessibilityLabel={`Remove ${item.villageName}`}
+        >
+          <Ionicons name="trash-outline" size={16} color={colors.status.error} />
+        </TouchableOpacity>
         <View style={[styles.villageCardArrow, { backgroundColor: `${colors.primary.DEFAULT}12` }]}>
           <Text style={[styles.villageCardArrowText, { color: colors.primary.DEFAULT }]}>›</Text>
         </View>
@@ -511,7 +529,7 @@ const BottomTabBar = ({ activeTab, onTabPress, colors, isDark, bottomInset }: {
   activeTab: string; onTabPress: (k: string) => void; colors: any; isDark: boolean; bottomInset: number;
 }) => {
   const leftTabs  = TABS.filter(t => t.key === 'notices' || t.key === 'complaint');
-  const rightTabs = TABS.filter(t => t.key === 'workguide' || t.key === 'villages');
+  const rightTabs = TABS.filter(t => t.key === 'workguide' || t.key === 'assistant');
   const scanTab   = TABS.find(t => t.key === 'scan')!;
   return (
     <View
@@ -569,7 +587,7 @@ export default function HomeScreen() {
     setIsDataLoading(true);
     try {
       const stored = await AsyncStorage.getItem('recentVillages');
-      if (stored) setRecentVillages((JSON.parse(stored) as ScannedVillage[]).slice(0, 5));
+      setRecentVillages(parseJsonArray<ScannedVillage>(stored).slice(0, 5));
     } catch (e) { console.error(e); }
     finally { setIsDataLoading(false); }
   };
@@ -579,6 +597,50 @@ export default function HomeScreen() {
     setRefreshing(true);
     await loadRecentVillages();
     setRefreshing(false);
+  };
+
+  const handleRemoveVillage = (village: ScannedVillage) => {
+    Alert.alert(
+      t('home.remove_saved_village_title', 'Remove saved village?'),
+      t('home.remove_saved_village_message', `Remove ${village.villageName} from this device? You can scan its QR code again anytime.`),
+      [
+        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+        {
+          text: t('common.remove', 'Remove'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const [recentValue, historyValue, scannedValue] = await Promise.all([
+                AsyncStorage.getItem('recentVillages'),
+                AsyncStorage.getItem('scannedVillagesHistory'),
+                AsyncStorage.getItem('scannedVillage'),
+              ]);
+
+              const filteredRecent = parseJsonArray<ScannedVillage>(recentValue)
+                .filter((item) => item.villageId !== village.villageId);
+              const filteredHistory = parseJsonArray<ScannedVillage>(historyValue)
+                .filter((item) => item.villageId !== village.villageId);
+              const scannedVillage = parseJsonObject<ScannedVillage>(scannedValue);
+
+              await AsyncStorage.setItem('recentVillages', JSON.stringify(filteredRecent));
+              await AsyncStorage.setItem('scannedVillagesHistory', JSON.stringify(filteredHistory));
+
+              if (scannedVillage?.villageId === village.villageId) {
+                await AsyncStorage.multiRemove(['scannedVillage', 'villageId']);
+              }
+
+              setRecentVillages(filteredRecent.slice(0, 5));
+            } catch (error) {
+              console.error('Remove saved village error:', error);
+              Alert.alert(
+                t('common.error', 'Error'),
+                t('home.remove_saved_village_failed', 'Could not remove the saved village. Please try again.')
+              );
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleCreateComplaint = async () => {
@@ -612,10 +674,8 @@ export default function HomeScreen() {
         handleCreateComplaint(); break;
       case 'workguide':
         router.push('/qr-notices/workguide' as any); break;
-      case 'villages':
-        recentVillages.length
-          ? router.push(`/qr-notices/${recentVillages[0].villageId}` as any)
-          : Alert.alert(t('home.no_villages'), t('home.scan_village_first'));
+      case 'assistant':
+        router.push('/smart-assistant' as any);
         break;
     }
   };
@@ -806,6 +866,7 @@ export default function HomeScreen() {
                 <VillageCard
                   key={v.villageId} item={v} index={i} colors={colors}
                   onPress={() => router.push(`/qr-notices/${v.villageId}` as any)}
+                  onRemove={() => handleRemoveVillage(v)}
                 />
               ))}
             </View>
@@ -1109,13 +1170,24 @@ const styles = StyleSheet.create({
   // Village Card
   villageCard: {
     flexDirection: 'row', alignItems: 'center',
-    borderRadius: 14, paddingHorizontal: 14, paddingVertical: 13, marginBottom: 8, borderWidth: 1,
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 13,
+    marginBottom: 10,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 2,
   },
   villageAvatar:       { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
   villageAvatarText:   { fontSize: 13, fontWeight: '700' },
-  villageCardBody:     { flex: 1 },
-  villageCardName:     { fontSize: 14, fontWeight: '600', marginBottom: 2 },
+  villageCardBody:     { flex: 1, minWidth: 0 },
+  villageCardTitleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 2 },
+  villageCardName:     { flex: 1, minWidth: 0, fontSize: 14, fontWeight: '600' },
   villageCardMeta:     { fontSize: 12 },
+  removeVillageButton: { width: 36, height: 36, borderRadius: 18, borderWidth: 1, justifyContent: 'center', alignItems: 'center', flexShrink: 0, marginLeft: 10 },
   villageCardArrow:    { width: 28, height: 28, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
   villageCardArrowText:{ fontSize: 18, lineHeight: 22, marginLeft: 1 },
 

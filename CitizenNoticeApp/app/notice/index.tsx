@@ -12,6 +12,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../context/ThemeContext';
 import { apiService } from '../../services/api';
 import { formatDate, formatViews } from '../../utils/format';
+import { parseJsonObject } from '../../utils/safeJson';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -307,14 +308,25 @@ export default function QRNoticesScreen() {
   useEffect(() => { setSearchQuery(''); }, [selectedCategory]);
 
   const loadScannedVillageInfo = async () => {
-    try { const i = await AsyncStorage.getItem('scannedVillage'); if (i) setScannedVillageInfo(JSON.parse(i)); } catch {}
+    const i = await AsyncStorage.getItem('scannedVillage');
+    setScannedVillageInfo(parseJsonObject(i));
   };
 
   const fetchNotices = async () => {
+    if (!villageId || typeof villageId !== 'string') {
+      setAllNotices([]);
+      setVillage(null);
+      setTotalPages(1);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const r = await apiService.getNoticesByVillage(villageId, page, 10);
-      setAllNotices(r.notices); setVillage(r.village); setTotalPages(r.totalPages);
+      setAllNotices(Array.isArray(r?.notices) ? r.notices : []);
+      setVillage(r?.village ?? null);
+      setTotalPages(Number(r?.totalPages) || 1);
     } catch { Alert.alert('Error', 'Failed to load notices. Please try again.'); }
     finally { setLoading(false); }
   };

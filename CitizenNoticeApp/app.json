@@ -1,13 +1,12 @@
 {
   "expo": {
-    "name": "CitizenNoticeApp",
-    "slug": "CitizenNoticeApp",
+    "name": "GramVartha",
+    "slug": "gramvartha",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/gramvarthalogo.png",
-    "scheme": "citizennoticeapp",
+    "scheme": "gramvartha",
     "userInterfaceStyle": "automatic",
-    "projectId": "65e8f3a2-c1b2-e4f5-a6b7-c8d9e0f1a2b3",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
@@ -15,13 +14,29 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/gramvarthalogo.png",
-        "backgroundImage": "./assets/images/gramvarthalogo.png",
-        "monochromeImage": "./assets/images/gramvarthalogo.png"
+        "foregroundImage": "./assets/images/gramvarthalogo.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.shrushti58.CitizenNoticeApp"
+      "package": "com.shrushti58.gramvartha",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.INTERNET",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.VIBRATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
     },
     "web": {
       "output": "static",
@@ -40,7 +55,28 @@
             "backgroundColor": "#000000"
           }
         }
-      ]
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow GramVartha to use your camera to scan village QR codes and capture complaint evidence."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Allow GramVartha to use your camera to capture complaint evidence.",
+          "photosPermission": "Allow GramVartha to access selected photos when you attach complaint evidence."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow GramVartha to use your location while filing a complaint."
+        }
+      ],
+      "expo-notifications",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

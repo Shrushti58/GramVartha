@@ -1,16 +1,13 @@
 /**
  * Application Configuration
- * Update the API_BASE_URL with your backend server address
  */
 
-import { Platform } from 'react-native';
-
-// Get API URL from environment variables
-const API_BASE_URL = 'http://192.168.31.219:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ?? "";
 
 export const Config = {
   API_BASE_URL: API_BASE_URL,
   API_TIMEOUT: 10000,
+  UPLOAD_TIMEOUT: 30000,
 
   APP_NAME: 'Citizen Notice',
   APP_VERSION: '1.0.0',

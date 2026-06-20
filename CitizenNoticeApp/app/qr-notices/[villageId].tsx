@@ -270,11 +270,18 @@ export default function QRNoticesScreen() {
   }, [villageId]);
 
   const fetchNotices = async () => {
+    if (!villageId || typeof villageId !== 'string') {
+      setAllNotices([]);
+      setVillage(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await apiService.getNoticesByVillage(villageId, 1, 100);
-      setAllNotices(response.notices || []);
-      setVillage(response.village);
+      setAllNotices(Array.isArray(response?.notices) ? response.notices : []);
+      setVillage(response?.village ?? null);
     } catch (error) {
       Alert.alert(t('common.error'), t('notices.error_load_failed'));
     } finally { 

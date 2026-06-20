@@ -54,6 +54,7 @@ frontend/build/
 # ======================
 CitizenNoticeApp/node_modules/
 CitizenNoticeApp/.expo/
+CitizenNoticeApp/.expo
 CitizenNoticeApp/.expo-shared/
 
 # Expo web build

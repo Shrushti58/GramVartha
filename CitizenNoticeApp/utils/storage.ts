@@ -4,6 +4,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { parseJsonArray } from './safeJson';
 
 const BOOKMARKS_KEY = '@bookmarked_notices';
 
@@ -14,7 +15,7 @@ export async function getBookmarks(): Promise<Set<string>> {
   try {
     const bookmarksJson = await AsyncStorage.getItem(BOOKMARKS_KEY);
     if (bookmarksJson) {
-      const bookmarksArray = JSON.parse(bookmarksJson);
+      const bookmarksArray = parseJsonArray<string>(bookmarksJson);
       return new Set(bookmarksArray);
     }
     return new Set();

@@ -1,33 +1,62 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {jwtDecode} from "jwt-decode";
+import * as SecureStore from "expo-secure-store";
+import { jwtDecode } from "jwt-decode";
+
+const TOKEN_KEY = "authToken";
+const LEGACY_TOKEN_KEY = "token";
+
+type JwtPayload = {
+  exp?: number;
+};
+
+const isTokenExpired = (token: string) => {
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    return !decoded.exp || decoded.exp * 1000 <= Date.now();
+  } catch {
+    return true;
+  }
+};
 
 export const saveToken = async (token: string) => {
-  await AsyncStorage.setItem("token", token);
+  if (!token || isTokenExpired(token)) {
+    throw new Error("Invalid or expired authentication token");
+  }
+
+  await SecureStore.setItemAsync(TOKEN_KEY, token, {
+    keychainAccessible: SecureStore.WHEN_UNLOCKED_THIS_DEVICE_ONLY,
+  });
+  await AsyncStorage.removeItem(LEGACY_TOKEN_KEY);
 };
 
 export const getToken = async () => {
-  return await AsyncStorage.getItem("token");
+  const secureToken = await SecureStore.getItemAsync(TOKEN_KEY);
+
+  if (secureToken) {
+    if (isTokenExpired(secureToken)) {
+      await logout();
+      return null;
+    }
+
+    return secureToken;
+  }
+
+  const legacyToken = await AsyncStorage.getItem(LEGACY_TOKEN_KEY);
+
+  if (!legacyToken) return null;
+
+  if (isTokenExpired(legacyToken)) {
+    await AsyncStorage.removeItem(LEGACY_TOKEN_KEY);
+    return null;
+  }
+
+  await saveToken(legacyToken);
+  return legacyToken;
 };
 
 export const logout = async () => {
-  await AsyncStorage.removeItem("token");
+  await SecureStore.deleteItemAsync(TOKEN_KEY);
+  await AsyncStorage.removeItem(LEGACY_TOKEN_KEY);
 };
 
-export const isLoggedIn = async () => {
-  const token = await AsyncStorage.getItem("token");
-
-  if (!token) return false;
-
-  try {
-    const decoded: any = jwtDecode(token);
-
-    if (decoded.exp * 1000 < Date.now()) {
-      await AsyncStorage.removeItem("token");
-      return false;
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
-};
+export const isLoggedIn = async () => Boolean(await getToken());

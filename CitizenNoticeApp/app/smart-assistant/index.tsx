@@ -19,6 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useTheme } from "../../context/ThemeContext";
 import apiService from "../../services/api";
+import { parseJsonArray, parseJsonObject } from "../../utils/safeJson";
 
 type AssistantCard = {
   type:
@@ -84,28 +85,20 @@ const getStoredVillageId = async () => {
 
   const scannedVillage = await AsyncStorage.getItem("scannedVillage");
   if (scannedVillage) {
-    try {
-      const parsed = JSON.parse(scannedVillage);
-      if (parsed?.villageId) return parsed.villageId;
-      if (parsed?._id) return parsed._id;
-      if (parsed?.id) return parsed.id;
-    } catch (error) {
-      console.warn("Invalid scannedVillage storage value");
-    }
+    const parsed = parseJsonObject(scannedVillage);
+    if (parsed?.villageId) return parsed.villageId;
+    if (parsed?._id) return parsed._id;
+    if (parsed?.id) return parsed.id;
   }
 
   const recentVillages =
     (await AsyncStorage.getItem("recentVillages")) ||
     (await AsyncStorage.getItem("scannedVillagesHistory"));
   if (recentVillages) {
-    try {
-      const parsed = JSON.parse(recentVillages);
-      if (Array.isArray(parsed) && parsed[0]?.villageId) return parsed[0].villageId;
-      if (Array.isArray(parsed) && parsed[0]?._id) return parsed[0]._id;
-      if (Array.isArray(parsed) && parsed[0]?.id) return parsed[0].id;
-    } catch (error) {
-      console.warn("Invalid recentVillages storage value");
-    }
+    const parsed = parseJsonArray<any>(recentVillages);
+    if (parsed[0]?.villageId) return parsed[0].villageId;
+    if (parsed[0]?._id) return parsed[0]._id;
+    if (parsed[0]?.id) return parsed[0].id;
   }
 
   return "";

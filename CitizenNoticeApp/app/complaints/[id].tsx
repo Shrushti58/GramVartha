@@ -214,6 +214,13 @@ export default function ComplaintDetailScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    if (!complaintId || typeof complaintId !== 'string') {
+      Alert.alert(t('error'), t('errors.load_complaint_failed'));
+      setLoading(false);
+      router.back();
+      return;
+    }
+
     fetchComplaintDetails();
   }, [complaintId]);
 
@@ -230,6 +237,7 @@ export default function ComplaintDetailScreen() {
   const fetchComplaintDetails = async () => {
     try {
       setLoading(true);
+      if (!complaintId || typeof complaintId !== 'string') return;
       const data = await apiService.getComplaintDetails(complaintId);
       setComplaint(data);
     } catch (err) {

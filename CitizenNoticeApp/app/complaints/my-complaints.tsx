@@ -9,7 +9,8 @@ import { router } from 'expo-router';
 import { useTheme } from '../../context/ThemeContext';
 import { apiService } from '../../services/api';
 import { formatDate } from '../../utils/format';
-import { isLoggedIn } from '../../utils/auth';
+import { isLoggedIn, logout } from '../../utils/auth';
+import { removePushTokenFromBackend } from '../../utils/pushNotifications';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 
@@ -482,8 +483,11 @@ export default function MyComplaintsScreen() {
         filtered = filtered.filter((c: any) => c.status === filterObj.status);
       }
       setMyComplaints(filtered);
-    } catch {
-      Alert.alert(t('common.error') || 'Error', t('my_complaints.load_error'));
+    } catch (error) {
+      Alert.alert(
+        t('common.error') || 'Error',
+        apiService.getErrorMessage(error, t('my_complaints.load_error'))
+      );
     } finally {
       setLoading(false);
     }
@@ -498,6 +502,65 @@ export default function MyComplaintsScreen() {
   const handleFilterChange = (id: string) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setSelectedFilter(id);
+  };
+
+  const handleLogout = () => {
+    Alert.alert(
+      t('my_complaints.logout_title', 'Logout'),
+      t('my_complaints.logout_message', 'You will need to log in again to view your complaints.'),
+      [
+        { text: t('my_complaints.cancel', 'Cancel'), style: 'cancel' },
+        {
+          text: t('my_complaints.logout_confirm', 'Logout'),
+          style: 'destructive',
+          onPress: async () => {
+            await removePushTokenFromBackend();
+            await logout();
+            setLoggedIn(false);
+            setMyComplaints([]);
+            router.replace('/' as any);
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      t('my_complaints.delete_account_title', 'Delete account'),
+      t(
+        'my_complaints.delete_account_message',
+        'This permanently deletes your account and your submitted complaints. This cannot be undone.'
+      ),
+      [
+        { text: t('my_complaints.cancel', 'Cancel'), style: 'cancel' },
+        {
+          text: t('my_complaints.delete_account_confirm', 'Delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              await apiService.deleteCitizenAccount();
+              await logout();
+              setLoggedIn(false);
+              setMyComplaints([]);
+              Alert.alert(
+                t('my_complaints.account_deleted_title', 'Account deleted'),
+                t('my_complaints.account_deleted_message', 'Your account has been removed.')
+              );
+              router.replace('/' as any);
+            } catch (error: any) {
+              Alert.alert(
+                t('common.error') || 'Error',
+                apiService.getErrorMessage(error, t('my_complaints.delete_account_error', 'Could not delete your account. Please try again.'))
+              );
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const processed = useMemo(() => {
@@ -606,6 +669,45 @@ export default function MyComplaintsScreen() {
       </LinearGradient>
 
       {/* ── Search bar — matches complaint input style ── */}
+      <View
+        style={[
+          styles.accountActions,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
+        <TouchableOpacity
+          onPress={handleLogout}
+          style={[
+            styles.accountActionBtn,
+            {
+              backgroundColor: isDark ? `${colors.primary[500]}12` : colors.primary[50],
+              borderColor: isDark ? `${colors.primary[500]}30` : colors.primary[100],
+            },
+          ]}
+          activeOpacity={0.75}
+        >
+          <Text style={[styles.accountActionText, { color: colors.primary[isDark ? 300 : 700] }]}>
+            {t('my_complaints.logout_action', 'Logout')}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleDeleteAccount}
+          style={[
+            styles.accountActionBtn,
+            {
+              backgroundColor: isDark ? 'rgba(239,68,68,0.12)' : '#FEF2F2',
+              borderColor: isDark ? 'rgba(239,68,68,0.35)' : '#FECACA',
+            },
+          ]}
+          activeOpacity={0.75}
+        >
+          <Text style={[styles.accountActionText, { color: isDark ? '#FCA5A5' : '#B91C1C' }]}>
+            {t('my_complaints.delete_account_action', 'Delete account')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <View
         style={[
           styles.searchSection,
@@ -820,6 +922,27 @@ const styles = StyleSheet.create({
     borderRadius: 12, borderWidth: 1,
   },
   newBtnTxt: { fontSize: 12, fontWeight: '800', letterSpacing: 0.2 },
+  accountActions: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  accountActionBtn: {
+    flex: 1,
+    minHeight: 42,
+    borderRadius: 10,
+    borderWidth: 1.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+  },
+  accountActionText: {
+    fontSize: 12,
+    fontWeight: '800',
+    textAlign: 'center',
+  },
   headerTitleBlock: { paddingHorizontal: 18, gap: 4 },
   headerEyebrow: {
     fontSize: 10, fontWeight: '800',

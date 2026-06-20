@@ -1,10 +1,17 @@
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
-import apiService from '../services/api';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import { router } from "expo-router";
+import { Platform } from "react-native";
+import { apiService } from "../services/api";
+import { getToken } from "./auth";
 
-// Configure notification handler
+const PUSH_TOKEN_KEY = "expoPushToken";
+const ANDROID_DEFAULT_CHANNEL_ID = "default";
+const ANDROID_COMPLAINTS_CHANNEL_ID = "complaints";
+const ANDROID_NOTICES_CHANNEL_ID = "notices";
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -15,126 +22,149 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function registerForPushNotificationsAsync() {
-  if (!Device.isDevice) {
-    console.warn('⚠️ Notifications only work on physical devices');
-    return null;
-  }
+async function configureAndroidNotificationChannels() {
+  if (Platform.OS !== "android") return;
 
+  await Notifications.setNotificationChannelAsync(ANDROID_DEFAULT_CHANNEL_ID, {
+    name: "General updates",
+    importance: Notifications.AndroidImportance.DEFAULT,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: "#2563EB",
+  });
+
+  await Notifications.setNotificationChannelAsync(ANDROID_NOTICES_CHANNEL_ID, {
+    name: "Village notices",
+    importance: Notifications.AndroidImportance.HIGH,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: "#16A34A",
+  });
+
+  await Notifications.setNotificationChannelAsync(ANDROID_COMPLAINTS_CHANNEL_ID, {
+    name: "Complaint updates",
+    importance: Notifications.AndroidImportance.HIGH,
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor: "#DC2626",
+  });
+}
+
+function getProjectId() {
+  return (
+    Constants.expoConfig?.extra?.eas?.projectId ||
+    (Constants as any).easConfig?.projectId
+  );
+}
+
+async function requestNotificationPermission() {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
 
-  if (existingStatus !== 'granted') {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
-  }
+  if (existingStatus === "granted") return true;
 
-  if (finalStatus !== 'granted') {
-    console.warn('⚠️ Permission denied for push notifications');
+  const { status } = await Notifications.requestPermissionsAsync();
+  return status === "granted";
+}
+
+async function getExpoPushToken() {
+  if (!Device.isDevice) {
+    console.warn("Push notifications require a physical device");
     return null;
   }
 
-  try {
-    // Fallback projectId - test UUID format
-    const projectId = Constants.expoConfig?.extra?.eas?.projectId || '65e8f3a2-c1b2-e4f5-a6b7-c8d9e0f1a2b3';
-    
-    const token = await Notifications.getExpoPushTokenAsync({
-      projectId: projectId,
-    });
+  await configureAndroidNotificationChannels();
 
-    console.log('✅ Push notification token obtained:', token.data);
-    return token.data;
-  } catch (error) {
-    console.error('❌ Error getting push token:', error);
-    console.log('💡 To fix this:');
-    console.log('   1. Run: npm install -g eas-cli');
-    console.log('   2. Run: eas init');
-    console.log('   3. This will link your project to Expo and update app.json with correct projectId');
+  const permissionGranted = await requestNotificationPermission();
+  if (!permissionGranted) {
+    console.warn("Permission denied for push notifications");
     return null;
   }
+
+  const projectId = getProjectId();
+  if (!projectId) {
+    console.warn("EAS projectId is missing; Expo push token registration skipped");
+    return null;
+  }
+
+  const token = await Notifications.getExpoPushTokenAsync({ projectId });
+  return token.data;
 }
 
 export async function savePushTokenToBackend(expoPushToken: string) {
-  try {
-    // Save to local storage for persistence
-    await AsyncStorage.setItem('expoPushToken', expoPushToken);
+  await AsyncStorage.setItem(PUSH_TOKEN_KEY, expoPushToken);
 
-    // Send to backend - use /citizen endpoint
-    const response = await apiService.post('/citizen/register-push-token', {
-      pushToken: expoPushToken
-    });
+  const authToken = await getToken();
+  if (!authToken) return null;
 
-    console.log('✅ Push token registered with backend');
-    return response.data;
-  } catch (error) {
-    console.error('❌ Error saving push token to backend:', error);
-  }
-}
-
-export function setupNotificationListeners() {
-  // Listener for when notification is received while app is foregrounded
-  const foregroundNotificationListener = Notifications.addNotificationReceivedListener(
-    (notification) => {
-      console.log('📬 Notification received (foreground):', notification);
-      handleNotification(notification);
-    }
-  );
-
-  // Listener for when user taps on notification
-  const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
-    console.log('👆 Notification tapped:', response.notification);
-    handleNotificationTap(response.notification);
+  return apiService.post("/citizen/register-push-token", {
+    pushToken: expoPushToken,
   });
-
-  return () => {
-    foregroundNotificationListener.remove();
-    responseListener.remove();
-  };
 }
 
-function handleNotification(notification: Notifications.Notification) {
-  // Show alert or update state based on notification data
-  const data = notification.request.content.data;
-  console.log('Notification data:', data);
-}
+export async function removePushTokenFromBackend() {
+  const token = await AsyncStorage.getItem(PUSH_TOKEN_KEY);
 
-function handleNotificationTap(notification: Notifications.Notification) {
-  const data = notification.request.content.data;
+  if (!token) return;
 
-  if (data?.type === 'notice') {
-    // Navigate to notice details
-    console.log('Navigating to notice for village:', data.villageId);
-    // You can use expo-router to navigate here
-  } else if (data?.type === 'complaint_resolved' || data?.type === 'complaint_rejected') {
-    // Navigate to complaint details
-    console.log('Navigating to complaint:', data.complaintId);
+  try {
+    await apiService.post("/citizen/unregister-push-token", {
+      pushToken: token,
+    });
+  } finally {
+    await AsyncStorage.removeItem(PUSH_TOKEN_KEY);
   }
 }
 
 export async function getOrCreatePushToken() {
   try {
-    // Check if token already exists
-    let token = await AsyncStorage.getItem('expoPushToken');
+    const token = await getExpoPushToken();
+    if (!token) return null;
 
-    if (!token) {
-      // Register for push notifications
-      token = await registerForPushNotificationsAsync();
-
-      if (token) {
-        await savePushTokenToBackend(token);
-      }
-    } else {
-      // Token exists but verify it's with backend
-      try {
-        await savePushTokenToBackend(token);
-      } catch (error) {
-        console.warn('Could not verify token with backend:', error);
-      }
-    }
+    await savePushTokenToBackend(token);
 
     return token;
   } catch (error) {
-    console.error('Error managing push token:', error);
+    console.error("Error managing push token:", error);
     return null;
   }
+}
+
+function handleNotificationTap(notification: Notifications.Notification) {
+  const data = notification.request.content.data;
+
+  if (data?.type === "notice" && data?.villageId) {
+    router.push(`/qr-notices/${data.villageId}` as any);
+  } else if (
+    (data?.type === "complaint_resolved" || data?.type === "complaint_rejected") &&
+    data?.complaintId
+  ) {
+    router.push(`/complaints/${data.complaintId}` as any);
+  }
+}
+
+export function setupNotificationListeners() {
+  void configureAndroidNotificationChannels();
+  void Notifications.getLastNotificationResponseAsync().then((response) => {
+    if (response?.notification) {
+      handleNotificationTap(response.notification);
+    }
+  });
+
+  const receivedSubscription = Notifications.addNotificationReceivedListener(() => {
+    // Foreground presentation is controlled by setNotificationHandler above.
+  });
+
+  const responseSubscription = Notifications.addNotificationResponseReceivedListener((response) => {
+    handleNotificationTap(response.notification);
+  });
+
+  const tokenSubscription = (Notifications as any).addPushTokenListener?.((token: any) => {
+    const tokenValue = typeof token === "string" ? token : token?.data;
+    if (tokenValue) {
+      void savePushTokenToBackend(tokenValue);
+    }
+  });
+
+  return () => {
+    receivedSubscription.remove();
+    responseSubscription.remove();
+    tokenSubscription?.remove?.();
+  };
 }

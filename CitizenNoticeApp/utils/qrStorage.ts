@@ -4,6 +4,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { parseJsonArray, parseJsonObject } from './safeJson';
 
 const SCANNED_VILLAGE_KEY = 'scannedVillage';
 const SCANNED_VILLAGES_HISTORY_KEY = 'scannedVillagesHistory';
@@ -14,7 +15,7 @@ const SCANNED_VILLAGES_HISTORY_KEY = 'scannedVillagesHistory';
 export async function getScannedVillage() {
   try {
     const data = await AsyncStorage.getItem(SCANNED_VILLAGE_KEY);
-    return data ? JSON.parse(data) : null;
+    return parseJsonObject(data);
   } catch (err) {
     console.error('Error getting scanned village:', err);
     return null;
@@ -67,7 +68,7 @@ export async function clearScannedVillage() {
 export async function getScanHistory() {
   try {
     const data = await AsyncStorage.getItem(SCANNED_VILLAGES_HISTORY_KEY);
-    return data ? JSON.parse(data) : [];
+    return parseJsonArray(data);
   } catch (err) {
     console.error('Error getting scan history:', err);
     return [];

@@ -18,11 +18,11 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../context/ThemeContext';
-import { Config } from '../constants/config';
-import axios from 'axios';
+import { apiService } from '../services/api';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { parseJsonArray } from '../utils/safeJson';
 
 const { width, height } = Dimensions.get('window');
 const FRAME_SIZE = width * 0.72;
@@ -187,11 +187,13 @@ export default function QRScannerScreen() {
     try {
       const qrCodeId = data.trim();
 
-      const response = await axios.get(
-        `${Config.API_BASE_URL}/villages/qr/${qrCodeId}`
-      );
+      const response = await apiService.getVillageByQRCode(qrCodeId);
 
-      const villageData = response.data.village;
+      const villageData = response?.village;
+
+      if (!villageData?._id || !villageData?.name) {
+        throw new Error(t('qr_scanner.invalid_qr_error'));
+      }
 
       const scannedVillageData = {
         villageId: villageData._id,
@@ -210,7 +212,7 @@ export default function QRScannerScreen() {
       await AsyncStorage.setItem("villageId", villageData._id);
 
       const recentStr = await AsyncStorage.getItem("recentVillages");
-      const recent = recentStr ? JSON.parse(recentStr) : [];
+      const recent = parseJsonArray<any>(recentStr);
 
       const filtered = recent.filter(
         (v: any) => v.villageId !== villageData._id
@@ -247,7 +249,7 @@ export default function QRScannerScreen() {
       
     } catch (err: unknown) {
       const errorMessage =
-        (err as any)?.response?.data?.error ||
+        apiService.getErrorMessage(err) ||
         t('qr_scanner.invalid_qr_error');
 
       Alert.alert(t('qr_scanner.not_recognized'), errorMessage, [

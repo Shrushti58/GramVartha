@@ -9,11 +9,10 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../context/ThemeContext";
-import axios from "axios";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-
-const API_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+import { apiService } from "../services/api";
+import { parseJsonObject } from "../utils/safeJson";
 
 export default function WeatherCard() {
   const { colors } = useTheme();
@@ -40,22 +39,30 @@ export default function WeatherCard() {
         return;
       }
 
-      const parsedVillage = JSON.parse(storedVillage);
+      const parsedVillage = parseJsonObject(storedVillage);
+      if (!parsedVillage) {
+        setVillage(null);
+        setWeather(null);
+        return;
+      }
+
       setVillage(parsedVillage);
 
       const villageId = parsedVillage.villageId || parsedVillage._id;
+      if (!villageId) {
+        setWeather(null);
+        return;
+      }
 
-      const res = await axios.get(
-        `${API_URL}/weather/basic-advice/${villageId}`
-      );
+      const res = await apiService.get(`/weather/basic-advice/${villageId}`);
 
-      if (res.data.success) {
-        setWeather(res.data.data);
+      if (res?.success) {
+        setWeather(res.data ?? null);
       } else {
         setWeather(null);
       }
     } catch (err: any) {
-      console.log("Weather error:", err.response?.data || err.message);
+      console.log("Weather error:", apiService.getErrorMessage(err));
       setWeather(null);
     } finally {
       setLoading(false);

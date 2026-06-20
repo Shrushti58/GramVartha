@@ -466,7 +466,9 @@ export default function AllComplaintsScreen() {
   const { colors, isDark } = useTheme();
   const { t } = useTranslation();
   const searchParams = useLocalSearchParams();
-  const villageId = (searchParams.villageId as string) || '';
+  const villageId = Array.isArray(searchParams.villageId)
+    ? searchParams.villageId[0]
+    : (searchParams.villageId || '');
 
   const [allComplaints, setAllComplaints] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -508,10 +510,13 @@ export default function AllComplaintsScreen() {
       const response = await apiService.getComplaintsByVillage(villageId, page, 10, {
         status: filterObj?.status,
       });
-      setAllComplaints(response.complaints || response);
-      setTotalPages(response.pages || 1);
-    } catch {
-      Alert.alert(t('common.error') || 'Error', t('all_complaints.load_error'));
+      setAllComplaints(Array.isArray(response?.complaints) ? response.complaints : Array.isArray(response) ? response : []);
+      setTotalPages(Number(response?.pages) || 1);
+    } catch (error) {
+      Alert.alert(
+        t('common.error') || 'Error',
+        apiService.getErrorMessage(error, t('all_complaints.load_error'))
+      );
     } finally {
       setLoading(false);
     }

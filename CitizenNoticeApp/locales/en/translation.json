@@ -164,7 +164,8 @@
     "tab_report": "Report",
     "tab_scan": "Scan",
     "tab_guide": "Guide",
-    "tab_recent": "Recent"
+    "tab_recent": "Recent",
+    "tab_schemes": "Schemes"
   },
 
   "home": {
@@ -497,7 +498,19 @@
     "filter_all": "All",
     "filter_pending": "Pending",
     "filter_in_progress": "In Progress",
-    "filter_resolved": "Resolved"
+    "filter_resolved": "Resolved",
+    "logout_action": "Logout",
+    "logout_title": "Logout",
+    "logout_message": "You will need to log in again to view your complaints.",
+    "logout_confirm": "Logout",
+    "cancel": "Cancel",
+    "delete_account_action": "Delete account",
+    "delete_account_title": "Delete account",
+    "delete_account_message": "This permanently deletes your account and your submitted complaints. This cannot be undone.",
+    "delete_account_confirm": "Delete",
+    "delete_account_error": "Could not delete your account. Please try again.",
+    "account_deleted_title": "Account deleted",
+    "account_deleted_message": "Your account has been removed."
   },
 
   "register_screen": {

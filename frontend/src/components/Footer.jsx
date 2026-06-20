@@ -83,6 +83,14 @@ export default function Footer() {
                   {t('register_village')}
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/privacy-policy"
+                  className="text-xs sm:text-sm text-white/50 hover:text-primary-400 transition-colors duration-200"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -121,6 +129,12 @@ export default function Footer() {
             <p className="text-xs text-white/30 text-center">
               {t('footer_rights').replace('2025', new Date().getFullYear())}
             </p>
+            <Link
+              to="/privacy-policy"
+              className="text-xs text-white/40 hover:text-primary-400 transition-colors duration-200"
+            >
+              Privacy Policy
+            </Link>
           </div>
         </div>
       </div>

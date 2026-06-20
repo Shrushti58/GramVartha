@@ -16,10 +16,11 @@ import {
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../context/ThemeContext';
-import { Config } from '../../constants/config';
+import { apiService } from '../../services/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { parseJsonArray, parseJsonObject } from '../../utils/safeJson';
 
 const { width } = Dimensions.get('window');
 
@@ -618,7 +619,7 @@ export default function WorkGuideScreen() {
       try {
         const primary = await AsyncStorage.getItem('scannedVillage');
         if (primary) {
-          const v = JSON.parse(primary);
+          const v = parseJsonObject(primary);
           if (v?.villageId) {
             setVillageId(v.villageId);
             setVillageName(v.villageName ?? '');
@@ -627,8 +628,8 @@ export default function WorkGuideScreen() {
         }
         const recent = await AsyncStorage.getItem('recentVillages');
         if (recent) {
-          const arr = JSON.parse(recent);
-          if (Array.isArray(arr) && arr.length > 0) {
+          const arr = parseJsonArray<any>(recent);
+          if (arr.length > 0) {
             const v = arr[0];
             if (v?.villageId) {
               setVillageId(v.villageId);
@@ -666,10 +667,9 @@ export default function WorkGuideScreen() {
     if (!villageId) return;
     try {
       setLoading(true);
-      const base = `${Config.API_BASE_URL}/workguide/village/${villageId}`;
-      const url  = search ? `${base}?search=${encodeURIComponent(search)}` : base;
-      const res  = await fetch(url);
-      const data = await res.json();
+      const data = await apiService.get(`/workguide/village/${villageId}`, {
+        params: search ? { search } : undefined,
+      });
       setGrouped(Array.isArray(data) ? data : []);
     } catch {
       setGrouped([]);

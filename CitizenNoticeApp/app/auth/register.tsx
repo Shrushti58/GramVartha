@@ -19,6 +19,9 @@ import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
+import { saveToken } from "../../utils/auth";
+import { getOrCreatePushToken } from "../../utils/pushNotifications";
+import { parseJsonObject } from "../../utils/safeJson";
 
 export default function Register() {
   const { colors, isDark } = useTheme();
@@ -32,12 +35,8 @@ export default function Register() {
 
   useEffect(() => {
     AsyncStorage.getItem("scannedVillage").then((str) => {
-      try {
-        const obj = JSON.parse(str || "{}");
-        setVillageName(obj.villageName || t('common.unknown_village') || 'Unknown Village');
-      } catch {
-        setVillageName(t('common.unknown_village') || 'Unknown Village');
-      }
+      const obj = parseJsonObject(str);
+      setVillageName(obj?.villageName || t('common.unknown_village') || 'Unknown Village');
     });
   }, [t]);
 
@@ -52,9 +51,9 @@ export default function Register() {
     }
     
     const villageStr = await AsyncStorage.getItem("scannedVillage");
-    const villageObj = JSON.parse(villageStr || "{}");
+    const villageObj = parseJsonObject(villageStr);
 
-    if (!villageObj.villageId) {
+    if (!villageObj?.villageId) {
       Toast.show({
         type: "error",
         text1: t('register_screen.no_village_found') || 'No Village Found',
@@ -73,7 +72,8 @@ export default function Register() {
         village: villageObj.villageId,
       });
 
-      await AsyncStorage.setItem("token", res.token);
+      await saveToken(res.token);
+      void getOrCreatePushToken();
       Toast.show({
         type: "success",
         text1: t('register_screen.welcome') || 'Welcome!',
@@ -84,7 +84,7 @@ export default function Register() {
       Toast.show({
         type: "error",
         text1: t('register_screen.register_error') || 'Registration Failed',
-        text2: err.response?.data?.message || t('register_screen.try_again') || 'Please try again',
+        text2: apiService.getErrorMessage(err, t('register_screen.try_again') || 'Please try again'),
       });
     } finally {
       setLoading(false);

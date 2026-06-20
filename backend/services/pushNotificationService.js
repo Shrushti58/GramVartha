@@ -1,79 +1,127 @@
-const admin = require('firebase-admin');
-require('dotenv').config();
+const axios = require("axios");
+const Citizens = require("../models/Citizens");
 
-// Initialize Firebase Admin SDK
-let serviceAccount;
-try {
-  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}');
-} catch (e) {
-  console.warn('⚠️ FIREBASE_SERVICE_ACCOUNT not configured - push notifications disabled');
+const EXPO_PUSH_URL = "https://exp.host/--/api/v2/push/send";
+const EXPO_PUSH_BATCH_SIZE = 100;
+
+function isExpoPushToken(token) {
+  return /^Expo(nent)?PushToken\[[\w-]+\]$/.test(token);
 }
 
-if (Object.keys(serviceAccount).length > 0) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
+function chunk(items, size) {
+  const chunks = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+}
+
+async function removeInvalidPushTokens(tokens) {
+  const uniqueTokens = [...new Set(tokens.filter(Boolean))];
+  if (uniqueTokens.length === 0) return;
+
+  await Citizens.updateMany(
+    { pushTokens: { $in: uniqueTokens } },
+    { $pull: { pushTokens: { $in: uniqueTokens } } }
+  );
 }
 
 async function sendPushNotification(pushTokens, title, body, data = {}) {
-  if (!admin.apps.length || !pushTokens || pushTokens.length === 0) {
-    console.log('⚠️ No push tokens or Firebase not initialized');
-    return { success: false, message: 'Firebase not configured or no tokens provided' };
+  const allTokens = pushTokens || [];
+  const tokens = [...new Set(allTokens.filter(isExpoPushToken))];
+  const invalidFormatTokens = allTokens.filter((token) => !isExpoPushToken(token));
+
+  if (invalidFormatTokens.length > 0) {
+    await removeInvalidPushTokens(invalidFormatTokens);
   }
 
-  try {
-    const message = {
-      notification: {
-        title: title,
-        body: body
-      },
+  if (tokens.length === 0) {
+    return {
+      success: false,
+      message: "No valid Expo push tokens provided",
+      successCount: 0,
+      failureCount: invalidFormatTokens.length,
+      failedTokens: invalidFormatTokens,
+    };
+  }
+
+  let successCount = 0;
+  const failedTokens = [...invalidFormatTokens];
+
+  for (const tokenBatch of chunk(tokens, EXPO_PUSH_BATCH_SIZE)) {
+    const messages = tokenBatch.map((to) => ({
+      to,
+      sound: "default",
+      title,
+      body,
       data: {
         ...data,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
-      tokens: pushTokens
-    };
+      channelId:
+        data?.type === "notice"
+          ? "notices"
+          : data?.type === "complaint_resolved" || data?.type === "complaint_rejected"
+          ? "complaints"
+          : "default",
+      priority: "high",
+    }));
 
-    const response = await admin.messaging().sendMulticast(message);
+    try {
+      const response = await axios.post(EXPO_PUSH_URL, messages, {
+        headers: {
+          Accept: "application/json",
+          "Accept-Encoding": "gzip, deflate",
+          "Content-Type": "application/json",
+        },
+        timeout: 10000,
+      });
 
-    if (response.failureCount > 0) {
-      const failedTokens = [];
-      response.responses.forEach((resp, idx) => {
-        if (!resp.success) {
-          failedTokens.push(pushTokens[idx]);
+      const tickets = Array.isArray(response.data?.data) ? response.data.data : [];
+
+      tickets.forEach((ticket, index) => {
+        if (ticket.status === "ok") {
+          successCount += 1;
+          return;
+        }
+
+        const failedToken = tokenBatch[index];
+        failedTokens.push(failedToken);
+
+        if (ticket.details?.error === "DeviceNotRegistered") {
+          void removeInvalidPushTokens([failedToken]);
         }
       });
-      console.log(`✅ Push sent to ${response.successCount}/${pushTokens.length} | Failed: ${failedTokens.join(', ')}`);
-    } else {
-      console.log(`✅ Push notification sent to ${response.successCount} devices`);
+    } catch (error) {
+      failedTokens.push(...tokenBatch);
+      console.error("Expo push notification error:", error.response?.data || error.message);
     }
-
-    return {
-      success: true,
-      successCount: response.successCount,
-      failureCount: response.failureCount,
-      failedTokens: response.responses
-        .map((r, i) => r.success ? null : pushTokens[i])
-        .filter(t => t)
-    };
-  } catch (err) {
-    console.error('❌ Push notification error:', err.message);
-    return { success: false, error: err.message };
   }
+
+  const uniqueFailedTokens = [...new Set(failedTokens)];
+
+  return {
+    success: successCount > 0,
+    successCount,
+    failureCount: uniqueFailedTokens.length,
+    failedTokens: uniqueFailedTokens,
+  };
 }
 
 async function notifyVillageCitizens(citizens, title, body, data = {}) {
   const pushTokens = [];
+
   for (const citizen of citizens) {
-    if (citizen.pushTokens && citizen.pushTokens.length > 0) {
+    if (Array.isArray(citizen.pushTokens)) {
       pushTokens.push(...citizen.pushTokens);
     }
   }
 
-  return await sendPushNotification(pushTokens, title, body, data);
+  return sendPushNotification(pushTokens, title, body, data);
 }
 
 module.exports = {
   sendPushNotification,
-  notifyVillageCitizens
+  notifyVillageCitizens,
+  removeInvalidPushTokens,
 };

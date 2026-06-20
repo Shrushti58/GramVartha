@@ -16,12 +16,11 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import axios from "axios";
 import { useTheme } from "../../context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-
-const API_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+import { apiService } from "../../services/api";
+import { parseJsonObject } from "../../utils/safeJson";
 
 // Custom Dropdown Component
 interface DropdownItem {
@@ -397,30 +396,37 @@ export default function WeatherAdvisoryScreen() {
           t("weather_advisory.no_village"),
           t("weather_advisory.scan_village_first")
         );
+        setLoading(false);
         return;
       }
 
-      const parsedVillage = JSON.parse(storedVillage);
-      const villageId = parsedVillage.villageId || parsedVillage._id;
+      const parsedVillage = parseJsonObject(storedVillage);
+      const villageId = parsedVillage?.villageId || parsedVillage?._id;
 
-      const res = await axios.get(
-        `${API_URL}/weather/crop-advice/${villageId}`,
-        {
-          params: {
-            crop: crop.trim().toLowerCase(),
-            stage: stage.trim().toLowerCase(),
-            soil: soilType,
-            lastIrrigationDays: Number(lastIrrigationDays || 0),
-          },
-        }
-      );
+      if (!villageId) {
+        Alert.alert(
+          t("weather_advisory.no_village"),
+          t("weather_advisory.scan_village_first")
+        );
+        setLoading(false);
+        return;
+      }
 
-      setAdvice(res.data.data);
+      const res = await apiService.get(`/weather/crop-advice/${villageId}`, {
+        params: {
+          crop: crop.trim().toLowerCase(),
+          stage: stage.trim().toLowerCase(),
+          soil: soilType,
+          lastIrrigationDays: Number(lastIrrigationDays || 0),
+        },
+      });
+
+      setAdvice(res?.data ?? null);
     } catch (err: any) {
-      console.log("Detailed weather error:", err.response?.data || err.message);
+      console.log("Detailed weather error:", apiService.getErrorMessage(err));
       Alert.alert(
         t("weather_advisory.error"),
-        t("weather_advisory.failed_generate")
+        apiService.getErrorMessage(err, t("weather_advisory.failed_generate"))
       );
     } finally {
       setLoading(false);

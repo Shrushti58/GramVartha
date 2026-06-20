@@ -1,7 +1,12 @@
 const bcrypt = require("bcryptjs");
 const Citizens = require("../models/Citizens");
+const Complaint = require("../models/Complaint");
 const { generateToken } = require("../utlis/jwt");
 const { tokenCookieOptions } = require("../utlis/cookieOptions");
+
+function isExpoPushToken(token) {
+  return /^Expo(nent)?PushToken\[[\w-]+\]$/.test(token);
+}
 
 const registerCitizen = async (req, res) => {
   try {
@@ -41,7 +46,6 @@ const registerCitizen = async (req, res) => {
         village: citizen.village
       }
     });
-
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Registration failed" });
@@ -80,7 +84,6 @@ const loginCitizen = async (req, res) => {
         village: citizen.village
       }
     });
-
   } catch (error) {
     res.status(500).json({ message: "Login failed" });
   }
@@ -90,9 +93,9 @@ const registerPushToken = async (req, res) => {
   try {
     const { pushToken } = req.body;
 
-    if (!pushToken) {
+    if (!isExpoPushToken(pushToken)) {
       return res.status(400).json({
-        message: "Push token is required"
+        message: "A valid Expo push token is required"
       });
     }
 
@@ -104,26 +107,74 @@ const registerPushToken = async (req, res) => {
       });
     }
 
-    // Add push token if not already present
-    if (!citizen.pushTokens.includes(pushToken)) {
-      citizen.pushTokens.push(pushToken);
-      await citizen.save();
-      console.log(`📱 Push token registered for citizen ${citizen._id}`);
-    }
+    await Citizens.updateOne(
+      { _id: citizen._id },
+      { $addToSet: { pushTokens: pushToken } }
+    );
 
     res.json({
       message: "Push token registered successfully",
-      tokensCount: citizen.pushTokens.length
+      tokensCount: citizen.pushTokens.includes(pushToken)
+        ? citizen.pushTokens.length
+        : citizen.pushTokens.length + 1
     });
-
   } catch (error) {
     console.error("Error registering push token:", error);
     res.status(500).json({ message: "Failed to register push token" });
   }
 };
 
+const unregisterPushToken = async (req, res) => {
+  try {
+    const { pushToken } = req.body;
+
+    if (!pushToken) {
+      return res.status(400).json({
+        message: "Push token is required"
+      });
+    }
+
+    await Citizens.updateOne(
+      { _id: req.user.id },
+      { $pull: { pushTokens: pushToken } }
+    );
+
+    res.json({
+      message: "Push token unregistered successfully"
+    });
+  } catch (error) {
+    console.error("Error unregistering push token:", error);
+    res.status(500).json({ message: "Failed to unregister push token" });
+  }
+};
+
+const deleteCitizenAccount = async (req, res) => {
+  try {
+    const citizen = await Citizens.findById(req.user.id);
+
+    if (!citizen) {
+      return res.status(404).json({
+        message: "Citizen not found"
+      });
+    }
+
+    await Complaint.deleteMany({ citizen: citizen._id });
+    await Citizens.deleteOne({ _id: citizen._id });
+
+    res.clearCookie("token");
+    res.json({
+      message: "Account deleted successfully"
+    });
+  } catch (error) {
+    console.error("Error deleting citizen account:", error);
+    res.status(500).json({ message: "Failed to delete account" });
+  }
+};
+
 module.exports = {
   registerCitizen,
   loginCitizen,
-  registerPushToken
+  registerPushToken,
+  unregisterPushToken,
+  deleteCitizenAccount
 };
