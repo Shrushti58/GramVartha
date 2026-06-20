@@ -382,6 +382,7 @@ const SplashScreen = ({ exitOpacity, exitScale }: { exitOpacity: Animated.Value;
 
   return (
     <Animated.View
+      pointerEvents="none"
       style={[
         styles.splash,
         { backgroundColor: colors.primary[700], opacity: exitOpacity, transform: [{ scale: exitScale }] },
@@ -684,8 +685,8 @@ export default function HomeScreen() {
     <ThemedView style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor={colors.primary[700]} />
 
-      {/* Splash — always mounted, fades out */}
-      <SplashScreen exitOpacity={splashOpacity} exitScale={splashScale} />
+      {/* Splash fades out, then unmounts so it cannot block touches. */}
+      {isLoading && <SplashScreen exitOpacity={splashOpacity} exitScale={splashScale} />}
 
       {/* Main content fades in underneath */}
       <Animated.View style={[{ flex: 1 }, { opacity: contentOpacity, transform: [{ translateY: contentSlide }] }]}>
