@@ -118,19 +118,19 @@ function IcoSpinner({ size = 18 }) {
 
 function StatCardSkeleton() {
   return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft animate-pulse">
-      <div className="w-9 h-9 rounded-xl bg-gray-200 dark:bg-gray-700 mb-4" />
-      <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-      <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-soft animate-pulse">
+      <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-xl bg-gray-200 dark:bg-gray-700 mb-2 sm:mb-4" />
+      <div className="h-6 sm:h-8 w-12 sm:w-16 bg-gray-200 dark:bg-gray-700 rounded mb-1 sm:mb-2" />
+      <div className="h-2.5 sm:h-3 w-14 sm:w-20 bg-gray-200 dark:bg-gray-700 rounded" />
     </div>
   );
 }
 
 function FilterTabSkeleton() {
   return (
-    <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+    <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1 overflow-x-auto">
       {[1, 2, 3, 4, 5].map((i) => (
-        <div key={i} className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+        <div key={i} className="h-8 w-14 sm:w-16 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse flex-shrink-0" />
       ))}
     </div>
   );
@@ -138,9 +138,9 @@ function FilterTabSkeleton() {
 
 function TypeFilterSkeleton() {
   return (
-    <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+    <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+        <div key={i} className="h-8 w-14 sm:w-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
       ))}
     </div>
   );
@@ -148,23 +148,23 @@ function TypeFilterSkeleton() {
 
 function ComplaintCardSkeleton() {
   return (
-    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl overflow-hidden animate-pulse">
-      <div className="flex items-stretch gap-0 min-h-[96px]">
-        <div className="w-28 sm:w-36 flex-shrink-0 bg-gray-200 dark:bg-gray-700" />
-        <div className="flex-1 px-4 py-3.5">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <div className="flex items-center gap-1.5">
-              <div className="h-5 w-12 bg-gray-200 dark:bg-gray-700 rounded-md" />
-              <div className="h-5 w-16 bg-gray-200 dark:bg-gray-700 rounded-md" />
+    <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl overflow-hidden animate-pulse">
+      <div className="flex flex-col sm:flex-row items-stretch gap-0 min-h-[70px] sm:min-h-[96px]">
+        <div className="w-full sm:w-28 md:w-36 h-32 sm:h-auto flex-shrink-0 bg-gray-200 dark:bg-gray-700" />
+        <div className="flex-1 px-3 sm:px-4 py-2.5 sm:py-3.5">
+          <div className="flex items-start justify-between gap-2 mb-1.5 sm:mb-2">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <div className="h-5 w-10 sm:w-12 bg-gray-200 dark:bg-gray-700 rounded-md" />
+              <div className="h-5 w-14 sm:w-16 bg-gray-200 dark:bg-gray-700 rounded-md" />
             </div>
-            <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded flex-shrink-0" />
           </div>
-          <div className="h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
-          <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded mb-1" />
-          <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mb-2.5" />
-          <div className="flex items-center justify-between gap-2">
-            <div className="h-3 w-32 bg-gray-200 dark:bg-gray-700 rounded" />
-            <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+          <div className="h-4 sm:h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-1.5 sm:mb-2" />
+          <div className="h-3 sm:h-4 w-full bg-gray-200 dark:bg-gray-700 rounded mb-1" />
+          <div className="h-3 sm:h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mb-1.5 sm:mb-2.5" />
+          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1.5 xs:gap-2">
+            <div className="h-2.5 sm:h-3 w-20 sm:w-32 bg-gray-200 dark:bg-gray-700 rounded" />
+            <div className="h-5 sm:h-6 w-14 sm:w-16 bg-gray-200 dark:bg-gray-700 rounded-lg" />
           </div>
         </div>
       </div>
@@ -172,7 +172,7 @@ function ComplaintCardSkeleton() {
   );
 }
 
-// ─── Image Lightbox (in-page, no redirect) ────────────────────────────────────
+// ─── Image Lightbox ───────────────────────────────────────────────────────────
 
 function Lightbox({ src, alt, onClose }) {
   const { t } = useTranslation();
@@ -191,19 +191,19 @@ function Lightbox({ src, alt, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-3 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="relative max-w-4xl w-full mx-4"
+        className="relative max-w-4xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute -top-10 right-0 text-white/80 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium"
+          className="absolute -top-8 sm:-top-10 right-0 text-white/80 hover:text-white transition-colors flex items-center gap-1 text-xs sm:text-sm font-medium"
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4 sm:w-5 sm:h-5"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -215,23 +215,23 @@ function Lightbox({ src, alt, onClose }) {
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
-          {t('complaints.lightbox.close')}
+          <span className="hidden sm:inline">{t('complaints.lightbox.close')}</span>
         </button>
         <img
           src={src}
           alt={alt}
-          className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl"
+          className="w-full max-h-[60vh] sm:max-h-[80vh] object-contain rounded-xl sm:rounded-2xl shadow-2xl"
           style={{ background: "rgba(0,0,0,0.3)" }}
         />
-        <p className="text-center text-white/50 text-xs mt-3">{alt}</p>
+        <p className="text-center text-white/50 text-[10px] sm:text-xs mt-2 sm:mt-3 px-2">{alt}</p>
       </div>
     </div>
   );
 }
 
-// ─── Complaint Image with expand button ──────────────────────────────────────
+// ─── Complaint Image ──────────────────────────────────────────────────────────
 
-function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
+function ComplaintImage({ src, alt, className = "", height = "h-40 sm:h-52" }) {
   const { t } = useTranslation();
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const jpgSrc = toJpg(src);
@@ -255,11 +255,11 @@ function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
             e.stopPropagation();
             setLightboxOpen(true);
           }}
-          className="absolute inset-0 flex items-end justify-end p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+          className="absolute inset-0 flex items-end justify-end p-2 sm:p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         >
-          <span className="flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg">
+          <span className="flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] sm:text-[11px] font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg">
             <svg
-              className="w-3.5 h-3.5"
+              className="w-3 h-3 sm:w-3.5 sm:h-3.5"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -271,7 +271,7 @@ function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
                 d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
               />
             </svg>
-            {t('complaints.image.view_full')}
+            <span className="hidden sm:inline">{t('complaints.image.view_full')}</span>
           </span>
         </button>
       </div>
@@ -287,16 +287,16 @@ function ComplaintImage({ src, alt, className = "", height = "h-52" }) {
   );
 }
 
-// ─── Upload zone ──────────────────────────────────────────────────────────────
+// ─── Upload Zone ──────────────────────────────────────────────────────────────
 
 function UploadZone({ file, onChange }) {
   const { t } = useTranslation();
   
   return (
-    <label className="flex items-center gap-3 p-3 bg-accent-mist dark:bg-dark-surface2 border border-dashed border-border dark:border-dark-border rounded-xl cursor-pointer hover:border-primary-400 transition-colors">
-      <div className="w-8 h-8 rounded-lg bg-white dark:bg-dark-surface flex items-center justify-center flex-shrink-0">
+    <label className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-accent-mist dark:bg-dark-surface2 border border-dashed border-border dark:border-dark-border rounded-xl cursor-pointer hover:border-primary-400 transition-colors">
+      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white dark:bg-dark-surface flex items-center justify-center flex-shrink-0">
         <svg
-          className="w-4 h-4 text-primary-500"
+          className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-500"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -314,11 +314,11 @@ function UploadZone({ file, onChange }) {
           />
         </svg>
       </div>
-      <div>
-        <p className="text-xs font-semibold text-text-primary dark:text-dark-text-primary">
+      <div className="flex-1 min-w-0">
+        <p className="text-[11px] sm:text-xs font-semibold text-text-primary dark:text-dark-text-primary truncate">
           {file ? file.name : t('complaints.upload.attach_photo')}
         </p>
-        <p className="text-[11px] text-text-muted dark:text-dark-text-muted">
+        <p className="text-[10px] sm:text-[11px] text-text-muted dark:text-dark-text-muted truncate">
           {t('complaints.upload.file_requirements')}
         </p>
       </div>
@@ -332,7 +332,7 @@ function UploadZone({ file, onChange }) {
   );
 }
 
-// ─── Inline expanded detail ───────────────────────────────────────────────────
+// ─── Inline Detail ────────────────────────────────────────────────────────────
 
 function InlineDetail({
   complaint,
@@ -380,28 +380,28 @@ function InlineDetail({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className="mt-4 pt-4 border-t border-border dark:border-dark-border flex flex-col gap-5"
+      className="mt-4 pt-4 border-t border-border dark:border-dark-border flex flex-col gap-4 sm:gap-5"
     >
       {/* AI Verification */}
       {complaint.aiVerification && (
         <div>
           <SectionLabel>{t('complaints.detail.ai_verification')}</SectionLabel>
-          <div className="flex gap-3 mb-3">
-            <div className="flex-1 bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3 flex flex-col items-center gap-1">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3">
+            <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3 flex flex-col items-center gap-1">
               <span
                 className={`text-lg font-bold ${complaint.aiVerification.isValidIssue ? "text-green-600 dark:text-green-400" : "text-red-500"}`}
               >
                 {complaint.aiVerification.isValidIssue ? "✓" : "✗"}
               </span>
-              <span className="text-[11px] text-text-muted dark:text-dark-text-muted">
+              <span className="text-[11px] text-text-muted dark:text-dark-text-muted text-center">
                 {t('complaints.detail.valid_issue')}
               </span>
             </div>
-            <div className="flex-1 bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3 flex flex-col items-center gap-1">
+            <div className="bg-accent-mist dark:bg-dark-surface2 rounded-xl p-3 flex flex-col items-center gap-1">
               <span className={`text-lg font-bold ${fraudColor(fs)}`}>
                 {fs}%
               </span>
-              <span className="text-[11px] text-text-muted dark:text-dark-text-muted">
+              <span className="text-[11px] text-text-muted dark:text-dark-text-muted text-center">
                 {t('complaints.detail.fraud_score')}
               </span>
             </div>
@@ -456,9 +456,8 @@ function InlineDetail({
               {complaint.resolutionVerification.remarks}
             </p>
           </div>
-          {/* Before / After comparison */}
           {complaint.resolvedImageUrl && (
-            <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-2">
               {complaint.imageUrl && (
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted dark:text-dark-text-muted mb-1.5">
@@ -467,7 +466,7 @@ function InlineDetail({
                   <ComplaintImage
                     src={complaint.imageUrl}
                     alt="Before"
-                    height="h-32"
+                    height="h-28 sm:h-32"
                   />
                 </div>
               )}
@@ -478,7 +477,7 @@ function InlineDetail({
                 <ComplaintImage
                   src={complaint.resolvedImageUrl}
                   alt="After resolution"
-                  height="h-32"
+                  height="h-28 sm:h-32"
                 />
               </div>
             </div>
@@ -490,10 +489,9 @@ function InlineDetail({
       {complaint.location?.lat && (
         <div>
           <SectionLabel>{t('complaints.detail.location')}</SectionLabel>
-          <div className="flex items-center justify-between bg-accent-mist dark:bg-dark-surface2 rounded-xl px-3 py-2.5">
-            <span className="text-xs font-mono font-semibold text-text-primary dark:text-dark-text-primary">
-              {complaint.location.lat.toFixed(6)},{" "}
-              {complaint.location.lng.toFixed(6)}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-3 bg-accent-mist dark:bg-dark-surface2 rounded-xl px-3 py-2.5">
+            <span className="text-xs font-mono font-semibold text-text-primary dark:text-dark-text-primary break-all">
+              {complaint.location.lat.toFixed(6)}, {complaint.location.lng.toFixed(6)}
             </span>
             <button
               onClick={(e) => {
@@ -507,7 +505,7 @@ function InlineDetail({
                   }),
                 );
               }}
-              className="text-xs font-semibold text-primary-600 dark:text-primary-400 flex items-center gap-1 hover:underline"
+              className="text-xs font-semibold text-primary-600 dark:text-primary-400 flex items-center gap-1 hover:underline whitespace-nowrap"
             >
               {t('complaints.detail.view_on_map')}
               <svg
@@ -537,11 +535,11 @@ function InlineDetail({
       {complaint.status !== "resolved" ? (
         <div>
           <SectionLabel>{t('complaints.detail.update_status')}</SectionLabel>
-          <div className="flex gap-2 mb-3">
+          <div className="flex flex-col sm:flex-row gap-2 mb-3">
             <select
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
-              className="flex-1 text-xs px-3 py-2 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface text-text-primary dark:text-dark-text-primary outline-none focus:border-primary-400 transition-colors"
+              className="flex-1 text-xs px-3 py-2.5 sm:py-2 rounded-xl border border-border dark:border-dark-border bg-white dark:bg-dark-surface text-text-primary dark:text-dark-text-primary outline-none focus:border-primary-400 transition-colors"
             >
               {statusOptions.map((s) => (
                 <option key={s.value} value={s.value}>
@@ -552,7 +550,7 @@ function InlineDetail({
             <button
               onClick={() => onStatusUpdate(newStatus)}
               disabled={updatingStatus || newStatus === complaint.status}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 shadow-soft"
+              className="px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-1.5 shadow-soft"
             >
               {updatingStatus && <IcoSpinner size={12} />}
               {t('complaints.detail.save')}
@@ -584,7 +582,7 @@ function InlineDetail({
                     <ComplaintImage
                       src={previewUrl}
                       alt="Resolution preview"
-                      height="h-40"
+                      height="h-32 sm:h-40"
                     />
                   )}
                   <button
@@ -595,7 +593,8 @@ function InlineDetail({
                     {resolving ? (
                       <>
                         <IcoSpinner size={13} />
-                        {t('complaints.detail.verifying_ai')}
+                        <span className="hidden sm:inline">{t('complaints.detail.verifying_ai')}</span>
+                        <span className="sm:hidden">{t('complaints.detail.verifying')}</span>
                       </>
                     ) : (
                       t('complaints.detail.submit_resolution')
@@ -607,10 +606,10 @@ function InlineDetail({
           )}
         </div>
       ) : (
-        <div className="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl px-4 py-3">
-          <div className="w-7 h-7 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-green-500 flex items-center justify-center flex-shrink-0">
             <svg
-              className="w-3.5 h-3.5 text-white"
+              className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.5"
@@ -624,10 +623,10 @@ function InlineDetail({
             </svg>
           </div>
           <div>
-            <p className="text-xs font-semibold text-green-800 dark:text-green-300">
+            <p className="text-xs sm:text-sm font-semibold text-green-800 dark:text-green-300">
               {t('complaints.detail.resolved')}
             </p>
-            <p className="text-[11px] text-green-700 dark:text-green-400">
+            <p className="text-[10px] sm:text-[11px] text-green-700 dark:text-green-400">
               {t('complaints.detail.closed')}
             </p>
           </div>
@@ -637,16 +636,16 @@ function InlineDetail({
   );
 }
 
-// ─── Pill badge ───────────────────────────────────────────────────────────────
+// ─── Pill Badge ──────────────────────────────────────────────────────────────
 
 function Pill({ bg, text, icon, children }) {
   return (
     <span
-      className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${bg} ${text}`}
+      className={`inline-flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-[11px] font-semibold px-1.5 sm:px-2 py-0.5 rounded-md ${bg} ${text}`}
     >
       {icon && (
         <svg
-          className="w-3 h-3 flex-shrink-0"
+          className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -660,17 +659,17 @@ function Pill({ bg, text, icon, children }) {
   );
 }
 
-// ─── Fraud gauge ──────────────────────────────────────────────────────────────
+// ─── Fraud Gauge ──────────────────────────────────────────────────────────────
 
 function FraudGauge({ score }) {
   const { t } = useTranslation();
   
   return (
     <div
-      className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs ${fraudBg(score)}`}
+      className={`flex items-center gap-1 sm:gap-2 px-1.5 sm:px-2.5 py-1 sm:py-1.5 rounded-lg border text-[10px] sm:text-xs ${fraudBg(score)}`}
     >
-      <div className="relative w-5 h-5 flex-shrink-0">
-        <svg viewBox="0 0 20 20" className="w-5 h-5 -rotate-90">
+      <div className="relative w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0">
+        <svg viewBox="0 0 20 20" className="w-4 h-4 sm:w-5 sm:h-5 -rotate-90">
           <circle
             cx="10"
             cy="10"
@@ -696,7 +695,7 @@ function FraudGauge({ score }) {
       <span className={`font-bold tabular-nums ${fraudColor(score)}`}>
         {score}%
       </span>
-      <span className="text-text-muted dark:text-dark-text-muted font-medium">
+      <span className="text-text-muted dark:text-dark-text-muted font-medium hidden xs:inline">
         {t('complaints.fraud')}
       </span>
     </div>
@@ -727,8 +726,9 @@ function ComplaintCard({
         group relative bg-white dark:bg-dark-surface
         border border-border dark:border-dark-border
         border-l-4 ${statusCfg.border}
-        rounded-2xl overflow-hidden cursor-pointer
+        rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer
         transition-all duration-200 shadow-soft
+        active:scale-[0.99] touch-manipulation
         ${
           expanded
             ? "ring-1 ring-primary-300 dark:ring-primary-700 shadow-md"
@@ -741,9 +741,9 @@ function ComplaintCard({
       />
 
       {!expanded && (
-        <div className="relative flex items-stretch gap-0 min-h-[96px]">
+        <div className="relative flex flex-col sm:flex-row items-stretch gap-0 min-h-[70px] sm:min-h-[96px]">
           {hasImage && (
-            <div className="w-28 sm:w-36 flex-shrink-0 overflow-hidden">
+            <div className="w-full sm:w-28 md:w-36 h-32 sm:h-auto flex-shrink-0 overflow-hidden">
               <img
                 src={toJpg(complaint.imageUrl)}
                 alt="Complaint"
@@ -755,30 +755,30 @@ function ComplaintCard({
           )}
 
           <div
-            className={`flex-1 flex flex-col justify-between px-4 py-3.5 min-w-0 ${!hasImage ? "pl-5" : ""}`}
+            className={`flex-1 flex flex-col justify-between px-3 sm:px-4 py-2.5 sm:py-3.5 min-w-0 ${!hasImage ? "sm:pl-5" : ""}`}
           >
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-start justify-between gap-1.5 sm:gap-2 mb-1.5 sm:mb-2">
+              <div className="flex items-center gap-1 sm:gap-1.5 flex-wrap">
                 <Pill bg={typeCfg.bg} text={typeCfg.text} icon={typeCfg.icon}>
                   {t(typeCfg.labelKey)}
                 </Pill>
                 <Pill bg={statusCfg.bg} text={statusCfg.text}>
                   <span
-                    className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot} mr-0.5 inline-block`}
+                    className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${statusCfg.dot} mr-0.5 inline-block`}
                   />
-                  {t(statusCfg.labelKey)}
+                  <span className="hidden xs:inline">{t(statusCfg.labelKey)}</span>
                 </Pill>
                 {fraudScore > 60 && (
                   <Pill
                     bg="bg-red-100 dark:bg-red-900/30"
                     text="text-red-700 dark:text-red-400"
                   >
-                    ⚠ {t('complaints.high_risk')}
+                    ⚠ <span className="hidden xs:inline">{t('complaints.high_risk')}</span>
                   </Pill>
                 )}
               </div>
               <svg
-                className="w-4 h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0 mt-0.5 transition-transform duration-200"
+                className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0 mt-0.5 transition-transform duration-200"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -792,18 +792,18 @@ function ComplaintCard({
               </svg>
             </div>
 
-            <p className="text-sm font-bold text-text-primary dark:text-dark-text-primary leading-snug mb-1 line-clamp-1">
+            <p className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-snug mb-0.5 sm:mb-1 line-clamp-1">
               {complaint.title}
             </p>
 
-            <p className="text-[13px] text-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-2 mb-2.5">
+            <p className="text-xs sm:text-[13px] text-text-secondary dark:text-dark-text-secondary leading-relaxed line-clamp-2 mb-1.5 sm:mb-2.5">
               {complaint.description}
             </p>
 
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1.5 text-[11px] text-text-muted dark:text-dark-text-muted">
+            <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1.5 xs:gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-text-muted dark:text-dark-text-muted flex-wrap">
                 <svg
-                  className="w-3 h-3 flex-shrink-0"
+                  className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -815,7 +815,7 @@ function ComplaintCard({
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <span>
+                <span className="whitespace-nowrap">
                   {new Date(complaint.createdAt).toLocaleDateString("en-IN", {
                     day: "numeric",
                     month: "short",
@@ -824,21 +824,8 @@ function ComplaintCard({
                 </span>
                 {complaint.location?.lat && (
                   <>
-                    <span className="opacity-40">·</span>
-                    <svg
-                      className="w-3 h-3 flex-shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                    </svg>
-                    <span className="font-mono">
+                    <span className="opacity-40 hidden sm:inline">·</span>
+                    <span className="hidden sm:inline">
                       {complaint.location.lat.toFixed(3)}°
                     </span>
                   </>
@@ -854,22 +841,52 @@ function ComplaintCard({
       {expanded && (
         <div className="relative" onClick={(e) => e.stopPropagation()}>
           {hasImage && (
-            <ComplaintImageExpanded
-              src={complaint.imageUrl}
-              alt="Complaint photo"
-            />
+            <div className="relative w-full h-48 sm:h-52 overflow-hidden group">
+              <img
+                src={toJpg(complaint.imageUrl)}
+                alt="Complaint photo"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              <button
+                onClick={() => {
+                  // Open lightbox for expanded image
+                  const event = new CustomEvent("open-lightbox", {
+                    detail: { src: complaint.imageUrl, alt: "Complaint photo" }
+                  });
+                  window.dispatchEvent(event);
+                }}
+                className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 flex items-center gap-1 bg-black/60 backdrop-blur-sm text-white text-[10px] sm:text-[11px] font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity touch-manipulation"
+              >
+                <svg
+                  className="w-3 h-3 sm:w-3.5 sm:h-3.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                  />
+                </svg>
+                <span className="hidden sm:inline">{t('complaints.image.view_full')}</span>
+              </button>
+            </div>
           )}
 
-          <div className="px-5 py-5">
-            <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="px-3 sm:px-5 py-3 sm:py-5">
+            <div className="flex items-start justify-between gap-2 sm:gap-3 mb-3">
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap mb-2">
+                <div className="flex items-center gap-1 flex-wrap mb-2">
                   <Pill bg={typeCfg.bg} text={typeCfg.text} icon={typeCfg.icon}>
                     {t(typeCfg.labelKey)}
                   </Pill>
                   <Pill bg={statusCfg.bg} text={statusCfg.text}>
                     <span
-                      className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot} mr-0.5 inline-block`}
+                      className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${statusCfg.dot} mr-0.5 inline-block`}
                     />
                     {t(statusCfg.labelKey)}
                   </Pill>
@@ -882,16 +899,16 @@ function ComplaintCard({
                     </Pill>
                   )}
                 </div>
-                <h3 className="text-base font-bold text-text-primary dark:text-dark-text-primary leading-snug">
+                <h3 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-snug">
                   {complaint.title}
                 </h3>
               </div>
               <button
                 onClick={onToggle}
-                className="mt-1 w-7 h-7 rounded-lg bg-accent-mist dark:bg-dark-surface2 flex items-center justify-center flex-shrink-0 hover:bg-border dark:hover:bg-dark-border transition-colors"
+                className="mt-1 w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-accent-mist dark:bg-dark-surface2 flex items-center justify-center flex-shrink-0 hover:bg-border dark:hover:bg-dark-border transition-colors touch-manipulation"
               >
                 <svg
-                  className="w-4 h-4 text-text-muted dark:text-dark-text-muted rotate-180"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-text-muted dark:text-dark-text-muted rotate-180"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -910,10 +927,10 @@ function ComplaintCard({
               {complaint.description}
             </p>
 
-            <div className="flex items-center gap-3 flex-wrap mb-5 pb-5 border-b border-border dark:border-dark-border">
-              <div className="flex items-center gap-1.5 text-[11px] text-text-muted dark:text-dark-text-muted">
+            <div className="flex flex-col xs:flex-row items-start xs:items-center gap-2 flex-wrap mb-4 pb-4 border-b border-border dark:border-dark-border">
+              <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-text-muted dark:text-dark-text-muted">
                 <svg
-                  className="w-3.5 h-3.5"
+                  className="w-3 h-3 sm:w-3.5 sm:h-3.5"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -945,54 +962,6 @@ function ComplaintCard({
         </div>
       )}
     </div>
-  );
-}
-
-// ─── Expanded hero image with lightbox trigger ────────────────────────────────
-
-function ComplaintImageExpanded({ src, alt }) {
-  const { t } = useTranslation();
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const jpgSrc = toJpg(src);
-
-  return (
-    <>
-      <div className="relative w-full h-52 overflow-hidden group">
-        <img
-          src={jpgSrc}
-          alt={alt}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-        <button
-          onClick={() => setLightboxOpen(true)}
-          className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-        >
-          <svg
-            className="w-3.5 h-3.5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-            />
-          </svg>
-          {t('complaints.image.view_full')}
-        </button>
-      </div>
-      {lightboxOpen && (
-        <Lightbox
-          src={jpgSrc}
-          alt={alt}
-          onClose={() => setLightboxOpen(false)}
-        />
-      )}
-    </>
   );
 }
 
@@ -1091,8 +1060,6 @@ export default function ComplaintsDashboard() {
     [expandedId, t],
   );
 
-  // ── Derived ────────────────────────────────────────────────────────────────
-
   const stats = {
     total: complaints.length,
     pending: complaints.filter((c) => c.status === "pending").length,
@@ -1157,19 +1124,19 @@ export default function ComplaintsDashboard() {
   const isInitialLoading = initialLoading;
 
   return (
-    <main className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-8 py-8">
+    <main className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-6 md:px-8 py-3 sm:py-6 md:py-8">
       {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">
+      <div className="mb-5 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-text-primary dark:text-dark-text-primary tracking-tight">
           {t('complaints.title')}
         </h1>
-        <p className="text-sm text-text-muted dark:text-dark-text-muted mt-1">
+        <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-0.5 sm:mt-1">
           {t('complaints.subtitle')}
         </p>
       </div>
 
-      {/* Stat cards with skeleton */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      {/* Stat cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 md:gap-4 mb-5 sm:mb-8">
         {isInitialLoading ? (
           <>
             <StatCardSkeleton />
@@ -1182,13 +1149,13 @@ export default function ComplaintsDashboard() {
           STAT_CARDS.map((s) => (
             <div
               key={s.labelKey}
-              className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-5 shadow-soft"
+              className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-5 shadow-soft"
             >
               <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${s.bgCls}`}
+                className={`w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-xl flex items-center justify-center mb-1.5 sm:mb-3 md:mb-4 ${s.bgCls}`}
               >
                 <svg
-                  className={`w-4 h-4 ${s.iconCls}`}
+                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${s.iconCls}`}
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -1197,10 +1164,10 @@ export default function ComplaintsDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
                 </svg>
               </div>
-              <p className="text-3xl font-bold text-text-primary dark:text-dark-text-primary">
+              <p className="text-lg sm:text-2xl md:text-3xl font-bold text-text-primary dark:text-dark-text-primary">
                 {s.value}
               </p>
-              <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1.5 font-medium">
+              <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5 sm:mt-1 font-medium">
                 {t(s.labelKey)}
               </p>
             </div>
@@ -1208,25 +1175,32 @@ export default function ComplaintsDashboard() {
         )}
       </div>
 
-      {/* Filter tabs with skeleton */}
-      <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+      {/* Filter tabs */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-5">
         {isInitialLoading ? (
           <FilterTabSkeleton />
         ) : (
-          <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+          <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1 overflow-x-auto scrollbar-hide">
             {FILTER_TABS.map((filter) => (
               <button
                 key={filter.key}
                 onClick={() => setActiveTab(filter.key)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold transition-all duration-150 whitespace-nowrap touch-manipulation ${
                   activeTab === filter.key
                     ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
                     : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
                 }`}
               >
-                {t(filter.labelKey)}
+                <span className="hidden xs:inline">{t(filter.labelKey)}</span>
+                <span className="xs:hidden">
+                  {filter.key === "all" && "All"}
+                  {filter.key === "pending" && "Pending"}
+                  {filter.key === "in-progress" && "In Prog"}
+                  {filter.key === "resolved" && "Resolved"}
+                  {filter.key === "rejected" && "Rejected"}
+                </span>
                 <span
-                  className={`text-[10px] font-bold min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full ${
+                  className={`text-[9px] sm:text-[10px] font-bold min-w-[14px] sm:min-w-[16px] h-3.5 sm:h-4 px-0.5 sm:px-1 flex items-center justify-center rounded-full ${
                     activeTab === filter.key
                       ? "bg-white/20 text-white"
                       : "bg-accent-mist dark:bg-dark-surface2 text-text-muted dark:text-dark-text-muted"
@@ -1242,31 +1216,32 @@ export default function ComplaintsDashboard() {
         {isInitialLoading ? (
           <TypeFilterSkeleton />
         ) : (
-          <div className="flex items-center gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1">
+          <div className="flex items-center gap-1 sm:gap-2 bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl p-1 self-start sm:self-auto overflow-x-auto">
             {[
-              { key: "all", labelKey: "complaints.type.all" },
-              { key: "issue", labelKey: "complaints.type.issue" },
-              { key: "suggestion", labelKey: "complaints.type.suggestion" },
+              { key: "all", labelKey: "complaints.type.all", shortKey: "All" },
+              { key: "issue", labelKey: "complaints.type.issue", shortKey: "Issues" },
+              { key: "suggestion", labelKey: "complaints.type.suggestion", shortKey: "Suggest" },
             ].map((type) => (
               <button
                 key={type.key}
                 onClick={() => setTypeFilter(type.key)}
-                className={`px-4 py-2 rounded-lg text-xs font-semibold capitalize transition-all duration-150 ${
+                className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[10px] sm:text-xs font-semibold capitalize transition-all duration-150 touch-manipulation whitespace-nowrap ${
                   typeFilter === type.key
                     ? "bg-primary-600 dark:bg-primary-700 text-white shadow-soft"
                     : "text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary"
                 }`}
               >
-                {t(type.labelKey)}
+                <span className="hidden xs:inline">{t(type.labelKey)}</span>
+                <span className="xs:hidden">{type.shortKey}</span>
               </button>
             ))}
           </div>
         )}
       </div>
 
-      {/* Cards list with skeleton */}
+      {/* Cards list */}
       {loading ? (
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           <ComplaintCardSkeleton />
           <ComplaintCardSkeleton />
           <ComplaintCardSkeleton />
@@ -1274,10 +1249,10 @@ export default function ComplaintsDashboard() {
           <ComplaintCardSkeleton />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl flex flex-col items-center justify-center py-16 gap-3 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-1">
+        <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl flex flex-col items-center justify-center py-10 sm:py-16 gap-2 sm:gap-3 text-center px-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-accent-mist dark:bg-dark-surface2 border border-border dark:border-dark-border flex items-center justify-center mb-0.5 sm:mb-1">
             <svg
-              className="w-5 h-5 text-primary-500 dark:text-primary-400"
+              className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500 dark:text-primary-400"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -1290,15 +1265,15 @@ export default function ComplaintsDashboard() {
               />
             </svg>
           </div>
-          <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">
+          <p className="text-sm sm:text-base font-semibold text-text-primary dark:text-dark-text-primary">
             {t('complaints.empty.title')}
           </p>
-          <p className="text-xs text-text-muted dark:text-dark-text-muted">
+          <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted max-w-xs">
             {t('complaints.empty.message')}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {filtered.map((c) => (
             <ComplaintCard
               key={c._id}

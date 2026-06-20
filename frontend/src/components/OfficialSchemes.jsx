@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  withCredentials: true,
-});
+import api from "../services/api";
 
 const initialForm = {
   title: "",
