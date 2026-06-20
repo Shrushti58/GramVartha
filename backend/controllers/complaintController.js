@@ -210,7 +210,7 @@ const getComplaints = async (req, res) => {
 
 const updateStatus = async (req, res) => {
   try {
-    if (!req.user?.id) {
+    if (!req.user?.id || !req.user?.village) {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -225,15 +225,17 @@ const updateStatus = async (req, res) => {
       });
     }
 
-    const complaint = await Complaint.findByIdAndUpdate(
-      req.params.id,
-      { status },
-      { new: true, runValidators: true }
-    );
-
+    const complaint = await Complaint.findById(req.params.id);
     if (!complaint) {
       return res.status(404).json({ message: "Complaint not found" });
     }
+
+    if (complaint.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    complaint.set({ status });
+    await complaint.save();
 
     return res.status(200).json(complaint);
   } catch (err) {

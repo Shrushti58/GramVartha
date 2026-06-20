@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const Citizens = require("../models/Citizens");
 const { generateToken } = require("../utlis/jwt");
+const { tokenCookieOptions } = require("../utlis/cookieOptions");
 
 const registerCitizen = async (req, res) => {
   try {
@@ -68,12 +69,7 @@ const loginCitizen = async (req, res) => {
     }
 
     const token = generateToken(citizen);
-    res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,          
-  sameSite: "none",      
-  maxAge: 24 * 60 * 60 * 1000
-});
+    res.cookie("token", token, tokenCookieOptions);
 
     res.json({
       message: "Login successful",

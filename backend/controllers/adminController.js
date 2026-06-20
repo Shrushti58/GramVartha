@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const Admin = require('../models/Admin');
 const Officals = require('../models/Officials');
 const { generateToken } = require("../utlis/jwt");
+const { tokenCookieOptions, clearTokenCookieOptions } = require("../utlis/cookieOptions");
 
 const registerAdmin = async (req, res) => {
     try {
@@ -60,12 +61,7 @@ const loginAdmin = async (req, res) => {
         }
 
         const token = generateToken(admin);
-       res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,          
-  sameSite: "none",      
-  maxAge: 24 * 60 * 60 * 1000
-});
+        res.cookie("token", token, tokenCookieOptions);
 
         return res.status(200).json({ message: "Login successful" });
     } catch (error) {
@@ -75,11 +71,7 @@ const loginAdmin = async (req, res) => {
 };
 
 const logoutAdmin = (req, res) => {
-    res.clearCookie("token", {
-        httpOnly: true,
-        secure: false,      
-        sameSite: "lax",
-    });
+    res.clearCookie("token", clearTokenCookieOptions);
     return res.status(200).json({ message: "Logged out successfully" });
 };
 

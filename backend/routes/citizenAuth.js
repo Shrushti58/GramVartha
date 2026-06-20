@@ -2,14 +2,21 @@ const express = require("express");
 const router = express.Router();
 const { verifyToken } = require("../utlis/jwt");
 const {
+  rejectMongoOperators,
+  validateRequest,
+  authValidators,
+} = require("../middlewares/validators");
+const {
   registerCitizen,
   loginCitizen,
   registerPushToken
 } = require("../controllers/citizenAuth");
 
-router.post("/register", registerCitizen);
-router.post("/login", loginCitizen);
-router.post("/register-push-token", verifyToken, registerPushToken);
+router.use(rejectMongoOperators);
+
+router.post("/register", authValidators.citizenRegister, validateRequest, registerCitizen);
+router.post("/login", authValidators.citizenLogin, validateRequest, loginCitizen);
+router.post("/register-push-token", authValidators.pushToken, validateRequest, verifyToken, registerPushToken);
 
 router.get("/me", verifyToken, (req, res) => {
   console.log("Decoded user from token:", req.user); // Debug log
