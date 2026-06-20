@@ -129,7 +129,7 @@
     "digital_village_updates": "Digital village updates",
     "village_notices": "VILLAGE NOTICES",
     "scan_once_stay_informed": "Scan once,\nstay informed",
-    "hero_description": "No app download. No registration. Just scan the QR code at your village panchayat and get instant access to all official notices, find officials, and file complaints.",
+    "hero_description": "No registration. Just scan the QR code at your village panchayat and get instant access to all official notices, find officials, and file complaints.",
     "how_app_works": "How GramVartha Works",
     "no_login": "No login",
     "instant_access": "Instant access",
@@ -180,7 +180,7 @@
     "how_it_works": "How GramVartha Works",
     "find_qr": "Find QR Code",
     "find_qr_sub": "Look for the GramVartha QR code on Panchayat wall, notice board, or entrance",
-    "find_qr_detail": "No app download needed - just scan with your phone camera",
+    "find_qr_detail": "Just scan with your phone camera",
     "scan_access": "Scan & Access",
     "scan_access_sub": "Point your camera at the QR code for instant access to all active notices",
     "scan_access_detail": "See notices, find officials, and access work guides",
@@ -227,7 +227,7 @@
     "how_app_works": "How GramVartha Works",
     "scan_access_section": "📱 Scan & Access",
     "scan_access_item_1": "• Find QR code on Panchayat wall or notice board",
-    "scan_access_item_2": "• Scan with your phone camera - no app download needed",
+    "scan_access_item_2": "• Scan with your phone camera",
     "scan_access_item_3": "• Instant access to all active village notices",
     "scan_access_item_4": "• No registration, no login, no friction",
     "find_officials_section": "👥 Find Officials",
@@ -250,7 +250,7 @@
     "work_guide_item_2": "• Required documents checklist",
     "work_guide_item_3": "• Application process explained",
     "work_guide_item_4": "• Contact information for each service",
-    "modal_footer": "No app download. No registration. Just information at your fingertips."
+    "modal_footer": "No registration. Just information at your fingertips."
   },
 
   "complaint": {

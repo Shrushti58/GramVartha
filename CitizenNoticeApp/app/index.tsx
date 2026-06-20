@@ -92,7 +92,7 @@ const InfoModal = ({ visible, onClose, colors }: any) => {
       icon: 'qr-code-outline', color: colors.primary[500],
       items: [
         t('modal.scan_access_item_1', '• Find QR code on Panchayat wall or notice board'),
-        t('modal.scan_access_item_2', '• Scan with your phone camera - no app download needed'),
+        t('modal.scan_access_item_2', '• Scan with your phone camera'),
         t('modal.scan_access_item_3', '• Instant access to all active village notices'),
         t('modal.scan_access_item_4', '• No registration, no login, no friction'),
       ],
@@ -171,7 +171,7 @@ const InfoModal = ({ visible, onClose, colors }: any) => {
             ))}
             <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
               <Text style={[styles.modalFooterText, { color: colors.text.muted }]}>
-                {t('modal.modal_footer', 'No app download. No registration. Just information at your fingertips.')}
+                {t('modal.modal_footer', 'No registration. Just information at your fingertips.')}
               </Text>
             </View>
           </ScrollView>
@@ -774,6 +774,25 @@ export default function HomeScreen() {
           </View>
           <WeatherCard />
 
+          <View style={styles.section}>
+            <TouchableOpacity
+              style={[styles.smartAssistantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              onPress={() => router.push('/smart-assistant' as any)}
+              activeOpacity={0.78}
+            >
+              <View style={[styles.smartAssistantIcon, { backgroundColor: `${colors.primary[500]}15` }]}>
+                <Ionicons name="ribbon-outline" size={24} color={colors.primary[500]} />
+              </View>
+              <View style={styles.smartAssistantBody}>
+                <Text style={[styles.smartAssistantTitle, { color: colors.text.primary }]}>Scheme Assistance</Text>
+                <Text style={[styles.smartAssistantDesc, { color: colors.text.muted }]}>
+                  Find government schemes, eligibility, documents, and application steps.
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
+            </TouchableOpacity>
+          </View>
+
           {/* Recent Villages */}
           {!isDataLoading && recentVillages.length > 0 && (
             <View style={styles.section}>
@@ -1050,6 +1069,36 @@ const styles = StyleSheet.create({
   pillRow: { flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 16, flexWrap: 'wrap' },
   pill:    { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, gap: 4 },
   pillText:{ fontSize: 11, fontWeight: '600' },
+
+  // Smart Assistant
+  smartAssistantCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: 1,
+    gap: 12,
+  },
+  smartAssistantIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  smartAssistantBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  smartAssistantTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    marginBottom: 3,
+  },
+  smartAssistantDesc: {
+    fontSize: 12,
+    lineHeight: 17,
+  },
 
   // Sections
   section:       { paddingHorizontal: 20, paddingTop: 28 },

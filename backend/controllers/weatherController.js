@@ -4,7 +4,7 @@ const Village = require("../models/Village");
 const {
   buildBasicWeatherAdvice,
   buildCropWeatherAdvice,
-} = require("../service/weatherAdvisoryService");
+} = require("../services/weatherAdvisoryService");
 
 const fetchVillageWeather = async (villageId) => {
   const village = await Village.findById(villageId);

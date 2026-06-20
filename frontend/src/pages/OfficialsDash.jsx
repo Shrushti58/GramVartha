@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ComplaintsDashboard from "../pages/Complaintsdashboard";
+import OfficialSchemes from "../components/OfficialSchemes";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
@@ -492,7 +493,7 @@ function NoticeCard({ notice, onEdit, onDelete, onView }) {
 const PAGE_TABS = [
   { key: 'notices', labelKey: 'Notices', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
   { key: 'complaints', labelKey: 'Complaints', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-  { key: 'schemes', labelKey: 'Schemes', icon: 'M12 6v6m0 0v6m0-6h6m-6 0H6' },
+  { key: 'schemes', labelKey: 'Add Village Scheme', icon: 'M12 6v6m0 0v6m0-6h6m-6 0H6' },
 ];
 
 const FILTER_TABS = [
@@ -810,38 +811,10 @@ export default function OfficialsDashboard() {
         </div>
       )}
 
-      {/* Schemes Page */}
+      {/* Add Village Scheme Page */}
       {activePage === 'schemes' && (
         <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Government Schemes
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
-                Manage and track welfare schemes for your village
-              </p>
-            </div>
-            <button className="inline-flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-sm font-semibold rounded-xl transition-all shadow-lg hover:shadow-xl">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-              Add Custom Scheme
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-5 border border-gray-200 dark:border-gray-700 shadow-lg">
-                <div className="w-3/4 h-5 bg-gray-200 dark:bg-gray-700 rounded-lg mb-2 animate-pulse" />
-                <div className="w-24 h-3 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse" />
-                <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse" />
-                <div className="w-32 h-8 bg-gray-200 dark:bg-gray-700 rounded mb-3 animate-pulse" />
-                <div className="flex gap-2"><div className="flex-1 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" /><div className="flex-1 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" /><div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse" /></div>
-              </div>
-            ))}
-          </div>
+          <OfficialSchemes />
         </div>
       )}
 

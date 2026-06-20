@@ -1,7 +1,7 @@
 const Complaint = require("../models/Complaint");
 const { analyzeImage } = require("../utlis/vision");
 const Citizen = require("../models/Citizens");
-const { verifyComplaintWithGemini } = require("../service/geminiComplaint.service");
+const { verifyComplaintWithGemini } = require("../services/geminiComplaint.service");
 
 const verifyComplaintInBackground = async (complaintId, data) => {
   try {

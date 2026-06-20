@@ -1,7 +1,7 @@
 const Notice = require("../models/Notice");
 const NoticeView = require("../models/NoticeView");
 const Citizen = require("../models/Citizens");
-const { notifyNewNotice } = require('../service/notificationService');
+const { notifyNewNotice } = require('../services/notificationService');
 
 const uploadNotice = async (req, res) => {
   try {

@@ -1,67 +1,115 @@
 const mongoose = require("mongoose");
-const schemeSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    required: true,
-  },
 
-  slug: {
-    type: String,
-    required: true,
-    unique: true, 
-  },
-
-  description: {
-    type: String,
-    required: true,
-  },
-
-  amount: {
-    type: Number,
-  },
-
-  category: [
-    {
+const schemeSchema = new mongoose.Schema(
+  {
+    title: {
       type: String,
-    }
-  ],
+      required: true,
+      index: true,
+    },
 
-  level: {
-    type: String, 
-  },
-
-  eligibility: {
-    type: String,
-  },
-
-  documents: [
-    {
+    slug: {
       type: String,
-    }
-  ],
+      index: true,
+      sparse: true,
+    },
 
-  applicationSteps: [
-    {
+    description: String,
+    shortDescription: String,
+    benefits: String,
+    eligibility: String,
+
+    documents: [String],
+    applicationSteps: [String],
+
+    level: {
       type: String,
-    }
-  ],
+      enum: ["Central", "State", "Unknown"],
+      default: "Unknown",
+      index: true,
+    },
 
-  tags: [
-    {
+    state: {
       type: String,
-    }
-  ],
+      default: "Unknown",
+      index: true,
+    },
 
-  status: {
-    type: String,
-    enum: ["active", "inactive"],
-    default: "active",
+    category: {
+      type: [String],
+      default: [],
+      index: true,
+    },
+
+    beneficiary: {
+      type: String,
+      default: "general",
+      index: true,
+    },
+
+    tags: {
+      type: [String],
+      default: [],
+    },
+
+    amount: {
+      type: Number,
+      default: 0,
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "expired", "unknown"],
+      default: "active",
+      index: true,
+    },
+
+    verificationStatus: {
+      type: String,
+      enum: ["verified", "needs_verification"],
+      default: "needs_verification",
+    },
+
+    source: {
+      type: String,
+      default: "Curated Government Scheme Dataset",
+    },
+
+    sourceUrl: {
+      type: String,
+      default: "",
+    },
+
+    language: {
+      type: String,
+      default: "en",
+    },
+
+    scope: {
+      type: String,
+      enum: ["global", "village"],
+      default: "global",
+      index: true,
+    },
+
+    village: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Village",
+      default: null,
+      index: true,
+    },
   },
+  { timestamps: true }
+);
 
-  region: {
-    type: String, 
-  },
-
-}, { timestamps: true });
+// Search index
+schemeSchema.index({
+  title: "text",
+  description: "text",
+  shortDescription: "text",
+  benefits: "text",
+  eligibility: "text",
+  tags: "text",
+});
 
 module.exports = mongoose.model("Scheme", schemeSchema);
