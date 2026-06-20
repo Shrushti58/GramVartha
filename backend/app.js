@@ -4,6 +4,14 @@ const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 const db = require("./config/mongoose-connection");
+const {
+  globalLimiter,
+  authLimiter,
+  assistantLimiter,
+  complaintLimiter,
+  weatherLimiter,
+  schemeLimiter,
+} = require("./middlewares/rateLimiter");
 
 const app = express();
 
@@ -13,6 +21,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(globalLimiter);
 
 /* ========================
    CORS CONFIGURATION
@@ -46,6 +55,29 @@ app.use(
    ROUTES
 ======================== */
 
+// Auth limiter protects only login/register-style endpoints from brute force abuse.
+app.use(
+  [
+    "/admin/login",
+    "/admin/register",
+    "/officials/login",
+    "/officials/register",
+    "/citizen/login",
+    "/citizen/register",
+    "/citizen/otp",
+    "/citizen/forgot-password",
+  ],
+  authLimiter
+);
+
+// Assistant limiter applies only to the AI chat endpoint.
+app.post("/assistant/chat", assistantLimiter);
+
+// Complaint limiter option 1:
+// app.post("/complaints/create", complaintLimiter);
+// Active implementation uses option 2 inside routes/complaintsRoutes.js,
+// so only complaint submissions are capped and complaint reads stay unaffected.
+
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/officials", require("./routes/officialsRoutes"));
 app.use("/notice", require("./routes/noticeRoutes"));
@@ -53,8 +85,8 @@ app.use("/villages", require("./routes/villageRoutes"));
 app.use("/citizen", require("./routes/citizenAuth"));
 app.use("/complaints", require("./routes/complaintsRoutes"));
 app.use("/workguide", require("./routes/workGuideRoutes"));
-app.use("/schemes", require("./routes/schemeRoutes"));
-app.use("/weather", require("./routes/weatherRoutes"));
+app.use("/schemes", schemeLimiter, require("./routes/schemeRoutes"));
+app.use("/weather", weatherLimiter, require("./routes/weatherRoutes"));
 app.use("/assistant", require("./routes/assistantRoutes"));
 
 /* ========================

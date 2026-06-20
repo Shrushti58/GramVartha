@@ -1,5 +1,13 @@
 const jwt = require("jsonwebtoken");
 
+function getJwtSecret() {
+  if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET environment variable is required");
+  }
+
+  return process.env.JWT_SECRET;
+}
+
 function generateToken(user) {
   return jwt.sign(
     { 
@@ -9,7 +17,7 @@ function generateToken(user) {
       status: user.status,
       village: user.village   
     },
-    process.env.JWT_SECRET || "supersecret",
+    getJwtSecret(),
      
     { expiresIn: "1d" }
   );
@@ -32,7 +40,7 @@ function verifyToken(req, res, next) {
     return res.status(401).json({ message: "No token" });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || "supersecret", (err, decoded) => {
+  jwt.verify(token, getJwtSecret(), (err, decoded) => {
     if (err) return res.status(403).json({ message: "Invalid token" });
 
     req.user = decoded;

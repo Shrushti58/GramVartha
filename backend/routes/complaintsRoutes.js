@@ -3,6 +3,7 @@ const router  = express.Router();
 
 const { verifyToken } = require("../utlis/jwt");
 const { uploadIssue } = require("../middlewares/uploadCloud");
+const { complaintLimiter } = require("../middlewares/rateLimiter");
 
 const {
   createComplaint,
@@ -17,6 +18,8 @@ const {
 
 router.post(
   "/create",
+  // Limit complaint creation only; viewing and status updates should remain usable.
+  complaintLimiter,
   verifyToken,
   uploadIssue.single("image"), 
   createComplaint
