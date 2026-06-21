@@ -16,6 +16,10 @@ const {
 
 const app = express();
 
+// Render and other hosts sit behind a reverse proxy. Trust the first proxy so
+// express-rate-limit can safely use X-Forwarded-For for client IPs.
+app.set("trust proxy", 1);
+
 /* ========================
    MIDDLEWARES
 ======================== */
