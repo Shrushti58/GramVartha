@@ -13,15 +13,12 @@ const notifyCitizenAboutComplaintStatus = async (complaint, status, reason) => {
     const citizen = await Citizen.findById(complaint.citizen);
 
     if (!citizen) {
-      console.warn("[complaint-push] Citizen not found", {
-        complaintId: complaint._id,
-        citizenId: complaint.citizen,
-        status,
-      });
+      console.warn("[complaint-push] Citizen not found");
       return;
     }
 
     let result = null;
+
     if (status === "resolved") {
       result = await notifyComplaintResolved(citizen, complaint._id);
     } else if (status === "rejected") {
@@ -38,153 +35,56 @@ const notifyCitizenAboutComplaintStatus = async (complaint, status, reason) => {
       status,
       tokenCount: citizen.pushTokens?.length || 0,
       success: result?.success || false,
-      successCount: result?.successCount || 0,
-      failureCount: result?.failureCount || 0,
-      message: result?.message,
     });
   } catch (notifErr) {
     console.error("Complaint push notification error:", notifErr.message);
   }
 };
 
-const verifyComplaintInBackground = async (complaintId, data) => {
-  try {
-    let rawLabels = [];
-
-    try {
-      rawLabels = await analyzeImage(data.imageUrl);
-    } catch (err) {
-      console.warn("[Vision background error]", err.message);
-    }
-
-    const labels = normalizeLabels(rawLabels);
-
-    const localFraudResult = runFraudCheck({
-      labels,
-      imageSource: data.imageSource,
-      lat: data.lat,
-      lng: data.lng,
-      timestamp: data.timestamp,
-    });
-
-    let geminiResult = null;
-
-    try {
-      geminiResult = await verifyComplaintWithGemini({
-        title: data.title,
-        description: data.description,
-        type: data.type,
-        labels,
-      });
-    } catch (err) {
-      console.warn("[Gemini background error]", err.message);
-    }
-
-    const finalIsValid =
-      geminiResult?.isValidIssue ?? localFraudResult.isValidIssue;
-
-    await Complaint.findByIdAndUpdate(complaintId, {
-      status: finalIsValid ? "pending" : "rejected",
-      aiVerification: {
-        isValidIssue: finalIsValid,
-        labels,
-        fraudScore: geminiResult?.fraudScore ?? localFraudResult.fraudScore,
-        remarks:
-          geminiResult?.englishRemarks ||
-          geminiResult?.remarks ||
-          localFraudResult.remarks,
-
-        confidence: geminiResult?.confidence ?? 0,
-        category: geminiResult?.category ?? "other",
-        language: geminiResult?.language ?? "unknown",
-        englishRemarks: geminiResult?.englishRemarks ?? "",
-        marathiRemarks: geminiResult?.marathiRemarks ?? "",
-        priority: geminiResult?.priority ?? "medium",
-        analyzedAt: new Date(),
-      },
-    });
-
-    console.log("[AI verification completed]", complaintId);
-  } catch (err) {
-    console.error("[AI background verification failed]", err.message);
-  }
-};
-
 const VALID_STATUSES = ["pending", "in-progress", "resolved", "rejected"];
 
 const VALID_KEYWORDS = [
-  // Waste & sanitation
   "garbage", "waste", "litter", "trash", "rubbish", "debris", "dump",
   "dumpster", "sewage", "sewer", "drainage", "drain", "filth", "dirt",
   "compost", "bin", "landfill", "open defecation",
-
-  // Roads & infrastructure
   "road", "pothole", "crack", "pavement", "footpath", "sidewalk", "asphalt",
   "construction", "broken road", "damaged road", "unpaved", "gravel",
   "speed breaker", "barricade", "bridge", "culvert", "manhole",
-
-  // Water & flooding
   "flood", "waterlogging", "puddle", "overflow", "leakage", "pipe",
   "water pipe", "burst pipe", "stagnant water", "sewage overflow",
   "blocked drain", "clogged", "water logging",
-
-  // Electricity
   "electric pole", "wire", "cable", "streetlight", "lamp post",
   "broken light", "fallen pole", "dangling wire", "power line",
   "transformer", "electricity",
-
-  // Public property damage
   "wall", "fence", "broken", "damaged", "vandalism", "graffiti",
   "collapsed", "dilapidated", "abandoned", "demolition", "rubble",
   "debris pile", "building", "structure",
-
-  // Animals & health hazards
   "stray", "animal", "dog", "cattle", "cow", "pig", "carcass",
   "dead animal", "mosquito", "pest", "rat", "infestation",
-
-  // Trees & vegetation hazards
   "fallen tree", "tree", "branch", "overgrown", "weed", "bush",
   "blocked path", "uprooted",
-
-  // Public spaces
   "park", "playground", "garden", "school", "hospital", "market",
   "bus stop", "public toilet", "toilet", "urinal", "well",
 ];
 
 const INVALID_KEYWORDS = [
-  // People / selfies
   "selfie", "face", "person", "people", "portrait", "human", "man",
   "woman", "child", "crowd", "group", "body",
-
-  // Indoor / unrelated scenes
   "indoor", "room", "bedroom", "kitchen", "office", "interior",
   "furniture", "table", "chair", "sofa", "food", "meal", "plate",
   "restaurant", "shop", "store",
-
-  // Vehicle interiors
   "car interior", "dashboard", "steering wheel",
-
-  // Pure nature (no civic issue)
   "sky", "cloud", "mountain", "beach", "ocean", "river", "sunset",
   "flower", "scenery", "landscape",
-
-  // Documents / screens
   "document", "paper", "screenshot", "screen", "phone screen", "text", "sign",
 ];
 
 const DIRTY_KEYWORDS = [
-  // Waste still visible
   "garbage", "waste", "litter", "trash", "rubbish", "debris", "dump", "filth",
   "sewage", "sewage overflow", "open defecation",
-
-  // Water issue still present
   "flood", "waterlogging", "stagnant water", "overflow", "puddle",
   "blocked drain", "clogged",
-
-  // Road damage still visible
   "pothole", "crack", "broken road", "damaged road",
-
-  // Health hazard still present
   "carcass", "dead animal", "infestation", "rat", "pest",
 ];
 
@@ -220,153 +120,106 @@ function runFraudCheck({ labels, imageSource, lat, lng, timestamp }) {
   if (isNaN(lat) || isNaN(lng)) fraudScore += FRAUD_WEIGHTS.missingCoords;
 
   if (timestamp) {
-    const ageHours = (Date.now() - new Date(timestamp).getTime()) / (1000 * 60 * 60);
+    const ageHours =
+      (Date.now() - new Date(timestamp).getTime()) / (1000 * 60 * 60);
+
     if (ageHours > 24) fraudScore += FRAUD_WEIGHTS.staleTimestamp;
   }
 
   let remarks = "Looks fine";
-  if (fraudScore > FRAUD_THRESHOLDS.high) remarks = "High chance of fake issue";
-  else if (fraudScore > FRAUD_THRESHOLDS.medium) remarks = "Needs verification";
+  if (fraudScore > FRAUD_THRESHOLDS.high) {
+    remarks = "High chance of fake issue";
+  } else if (fraudScore > FRAUD_THRESHOLDS.medium) {
+    remarks = "Needs verification";
+  }
 
   return { isValidIssue, fraudScore, remarks };
 }
 
-const getComplaints = async (req, res) => {
+const verifyComplaintInBackground = async (complaintId, data) => {
   try {
-    if (!req.user?.village) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
+    console.log("🚀 verifyComplaintInBackground started:", complaintId);
+    console.log("📸 Image URL:", data.imageUrl);
 
-    const filter = { village: req.user.village };
-    if (req.query.type) filter.type = req.query.type;
-    if (req.query.status) filter.status = req.query.status;
+    let rawLabels = [];
 
-    const complaints = await Complaint.find(filter)
-      .sort({ createdAt: -1 })
-      .lean();
-
-    return res.status(200).json(complaints);
-  } catch (err) {
-    console.error("[getComplaints]", err);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
-
-const updateStatus = async (req, res) => {
-  try {
-    if (!req.user?.id || !req.user?.village) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    const { status } = req.body;
-
-    if (!status) {
-      return res.status(400).json({ message: "Status is required" });
-    }
-    if (!VALID_STATUSES.includes(status)) {
-      return res.status(400).json({
-        message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
-      });
-    }
-
-    const complaint = await Complaint.findById(req.params.id);
-    if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
-    }
-
-    if (complaint.village.toString() !== req.user.village.toString()) {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    const previousStatus = complaint.status;
-    complaint.set({ status });
-    await complaint.save();
-
-    if (previousStatus !== status && ["resolved", "rejected"].includes(status)) {
-      await notifyCitizenAboutComplaintStatus(complaint, status, req.body.reason);
-    }
-
-    return res.status(200).json(complaint);
-  } catch (err) {
-    console.error("[updateStatus]", err);
-    return res.status(500).json({ message: "Error updating status" });
-  }
-};
-
-const resolveComplaint = async (req, res) => {
-  try {
-    // Validate if id is a valid ObjectId
-    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({
-        message: "Invalid complaint ID format"
-      });
-    }
-
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ message: "Resolution photo required" });
-    }
-
-    const resolvedImageUrl = req.file.path;
-
-    const complaint = await Complaint.findById(req.params.id);
-    if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
-    }
-    if (complaint.status === "resolved") {
-      return res.status(400).json({ message: "Complaint is already resolved" });
-    }
-
-    // ── AI analysis (unchanged) ──
-    let labels = [];
     try {
-      const raw = await analyzeImage(resolvedImageUrl);
-      labels = normalizeLabels(raw);
-    } catch (visionErr) {
-      console.warn("[Vision API error - resolve]", visionErr.message);
+      console.log("📸 Calling Vision API...");
+
+      rawLabels = await analyzeImage(data.imageUrl);
+
+      console.log("✅ Raw Vision response:", rawLabels);
+    } catch (err) {
+      console.error("❌ Vision background error");
+      console.error("Code:", err.code);
+      console.error("Message:", err.message);
+      console.error("Details:", err.details);
     }
 
-    const hasInvalidContent = labels.some((l) => INVALID_KEYWORDS.includes(l));
-    if (hasInvalidContent) {
-      const matchedInvalid = labels.filter((l) => INVALID_KEYWORDS.includes(l));
-      return res.status(400).json({
-        message: "Resolution photo appears to be invalid or unrelated to the complaint.",
-        reason: "invalid_image",
-        detectedLabels: matchedInvalid,
+    const labels = normalizeLabels(rawLabels);
+
+    console.log("🏷️ Normalized Vision labels:", labels);
+
+    const localFraudResult = runFraudCheck({
+      labels,
+      imageSource: data.imageSource,
+      lat: data.lat,
+      lng: data.lng,
+      timestamp: data.timestamp,
+    });
+
+    console.log("🧪 Local fraud result:", localFraudResult);
+
+    let geminiResult = null;
+
+    try {
+      console.log("🤖 Calling Gemini verification...");
+
+      geminiResult = await verifyComplaintWithGemini({
+        title: data.title,
+        description: data.description,
+        type: data.type,
+        labels,
       });
+
+      console.log("✅ Gemini result:", geminiResult);
+    } catch (err) {
+      console.warn("[Gemini background error]", err.message);
     }
 
-    const isClean = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
-    const matchedDirty = labels.filter((l) => DIRTY_KEYWORDS.includes(l));
-    const score = isClean ? 80 : 30;
-    const remarks = isClean
-      ? "Looks cleaned"
-      : `Issue still visible in photo (detected: ${matchedDirty.join(", ")})`;
+    const finalIsValid =
+      geminiResult?.isValidIssue ?? localFraudResult.isValidIssue;
 
-    const updated = await Complaint.findByIdAndUpdate(
-      req.params.id,
-      {
-        status: "resolved",
-        resolvedImageUrl,
-        resolutionVerification: { score, remarks, labels },
+    await Complaint.findByIdAndUpdate(complaintId, {
+      status: finalIsValid ? "pending" : "rejected",
+      aiVerification: {
+        isValidIssue: finalIsValid,
+        labels,
+        fraudScore: geminiResult?.fraudScore ?? localFraudResult.fraudScore,
+        remarks:
+          geminiResult?.englishRemarks ||
+          geminiResult?.remarks ||
+          localFraudResult.remarks,
+        confidence: geminiResult?.confidence ?? 0,
+        category: geminiResult?.category ?? "other",
+        language: geminiResult?.language ?? "unknown",
+        englishRemarks: geminiResult?.englishRemarks ?? "",
+        marathiRemarks: geminiResult?.marathiRemarks ?? "",
+        priority: geminiResult?.priority ?? "medium",
+        analyzedAt: new Date(),
       },
-      { new: true, runValidators: true }
-    );
+    });
 
-    await notifyCitizenAboutComplaintStatus(updated, "resolved");
-
-    return res.status(200).json(updated);
+    console.log("✅ AI verification completed:", complaintId);
   } catch (err) {
-    console.error("[resolveComplaint]", err);
-    return res.status(500).json({ message: "Error resolving complaint" });
+    console.error("[AI background verification failed]", err.message);
   }
 };
 
 const createComplaint = async (req, res) => {
   try {
+    console.log("🚀 createComplaint route hit");
+
     if (!req.user?.id) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -407,7 +260,6 @@ const createComplaint = async (req, res) => {
       });
     }
 
-    // Suggestion: save directly, no photo/GPS/AI
     if (type === "suggestion") {
       const complaint = await Complaint.create({
         citizen: req.user.id,
@@ -428,7 +280,6 @@ const createComplaint = async (req, res) => {
       });
     }
 
-    // Issue: photo + GPS required
     if (!req.file) {
       return res.status(400).json({
         message: "Issue requires a photo",
@@ -439,13 +290,15 @@ const createComplaint = async (req, res) => {
     const lat = Number(req.body.lat);
     const lng = Number(req.body.lng);
 
+    console.log("📸 Complaint image URL:", imageUrl);
+    console.log("📍 Complaint location:", { lat, lng });
+
     if (isNaN(lat) || isNaN(lng)) {
       return res.status(400).json({
         message: "Invalid or missing GPS coordinates",
       });
     }
 
-    // Duplicate nearby issue check BEFORE creating
     const nearbyIssue = await Complaint.findOne({
       village: village._id,
       type: "issue",
@@ -467,7 +320,6 @@ const createComplaint = async (req, res) => {
       });
     }
 
-    // Save complaint WITHOUT Gemini verification
     const complaint = await Complaint.create({
       citizen: req.user.id,
       village: village._id,
@@ -479,24 +331,25 @@ const createComplaint = async (req, res) => {
       imageSource: imageSource ?? "camera",
       timestamp: timestamp ? new Date(timestamp) : new Date(),
       status: "pending",
-
       aiVerification: {
         isValidIssue: true,
         labels: [],
         fraudScore: 0,
-        remarks: "AI verification disabled",
+        remarks: "AI verification pending",
         confidence: 0,
         category: "other",
         language: "unknown",
-        englishRemarks: "AI verification is currently disabled",
-        marathiRemarks: "एआय पडताळणी सध्या बंद आहे",
+        englishRemarks: "AI verification is pending",
+        marathiRemarks: "एआय पडताळणी प्रलंबित आहे",
         priority: "medium",
       },
     });
 
-    // Gemini verification disabled
-    /*
+    console.log("✅ Complaint saved:", complaint._id);
+
     setImmediate(() => {
+      console.log("🚀 Starting background AI verification:", complaint._id);
+
       verifyComplaintInBackground(complaint._id, {
         title: title.trim(),
         description: description.trim(),
@@ -508,10 +361,9 @@ const createComplaint = async (req, res) => {
         timestamp,
       });
     });
-    */
 
     return res.status(201).json({
-      message: "Complaint submitted successfully.",
+      message: "Complaint submitted successfully. AI verification is running.",
       complaint,
     });
   } catch (err) {
@@ -519,6 +371,169 @@ const createComplaint = async (req, res) => {
     return res.status(500).json({
       message: "Internal server error",
     });
+  }
+};
+
+const resolveComplaint = async (req, res) => {
+  try {
+    console.log("🚀 resolveComplaint route hit");
+
+    if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        message: "Invalid complaint ID format",
+      });
+    }
+
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "Resolution photo required" });
+    }
+
+    const resolvedImageUrl = req.file.path;
+
+    console.log("📸 Resolution image uploaded:", resolvedImageUrl);
+
+    const complaint = await Complaint.findById(req.params.id);
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    if (complaint.status === "resolved") {
+      return res.status(400).json({ message: "Complaint is already resolved" });
+    }
+
+    let labels = [];
+
+    try {
+      console.log("📸 Calling Vision API for resolution...");
+      console.log("Complaint ID:", req.params.id);
+      console.log("Resolved Image URL:", resolvedImageUrl);
+
+      const raw = await analyzeImage(resolvedImageUrl);
+
+      console.log("✅ Raw Vision response - resolve:", raw);
+
+      labels = normalizeLabels(raw);
+
+      console.log("🏷️ Normalized labels - resolve:", labels);
+    } catch (visionErr) {
+      console.error("❌ Vision API error - resolve");
+      console.error("Code:", visionErr.code);
+      console.error("Message:", visionErr.message);
+      console.error("Details:", visionErr.details);
+    }
+
+    const hasInvalidContent = labels.some((l) => INVALID_KEYWORDS.includes(l));
+
+    if (hasInvalidContent) {
+      const matchedInvalid = labels.filter((l) => INVALID_KEYWORDS.includes(l));
+
+      return res.status(400).json({
+        message: "Resolution photo appears to be invalid or unrelated to the complaint.",
+        reason: "invalid_image",
+        detectedLabels: matchedInvalid,
+      });
+    }
+
+    const isClean = !labels.some((l) => DIRTY_KEYWORDS.includes(l));
+    const matchedDirty = labels.filter((l) => DIRTY_KEYWORDS.includes(l));
+
+    const score = isClean ? 80 : 30;
+    const remarks = isClean
+      ? "Looks cleaned"
+      : `Issue still visible in photo (detected: ${matchedDirty.join(", ")})`;
+
+    const updated = await Complaint.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: "resolved",
+        resolvedImageUrl,
+        resolutionVerification: {
+          score,
+          remarks,
+          labels,
+          analyzedAt: new Date(),
+        },
+      },
+      { new: true, runValidators: true }
+    );
+
+    console.log("✅ Complaint resolved:", updated._id);
+    console.log("Resolution Score:", score);
+    console.log("Resolution Remarks:", remarks);
+
+    await notifyCitizenAboutComplaintStatus(updated, "resolved");
+
+    return res.status(200).json(updated);
+  } catch (err) {
+    console.error("[resolveComplaint]", err);
+    return res.status(500).json({ message: "Error resolving complaint" });
+  }
+};
+
+const getComplaints = async (req, res) => {
+  try {
+    if (!req.user?.village) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const filter = { village: req.user.village };
+    if (req.query.type) filter.type = req.query.type;
+    if (req.query.status) filter.status = req.query.status;
+
+    const complaints = await Complaint.find(filter)
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json(complaints);
+  } catch (err) {
+    console.error("[getComplaints]", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const updateStatus = async (req, res) => {
+  try {
+    if (!req.user?.id || !req.user?.village) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+
+    if (!VALID_STATUSES.includes(status)) {
+      return res.status(400).json({
+        message: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}`,
+      });
+    }
+
+    const complaint = await Complaint.findById(req.params.id);
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    if (complaint.village.toString() !== req.user.village.toString()) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const previousStatus = complaint.status;
+    complaint.set({ status });
+    await complaint.save();
+
+    if (previousStatus !== status && ["resolved", "rejected"].includes(status)) {
+      await notifyCitizenAboutComplaintStatus(complaint, status, req.body.reason);
+    }
+
+    return res.status(200).json(complaint);
+  } catch (err) {
+    console.error("[updateStatus]", err);
+    return res.status(500).json({ message: "Error updating status" });
   }
 };
 
@@ -555,10 +570,9 @@ const getMyComplaints = async (req, res) => {
 
 const getComplaintById = async (req, res) => {
   try {
-    // Validate if id is a valid ObjectId
     if (!req.params.id || !req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
-        message: "Invalid complaint ID format"
+        message: "Invalid complaint ID format",
       });
     }
 
@@ -586,6 +600,7 @@ const getComplaintsByVillage = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const village = await Village.findById(villageId);
+
     if (!village) {
       return res.status(404).json({ message: "Village not found" });
     }
@@ -619,4 +634,12 @@ const getComplaintsByVillage = async (req, res) => {
   }
 };
 
-module.exports = { getComplaints, updateStatus, resolveComplaint, createComplaint, getMyComplaints, getComplaintById, getComplaintsByVillage };
+module.exports = {
+  getComplaints,
+  updateStatus,
+  resolveComplaint,
+  createComplaint,
+  getMyComplaints,
+  getComplaintById,
+  getComplaintsByVillage,
+};
