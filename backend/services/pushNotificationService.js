@@ -36,6 +36,11 @@ async function sendPushNotification(pushTokens, title, body, data = {}) {
   }
 
   if (tokens.length === 0) {
+    console.warn("[expo-push] No valid Expo push tokens", {
+      providedCount: allTokens.length,
+      invalidCount: invalidFormatTokens.length,
+    });
+
     return {
       success: false,
       message: "No valid Expo push tokens provided",
@@ -87,6 +92,10 @@ async function sendPushNotification(pushTokens, title, body, data = {}) {
 
         const failedToken = tokenBatch[index];
         failedTokens.push(failedToken);
+        console.error("[expo-push] Ticket failed", {
+          error: ticket.details?.error,
+          message: ticket.message,
+        });
 
         if (ticket.details?.error === "DeviceNotRegistered") {
           void removeInvalidPushTokens([failedToken]);

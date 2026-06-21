@@ -2,6 +2,49 @@ const Complaint = require("../models/Complaint");
 const { analyzeImage } = require("../utlis/vision");
 const Citizen = require("../models/Citizens");
 const { verifyComplaintWithGemini } = require("../services/geminiComplaint.service");
+const {
+  notifyComplaintRejected,
+  notifyComplaintResolved,
+} = require("../services/notificationService");
+
+const notifyCitizenAboutComplaintStatus = async (complaint, status, reason) => {
+  try {
+    const citizen = await Citizen.findById(complaint.citizen);
+
+    if (!citizen) {
+      console.warn("[complaint-push] Citizen not found", {
+        complaintId: complaint._id,
+        citizenId: complaint.citizen,
+        status,
+      });
+      return;
+    }
+
+    let result = null;
+    if (status === "resolved") {
+      result = await notifyComplaintResolved(citizen, complaint._id);
+    } else if (status === "rejected") {
+      result = await notifyComplaintRejected(
+        citizen,
+        complaint._id,
+        reason || "Updated by Gram Panchayat"
+      );
+    }
+
+    console.log("[complaint-push] Notification result", {
+      complaintId: complaint._id,
+      citizenId: citizen._id,
+      status,
+      tokenCount: citizen.pushTokens?.length || 0,
+      success: result?.success || false,
+      successCount: result?.successCount || 0,
+      failureCount: result?.failureCount || 0,
+      message: result?.message,
+    });
+  } catch (notifErr) {
+    console.error("Complaint push notification error:", notifErr.message);
+  }
+};
 
 const verifyComplaintInBackground = async (complaintId, data) => {
   try {
@@ -234,8 +277,13 @@ const updateStatus = async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
+    const previousStatus = complaint.status;
     complaint.set({ status });
     await complaint.save();
+
+    if (previousStatus !== status && ["resolved", "rejected"].includes(status)) {
+      await notifyCitizenAboutComplaintStatus(complaint, status, req.body.reason);
+    }
 
     return res.status(200).json(complaint);
   } catch (err) {
@@ -306,6 +354,8 @@ const resolveComplaint = async (req, res) => {
       },
       { new: true, runValidators: true }
     );
+
+    await notifyCitizenAboutComplaintStatus(updated, "resolved");
 
     return res.status(200).json(updated);
   } catch (err) {
