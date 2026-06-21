@@ -26,7 +26,6 @@ import { parseJsonObject } from "../../utils/safeJson";
 interface DropdownItem {
   label: string;
   value: string;
-  marathiLabel?: string;
   icon?: string;
 }
 
@@ -49,7 +48,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   selectedValue,
   items,
   onValueChange,
-  placeholder = "Select an option",
+  placeholder = "",
   colors,
   isDark,
   icon = "chevron-down",
@@ -62,14 +61,6 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
   const getLabel = (item: DropdownItem) => {
     return isDark ? item.label : item.label;
-  };
-
-  // Get the icon for the selected item (for display in the button)
-  const getSelectedItemIcon = () => {
-    if (selectedItem && selectedItem.icon) {
-      return selectedItem.icon;
-    }
-    return null;
   };
 
   return (
@@ -187,7 +178,6 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                         ]}
                       >
                         {isDark ? item.label : item.label}
-                        {item.marathiLabel && ` (${item.marathiLabel})`}
                       </Text>
                     </View>
                     {isSelected && (
@@ -212,8 +202,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 // Main Component
 export default function WeatherAdvisoryScreen() {
   const { colors, isDark } = useTheme();
-  const { t, i18n } = useTranslation();
-  const currentLanguage = i18n.language || 'en';
+  const { t } = useTranslation();
 
   const [crop, setCrop] = useState("sugarcane");
   const [stage, setStage] = useState("vegetative");
@@ -229,160 +218,134 @@ export default function WeatherAdvisoryScreen() {
   const headerEyebrowColor = isDark ? colors.primary[300] : "rgba(255,255,255,0.6)";
   const backBtnBg = isDark ? `${colors.primary[500]}40` : "rgba(255,255,255,0.15)";
 
-  // Data for dropdowns with bilingual support and icons
   const cropData: DropdownItem[] = [
-    { label: currentLanguage === 'mr' ? "ऊस" : "Sugarcane", value: "sugarcane", marathiLabel: "ऊस", icon: "🌾" },
-    { label: currentLanguage === 'mr' ? "सोयाबीन" : "Soybean", value: "soybean", marathiLabel: "सोयाबीन", icon: "🌱" },
-    { label: currentLanguage === 'mr' ? "गहू" : "Wheat", value: "wheat", marathiLabel: "गहू", icon: "🌾" },
-    { label: currentLanguage === 'mr' ? "भात" : "Rice", value: "rice", marathiLabel: "भात", icon: "🌾" },
-    { label: currentLanguage === 'mr' ? "कापूस" : "Cotton", value: "cotton", marathiLabel: "कापूस", icon: "🌿" },
-    { label: currentLanguage === 'mr' ? "मका" : "Maize", value: "maize", marathiLabel: "मका", icon: "🌽" },
-    { label: currentLanguage === 'mr' ? "शेंगदाणा" : "Groundnut", value: "groundnut", marathiLabel: "शेंगदाणा", icon: "🥜" },
+    { label: t("weather.crops.sugarcane"), value: "sugarcane", icon: "\uD83C\uDF3E" },
+    { label: t("weather.crops.soybean"), value: "soybean", icon: "\uD83C\uDF31" },
+    { label: t("weather.crops.wheat"), value: "wheat", icon: "\uD83C\uDF3E" },
+    { label: t("weather.crops.rice"), value: "rice", icon: "\uD83C\uDF3E" },
+    { label: t("weather.crops.cotton"), value: "cotton", icon: "\uD83C\uDF3F" },
+    { label: t("weather.crops.maize"), value: "maize", icon: "\uD83C\uDF3D" },
+    { label: t("weather.crops.groundnut"), value: "groundnut", icon: "\uD83E\uDD5C" },
   ];
 
   const stageData: DropdownItem[] = [
-    { label: currentLanguage === 'mr' ? "पेरणी" : "Sowing", value: "sowing", marathiLabel: "पेरणी", icon: "🌱" },
-    { label: currentLanguage === 'mr' ? "वाढ" : "Vegetative", value: "vegetative", marathiLabel: "वाढ", icon: "🌿" },
-    { label: currentLanguage === 'mr' ? "फुलोरा" : "Flowering", value: "flowering", marathiLabel: "फुलोरा", icon: "🌸" },
-    { label: currentLanguage === 'mr' ? "फळधारणा" : "Fruiting", value: "fruiting", marathiLabel: "फळधारणा", icon: "🍎" },
-    { label: currentLanguage === 'mr' ? "कापणी" : "Harvest", value: "harvest", marathiLabel: "कापणी", icon: "🌾" },
-    { label: currentLanguage === 'mr' ? "परिपक्वता" : "Maturity", value: "maturity", marathiLabel: "परिपक्वता", icon: "⭐" },
+    { label: t("weather.stages.sowing"), value: "sowing", icon: "\uD83C\uDF31" },
+    { label: t("weather.stages.vegetative"), value: "vegetative", icon: "\uD83C\uDF3F" },
+    { label: t("weather.stages.flowering"), value: "flowering", icon: "\uD83C\uDF38" },
+    { label: t("weather.stages.fruiting"), value: "fruiting", icon: "\uD83C\uDF4E" },
+    { label: t("weather.stages.harvest"), value: "harvest", icon: "\uD83C\uDF3E" },
+    { label: t("weather.stages.maturity"), value: "maturity", icon: "\u2B50" },
   ];
 
   const soilData: DropdownItem[] = [
-    { label: currentLanguage === 'mr' ? "हलकी माती" : "Light Soil", value: "light", marathiLabel: "हलकी माती", icon: "🏖️" },
-    { label: currentLanguage === 'mr' ? "मध्यम माती" : "Medium Soil", value: "medium", marathiLabel: "मध्यम माती", icon: "🏜️" },
-    { label: currentLanguage === 'mr' ? "जड माती" : "Heavy Soil", value: "heavy", marathiLabel: "जड माती", icon: "⛰️" },
-    { label: currentLanguage === 'mr' ? "वालुकामय माती" : "Sandy Soil", value: "sandy", marathiLabel: "वालुकामय माती", icon: "🏖️" },
-    { label: currentLanguage === 'mr' ? "गाळाची माती" : "Loamy Soil", value: "loamy", marathiLabel: "गाळाची माती", icon: "🌾" },
-    { label: currentLanguage === 'mr' ? "काळी माती" : "Black Soil", value: "black", marathiLabel: "काळी माती", icon: "🖤" },
-    { label: currentLanguage === 'mr' ? "लाल माती" : "Red Soil", value: "red", marathiLabel: "लाल माती", icon: "🔴" },
+    { label: t("weather.soil.light"), value: "light", icon: "\uD83C\uDFD6\uFE0F" },
+    { label: t("weather.soil.medium"), value: "medium", icon: "\uD83C\uDFDC\uFE0F" },
+    { label: t("weather.soil.heavy"), value: "heavy", icon: "\u26F0\uFE0F" },
+    { label: t("weather.soil.sandy"), value: "sandy", icon: "\uD83C\uDFD6\uFE0F" },
+    { label: t("weather.soil.loamy"), value: "loamy", icon: "\uD83C\uDF3E" },
+    { label: t("weather.soil.black"), value: "black", icon: "\u26AB" },
+    { label: t("weather.soil.red"), value: "red", icon: "\uD83D\uDD34" },
   ];
 
-  // Translation helpers
   const getTranslatedTitle = (title: string): string => {
-    if (currentLanguage === 'mr') {
-      const titleMap: Record<string, string> = {
-        "Detailed Crop Advisory": "तपशीलवार पीक सल्ला",
-      };
-      return titleMap[title] || title;
-    }
-    return title;
+    const titleMap: Record<string, string> = {
+      "Detailed Crop Advisory": "weather.advisory.result_title",
+    };
+    return titleMap[title] ? t(titleMap[title]) : title;
   };
 
   const getTranslatedAdviceTitle = (title: string): string => {
-    if (currentLanguage === 'mr') {
-      const titleMap: Record<string, string> = {
-        "Irrigation": "सिंचन",
-        "Spraying": "फवारणी",
-        "Fertilizer": "खत",
-        "Pest Control": "कीड नियंत्रण",
-        "Harvest": "कापणी",
-        "Sowing": "पेरणी",
-        "Water": "पाणी",
-        "Weather": "हवामान",
-        "Frost": "दंव संरक्षण",
-        "Heat": "उष्णता संरक्षण",
-      };
-      return titleMap[title] || title;
-    }
-    return title;
+    const titleMap: Record<string, string> = {
+      Irrigation: "weather.adviceTitles.irrigation",
+      Spraying: "weather.adviceTitles.spraying",
+      Fertilizer: "weather.adviceTitles.fertilizer",
+      "Pest Control": "weather.adviceTitles.pest_control",
+      Harvest: "weather.adviceTitles.harvest",
+      Sowing: "weather.adviceTitles.sowing",
+      Water: "weather.adviceTitles.water",
+      Weather: "weather.adviceTitles.weather",
+      Frost: "weather.adviceTitles.frost",
+      Heat: "weather.adviceTitles.heat",
+    };
+    return titleMap[title] ? t(titleMap[title]) : title;
   };
 
   const getTranslatedDecision = (decision: string): string => {
-    if (currentLanguage === 'mr') {
-      const decisionMap: Record<string, string> = {
-        "avoid": "टाळा",
-        "recommended": "शिफारस केलेली",
-        "optional": "ऐच्छिक",
-        "suitable": "योग्य",
-        "delay": "विलंब करा",
-      };
-      return decisionMap[decision] || decision;
-    }
-    return decision;
+    const decisionMap: Record<string, string> = {
+      avoid: "weather.decisions.avoid",
+      recommended: "weather.decisions.recommended",
+      optional: "weather.decisions.optional",
+      suitable: "weather.decisions.suitable",
+      delay: "weather.decisions.delay",
+    };
+    return decisionMap[decision] ? t(decisionMap[decision]) : decision;
   };
 
   const getTranslatedMessage = (message: string): string => {
-    if (currentLanguage === 'mr') {
-      const messageMap: Record<string, string> = {
-        "Avoid irrigation today because rainfall is expected.": 
-          "आज पावसाची शक्यता असल्याने सिंचन टाळा.",
-        "Irrigation is recommended because temperature is high and the crop was not irrigated recently.": 
-          "तापमान जास्त असल्याने आणि पिकाला अलीकडे सिंचन न केल्याने सिंचनाची शिफारस केली जाते.",
-        "Irrigation is optional today. Check soil moisture before watering.": 
-          "आज सिंचन ऐच्छिक आहे. पाणी देण्यापूर्वी जमिनीतील ओलावा तपासा.",
-        "Avoid spraying today because rain or strong wind may reduce spray effectiveness.": 
-          "आज फवारणी टाळा कारण पाऊस किंवा जोरदार वारा फवारणीची प्रभावीता कमी करू शकतो.",
-        "Spraying is suitable today. Prefer early morning or evening.": 
-          "आज फवारणी योग्य आहे. सकाळी लवकर किंवा संध्याकाळी करा.",
-        "Delay fertilizer application because rainfall may wash away nutrients.": 
-          "खताचा वापर विलंब करा कारण पावसामुळे पोषक तत्वे वाहून जाऊ शकतात.",
-        "Fertilizer application is suitable if soil condition is proper.": 
-          "जमिनीची स्थिती योग्य असल्यास खताचा वापर योग्य आहे.",
-        "This advisory is based on weather forecast and farmer inputs. For critical decisions, consult a local agriculture officer.": 
-          "हा सल्ला हवामान अंदाज आणि शेतकऱ्यांच्या माहितीवर आधारित आहे. महत्त्वाच्या निर्णयांसाठी, स्थानिक कृषी अधाऱ्यांचा सल्ला घ्या.",
-      };
-      return messageMap[message] || message;
-    }
-    return message;
+    const messageMap: Record<string, string> = {
+      "Avoid irrigation today because rainfall is expected.": "weather.messages.avoid_irrigation_rainfall",
+      "Irrigation is recommended because temperature is high and the crop was not irrigated recently.": "weather.messages.irrigation_recommended_high_temp",
+      "Irrigation is optional today. Check soil moisture before watering.": "weather.messages.irrigation_optional",
+      "Avoid spraying today because rain or strong wind may reduce spray effectiveness.": "weather.messages.avoid_spraying_rain_wind",
+      "Spraying is suitable today. Prefer early morning or evening.": "weather.messages.spraying_suitable",
+      "Delay fertilizer application because rainfall may wash away nutrients.": "weather.messages.delay_fertilizer_rainfall",
+      "Fertilizer application is suitable if soil condition is proper.": "weather.messages.fertilizer_suitable",
+      "This advisory is based on weather forecast and farmer inputs. For critical decisions, consult a local agriculture officer.": "weather.messages.advisory_note",
+    };
+    return messageMap[message] ? t(messageMap[message]) : message;
   };
 
   const getTranslatedSummary = (summary: string): string => {
-    if (currentLanguage === 'mr') {
-      const match = summary.match(/Advisory generated for (.+?) at (.+?) stage/);
-      if (match) {
-        const cropName = match[1];
-        const stageName = match[2];
-        const cropMap: Record<string, string> = {
-          "sugarcane": "ऊस",
-          "soybean": "सोयाबीन",
-          "wheat": "गहू",
-          "rice": "भात",
-          "cotton": "कापूस",
-          "maize": "मका",
-          "groundnut": "शेंगदाणा",
-        };
-        const stageMap: Record<string, string> = {
-          "sowing": "पेरणी",
-          "vegetative": "वाढ",
-          "flowering": "फुलोरा",
-          "fruiting": "फळधारणा",
-          "harvest": "कापणी",
-          "maturity": "परिपक्वता",
-        };
-        const translatedCrop = cropMap[cropName] || cropName;
-        const translatedStage = stageMap[stageName] || stageName;
-        return `${translatedCrop} साठी ${translatedStage} टप्प्यावर सल्ला तयार केला.`;
-      }
-      return summary;
+    const match = summary.match(/Advisory generated for (.+?) at (.+?) stage/);
+    if (match) {
+      const cropName = match[1];
+      const stageName = match[2];
+      const cropKeys: Record<string, string> = {
+        sugarcane: "weather.crops.sugarcane",
+        soybean: "weather.crops.soybean",
+        wheat: "weather.crops.wheat",
+        rice: "weather.crops.rice",
+        cotton: "weather.crops.cotton",
+        maize: "weather.crops.maize",
+        groundnut: "weather.crops.groundnut",
+      };
+      const stageKeys: Record<string, string> = {
+        sowing: "weather.stages.sowing",
+        vegetative: "weather.stages.vegetative",
+        flowering: "weather.stages.flowering",
+        fruiting: "weather.stages.fruiting",
+        harvest: "weather.stages.harvest",
+        maturity: "weather.stages.maturity",
+      };
+      const cropLabel = cropKeys[cropName] ? t(cropKeys[cropName]) : cropName;
+      const stageLabel = stageKeys[stageName] ? t(stageKeys[stageName]) : stageName;
+      return t("weather.advisory.generated_summary", { crop: cropLabel, stage: stageLabel });
     }
     return summary;
   };
 
-  // Get icon for advice type
   const getAdviceIcon = (title: string): string => {
     const iconMap: Record<string, string> = {
-      "Irrigation": "💧",
-      "Spraying": "🌿",
-      "Fertilizer": "🧪",
-      "Pest Control": "🐛",
-      "Harvest": "🌾",
-      "Sowing": "🌱",
-      "Water": "💧",
-      "Weather": "🌤️",
-      "Frost": "❄️",
-      "Heat": "🔥",
+      Irrigation: "\uD83D\uDCA7",
+      Spraying: "\uD83C\uDF3F",
+      Fertilizer: "\uD83E\uDDEA",
+      "Pest Control": "\uD83D\uDC1B",
+      Harvest: "\uD83C\uDF3E",
+      Sowing: "\uD83C\uDF31",
+      Water: "\uD83D\uDCA7",
+      Weather: "\uD83C\uDF24\uFE0F",
+      Frost: "\u2744\uFE0F",
+      Heat: "\uD83D\uDD25",
     };
-    return iconMap[title] || "📋";
+    return iconMap[title] || "\uD83D\uDCCB";
   };
 
   const getDetailedAdvice = async () => {
     try {
       if (!crop.trim()) {
         Alert.alert(
-          t("weather_advisory.missing_details"),
-          t("weather_advisory.select_crop")
+          t("weather.advisory.missing_details"),
+          t("weather.advisory.enter_crop_stage")
         );
         return;
       }
@@ -393,8 +356,8 @@ export default function WeatherAdvisoryScreen() {
 
       if (!storedVillage) {
         Alert.alert(
-          t("weather_advisory.no_village"),
-          t("weather_advisory.scan_village_first")
+          t("weather.advisory.no_village"),
+          t("weather.advisory.scan_village_first")
         );
         setLoading(false);
         return;
@@ -405,8 +368,8 @@ export default function WeatherAdvisoryScreen() {
 
       if (!villageId) {
         Alert.alert(
-          t("weather_advisory.no_village"),
-          t("weather_advisory.scan_village_first")
+          t("weather.advisory.no_village"),
+          t("weather.advisory.scan_village_first")
         );
         setLoading(false);
         return;
@@ -423,10 +386,10 @@ export default function WeatherAdvisoryScreen() {
 
       setAdvice(res?.data ?? null);
     } catch (err: any) {
-      console.log("Detailed weather error:", apiService.getErrorMessage(err));
+      console.log("Detailed weather common.error:", apiService.getErrorMessage(err));
       Alert.alert(
-        t("weather_advisory.error"),
-        apiService.getErrorMessage(err, t("weather_advisory.failed_generate"))
+        t("weather.advisory.error"),
+        apiService.getErrorMessage(err, t("weather.advisory.failed_generate"))
       );
     } finally {
       setLoading(false);
@@ -486,10 +449,10 @@ export default function WeatherAdvisoryScreen() {
 
         <View style={styles.headerTitleBlock}>
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-            {t("weather_advisory.weather_services")}
+            {t("weather.advisory.weather_services")}
           </Text>
           <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-            {t("weather_advisory.title")}
+            {t("weather.advisory.title")}
           </Text>
           <View style={styles.headerBreadcrumb}>
             <View
@@ -499,7 +462,7 @@ export default function WeatherAdvisoryScreen() {
               ]}
             />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              {t("weather_advisory.crop_weather")}
+              {t("weather.advisory.crop_weather")}
             </Text>
           </View>
         </View>
@@ -521,19 +484,19 @@ export default function WeatherAdvisoryScreen() {
           ]}
         >
           <Text style={[styles.title, { color: colors.text.primary }]}>
-            {t("weather_advisory.get_detailed_advice")}
+            {t("weather.advisory.get_detailed_advice")}
           </Text>
 
           <Text style={[styles.subtitle, { color: colors.text.secondary }]}>
-            {t("weather_advisory.enter_crop_details")}
+            {t("weather.advisory.enter_crop_details")}
           </Text>
 
           {/* Crop Name */}
           <Text style={[styles.label, { color: colors.primary[700] }]}>
-            {t("weather_advisory.crop_name")}
+            {t("weather.advisory.crop_name")}
           </Text>
           <CustomDropdown
-            label={t("weather_advisory.crop_name")}
+            label={t("weather.advisory.crop_name")}
             selectedValue={crop}
             items={cropData}
             onValueChange={setCrop}
@@ -543,14 +506,15 @@ export default function WeatherAdvisoryScreen() {
             borderColor={colors.primary[500]}
             labelColor={colors.primary[700]}
             showItemIcons={true}
+            placeholder={t("common.select_option")}
           />
 
           {/* Growth Stage - With Icon in Input */}
           <Text style={[styles.label, { color: colors.secondary || colors.primary[600] }]}>
-            {t("weather_advisory.growth_stage")}
+            {t("weather.advisory.growth_stage")}
           </Text>
           <CustomDropdown
-            label={t("weather_advisory.growth_stage")}
+            label={t("weather.advisory.growth_stage")}
             selectedValue={stage}
             items={stageData}
             onValueChange={setStage}
@@ -560,14 +524,15 @@ export default function WeatherAdvisoryScreen() {
             borderColor={colors.secondary || colors.primary[400]}
             labelColor={colors.secondary || colors.primary[600]}
             showItemIcons={true} // Show selected item icon in input
+            placeholder={t("common.select_option")}
           />
 
           {/* Soil Type */}
           <Text style={[styles.label, { color: colors.success || colors.green[600] }]}>
-            {t("weather_advisory.soil_type")}
+            {t("weather.advisory.soil_type")}
           </Text>
           <CustomDropdown
-            label={t("weather_advisory.soil_type")}
+            label={t("weather.advisory.soil_type")}
             selectedValue={soilType}
             items={soilData}
             onValueChange={setSoilType}
@@ -577,11 +542,12 @@ export default function WeatherAdvisoryScreen() {
             borderColor={colors.success || colors.green[400]}
             labelColor={colors.success || colors.green[600]}
             showItemIcons={true}
+            placeholder={t("common.select_option")}
           />
 
           {/* Last Irrigation */}
           <Text style={[styles.label, { color: colors.warning || colors.orange[600] }]}>
-            {t("weather_advisory.last_irrigation_days")}
+            {t("weather.advisory.last_irrigation_days")}
           </Text>
           <View
             style={[
@@ -595,7 +561,7 @@ export default function WeatherAdvisoryScreen() {
           >
             <Ionicons name="water-outline" size={18} color={colors.warning || colors.orange[500]} />
             <TextInput
-              placeholder={t("weather_advisory.days_placeholder")}
+              placeholder={t("weather.advisory.days_placeholder")}
               placeholderTextColor={colors.text.muted}
               value={lastIrrigationDays}
               onChangeText={setLastIrrigationDays}
@@ -616,7 +582,7 @@ export default function WeatherAdvisoryScreen() {
               <>
                 <Ionicons name="leaf-outline" size={18} color="#fff" />
                 <Text style={styles.buttonText}>
-                  {t("weather_advisory.get_advisory")}
+                  {t("weather.advisory.get_advisory")}
                 </Text>
               </>
             )}
@@ -645,29 +611,29 @@ export default function WeatherAdvisoryScreen() {
             {/* Weather Stats */}
             <View style={styles.weatherGrid}>
               <WeatherMiniStat
-                icon="🌧️"
-                label={t("weather_advisory.rain")}
+                icon={"\uD83C\uDF27\uFE0F"}
+                label={t("weather.advisory.rain")}
                 value={`${advice.weather.rainNext24HoursMM} mm`}
                 colors={colors}
                 isDark={isDark}
               />
               <WeatherMiniStat
-                icon="💨"
-                label={t("weather_advisory.wind")}
+                icon={"\uD83D\uDCA8"}
+                label={t("weather.advisory.wind")}
                 value={`${advice.weather.maxWindKmph} km/h`}
                 colors={colors}
                 isDark={isDark}
               />
               <WeatherMiniStat
-                icon="🌡️"
-                label={t("weather_advisory.temp")}
-                value={`${advice.weather.maxTemperatureC}°C`}
+                icon={"\uD83C\uDF21\uFE0F"}
+                label={t("weather.advisory.temp")}
+                value={`${advice.weather.maxTemperatureC}\u00B0C`}
                 colors={colors}
                 isDark={isDark}
               />
               <WeatherMiniStat
-                icon="💧"
-                label={t("weather_advisory.humidity")}
+                icon={"\uD83D\uDCA7"}
+                label={t("weather.advisory.humidity")}
                 value={`${advice.weather.averageHumidity}%`}
                 colors={colors}
                 isDark={isDark}

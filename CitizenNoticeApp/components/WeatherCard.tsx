@@ -62,142 +62,94 @@ export default function WeatherCard() {
         setWeather(null);
       }
     } catch (err: any) {
-      console.log("Weather error:", apiService.getErrorMessage(err));
+      console.log("Weather common.error:", apiService.getErrorMessage(err));
       setWeather(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Get translated stats labels
   const getTranslatedStatLabel = (label: string): string => {
-    const labelMap: Record<string, { en: string; mr: string }> = {
-      "Temperature": { en: "Temperature", mr: "तापमान" },
-      "Wind": { en: "Wind", mr: "वारा" },
-      "Humidity": { en: "Humidity", mr: "आर्द्रता" },
-      "Rain": { en: "Rain", mr: "पाऊस" },
-      "Pressure": { en: "Pressure", mr: "दाब" },
-      "UV": { en: "UV Index", mr: "यूव्ही निर्देशांक" },
-      "Visibility": { en: "Visibility", mr: "दृश्यता" },
-      "Clouds": { en: "Cloud Cover", mr: "ढगांचे आवरण" },
+    const labelMap: Record<string, string> = {
+      Temperature: "weather.card.stats.temperature",
+      Wind: "weather.card.stats.wind",
+      Humidity: "weather.card.stats.humidity",
+      Rain: "weather.card.stats.rain",
+      Pressure: "weather.card.stats.pressure",
+      UV: "weather.card.stats.uv",
+      Visibility: "weather.card.stats.visibility",
+      Clouds: "weather.card.stats.clouds",
     };
-    
-    return currentLanguage === 'mr'
-      ? (labelMap[label]?.mr || label)
-      : (labelMap[label]?.en || label);
+    return labelMap[label] ? t(labelMap[label]) : label;
   };
 
-  // Get translated advice titles (without icons) and answers
   const getTranslatedAdvice = (title: string, answer: string): { title: string; answer: string } => {
-    // Advice titles translation (without emoji icons)
-    const titleMap: Record<string, { en: string; mr: string }> = {
-      "Irrigation": { en: "Irrigation", mr: "सिंचन" },
-      "Spraying": { en: "Spraying", mr: "फवारणी" },
-      "Fertilizer": { en: "Fertilizer", mr: "खत" },
-      "Pest Control": { en: "Pest Control", mr: "कीड नियंत्रण" },
-      "Harvest": { en: "Harvest", mr: "कापणी" },
-      "Sowing": { en: "Sowing", mr: "पेरणी" },
-      "Water": { en: "Water", mr: "पाणी" },
-      "Weather": { en: "Weather", mr: "हवामान" },
-      "Frost": { en: "Frost Protection", mr: "दंव संरक्षण" },
-      "Heat": { en: "Heat Protection", mr: "उष्णता संरक्षण" },
+    const titleMap: Record<string, string> = {
+      Irrigation: "weather.adviceTitles.irrigation",
+      Spraying: "weather.adviceTitles.spraying",
+      Fertilizer: "weather.adviceTitles.fertilizer",
+      "Pest Control": "weather.adviceTitles.pest_control",
+      Harvest: "weather.adviceTitles.harvest",
+      Sowing: "weather.adviceTitles.sowing",
+      Water: "weather.adviceTitles.water",
+      Weather: "weather.adviceTitles.weather",
+      Frost: "weather.adviceTitles.frost",
+      Heat: "weather.adviceTitles.heat",
     };
 
-    // Advice answers translation
-    const answerMap: Record<string, { en: string; mr: string }> = {
-      "Avoid today": { en: "Avoid today", mr: "आज टाळा" },
-      "Can irrigate if needed": { en: "Can irrigate if needed", mr: "आवश्यक असल्यास सिंचन करा" },
-      "Suitable today": { en: "Suitable today", mr: "आज योग्य आहे" },
-      "Irrigation is recommended because temperature is high and the crop was not irrigated recently.": { 
-        en: "Irrigation is recommended because temperature is high and the crop was not irrigated recently.", 
-        mr: "तापमान जास्त असल्याने आणि पिकाला अलीकडे सिंचन न केल्याने सिंचनाची शिफारस केली जाते." 
-      },
-      "Avoid irrigation today because rainfall is expected.": { 
-        en: "Avoid irrigation today because rainfall is expected.", 
-        mr: "आज पावसाची शक्यता असल्याने सिंचन टाळा." 
-      },
-      "Irrigation is optional today. Check soil moisture before watering.": { 
-        en: "Irrigation is optional today. Check soil moisture before watering.", 
-        mr: "आज सिंचन ऐच्छिक आहे. पाणी देण्यापूर्वी जमिनीतील ओलावा तपासा." 
-      },
-      "Avoid spraying today because rain or strong wind may reduce spray effectiveness.": { 
-        en: "Avoid spraying today because rain or strong wind may reduce spray effectiveness.", 
-        mr: "आज फवारणी टाळा कारण पाऊस किंवा जोरदार वारा फवारणीची प्रभावीता कमी करू शकतो." 
-      },
-      "Spraying is suitable today. Prefer early morning or evening.": { 
-        en: "Spraying is suitable today. Prefer early morning or evening.", 
-        mr: "आज फवारणी योग्य आहे. सकाळी लवकर किंवा संध्याकाळी करा." 
-      },
-      "Delay fertilizer application because rainfall may wash away nutrients.": { 
-        en: "Delay fertilizer application because rainfall may wash away nutrients.", 
-        mr: "खताचा वापर विलंब करा कारण पावसामुळे पोषक तत्वे वाहून जाऊ शकतात." 
-      },
-      "Fertilizer application is suitable if soil condition is proper.": { 
-        en: "Fertilizer application is suitable if soil condition is proper.", 
-        mr: "जमिनीची स्थिती योग्य असल्यास खताचा वापर योग्य आहे." 
-      },
+    const answerMap: Record<string, string> = {
+      "Avoid today": "weather.messages.avoid_today",
+      "Can irrigate if needed": "weather.messages.can_irrigate_if_needed",
+      "Suitable today": "weather.messages.suitable_today",
+      "Irrigation is recommended because temperature is high and the crop was not irrigated recently.": "weather.messages.irrigation_recommended_high_temp",
+      "Avoid irrigation today because rainfall is expected.": "weather.messages.avoid_irrigation_rainfall",
+      "Irrigation is optional today. Check soil moisture before watering.": "weather.messages.irrigation_optional",
+      "Avoid spraying today because rain or strong wind may reduce spray effectiveness.": "weather.messages.avoid_spraying_rain_wind",
+      "Spraying is suitable today. Prefer early morning or evening.": "weather.messages.spraying_suitable",
+      "Delay fertilizer application because rainfall may wash away nutrients.": "weather.messages.delay_fertilizer_rainfall",
+      "Fertilizer application is suitable if soil condition is proper.": "weather.messages.fertilizer_suitable",
     };
 
     const cleanTitle = title.replace(/[^\w\s]/g, '').trim();
-    const translatedTitle = currentLanguage === 'mr'
-      ? (titleMap[cleanTitle]?.mr || title)
-      : (titleMap[cleanTitle]?.en || title);
-
-    const translatedAnswer = currentLanguage === 'mr'
-      ? (answerMap[answer]?.mr || answer)
-      : (answerMap[answer]?.en || answer);
+    const translatedTitle = titleMap[cleanTitle] ? t(titleMap[cleanTitle]) : title;
+    const translatedAnswer = answerMap[answer] ? t(answerMap[answer]) : answer;
 
     return { title: translatedTitle, answer: translatedAnswer };
   };
 
-  // Get icon for advice type
   const getAdviceIcon = (title: string): string => {
     const iconMap: Record<string, string> = {
-      "Irrigation": "💧",
-      "Spraying": "🌿",
-      "Fertilizer": "🧪",
-      "Pest Control": "🐛",
-      "Harvest": "🌾",
-      "Sowing": "🌱",
-      "Water": "💧",
-      "Weather": "🌤️",
-      "Frost": "❄️",
-      "Heat": "🔥",
+      Irrigation: "\uD83D\uDCA7",
+      Spraying: "\uD83C\uDF3F",
+      Fertilizer: "\uD83E\uDDEA",
+      "Pest Control": "\uD83D\uDC1B",
+      Harvest: "\uD83C\uDF3E",
+      Sowing: "\uD83C\uDF31",
+      Water: "\uD83D\uDCA7",
+      Weather: "\uD83C\uDF24\uFE0F",
+      Frost: "\u2744\uFE0F",
+      Heat: "\uD83D\uDD25",
     };
     const cleanTitle = title.replace(/[^\w\s]/g, '').trim();
-    return iconMap[cleanTitle] || "📋";
+    return iconMap[cleanTitle] || "\uD83D\uDCCB";
   };
 
-  // Get translated summary
   const getTranslatedSummary = (summary: string): string => {
-    if (currentLanguage === 'mr') {
-      const summaryMap: Record<string, string> = {
-        "Rain is expected today. Be careful with irrigation and spraying.": 
-          "आज पावसाची शक्यता आहे. सिंचन आणि फवारणीत काळजी घ्या.",
-        "Weather looks normal for farm work today.": 
-          "आज शेतीच्या कामासाठी हवामान सामान्य आहे.",
-        "Partly cloudy with no chance of rain": 
-          "अंशतः ढगाळ, पावसाची शक्यता नाही",
-        "Clear skies expected today": 
-          "आज स्वच्छ आकाश अपेक्षित",
-        "Rain showers expected in the afternoon": 
-          "दुपारी पावसाच्या सरी अपेक्षित",
-        "Thunderstorms likely in the evening": 
-          "संध्याकाळी वादळाची शक्यता",
-        "High humidity with scattered showers": 
-          "उच्च आर्द्रता आणि विखुरलेल्या सरी",
-        "Cool and pleasant weather": 
-          "थंड आणि सुखद हवामान",
-        "Hot and humid conditions": 
-          "उष्ण आणि दमट परिस्थिती",
-        "Dry weather with strong winds": 
-          "कोरडे हवामान आणि जोरदार वारे",
-      };
-      
-      for (const [key, value] of Object.entries(summaryMap)) {
-        if (summary.includes(key)) return value;
-      }
-      return summary;
+    const summaryMap: Record<string, string> = {
+      "Rain is expected today. Be careful with irrigation and spraying.": "weather.messages.rain_expected_today",
+      "Weather looks normal for farm work today.": "weather.messages.normal_farm_weather",
+      "Partly cloudy with no chance of rain": "weather.conditions.partly_cloudy_no_rain",
+      "Clear skies expected today": "weather.conditions.clear_skies",
+      "Rain showers expected in the afternoon": "weather.conditions.afternoon_showers",
+      "Thunderstorms likely in the evening": "weather.conditions.evening_thunderstorms",
+      "High humidity with scattered showers": "weather.conditions.humid_scattered_showers",
+      "Cool and pleasant weather": "weather.conditions.cool_pleasant",
+      "Hot and humid conditions": "weather.conditions.hot_humid",
+      "Dry weather with strong winds": "weather.conditions.dry_strong_winds",
+    };
+
+    for (const [key, value] of Object.entries(summaryMap)) {
+      if (summary.includes(key)) return t(value);
     }
     return summary;
   };
@@ -230,16 +182,14 @@ export default function WeatherCard() {
         ]}
       >
         <Text style={[styles.noDataText, { color: colors.text.muted }]}>
-          {currentLanguage === 'mr' 
-            ? "हवामान डेटा उपलब्ध नाही" 
-            : "Weather data not available"}
+          {t("weather.card.data_not_available")}
         </Text>
         <TouchableOpacity 
           onPress={loadWeatherAdvice}
           style={[styles.retryButton, { backgroundColor: colors.primary[500] }]}
         >
           <Text style={styles.retryButtonText}>
-            {currentLanguage === 'mr' ? "पुन्हा प्रयत्न करा" : "Retry"}
+            {t("common.retry")}
           </Text>
         </TouchableOpacity>
       </View>
@@ -259,13 +209,12 @@ export default function WeatherCard() {
       <View style={styles.header}>
         <View>
           <Text style={[styles.title, { color: colors.text.primary }]}>
-            {currentLanguage === 'mr' ? "🌤️ आजचे हवामान" : "🌤️ Today's Weather"}
+            {t("weather.card.todays_weather")}
           </Text>
 
           {village?.name && (
             <Text style={[styles.villageName, { color: colors.text.muted }]}>
-              {village.name}
-              {currentLanguage === 'mr' && " - गाव"}
+              {village.name}
             </Text>
           )}
         </View>
@@ -340,16 +289,14 @@ export default function WeatherCard() {
         onPress={() => router.push("/weather/weather-advisory" as any)}
       >
         <Text style={[styles.detailButtonText, { color: colors.primary[700] }]}>
-          {currentLanguage === 'mr' 
-            ? "📋 तपशीलवार पीक सल्ला मिळवा" 
-            : "📋 Get detailed crop advice"}
+          {t("weather.card.get_detailed_crop_advice")}
         </Text>
       </TouchableOpacity>
 
       <Text style={[styles.footer, { color: colors.text.muted }]}>
-        {currentLanguage === 'mr' 
-          ? `🔄 ${new Date().toLocaleString('mr-IN')} रोजी अपडेट केले`
-          : `🔄 Updated at ${new Date().toLocaleString('en-IN')}`}
+        {t("weather.card.updated_at", {
+          time: new Date().toLocaleString(currentLanguage === "mr" ? "mr-IN" : "en-IN"),
+        })}
       </Text>
     </View>
   );

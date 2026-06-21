@@ -32,12 +32,12 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
-  const [villageName, setVillageName] = useState<string>(t('loading'));
+  const [villageName, setVillageName] = useState<string>(t('auth.login.loading'));
 
   useEffect(() => {
     AsyncStorage.getItem("scannedVillage").then((str) => {
       const obj = parseJsonObject(str);
-      setVillageName(obj?.villageName || t('no_village_found'));
+      setVillageName(obj?.villageName || t('auth.login.no_village_found'));
     });
   }, [t]);
 
@@ -46,7 +46,7 @@ export default function Login() {
       Toast.show({
         type: "error",
         text1: t('common.error'),
-        text2: t('auth.missing_fields'),
+        text2: t('validation.phone_password_required'),
       });
       return;
     }
@@ -57,8 +57,8 @@ export default function Login() {
     if (!villageObj?.villageId) {
       Toast.show({
         type: "error",
-        text1: t('auth.no_village_found'),
-        text2: t('auth.scan_village_login'),
+        text1: t('auth.login.no_village_found'),
+        text2: t('auth.login.scan_village_login'),
       });
       return;
     }
@@ -77,14 +77,14 @@ export default function Login() {
       Toast.show({
         type: "success",
         text1: t('common.welcome_back'),
-        text2: t('auth.login_success'),
+        text2: t('auth.login.success'),
       });
       setTimeout(() => router.replace("/complaints/my-complaints"), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: t('auth.login_failed'),
-        text2: apiService.getErrorMessage(err, t('auth.invalid_credentials')),
+        text1: t('auth.login.failed'),
+        text2: apiService.getErrorMessage(err, t('auth.login.invalid_credentials')),
       });
     } finally {
       setLoading(false);
@@ -94,8 +94,8 @@ export default function Login() {
   const fields = [
     {
       key: "phone",
-      label: t('auth.phone_number'),
-      placeholder: t('auth.phone_placeholder'),
+      label: t('auth.login.phone'),
+      placeholder: t('auth.login.phone_placeholder'),
       secure: false,
       value: phone,
       onChange: setPhone,
@@ -103,8 +103,8 @@ export default function Login() {
     },
     {
       key: "password",
-      label: t('auth.password'),
-      placeholder: t('auth.password_placeholder'),
+      label: t('auth.login.password'),
+      placeholder: t('auth.login.password_placeholder'),
       secure: true,
       value: password,
       onChange: setPassword,
@@ -152,11 +152,11 @@ export default function Login() {
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
             {t('common.citizen_portal').toUpperCase()}
           </Text>
-          <Text style={[styles.headerTitle, { color: headerTextColor }]}>{t('common.welcome_back')}</Text>
+          <Text style={[styles.headerTitle, { color: headerTextColor }]}>{t('auth.login.title')}</Text>
           <View style={styles.headerBreadcrumb}>
             <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              {t('common.sign_in_account')}
+              {t('auth.login.subtitle')}
             </Text>
           </View>
         </View>
@@ -180,10 +180,10 @@ export default function Login() {
             <Text style={styles.villageIcon}>🏘️</Text>
           </View>
           <View style={styles.villageTextBlock}>
-            <Text style={[styles.villageLabel, { color: colors.text.muted }]}>{t('register.village')}</Text>
+            <Text style={[styles.villageLabel, { color: colors.text.muted }]}>{t('auth.login.village')}</Text>
             <Text style={[styles.villageName, { color: colors.text.primary }]}>{villageName}</Text>
             <Text style={[styles.villageVerified, { color: colors.primary[500] }]}>
-              ✓ {t('register.verified_qr')}
+              ✓ {t('auth.login.verified_qr')}
             </Text>
           </View>
         </View>
@@ -252,7 +252,7 @@ export default function Login() {
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <Text style={[styles.loginBtnTxt, { color: "#fff" }]}>
-              {t('common.login')}
+              {t('auth.login.submit')}
             </Text>
           )}
         </TouchableOpacity>
@@ -260,20 +260,20 @@ export default function Login() {
         {/* ── Register redirect ── */}
         <View style={styles.registerRow}>
           <Text style={[styles.registerHint, { color: colors.text.secondary }]}>
-            {t('register.already_account')}
+            {t('auth.login.no_account')}
           </Text>
           <TouchableOpacity
             onPress={() => router.replace({ pathname: "/auth/register" } as any)}
             activeOpacity={0.7}
           >
             <Text style={[styles.registerLink, { color: colors.primary[500] }]}>
-              {" "}{t('register.login_link')}
+              {" "}{t('auth.login.register_link')}
             </Text>
           </TouchableOpacity>
         </View>
 
         <Text style={[styles.terms, { color: colors.text.muted }]}>
-          {t('register.terms')}
+          {t('auth.login.terms')}
         </Text>
       </ScrollView>
 

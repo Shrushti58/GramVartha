@@ -7,14 +7,17 @@ import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import "../i18n"; // Initialize i18n
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
-import { setupNotificationListeners } from "../utils/pushNotifications";
+import { getOrCreatePushToken, setupNotificationListeners } from "../utils/pushNotifications";
 
 
 
 function RootLayoutContent() {
   const { colors, isDark } = useTheme();
 
-  useEffect(() => setupNotificationListeners(), []);
+  useEffect(() => {
+    void getOrCreatePushToken();
+    return setupNotificationListeners();
+  }, []);
 
   return (
     <>

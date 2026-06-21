@@ -28,21 +28,21 @@ const getTypeStyles = (type: string, t: any) => {
       bg: '#FEE9E7',
       bgDark: '#3D1A17',
       fg: '#C0392B',
-      label: t('type.issue'),
+      label: t('complaint.type.issue'),
       icon: '⚠️',
     },
     complaint: {
       bg: '#E8F5E9',
       bgDark: '#1B3A1E',
       fg: '#2E7D32',
-      label: t('type.complaint'),
+      label: t('complaint.type.complaint'),
       icon: '📋',
     },
     suggestion: {
       bg: '#E3F2FD',
       bgDark: '#0D2137',
       fg: '#1976D2',
-      label: t('type.suggestion'),
+      label: t('complaint.type.suggestion'),
       icon: '💡',
     },
   };
@@ -56,7 +56,7 @@ const getStatusConfig = (status: string, t: any) => {
       bgDark: '#342A05',
       fg: '#B7950B',
       dot: '#F1C40F',
-      label: t('status.pending'),
+      label: t('complaint.status.pending'),
       icon: '⏳',
     },
     'in-progress': {
@@ -64,7 +64,7 @@ const getStatusConfig = (status: string, t: any) => {
       bgDark: '#0D2137',
       fg: '#1976D2',
       dot: '#2196F3',
-      label: t('status.in_progress'),
+      label: t('complaint.status.in_progress'),
       icon: '🔧',
     },
     resolved: {
@@ -72,7 +72,7 @@ const getStatusConfig = (status: string, t: any) => {
       bgDark: '#1B3A1E',
       fg: '#2E7D32',
       dot: '#4CAF50',
-      label: t('status.resolved'),
+      label: t('complaint.status.resolved'),
       icon: '✅',
     },
     rejected: {
@@ -80,7 +80,7 @@ const getStatusConfig = (status: string, t: any) => {
       bgDark: '#3D1A1A',
       fg: '#C0392B',
       dot: '#F44336',
-      label: t('status.rejected'),
+      label: t('complaint.status.rejected'),
       icon: '❌',
     },
   };
@@ -125,7 +125,7 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark, t }: any) 
   const typ = getTypeStyles(item.type, t);
   const sta = getStatusConfig(item.status, t);
 
-  const initials = (item.citizen?.name || t('all_complaints.citizen')[0])[0].toUpperCase();
+  const initials = (item.citizen?.name || t('complaint.all.citizen')[0])[0].toUpperCase();
   const avatarBg = isDark ? '#0D2137' : '#E3F2FD';
   const avatarFg = isDark ? '#90CAF9' : '#1976D2';
 
@@ -183,7 +183,7 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark, t }: any) 
             >
               <Text style={styles.evidenceIcon}>📸</Text>
               <Text style={[styles.evidenceText, { color: colors.primary[isDark ? 300 : 700] }]}>
-                {t('all_complaints.image_attached')}
+                {t('complaint.all.image_attached')}
               </Text>
             </View>
           )}
@@ -197,7 +197,7 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark, t }: any) 
                 style={[styles.metaTxt, { color: colors.text.muted }]}
                 numberOfLines={1}
               >
-                {item.citizen?.name || t('all_complaints.citizen')}
+                {item.citizen?.name || t('complaint.all.citizen')}
               </Text>
             </View>
             <Text style={[styles.metaTxt, { color: colors.text.muted }]}>
@@ -217,7 +217,7 @@ const ComplaintCard = ({ item, onPress, index, query, colors, isDark, t }: any) 
 // ─── Empty state ──────────────────────────────────────────────────────────────
 const EmptyState = ({ query, filter, colors, isDark, t }: any) => {
   const filterKey = COMPLAINT_FILTERS.find(f => f.id === filter)?.key || 'filter_all';
-  const filterLabel = t(`all_complaints.${filterKey}`);
+  const filterLabel = t(`complaint.all.${filterKey}`);
 
   return (
     <View style={styles.emptyWrap}>
@@ -233,14 +233,14 @@ const EmptyState = ({ query, filter, colors, isDark, t }: any) => {
         <Text style={styles.emptyGlyph}>{query ? '🔍' : '📭'}</Text>
       </View>
       <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-        {query ? t('all_complaints.no_results') : t('all_complaints.no_complaints')}
+        {query ? t('complaint.all.no_results') : t('complaint.all.no_complaints')}
       </Text>
       <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
         {query
-          ? t('all_complaints.no_results_desc', { query })
+          ? t('complaint.all.no_results_desc', { query })
           : filter === 'all'
-          ? t('all_complaints.no_complaints_desc')
-          : t('all_complaints.no_complaints_filter_desc', { filter: filterLabel })}
+          ? t('complaint.all.no_complaints_desc')
+          : t('complaint.all.no_complaints_filter_desc', { filter: filterLabel })}
       </Text>
     </View>
   );
@@ -347,9 +347,9 @@ const LoginPrompt = ({ colors, isDark, t }: any) => {
               <Text style={styles.loginIconText}>🔒</Text>
             </LinearGradient>
           </View>
-          <Text style={styles.loginHeaderTitle}>{t('all_complaints.login_required')}</Text>
+          <Text style={styles.loginHeaderTitle}>{t('complaint.all.login_required')}</Text>
           <Text style={styles.loginHeaderSubtitle}>
-            {t('all_complaints.login_required_desc')}
+            {t('complaint.all.login_required_desc')}
           </Text>
         </View>
       </LinearGradient>
@@ -372,10 +372,10 @@ const LoginPrompt = ({ colors, isDark, t }: any) => {
               </View>
               <View style={styles.loginFeatureText}>
                 <Text style={[styles.loginFeatureTitle, { color: colors.text.primary }]}>
-                  {t('all_complaints.feature_submit')}
+                  {t('complaint.all.feature_submit')}
                 </Text>
                 <Text style={[styles.loginFeatureDesc, { color: colors.text.secondary }]}>
-                  {t('all_complaints.feature_submit_desc')}
+                  {t('complaint.all.feature_submit_desc')}
                 </Text>
               </View>
             </View>
@@ -386,10 +386,10 @@ const LoginPrompt = ({ colors, isDark, t }: any) => {
               </View>
               <View style={styles.loginFeatureText}>
                 <Text style={[styles.loginFeatureTitle, { color: colors.text.primary }]}>
-                  {t('all_complaints.feature_track')}
+                  {t('complaint.all.feature_track')}
                 </Text>
                 <Text style={[styles.loginFeatureDesc, { color: colors.text.secondary }]}>
-                  {t('all_complaints.feature_track_desc')}
+                  {t('complaint.all.feature_track_desc')}
                 </Text>
               </View>
             </View>
@@ -400,10 +400,10 @@ const LoginPrompt = ({ colors, isDark, t }: any) => {
               </View>
               <View style={styles.loginFeatureText}>
                 <Text style={[styles.loginFeatureTitle, { color: colors.text.primary }]}>
-                  {t('all_complaints.feature_real_time')}
+                  {t('complaint.all.feature_real_time')}
                 </Text>
                 <Text style={[styles.loginFeatureDesc, { color: colors.text.secondary }]}>
-                  {t('all_complaints.feature_real_time_desc')}
+                  {t('complaint.all.feature_real_time_desc')}
                 </Text>
               </View>
             </View>
@@ -412,7 +412,7 @@ const LoginPrompt = ({ colors, isDark, t }: any) => {
           <View style={styles.loginDivider}>
             <View style={[styles.loginDividerLine, { backgroundColor: colors.border }]} />
             <Text style={[styles.loginDividerText, { color: colors.text.muted }]}>
-              {t('all_complaints.get_started')}
+              {t('complaint.all.get_started')}
             </Text>
             <View style={[styles.loginDividerLine, { backgroundColor: colors.border }]} />
           </View>
@@ -430,7 +430,7 @@ const LoginPrompt = ({ colors, isDark, t }: any) => {
                 style={styles.loginPrimaryBtnGradient}
               >
                 <Text style={styles.loginPrimaryBtnText}>
-                  {t('all_complaints.login_button')} →
+                  {t('complaint.all.login_button')} →
                 </Text>
               </LinearGradient>
             </TouchableOpacity>
@@ -447,13 +447,13 @@ const LoginPrompt = ({ colors, isDark, t }: any) => {
               activeOpacity={0.82}
             >
               <Text style={[styles.loginSecondaryBtnText, { color: colors.primary[700] }]}>
-                {t('all_complaints.register_button')}
+                {t('complaint.all.register_button')}
               </Text>
             </TouchableOpacity>
           </View>
 
           <Text style={[styles.loginFooterText, { color: colors.text.muted }]}>
-            {t('all_complaints.login_footer')}
+            {t('complaint.all.login_footer')}
           </Text>
         </View>
       </Animated.View>
@@ -514,8 +514,8 @@ export default function AllComplaintsScreen() {
       setTotalPages(Number(response?.pages) || 1);
     } catch (error) {
       Alert.alert(
-        t('common.error') || 'Error',
-        apiService.getErrorMessage(error, t('all_complaints.load_error'))
+        t('common.error'),
+        apiService.getErrorMessage(error, t('complaint.all.load_error'))
       );
     } finally {
       setLoading(false);
@@ -568,10 +568,10 @@ export default function AllComplaintsScreen() {
           </View>
           <View style={styles.headerTitleBlock}>
             <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-              {t('all_complaints.village_services')}
+              {t('complaint.all.village_services')}
             </Text>
             <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-              {t('all_complaints.title')} 📋
+              {t('complaint.all.title')} 📋
             </Text>
           </View>
         </LinearGradient>
@@ -580,17 +580,17 @@ export default function AllComplaintsScreen() {
             <Text style={styles.emptyGlyph}>🔍</Text>
           </View>
           <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-            {t('all_complaints.no_village')}
+            {t('complaint.all.no_village')}
           </Text>
           <Text style={[styles.emptyDesc, { color: colors.text.secondary }]}>
-            {t('all_complaints.no_village_desc')}
+            {t('complaint.all.no_village_desc')}
           </Text>
           <TouchableOpacity
             style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
             onPress={() => router.push('/qr-scanner' as any)}
             activeOpacity={0.82}
           >
-            <Text style={styles.emptyBtnText}>{t('all_complaints.scan_qr')}</Text>
+            <Text style={styles.emptyBtnText}>{t('complaint.all.scan_qr')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -603,7 +603,7 @@ export default function AllComplaintsScreen() {
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <ActivityIndicator size="large" color={colors.primary[600]} />
         <Text style={[styles.loadingText, { color: colors.text.secondary }]}>
-          {t('all_complaints.loading')}
+          {t('complaint.all.loading')}
         </Text>
       </View>
     );
@@ -634,15 +634,15 @@ export default function AllComplaintsScreen() {
 
         <View style={styles.headerTitleBlock}>
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-            {t('all_complaints.village_services')}
+            {t('complaint.all.village_services')}
           </Text>
           <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-            {t('all_complaints.title')} 📋
+            {t('complaint.all.title')} 📋
           </Text>
           <View style={styles.headerBreadcrumb}>
             <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              {t('all_complaints.subtitle')}
+              {t('complaint.all.subtitle')}
             </Text>
           </View>
         </View>
@@ -659,11 +659,11 @@ export default function AllComplaintsScreen() {
           ]}
         >
           <Text style={[styles.searchIcon, { color: searchFocused ? colors.primary[500] : colors.text.muted }]}>
-            {t('all_complaints.search_icon')}
+            {t('complaint.all.search_icon')}
           </Text>
           <TextInput
             style={[styles.searchInput, { color: colors.text.primary }]}
-            placeholder={t('all_complaints.search_placeholder')}
+            placeholder={t('complaint.all.search_placeholder')}
             placeholderTextColor={colors.text.muted}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -726,7 +726,7 @@ export default function AllComplaintsScreen() {
                   },
                 ]}
               >
-                {t(`all_complaints.${f.key}`)}
+                {t(`complaint.all.${f.key}`)}
               </Text>
             </TouchableOpacity>
           );
@@ -746,8 +746,8 @@ export default function AllComplaintsScreen() {
           {processed.length}
         </Text>
         <Text style={[styles.countLabel, { color: colors.text.muted }]}>
-          {processed.length !== 1 ? t('all_complaints.complaints_count') : t('all_complaints.complaint_count_singular')}
-          {searchQuery.trim() ? `  ·  ${t('all_complaints.search_results_for')} "${searchQuery.trim()}"` : ''}
+          {processed.length !== 1 ? t('complaint.all.complaints_count') : t('complaint.all.complaint_count_singular')}
+          {searchQuery.trim() ? `  ·  ${t('complaint.all.search_results_for')} "${searchQuery.trim()}"` : ''}
         </Text>
       </View>
 
@@ -776,7 +776,7 @@ export default function AllComplaintsScreen() {
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={colors.primary[600]}
-              title={t('all_complaints.pull_to_refresh')}
+              title={t('complaint.all.pull_to_refresh')}
             />
           }
           ListFooterComponent={

@@ -23,25 +23,25 @@ const { width, height } = Dimensions.get('window');
 // ─── Category config with translation support ─────────────────────────────────
 const getCategoryStyles = (category: string, colors: any, t: any) => {
   const catMap: Record<string, { name: string; color: string; bg: string; bgDark: string }> = {
-    development:    { name: t('development_category'),    color: '#1976D2', bg: '#E3F2FD', bgDark: '#0D2137' },
-    health:         { name: t('health_category'),         color: '#C0392B', bg: '#FEE9E7', bgDark: '#3D1A17' },
-    education:      { name: t('education_category'),      color: '#7B1FA2', bg: '#F3E5F5', bgDark: '#2A0D36' },
-    agriculture:    { name: t('agriculture_category'),    color: '#2E7D32', bg: '#E8F5E9', bgDark: '#1B3A1E' },
-    employment:     { name: t('employment_category'),     color: '#E65100', bg: '#FFF3E0', bgDark: '#3A1A00' },
-    social_welfare: { name: t('social_welfare_category'), color: '#C2185B', bg: '#FCE4EC', bgDark: '#3D1025' },
-    tax_billing:    { name: t('tax_billing_category'),    color: '#00796B', bg: '#E0F2F1', bgDark: '#003D36' },
-    election:       { name: t('election_category'),       color: '#E64A19', bg: '#FBE9E7', bgDark: '#3D1A10' },
-    meeting:        { name: t('meeting_category'),        color: '#303F9F', bg: '#E8EAF6', bgDark: '#0D1229' },
-    general:        { name: t('general_category'),        color: '#455A64', bg: '#ECEFF1', bgDark: '#151C1F' },
+    development:    { name: t('notice.list.category_development'), color: '#1976D2', bg: '#E3F2FD', bgDark: '#0D2137' },
+    health:         { name: t('notice.list.category_health'),      color: '#C0392B', bg: '#FEE9E7', bgDark: '#3D1A17' },
+    education:      { name: t('notice.list.category_education'),   color: '#7B1FA2', bg: '#F3E5F5', bgDark: '#2A0D36' },
+    agriculture:    { name: t('notice.list.category_agriculture'), color: '#2E7D32', bg: '#E8F5E9', bgDark: '#1B3A1E' },
+    employment:     { name: t('notice.list.category_employment'),  color: '#E65100', bg: '#FFF3E0', bgDark: '#3A1A00' },
+    social_welfare: { name: t('notice.list.category_welfare'),     color: '#C2185B', bg: '#FCE4EC', bgDark: '#3D1025' },
+    tax_billing:    { name: t('notice.list.category_tax_billing'), color: '#00796B', bg: '#E0F2F1', bgDark: '#003D36' },
+    election:       { name: t('notice.list.category_election'),    color: '#E64A19', bg: '#FBE9E7', bgDark: '#3D1A10' },
+    meeting:        { name: t('notice.list.category_general'),     color: '#303F9F', bg: '#E8EAF6', bgDark: '#0D1229' },
+    general:        { name: t('notice.list.category_general'),     color: '#455A64', bg: '#ECEFF1', bgDark: '#151C1F' },
   };
   return catMap[category] ?? catMap.general;
 };
 
 const getPriorityStyles = (priority: string, t: any) => {
   const priMap: Record<string, { label: string; dot: string; bg: string; bgDark: string; fg: string; fgDark: string }> = {
-    high:   { label: t('high_priority'),    dot: '#F44336', bg: '#FFEBEE', bgDark: '#3D1A1A', fg: '#C0392B', fgDark: '#EF5350' },
-    medium: { label: t('normal_priority'),  dot: '#2196F3', bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', fgDark: '#64B5F6' },
-    low:    { label: t('general_priority'), dot: '#4CAF50', bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', fgDark: '#81C784' },
+    high:   { label: t('notice.details.high_priority_label'), dot: '#F44336', bg: '#FFEBEE', bgDark: '#3D1A1A', fg: '#C0392B', fgDark: '#EF5350' },
+    medium: { label: t('notice.list.priority_medium'),        dot: '#2196F3', bg: '#E3F2FD', bgDark: '#0D2137', fg: '#1976D2', fgDark: '#64B5F6' },
+    low:    { label: t('notice.list.priority_low'),           dot: '#4CAF50', bg: '#E8F5E9', bgDark: '#1B3A1E', fg: '#2E7D32', fgDark: '#81C784' },
   };
   return priMap[priority] ?? priMap.low;
 };
@@ -67,20 +67,26 @@ const cloudThumb = (url: string, w = 1200, h = 700) =>
 const FILE_CONFIGS: Record<FileType, {
   colorLight: string; colorDark: string;
   bg: string; bgDark: string;
-  label: string; short: string;
+  labelKey: string; short: string;
   mimeType: string; UTI: string;
 }> = {
-  jpg:     { colorLight: '#1565C0', colorDark: '#64B5F6', bg: '#E3F2FD', bgDark: '#0D2137', label: 'Photo',    short: 'Photo', mimeType: 'image/jpeg',         UTI: 'public.jpeg'   },
-  png:     { colorLight: '#1565C0', colorDark: '#64B5F6', bg: '#E3F2FD', bgDark: '#0D2137', label: 'Photo',    short: 'Photo', mimeType: 'image/png',          UTI: 'public.png'    },
-  pdf:     { colorLight: '#B71C1C', colorDark: '#EF5350', bg: '#FFEBEE', bgDark: '#3D1A1A', label: 'Document', short: 'PDF',   mimeType: 'application/pdf',    UTI: 'com.adobe.pdf' },
-  doc:     { colorLight: '#1A237E', colorDark: '#7986CB', bg: '#E8EAF6', bgDark: '#0D1229', label: 'Document', short: 'DOC',   mimeType: 'application/msword', UTI: 'public.data'   },
-  docx:    { colorLight: '#1A237E', colorDark: '#7986CB', bg: '#E8EAF6', bgDark: '#0D1229', label: 'Document', short: 'DOCX',  mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', UTI: 'public.data' },
-  unknown: { colorLight: '#37474F', colorDark: '#78909C', bg: '#ECEFF1', bgDark: '#151C1F', label: 'File',     short: 'File',  mimeType: 'application/octet-stream', UTI: 'public.data' },
+  jpg:     { colorLight: '#1565C0', colorDark: '#64B5F6', bg: '#E3F2FD', bgDark: '#0D2137', labelKey: 'notice.file.photo',    short: 'Photo', mimeType: 'image/jpeg',         UTI: 'public.jpeg'   },
+  png:     { colorLight: '#1565C0', colorDark: '#64B5F6', bg: '#E3F2FD', bgDark: '#0D2137', labelKey: 'notice.file.photo',    short: 'Photo', mimeType: 'image/png',          UTI: 'public.png'    },
+  pdf:     { colorLight: '#B71C1C', colorDark: '#EF5350', bg: '#FFEBEE', bgDark: '#3D1A1A', labelKey: 'notice.file.document', short: 'PDF',   mimeType: 'application/pdf',    UTI: 'com.adobe.pdf' },
+  doc:     { colorLight: '#1A237E', colorDark: '#7986CB', bg: '#E8EAF6', bgDark: '#0D1229', labelKey: 'notice.file.document', short: 'DOC',   mimeType: 'application/msword', UTI: 'public.data'   },
+  docx:    { colorLight: '#1A237E', colorDark: '#7986CB', bg: '#E8EAF6', bgDark: '#0D1229', labelKey: 'notice.file.document', short: 'DOCX',  mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', UTI: 'public.data' },
+  unknown: { colorLight: '#37474F', colorDark: '#78909C', bg: '#ECEFF1', bgDark: '#151C1F', labelKey: 'notice.file.file',     short: 'File',  mimeType: 'application/octet-stream', UTI: 'public.data' },
 };
 
-const getFileCfg = (ft: FileType, isDark: boolean) => {
+const getFileCfg = (ft: FileType, isDark: boolean, t?: any) => {
   const c = FILE_CONFIGS[ft];
-  return { ...c, color: isDark ? c.colorDark : c.colorLight, activeBg: isDark ? c.bgDark : c.bg };
+  return {
+    ...c,
+    label: t ? t(c.labelKey) : c.short,
+    saveDialogTitle: t ? t('notice.details.save_to_files') : 'Save to Files',
+    color: isDark ? c.colorDark : c.colorLight,
+    activeBg: isDark ? c.bgDark : c.bg,
+  };
 };
 
 const formatFileSize = (bytes: number): string => {
@@ -141,7 +147,7 @@ async function downloadToCache(
   );
   
   const result = await downloadResumable.downloadAsync();
-  if (!result?.uri) throw new Error('Download failed');
+  if (!result?.uri) throw new Error('notice.download.download_failed');
   
   const finalInfo = await FileSystemLegacy.getInfoAsync(dest);
   const finalSize = finalInfo.exists && 'size' in finalInfo ? (finalInfo as any).size : 0;
@@ -149,25 +155,25 @@ async function downloadToCache(
   return result.uri;
 }
 
-async function saveToDevice(localUri: string, ft: FileType, cfg: any): Promise<void> {
+async function saveToDevice(localUri: string, ft: FileType, cfg: any, t: any): Promise<void> {
   if (ft === 'jpg' || ft === 'png') {
     const { status } = await MediaLibrary.requestPermissionsAsync();
-    if (status !== 'granted') throw new Error('Gallery permission denied');
+    if (status !== 'granted') throw new Error('notice.download.gallery_permission_denied');
     await MediaLibrary.saveToLibraryAsync(localUri);
   } else {
     const ok = await Sharing.isAvailableAsync();
-    if (!ok) throw new Error('Sharing not available');
-    await Sharing.shareAsync(localUri, { mimeType: cfg.mimeType, dialogTitle: 'Save to Files', UTI: cfg.UTI });
+    if (!ok) throw new Error('notice.download.sharing_not_available');
+    await Sharing.shareAsync(localUri, { mimeType: cfg.mimeType, dialogTitle: cfg.saveDialogTitle, UTI: cfg.UTI });
   }
 }
 
 async function shareFileWithNotice(localUri: string, ft: FileType, notice: Notice, cfg: any, t: any) {
-  const shareTitle = t('share.title', { title: notice.title });
-  const shareMessage = t('share.message_with_file', {
-    description: notice.description || 'No description provided',
+  const shareTitle = t('notice.share.title', { title: notice.title });
+  const shareMessage = t('notice.share.message_with_file', {
+    description: notice.description || t('notice.share.no_description'),
     date: formatLongDate(notice.createdAt),
     category: notice.category,
-    fileName: notice.fileName || 'Document'
+    fileName: notice.fileName || t('notice.file.document')
   });
 
   const ok = await Sharing.isAvailableAsync();
@@ -255,11 +261,11 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark, t }: {
   const msgClr  = isDark ? colors.primary[100] : colors.text?.primary   || '#1e293b';
   const borderC = isDark ? `${colors.primary[500]}25` : 'rgba(0,0,0,0.06)';
 
-  const phaseTitle = isErr ? t('download.something_wrong') : 
-                     isDone ? t('download.all_done') : 
-                     isPrep ? t('download.preparing_share') : 
-                     isSave ? t('download.saving') : 
-                     t('download.downloading', { fileName: state.fileName || 'file' });
+  const phaseTitle = isErr ? t('notice.download.something_wrong') : 
+                     isDone ? t('notice.download.all_done') : 
+                     isPrep ? t('notice.download.preparing_share') : 
+                     isSave ? t('notice.download.saving') : 
+                     t('notice.download.downloading', { fileName: state.fileName || t('notice.file.file') });
 
   return (
     <Modal transparent visible={state.active} animationType="none" statusBarTranslucent>
@@ -277,7 +283,7 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark, t }: {
             <View style={{ flex: 1 }}>
               <Text style={[OV.headTitle, { color: headClr }]}>{phaseTitle}</Text>
               {!isDone && !isErr && !isPrep && (
-                <Text style={[OV.headSub, { color: textClr }]}>{pct}% complete</Text>
+                <Text style={[OV.headSub, { color: textClr }]}>{t('notice.download.percent_complete', { percent: pct })}</Text>
               )}
             </View>
           </View>
@@ -296,18 +302,18 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark, t }: {
                 
                 <View style={OV.detailsRow}>
                   <View style={OV.detailItem}>
-                    <Text style={[OV.detailLabel, { color: textClr }]}>Progress</Text>
+                    <Text style={[OV.detailLabel, { color: textClr }]}>{t('notice.download.progress')}</Text>
                     <Text style={[OV.detailValue, { color: accentColor }]}>{pct}%</Text>
                   </View>
                   {sizeInfo && (
                     <View style={OV.detailItem}>
-                      <Text style={[OV.detailLabel, { color: textClr }]}>File Size</Text>
+                      <Text style={[OV.detailLabel, { color: textClr }]}>{t('notice.download.file_size')}</Text>
                       <Text style={[OV.detailValue, { color: msgClr }]} numberOfLines={1}>{sizeInfo}</Text>
                     </View>
                   )}
                   {speedInfo && (
                     <View style={OV.detailItem}>
-                      <Text style={[OV.detailLabel, { color: textClr }]}>Speed</Text>
+                      <Text style={[OV.detailLabel, { color: textClr }]}>{t('notice.download.speed')}</Text>
                       <Text style={[OV.detailValue, { color: msgClr }]}>{speedInfo}</Text>
                     </View>
                   )}
@@ -318,13 +324,13 @@ const ProgressOverlay = ({ state, accentColor, onDismiss, colors, isDark, t }: {
             {isPrep && (
               <View style={OV.prepareContainer}>
                 <ActivityIndicator size="large" color={accentColor} />
-                <Text style={[OV.prepareText, { color: textClr }]}>This may take a moment...</Text>
+                <Text style={[OV.prepareText, { color: textClr }]}>{t('notice.download.may_take_moment')}</Text>
               </View>
             )}
             
             {(isDone || isErr) && (
               <TouchableOpacity onPress={onDismiss} style={[OV.btn, { backgroundColor: isErr ? '#EF5350' : '#4CAF50' }]} activeOpacity={0.8}>
-                <Text style={OV.btnTxt}>{isDone ? t('download.great_thanks') : t('download.close')}</Text>
+                <Text style={OV.btnTxt}>{isDone ? t('notice.download.great_thanks') : t('notice.download.close')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -388,15 +394,15 @@ const ViewerActionSheet = ({
         <Animated.View style={[AS.sheet, { backgroundColor: sheetBg, borderColor: borderC, borderWidth: 1, transform: [{ translateY: slideAnim }] }]}>
           <View style={[AS.handle, { backgroundColor: handleC }]} />
           <Text style={[AS.sheetTitle, { color: titleClr }]} numberOfLines={1}>{fileName}</Text>
-          <Text style={[AS.sheetSub,   { color: subClr   }]}>{t('notice_details.what_would_you_like')}</Text>
+          <Text style={[AS.sheetSub,   { color: subClr   }]}>{t('notice.details.what_would_you_like')}</Text>
           <View style={[AS.divider, { backgroundColor: borderC }]} />
           <Row
-            icon="↗" label={t('notice_details.share_file')} sub={t('notice_details.share_file_desc')}
+            icon="↗" label={t('notice.details.share_file')} sub={t('notice.details.share_file_desc')}
             iconBg={isDark ? `${colors.primary[500]}20` : colors.primary[50]}
             onPress={() => { onClose(); setTimeout(onShare, 300); }}
           />
           <Row
-            icon="↓" label={t('notice_details.save_to_device')} sub={t('notice_details.save_to_device_desc')}
+            icon="↓" label={t('notice.details.save_to_device')} sub={t('notice.details.save_to_device_desc')}
             iconBg={isDark ? `${accentColor}22` : `${accentColor}18`}
             onPress={() => { onClose(); setTimeout(onDownload, 300); }}
           />
@@ -409,7 +415,7 @@ const ViewerActionSheet = ({
             }]}
             activeOpacity={0.75}
           >
-            <Text style={[AS.cancelTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>{t('notice_details.cancel')}</Text>
+            <Text style={[AS.cancelTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>{t('notice.details.cancel')}</Text>
           </TouchableOpacity>
           <View style={{ height: Platform.OS === 'ios' ? 24 : 8 }} />
         </Animated.View>
@@ -476,7 +482,7 @@ const ViewerShell = ({
             activeOpacity={0.75}
           >
             <Text style={{ fontSize: 14, marginRight: 5 }}>↗</Text>
-            <Text style={[VM.btnOutlineTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>{t('notice_details.share')}</Text>
+            <Text style={[VM.btnOutlineTxt, { color: isDark ? colors.primary[300] : colors.primary[700] }]}>{t('notice.details.share')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={onDownload}
@@ -488,7 +494,7 @@ const ViewerShell = ({
             activeOpacity={0.8}
           >
             <Text style={{ fontSize: 14, color: '#fff', marginRight: 5 }}>↓</Text>
-            <Text style={VM.btnTxt}>{t('notice_details.save_to_device')}</Text>
+            <Text style={VM.btnTxt}>{t('notice.details.save_to_device')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -505,7 +511,7 @@ const ViewerShell = ({
 const LoaderView = ({ color, isDark, colors, t }: { color: string; isDark: boolean; colors: any; t: any }) => (
   <View style={[VM.loader, { backgroundColor: isDark ? colors.background || '#0d1117' : '#f8fafc' }]}>
     <ActivityIndicator size="large" color={color} />
-    <Text style={[VM.loaderTxt, { color }]}>{t('notice_details.loading')}</Text>
+    <Text style={[VM.loaderTxt, { color }]}>{t('notice.details.loading')}</Text>
   </View>
 );
 
@@ -513,9 +519,9 @@ const PdfViewer = ({ visible, url, title, onClose, onShare, onDownload, colors, 
   visible: boolean; url: string; title: string;
   onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean; t: any;
 }) => {
-  const cfg = getFileCfg('pdf', isDark);
+  const cfg = getFileCfg('pdf', isDark, t);
   return (
-    <ViewerShell visible={visible} accentColor={cfg.color} title={title} fileLabel="PDF Document"
+    <ViewerShell visible={visible} accentColor={cfg.color} title={title} fileLabel={t('notice.file.pdf_document')}
       onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark} t={t}>
       <WebView
         source={{ uri: `https://docs.google.com/gview?url=${encodeURIComponent(url)}&embedded=true` }}
@@ -531,7 +537,7 @@ const DocViewer = ({ visible, url, fileName, noticeTitle, onClose, onShare, onDo
   onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean; t: any;
 }) => {
   const ft  = getFileType(url, fileName);
-  const cfg = getFileCfg(ft, isDark);
+  const cfg = getFileCfg(ft, isDark, t);
   return (
     <ViewerShell visible={visible} accentColor={cfg.color} title={fileName || noticeTitle} fileLabel={cfg.label}
       onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark} t={t}>
@@ -548,9 +554,9 @@ const ImageViewer = ({ visible, url, title, onClose, onShare, onDownload, colors
   visible: boolean; url: string; title: string;
   onClose(): void; onShare(): void; onDownload(): void; colors: any; isDark: boolean; t: any;
 }) => {
-  const cfg = getFileCfg('jpg', isDark);
+  const cfg = getFileCfg('jpg', isDark, t);
   return (
-    <ViewerShell visible={visible} accentColor={cfg.color} title={title} fileLabel="Image"
+    <ViewerShell visible={visible} accentColor={cfg.color} title={title} fileLabel={t('notice.file.image')}
       onClose={onClose} onShare={onShare} onDownload={onDownload} colors={colors} isDark={isDark} t={t}>
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', minHeight: height * 0.7 }}
@@ -570,7 +576,7 @@ const AttachmentCard = ({ notice, onView, colors, isDark, t }: {
   if (!notice.fileUrl) return null;
 
   const ft   = getFileType(notice.fileUrl, notice.fileName ?? '');
-  const cfg  = getFileCfg(ft, isDark);
+  const cfg  = getFileCfg(ft, isDark, t);
   const isImg= ft === 'jpg' || ft === 'png';
   const isPdf= ft === 'pdf';
 
@@ -586,7 +592,7 @@ const AttachmentCard = ({ notice, onView, colors, isDark, t }: {
       <TouchableOpacity onPress={onView} style={[AC.wrap, { borderColor: borderC, backgroundColor: cardBg }]} activeOpacity={0.85}>
         <Image source={{ uri: cloudThumb(notice.fileUrl!) }} style={AC.img} resizeMode="cover" onError={() => setImgErr(true)} />
         <View style={[AC.imgFooter, { backgroundColor: isDark ? 'rgba(0,0,0,0.65)' : cfg.color }]}>
-          <Text style={[AC.imgFooterTxt, { color: isDark ? cfg.color : '#fff' }]}>{t('notice_details.tap_to_view_photo')}</Text>
+          <Text style={[AC.imgFooterTxt, { color: isDark ? cfg.color : '#fff' }]}>{t('notice.details.tap_to_view_photo')}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -610,8 +616,8 @@ const AttachmentCard = ({ notice, onView, colors, isDark, t }: {
             </View>
           </View>
           <View style={AC.thumbInfo}>
-            <Text style={[AC.thumbName, { color: textPri }]} numberOfLines={2}>{notice.fileName ?? 'Document.pdf'}</Text>
-            <Text style={[AC.thumbMeta, { color: textSec }]}>PDF Document · {t('notice_details.tap_to_open')}</Text>
+            <Text style={[AC.thumbName, { color: textPri }]} numberOfLines={2}>{notice.fileName ?? t('notice.file.document_pdf')}</Text>
+            <Text style={[AC.thumbMeta, { color: textSec }]}>{t('notice.file.pdf_document')} ? {t('notice.details.tap_to_open')}</Text>
           </View>
         </View>
         <View style={[AC.actionRow, { borderTopColor: borderC }]}>
@@ -623,8 +629,8 @@ const AttachmentCard = ({ notice, onView, colors, isDark, t }: {
             </View>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={[AC.actionLabel, { color: textPri }]}>{t('notice_details.open_document')}</Text>
-            <Text style={[AC.actionSub,   { color: textSec }]}>{t('notice_details.tap_to_open')}</Text>
+            <Text style={[AC.actionLabel, { color: textPri }]}>{t('notice.details.open_document')}</Text>
+            <Text style={[AC.actionSub,   { color: textSec }]}>{t('notice.details.tap_to_open')}</Text>
           </View>
           <View style={[AC.chevronBox, { borderColor: borderC, backgroundColor: chevBg }]}>
             <Text style={{ fontSize: 14, color: cfg.color, fontWeight: '700' }}>›</Text>
@@ -642,13 +648,13 @@ const AttachmentCard = ({ notice, onView, colors, isDark, t }: {
         </View>
         <View style={AC.thumbInfo}>
           <Text style={[AC.thumbName, { color: textPri }]} numberOfLines={2}>{notice.fileName ?? notice.title}</Text>
-          <Text style={[AC.thumbMeta, { color: textSec }]}>{cfg.label} · {t('notice_details.tap_to_open')}</Text>
+          <Text style={[AC.thumbMeta, { color: textSec }]}>{cfg.label} · {t('notice.details.tap_to_open')}</Text>
         </View>
       </View>
       <View style={[AC.actionRow, { borderTopColor: borderC }]}>
         <View style={{ flex: 1 }}>
-          <Text style={[AC.actionLabel, { color: textPri }]}>Open {cfg.label.toLowerCase()}</Text>
-          <Text style={[AC.actionSub,   { color: textSec }]}>{t('notice_details.tap_to_open')}</Text>
+          <Text style={[AC.actionLabel, { color: textPri }]}>{t('notice.details.open_file_type', { fileType: cfg.label.toLowerCase() })}</Text>
+          <Text style={[AC.actionSub,   { color: textSec }]}>{t('notice.details.tap_to_open')}</Text>
         </View>
         <View style={[AC.chevronBox, { borderColor: borderC, backgroundColor: chevBg }]}>
           <Text style={{ fontSize: 14, color: cfg.color, fontWeight: '700' }}>›</Text>
@@ -682,7 +688,7 @@ export default function NoticeDetailsScreen() {
 
   useEffect(() => {
     if (!noticeId) {
-      setError(t('notice_details.not_found_desc'));
+      setError(t('notice.details.not_found_desc'));
       setLoading(false);
       return;
     }
@@ -703,7 +709,7 @@ export default function NoticeDetailsScreen() {
       setNotice(data);
       Animated.stagger(90, [animIn(fade0, slide0, 0), animIn(fade1, slide1, 0), animIn(fade2, slide2, 0)]).start();
     } catch {
-      setError(t('notice_details.not_found_desc'));
+      setError(t('notice.details.not_found_desc'));
     } finally {
       setLoading(false);
     }
@@ -719,14 +725,14 @@ export default function NoticeDetailsScreen() {
   const handleDownload = useCallback(async () => {
     if (!notice?.fileUrl) return;
     const ft   = getFileType(notice.fileUrl, notice.fileName ?? '');
-    const cfg  = getFileCfg(ft, isDark);
+    const cfg  = getFileCfg(ft, isDark, t);
     const name = getSafeName();
     
     setDl({ 
       active: true, 
       progress: 0, 
       phase: 'preparing', 
-      message: t('download.preparing', { fileName: notice.fileName ?? 'file' }),
+      message: t('notice.download.preparing', { fileName: notice.fileName ?? t('notice.file.file') }),
       fileName: notice.fileName ?? 'file'
     });
     
@@ -735,7 +741,7 @@ export default function NoticeDetailsScreen() {
     setDl(prev => ({ 
       ...prev, 
       phase: 'downloading', 
-      message: t('download.downloading', { fileName: notice.fileName ?? 'file' })
+      message: t('notice.download.downloading', { fileName: notice.fileName ?? 'file' })
     }));
     
     try {
@@ -749,31 +755,31 @@ export default function NoticeDetailsScreen() {
             downloadedBytes, 
             totalBytes, 
             speed,
-            message: t('download.downloading_percent', { percent: Math.round(progress * 100) })
+            message: t('notice.download.downloading_percent', { percent: Math.round(progress * 100) })
           }))
       );
       
       setDl(prev => ({ 
         ...prev, 
         phase: 'saving', 
-        message: t('download.saving')
+        message: t('notice.download.saving')
       }));
       
-      await saveToDevice(local, ft, cfg);
+      await saveToDevice(local, ft, cfg, t);
       
       setDl(prev => ({ 
         ...prev, 
         phase: 'done', 
         progress: 1, 
         message: ft === 'jpg' || ft === 'png' 
-          ? t('download.photo_saved')
-          : t('download.document_saved')
+          ? t('notice.download.photo_saved')
+          : t('notice.download.document_saved')
       }));
     } catch (e: any) {
       setDl(prev => ({ 
         ...prev, 
         phase: 'error', 
-        message: e?.message ?? t('download.download_failed')
+        message: e?.message?.startsWith?.('notice.') ? t(e.message) : t('notice.download.download_failed')
       }));
     }
   }, [notice, getSafeName, isDark, t]);
@@ -782,13 +788,13 @@ export default function NoticeDetailsScreen() {
     if (!notice) return;
     
     if (!notice.fileUrl) {
-      const shareTitle = t('share.title', { title: notice.title });
-      const shareMessage = t('share.message_without_file', {
-        description: notice.description || 'No description provided',
+      const shareTitle = t('notice.share.title', { title: notice.title });
+      const shareMessage = t('notice.share.message_without_file', {
+        description: notice.description || t('notice.share.no_description'),
         date: formatLongDate(notice.createdAt),
         category: notice.category,
-        author: notice.createdBy?.name || 'Village Administration',
-        department: notice.createdBy?.department || 'Village Notice Board'
+        author: notice.createdBy?.name || t('notice.share.village_administration'),
+        department: notice.createdBy?.department || t('notice.share.village_notice_board')
       });
       
       await Share.share({
@@ -799,14 +805,14 @@ export default function NoticeDetailsScreen() {
     }
     
     const ft = getFileType(notice.fileUrl, notice.fileName ?? '');
-    const cfg = getFileCfg(ft, isDark);
+    const cfg = getFileCfg(ft, isDark, t);
     const name = getSafeName();
     
     setDl({ 
       active: true, 
       progress: 0, 
       phase: 'preparing', 
-      message: t('download.preparing_share'),
+      message: t('notice.download.preparing_share'),
       fileName: notice.fileName ?? 'file'
     });
     
@@ -815,7 +821,7 @@ export default function NoticeDetailsScreen() {
     setDl(prev => ({ 
       ...prev, 
       phase: 'downloading', 
-      message: t('download.preparing_share')
+      message: t('notice.download.preparing_share')
     }));
     
     try {
@@ -829,7 +835,7 @@ export default function NoticeDetailsScreen() {
             downloadedBytes, 
             totalBytes, 
             speed,
-            message: t('download.preparing_percent', { percent: Math.round(progress * 100) })
+            message: t('notice.download.preparing_percent', { percent: Math.round(progress * 100) })
           }))
       );
       
@@ -839,7 +845,7 @@ export default function NoticeDetailsScreen() {
       setDl(prev => ({ 
         ...prev, 
         phase: 'error', 
-        message: e?.message ?? t('download.share_failed')
+        message: e?.message?.startsWith?.('notice.') ? t(e.message) : t('notice.download.share_failed')
       }));
     }
   }, [notice, getSafeName, isDark, t]);
@@ -872,7 +878,7 @@ export default function NoticeDetailsScreen() {
       <View style={[S.loadingWrap, { backgroundColor: bg }]}>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <ActivityIndicator size="large" color={colors.primary[600]} />
-        <Text style={[S.loadingText, { color: textSec }]}>{t('notice_details.loading')}</Text>
+        <Text style={[S.loadingText, { color: textSec }]}>{t('notice.details.loading')}</Text>
       </View>
     );
   }
@@ -888,14 +894,14 @@ export default function NoticeDetailsScreen() {
           }]}>
             <Text style={S.emptyGlyph}>⚠️</Text>
           </View>
-          <Text style={[S.emptyTitle, { color: textPri }]}>{t('notice_details.not_found')}</Text>
-          <Text style={[S.emptyDesc,  { color: textSec }]}>{error ?? t('notice_details.not_found_desc')}</Text>
+          <Text style={[S.emptyTitle, { color: textPri }]}>{t('notice.details.not_found')}</Text>
+          <Text style={[S.emptyDesc,  { color: textSec }]}>{error ?? t('notice.details.not_found_desc')}</Text>
           <TouchableOpacity
             onPress={() => noticeId && fetchNotice(noticeId)}
             style={[S.emptyBtn, { backgroundColor: colors.primary[700] }]}
             activeOpacity={0.82}
           >
-            <Text style={S.emptyBtnText}>{t('notice_details.try_again')}</Text>
+            <Text style={S.emptyBtnText}>{t('notice.details.try_again')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -905,7 +911,7 @@ export default function NoticeDetailsScreen() {
   const cat      = getCategoryStyles(notice.category, colors, t);
   const pri      = getPriorityStyles((notice as any).priority ?? 'low', t);
   const ft       = notice.fileUrl ? getFileType(notice.fileUrl, notice.fileName ?? '') : 'unknown';
-  const cfg      = getFileCfg(ft, isDark);
+  const cfg      = getFileCfg(ft, isDark, t);
   const hasFile  = !!notice.fileUrl;
   const isPdf    = ft === 'pdf';
   const isDoc    = ft === 'doc' || ft === 'docx';
@@ -955,12 +961,12 @@ export default function NoticeDetailsScreen() {
         </View>
 
         <Animated.View style={[S.headerTitleBlock, { opacity: fade0, transform: [{ translateY: slide0 }] }]}>
-          <Text style={[S.headerEyebrow, { color: headerEyeColor }]}>{t('notice_details.village_notices')}</Text>
+          <Text style={[S.headerEyebrow, { color: headerEyeColor }]}>{t('notice.details.village_notices')}</Text>
 
           {isUrgent && (
             <View style={[S.urgentPill, { backgroundColor: isDark ? '#3D1A1A' : '#B71C1C' }]}>
               <View style={[S.urgentDot, { backgroundColor: isDark ? '#EF5350' : '#fff' }]} />
-              <Text style={[S.urgentTxt, { color: isDark ? '#EF5350' : '#fff' }]}>{t('notice_details.urgent_action')}</Text>
+              <Text style={[S.urgentTxt, { color: isDark ? '#EF5350' : '#fff' }]}>{t('notice.details.urgent_action')}</Text>
             </View>
           )}
 
@@ -973,7 +979,7 @@ export default function NoticeDetailsScreen() {
             </View>
             {isUrgent && (
               <View style={[S.heroPill, { backgroundColor: isDark ? '#3D1A1A' : '#B71C1C', borderColor: 'transparent' }]}>
-                <Text style={[S.heroPillTxt, { color: isDark ? '#EF5350' : '#fff' }]}>{t('notice_details.high_priority_label')}</Text>
+                <Text style={[S.heroPillTxt, { color: isDark ? '#EF5350' : '#fff' }]}>{t('notice.details.high_priority_label')}</Text>
               </View>
             )}
           </View>
@@ -983,7 +989,7 @@ export default function NoticeDetailsScreen() {
           <View style={S.headerBreadcrumb}>
             <View style={[S.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
             <Text style={[S.headerSub, { color: headerSubColor }]}>
-              {notice.createdBy?.department || 'Village Notice Board'}
+              {notice.createdBy?.department || t('notice.share.village_notice_board')}
             </Text>
           </View>
 
@@ -996,7 +1002,7 @@ export default function NoticeDetailsScreen() {
                 <Text style={[S.heroAvatarTxt, { color: avatarFg }]}>{initials}</Text>
               </View>
               <View style={{ flex: 1, minWidth: 0 }}>
-                <Text style={[S.heroAuthorLabel, { color: headerEyeColor }]}>{t('notice_details.posted_by')}</Text>
+                <Text style={[S.heroAuthorLabel, { color: headerEyeColor }]}>{t('notice.details.posted_by')}</Text>
                 {notice.createdBy?.name && (
                   <Text style={[S.heroAuthorName, { color: headerTextColor }]} numberOfLines={1}>{notice.createdBy.name}</Text>
                 )}
@@ -1028,9 +1034,9 @@ export default function NoticeDetailsScreen() {
           
           <View style={S.statRow}>
             {[
-              { label: t('notice_details.date_label'), value: formatLongDate(notice.createdAt), color: isDark ? '#EAEAEA' : colors.primary[700] },
-              { label: t('notice_details.category_label'), value: cat.name, color: isDark ? '#EAEAEA' : cat.color },
-              { label: t('notice_details.priority_label'), value: pri.label, color: isUrgent ? '#FF6B6B' : (notice as any).priority === 'medium' ? '#64B5F6' : '#81C784' },
+              { label: t('notice.details.date_label'), value: formatLongDate(notice.createdAt), color: isDark ? '#EAEAEA' : colors.primary[700] },
+              { label: t('notice.details.category_label'), value: cat.name, color: isDark ? '#EAEAEA' : cat.color },
+              { label: t('notice.details.priority_label'), value: pri.label, color: isUrgent ? '#FF6B6B' : (notice as any).priority === 'medium' ? '#64B5F6' : '#81C784' },
             ].map(({ label, value, color }) => (
               <View key={label} style={[S.statCard, { backgroundColor: surface, borderColor: borderC }]}>
                 <Text style={[S.statLabel, { color: isDark ? '#A0A0A0' : colors.primary[600] }]}>{label}</Text>
@@ -1042,7 +1048,7 @@ export default function NoticeDetailsScreen() {
           <View style={[S.card, { backgroundColor: surface, borderColor: borderC }]}>
             <View style={[S.cardHeader, { borderBottomColor: borderC }]}>
               <View style={[S.cardAccent, { backgroundColor: colors.primary[600] }]} />
-              <Text style={[S.cardHeaderTxt, { color: isDark ? '#FFFFFF' : textPri }]}>{t('notice_details.notice_details_title')}</Text>
+              <Text style={[S.cardHeaderTxt, { color: isDark ? '#FFFFFF' : textPri }]}>{t('notice.details.notice_details_title')}</Text>
             </View>
             <Text style={[S.descTxt, { color: isDark ? '#EAEAEA' : textPri }]}>{notice.description}</Text>
           </View>
@@ -1051,7 +1057,7 @@ export default function NoticeDetailsScreen() {
         <Animated.View style={{ opacity: fade2, transform: [{ translateY: slide2 }] }}>
           {hasFile && (
             <View style={S.attachSection}>
-              <Text style={[S.attachLabel, { color: isDark ? '#EAEAEA' : textPri }]}>{t('notice_details.attached_file')}</Text>
+              <Text style={[S.attachLabel, { color: isDark ? '#EAEAEA' : textPri }]}>{t('notice.details.attached_file')}</Text>
               <AttachmentCard notice={notice} onView={showFileModal} colors={colors} isDark={isDark} t={t} />
             </View>
           )}
@@ -1066,7 +1072,7 @@ export default function NoticeDetailsScreen() {
           activeOpacity={0.75}
         >
           <Text style={[S.barSecIcon, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>↗</Text>
-          <Text style={[S.barSecTxt, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>{t('notice_details.share_notice')}</Text>
+          <Text style={[S.barSecTxt, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>{t('notice.details.share_notice')}</Text>
         </TouchableOpacity>
 
         {hasFile && (
@@ -1076,7 +1082,7 @@ export default function NoticeDetailsScreen() {
             activeOpacity={0.75}
           >
             <Text style={[S.barSecIcon, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>↓</Text>
-            <Text style={[S.barSecTxt, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>{t('notice_details.save_file')}</Text>
+            <Text style={[S.barSecTxt, { color: isDark ? '#EAEAEA' : colors.primary[700] }]}>{t('notice.details.save_file')}</Text>
           </TouchableOpacity>
         )}
 
@@ -1086,7 +1092,7 @@ export default function NoticeDetailsScreen() {
           activeOpacity={0.8}
         >
           <Text style={[S.barPriTxt, { color: '#FFFFFF' }]}>
-            {hasFile ? (isImg ? t('notice_details.view_photo') : t('notice_details.open_file')) : t('notice_details.share_notice')}
+            {hasFile ? (isImg ? t('notice.details.view_photo') : t('notice.details.open_file')) : t('notice.details.share_notice')}
           </Text>
           {hasFile && (
             <View style={[S.barPriArrow, { backgroundColor: isDark ? `${colors.primary[500]}40` : 'rgba(255,255,255,0.2)' }]}>

@@ -16,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { useTheme } from "../../context/ThemeContext";
 import apiService from "../../services/api";
@@ -55,22 +56,22 @@ type ChatMessage = {
 };
 
 const QUICK_CATEGORIES = [
-  { label: "Students", query: "Show schemes for students", icon: "school-outline", hint: "Scholarships, fee support" },
-  { label: "Farmers", query: "Show farmer schemes", icon: "leaf-outline", hint: "Crop, subsidy, support" },
-  { label: "Women", query: "Show women welfare schemes", icon: "woman-outline", hint: "Welfare and self help" },
-  { label: "Pension", query: "Show pension schemes", icon: "accessibility-outline", hint: "Senior, widow, disabled" },
-  { label: "Housing", query: "Show housing schemes", icon: "home-outline", hint: "House and repair help" },
-  { label: "Health", query: "Show health schemes", icon: "medkit-outline", hint: "Insurance and treatment" },
-  { label: "Employment", query: "Show employment schemes", icon: "briefcase-outline", hint: "Jobs and skill training" },
-  { label: "Business", query: "Show business loan schemes", icon: "storefront-outline", hint: "Loans and startup help" },
+  { labelKey: "assistant.categories.students", query: "Show schemes for students", icon: "school-outline", hintKey: "assistant.categories.students_hint" },
+  { labelKey: "assistant.categories.farmers", query: "Show farmer schemes", icon: "leaf-outline", hintKey: "assistant.categories.farmers_hint" },
+  { labelKey: "assistant.categories.women", query: "Show women welfare schemes", icon: "woman-outline", hintKey: "assistant.categories.women_hint" },
+  { labelKey: "assistant.categories.pension", query: "Show pension schemes", icon: "accessibility-outline", hintKey: "assistant.categories.pension_hint" },
+  { labelKey: "assistant.categories.housing", query: "Show housing schemes", icon: "home-outline", hintKey: "assistant.categories.housing_hint" },
+  { labelKey: "assistant.categories.health", query: "Show health schemes", icon: "medkit-outline", hintKey: "assistant.categories.health_hint" },
+  { labelKey: "assistant.categories.employment", query: "Show employment schemes", icon: "briefcase-outline", hintKey: "assistant.categories.employment_hint" },
+  { labelKey: "assistant.categories.business", query: "Show business loan schemes", icon: "storefront-outline", hintKey: "assistant.categories.business_hint" },
 ] as const;
 
 const SUGGESTED_QUESTIONS = [
-  "Show schemes for students",
-  "Show farmer schemes",
-  "Show women welfare schemes",
-  "Show pension schemes",
-  "Show schemes for business loan",
+  { labelKey: "assistant.suggested.students", query: "Show schemes for students" },
+  { labelKey: "assistant.suggested.farmers", query: "Show farmer schemes" },
+  { labelKey: "assistant.suggested.women", query: "Show women welfare schemes" },
+  { labelKey: "assistant.suggested.pension", query: "Show pension schemes" },
+  { labelKey: "assistant.suggested.business", query: "Show schemes for business loan" },
 ];
 
 const CARD_META: Record<AssistantCard["type"], { icon: keyof typeof Ionicons.glyphMap; tone: string }> = {
@@ -106,6 +107,7 @@ const getStoredVillageId = async () => {
 
 export default function SmartAssistantScreen() {
   const { colors, isDark } = useTheme();
+  const { t } = useTranslation();
   const listRef = useRef<FlatList<ChatMessage>>(null);
 
   const [villageId, setVillageId] = useState("");
@@ -140,7 +142,7 @@ export default function SmartAssistantScreen() {
     if (!message || loading) return;
 
     if (!villageId) {
-      Alert.alert("Scan village first", "Please scan a village QR code before using Smart Assistance.");
+      Alert.alert(t("assistant.scan_village_first"), t("assistant.scan_village_first_message"));
       return;
     }
 
@@ -169,7 +171,7 @@ export default function SmartAssistantScreen() {
           response,
         },
       ]);
-    } catch (error) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         {
@@ -179,13 +181,13 @@ export default function SmartAssistantScreen() {
             success: false,
             type: "smart_assistance",
             intent: "general",
-            title: "Scheme Assistance Unavailable",
-            summary: "Unable to reach Scheme Assistance right now. Please try again.",
+            title: t("assistant.unavailable_title"),
+            summary: t("assistant.unavailable_summary"),
             cards: [],
             sections: [],
             suggestions: [
-              { label: "Search Schemes", query: "Show government schemes" },
-              { label: "Student Schemes", query: "Show student schemes" },
+              { label: t("assistant.search_schemes"), query: "Show government schemes" },
+              { label: t("assistant.student_schemes"), query: "Show student schemes" },
             ],
           },
         },
@@ -201,34 +203,40 @@ export default function SmartAssistantScreen() {
     return `Am I eligible for ${schemeTitle}?`;
   };
 
+  const getDetailActionLabel = (detailType: "eligibility" | "documents" | "application") => {
+    if (detailType === "application") return t("assistant.how_to_apply");
+    if (detailType === "documents") return t("assistant.required_documents");
+    return t("assistant.check_eligibility");
+  };
+
   const showSchemePicker = (detailType: "eligibility" | "documents" | "application", response: AssistantResponse) => {
     const schemeCards = (response.cards || []).filter((card) => card.type === "scheme").slice(0, 4);
 
     if (!schemeCards.length) {
-      sendMessage(detailType, detailType === "application" ? "How To Apply" : detailType === "documents" ? "Required Documents" : "Check Eligibility");
+      sendMessage(detailType, getDetailActionLabel(detailType));
       return;
     }
 
     const title =
       detailType === "documents"
-        ? "Choose Scheme For Documents"
+        ? t("assistant.choose_scheme_for_documents")
         : detailType === "application"
-        ? "Choose Scheme To Apply"
-        : "Choose Scheme For Eligibility";
+        ? t("assistant.choose_scheme_to_apply")
+        : t("assistant.choose_scheme_for_eligibility");
 
     const question =
       detailType === "documents"
-        ? "Which scheme do you need documents for?"
+        ? t("assistant.which_scheme_documents")
         : detailType === "application"
-        ? "Which scheme do you want to apply for?"
-        : "Which scheme do you want eligibility for?";
+        ? t("assistant.which_scheme_apply")
+        : t("assistant.which_scheme_eligibility");
 
     setMessages((prev) => [
       ...prev,
       {
         id: `user-${Date.now()}`,
         role: "user",
-        text: detailType === "application" ? "How To Apply" : detailType === "documents" ? "Required Documents" : "Check Eligibility",
+        text: getDetailActionLabel(detailType),
       },
       {
         id: `assistant-picker-${Date.now()}`,
@@ -238,12 +246,12 @@ export default function SmartAssistantScreen() {
           type: "smart_assistance",
           intent: "scheme",
           title,
-          summary: "Select one scheme from the current results.",
+          summary: t("assistant.select_scheme_summary"),
           cards: [
             {
               type: "process",
               title: question,
-              subtitle: "Choose one option",
+              subtitle: t("assistant.choose_one_option"),
               items: schemeCards.map((card) => card.title),
             },
           ],
@@ -293,27 +301,27 @@ export default function SmartAssistantScreen() {
             <Ionicons name="search-outline" size={26} color={colors.primary[500]} />
           </View>
           <View style={themedStyles.heroBadge}>
-            <Text style={themedStyles.heroBadgeText}>Scheme Finder</Text>
+            <Text style={themedStyles.heroBadgeText}>{t("assistant.scheme_finder")}</Text>
           </View>
         </View>
-        <Text style={themedStyles.heroTitle}>Find The Right Government Scheme</Text>
+        <Text style={themedStyles.heroTitle}>{t("assistant.find_right_scheme")}</Text>
         <Text style={themedStyles.heroSub}>
-          Choose a category or ask in simple words. Results are ranked using your village state and scheme details.
+          {t("assistant.hero_subtitle")}
         </Text>
         <Pressable style={themedStyles.heroSearch} onPress={() => sendMessage("Show government schemes")}>
           <Ionicons name="sparkles-outline" size={18} color={colors.primary[500]} />
-          <Text style={themedStyles.heroSearchText}>Start by choosing who the scheme is for</Text>
+          <Text style={themedStyles.heroSearchText}>{t("assistant.start_by_choosing")}</Text>
         </Pressable>
       </View>
 
       <View style={themedStyles.blockHeader}>
-        <Text style={themedStyles.blockTitle}>Popular Categories</Text>
-        <Text style={themedStyles.blockHint}>Tap one to search</Text>
+        <Text style={themedStyles.blockTitle}>{t("assistant.popular_categories")}</Text>
+        <Text style={themedStyles.blockHint}>{t("assistant.tap_one_to_search")}</Text>
       </View>
       <View style={themedStyles.categoryList}>
         {QUICK_CATEGORIES.map((category) => (
           <Pressable
-            key={category.label}
+            key={category.labelKey}
             style={themedStyles.categoryCard}
             onPress={() => sendMessage(category.query)}
           >
@@ -321,8 +329,8 @@ export default function SmartAssistantScreen() {
               <Ionicons name={category.icon} size={20} color={colors.primary[500]} />
             </View>
             <View style={themedStyles.categoryCopy}>
-              <Text style={themedStyles.categoryText}>{category.label}</Text>
-              <Text style={themedStyles.categoryHint}>{category.hint}</Text>
+              <Text style={themedStyles.categoryText}>{t(category.labelKey)}</Text>
+              <Text style={themedStyles.categoryHint}>{t(category.hintKey)}</Text>
             </View>
             <Ionicons name="chevron-forward" size={18} color={colors.text.muted} />
           </Pressable>
@@ -330,13 +338,13 @@ export default function SmartAssistantScreen() {
       </View>
 
       <View style={themedStyles.blockHeader}>
-        <Text style={themedStyles.blockTitle}>Try A Search</Text>
-        <Text style={themedStyles.blockHint}>Quick examples</Text>
+        <Text style={themedStyles.blockTitle}>{t("assistant.try_search")}</Text>
+        <Text style={themedStyles.blockHint}>{t("assistant.quick_examples")}</Text>
       </View>
       <View style={themedStyles.questionList}>
         {SUGGESTED_QUESTIONS.map((question) => (
-          <Pressable key={question} style={themedStyles.questionRow} onPress={() => sendMessage(question)}>
-            <Text style={themedStyles.questionText}>{question}</Text>
+          <Pressable key={question.labelKey} style={themedStyles.questionRow} onPress={() => sendMessage(question.query, t(question.labelKey))}>
+            <Text style={themedStyles.questionText}>{t(question.labelKey)}</Text>
             <Ionicons name="chevron-forward" size={18} color={colors.text.muted} />
           </Pressable>
         ))}
@@ -434,8 +442,8 @@ export default function SmartAssistantScreen() {
             <Ionicons name="chevron-back" size={24} color={colors.text.primary} />
           </Pressable>
           <View style={themedStyles.headerCopy}>
-            <Text style={themedStyles.headerTitle}>Scheme Assistance</Text>
-            <Text style={themedStyles.headerSubtitle}>Government scheme help desk</Text>
+            <Text style={themedStyles.headerTitle}>{t("assistant.title")}</Text>
+            <Text style={themedStyles.headerSubtitle}>{t("assistant.subtitle")}</Text>
           </View>
         </View>
 
@@ -459,7 +467,7 @@ export default function SmartAssistantScreen() {
               loading ? (
                 <View style={themedStyles.typingRow}>
                   <ActivityIndicator color={colors.primary[500]} />
-                  <Text style={themedStyles.typingText}>Checking GramVartha records...</Text>
+                  <Text style={themedStyles.typingText}>{t("assistant.checking_records")}</Text>
                 </View>
               ) : null
             }
@@ -470,7 +478,7 @@ export default function SmartAssistantScreen() {
           <TextInput
             value={input}
             onChangeText={setInput}
-            placeholder="Ask about government schemes..."
+            placeholder={t("assistant.input_placeholder")}
             placeholderTextColor={colors.text.muted}
             style={themedStyles.input}
             multiline

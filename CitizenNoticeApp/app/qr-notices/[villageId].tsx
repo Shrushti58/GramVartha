@@ -45,25 +45,25 @@ const getCategoryStyles = (category: string, colors: any) => {
 
 const getPriorityStyles = (priority: string, t: any) => {
   const priStyles: Record<string, any> = {
-    high:   { bg: '#FEE9E7', fg: '#C0392B', dot: '#E74C3C', label: t('notices.priority_high') },
-    medium: { bg: '#FEF9E7', fg: '#B7950B', dot: '#F1C40F', label: t('notices.priority_medium') },
-    low:    { bg: '#EAF4FB', fg: '#1A5276', dot: '#2E86C1', label: t('notices.priority_low') },
+    high:   { bg: '#FEE9E7', fg: '#C0392B', dot: '#E74C3C', label: t('notice.list.priority_high') },
+    medium: { bg: '#FEF9E7', fg: '#B7950B', dot: '#F1C40F', label: t('notice.list.priority_medium') },
+    low:    { bg: '#EAF4FB', fg: '#1A5276', dot: '#2E86C1', label: t('notice.list.priority_low') },
   };
   return priStyles[priority] || priStyles.low;
 };
 
 const CATEGORIES = [
-  { id: 'all',           labelKey: 'notices.category_all' },
-  { id: 'urgent',        labelKey: 'notices.category_urgent' },
-  { id: 'development',   labelKey: 'notices.category_development' },
-  { id: 'health',        labelKey: 'notices.category_health' },
-  { id: 'education',     labelKey: 'notices.category_education' },
-  { id: 'agriculture',   labelKey: 'notices.category_agriculture' },
-  { id: 'employment',    labelKey: 'notices.category_employment' },
-  { id: 'social_welfare',labelKey: 'notices.category_welfare' },
-  { id: 'tax_billing',   labelKey: 'notices.category_tax_billing' },
-  { id: 'election',      labelKey: 'notices.category_election' },
-  { id: 'general',       labelKey: 'notices.category_general' },
+  { id: 'all',           labelKey: 'notice.list.category_all' },
+  { id: 'urgent',        labelKey: 'notice.list.category_urgent' },
+  { id: 'development',   labelKey: 'notice.list.category_development' },
+  { id: 'health',        labelKey: 'notice.list.category_health' },
+  { id: 'education',     labelKey: 'notice.list.category_education' },
+  { id: 'agriculture',   labelKey: 'notice.list.category_agriculture' },
+  { id: 'employment',    labelKey: 'notice.list.category_employment' },
+  { id: 'social_welfare',labelKey: 'notice.list.category_welfare' },
+  { id: 'tax_billing',   labelKey: 'notice.list.category_tax_billing' },
+  { id: 'election',      labelKey: 'notice.list.category_election' },
+  { id: 'general',       labelKey: 'notice.list.category_general' },
 ];
 
 // ─── Highlighted text component ─────────────────────────────────────────────
@@ -89,7 +89,7 @@ const SearchBar = ({ value, onChange, onClear, colors, t }: { value: string; onC
       <Text style={[styles.searchIcon, { color: colors.text.secondary }]}>🔍</Text>
       <TextInput
         style={[styles.searchInput, { color: colors.text.primary }]}
-        placeholder={t('notices.search_placeholder')}
+        placeholder={t('notice.list.search_placeholder')}
         placeholderTextColor={colors.text.secondary + '80'}
         value={value}
         onChangeText={onChange}
@@ -141,7 +141,7 @@ const NoticeCard = ({ item, onPress, index, query, colors, t }: { item: any; onP
           <View style={styles.cardHeaderRow}>
             <View style={[styles.categoryPill, { backgroundColor: cat.bg }]}>
               <Text style={[styles.categoryText, { color: cat.fg }]}>
-                {t(`notices.category_${item.category?.replace('_', '')}`) || item.category?.replace('_', ' ').toUpperCase()}
+                {t(`notice.list.category_${item.category?.replace('_', '')}`) || item.category?.replace('_', ' ').toUpperCase()}
               </Text>
             </View>
             <View style={[styles.priorityBadge, { backgroundColor: pri.bg }]}>
@@ -149,7 +149,7 @@ const NoticeCard = ({ item, onPress, index, query, colors, t }: { item: any; onP
             </View>
             {item.isPinned && (
               <View style={styles.pinnedBadge}>
-                <Text style={styles.pinnedText}>{t('notices.pinned')}</Text>
+                <Text style={styles.pinnedText}>{t('notice.list.pinned')}</Text>
               </View>
             )}
           </View>
@@ -175,7 +175,7 @@ const NoticeCard = ({ item, onPress, index, query, colors, t }: { item: any; onP
           {/* Footer - Only author and date */}
           <View style={[styles.cardFooter, { borderTopColor: colors.border }]}>
             <Text style={[styles.authorName, { color: colors.text.secondary }]} numberOfLines={1}>
-              {item.createdBy?.name || t('notices.official')}
+              {item.createdBy?.name || t('notice.list.official')}
             </Text>
             <Text style={[styles.dateText, { color: colors.text.secondary }]}>
               {formatDate(item.createdAt)}
@@ -193,7 +193,7 @@ const PinnedStrip = ({ notices, onPress, colors, t }: { notices: any[]; onPress:
   return (
     <View style={[styles.pinnedContainer, { borderBottomColor: colors.border }]}>
       <View style={styles.pinnedHeader}>
-        <Text style={[styles.pinnedHeaderText, { color: colors.text.secondary }]}>{t('notices.pinned_notices')}</Text>
+        <Text style={[styles.pinnedHeaderText, { color: colors.text.secondary }]}>{t('notice.list.pinned_notices')}</Text>
       </View>
       <ScrollView
         horizontal
@@ -218,7 +218,7 @@ const PinnedStrip = ({ notices, onPress, colors, t }: { notices: any[]; onPress:
               activeOpacity={0.7}
             >
               <Text style={[styles.pinnedCatText, { color: cat.fg }]}>
-                {t(`notices.category_${n.category?.replace('_', '')}`) || n.category?.replace('_', ' ')}
+                {t(`notice.list.category_${n.category?.replace('_', '')}`) || n.category?.replace('_', ' ')}
               </Text>
               <Text numberOfLines={2} style={[styles.pinnedTitle, { color: colors.text.primary }]}>{n.title}</Text>
               <Text style={[styles.pinnedDate, { color: colors.text.secondary }]}>{formatDate(n.createdAt)}</Text>
@@ -233,9 +233,9 @@ const PinnedStrip = ({ notices, onPress, colors, t }: { notices: any[]; onPress:
 // ─── Empty State ──────────────────────────────────────────────────────────────
 const EmptyState = ({ query, category, colors, t }: { query: string; category: string; colors: any; t: any }) => {
   const getEmptyMessage = () => {
-    if (query) return { title: t('notices.empty_no_results_title'), desc: t('notices.empty_no_results_desc') };
-    if (category !== 'all') return { title: t('notices.empty_no_notices_title'), desc: t('notices.empty_no_notices_desc') };
-    return { title: t('notices.empty_no_notices_yet_title'), desc: t('notices.empty_no_notices_yet_desc') };
+    if (query) return { title: t('notice.list.empty_no_results_title'), desc: t('notice.list.empty_no_results_desc') };
+    if (category !== 'all') return { title: t('notice.list.empty_no_notices_title'), desc: t('notice.list.empty_no_notices_desc') };
+    return { title: t('notice.list.empty_no_notices_yet_title'), desc: t('notice.list.empty_no_notices_yet_desc') };
   };
   const { title, desc } = getEmptyMessage();
 
@@ -282,9 +282,9 @@ export default function QRNoticesScreen() {
       const response = await apiService.getNoticesByVillage(villageId, 1, 100);
       setAllNotices(Array.isArray(response?.notices) ? response.notices : []);
       setVillage(response?.village ?? null);
-    } catch (error) {
-      Alert.alert(t('common.error'), t('notices.error_load_failed'));
-    } finally { 
+    } catch {
+      Alert.alert(t('common.error'), t('notice.list.error_load_failed'));
+    } finally {
       setLoading(false); 
     }
   };
@@ -359,7 +359,7 @@ export default function QRNoticesScreen() {
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
         <ActivityIndicator size="large" color={colors.primary[600]} />
-        <Text style={[styles.loadingText, { color: colors.text.secondary }]}>{t('notices.loading')}</Text>
+        <Text style={[styles.loadingText, { color: colors.text.secondary }]}>{t('notice.list.loading')}</Text>
       </View>
     );
   }
@@ -386,7 +386,7 @@ export default function QRNoticesScreen() {
             <Text style={[styles.backBtnTxt, { color: headerTextColor }]}>←</Text>
           </TouchableOpacity>
           <Text style={[styles.headerTitle, { color: headerTextColor, flex: 1, textAlign: 'center' }]} numberOfLines={1}>
-            {village?.name || t('notices.notices')}
+            {village?.name || t('notice.list.notices')}
           </Text>
           <TouchableOpacity 
             onPress={handleScanAnother} 
@@ -394,7 +394,7 @@ export default function QRNoticesScreen() {
             activeOpacity={0.7}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Text style={[styles.scanText, { color: headerTextColor }]}>{t('notices.scan')}</Text>
+            <Text style={[styles.scanText, { color: headerTextColor }]}>{t('notice.list.scan')}</Text>
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -440,12 +440,12 @@ export default function QRNoticesScreen() {
         <View style={styles.countContainer}>
           <Text style={[styles.countNumber, { color: colors.primary[600] }]}>{processedNotices.length}</Text>
           <Text style={[styles.countLabel, { color: colors.text.secondary }]}>
-            {processedNotices.length !== 1 ? t('notices.notices') : t('notices.notice')}
+            {processedNotices.length !== 1 ? t('notice.list.notices') : t('notice.list.notice')}
           </Text>
         </View>
 
         <View style={styles.sortGroup}>
-          <Text style={[styles.sortLabel, { color: colors.text.secondary }]}>{t('notices.sort')}:</Text>
+          <Text style={[styles.sortLabel, { color: colors.text.secondary }]}>{t('notice.list.sort')}:</Text>
           {(['date', 'priority'] as SortField[]).map((f) => {
             const active = sort.field === f;
             const arrow = active ? (sort.dir === 'desc' ? '↓' : '↑') : '';
@@ -468,7 +468,7 @@ export default function QRNoticesScreen() {
                   { color: colors.text.secondary },
                   active && styles.sortButtonTextActive
                 ]}>
-                  {f === 'date' ? t('notices.date') : t('notices.priority')} {arrow}
+                  {f === 'date' ? t('notice.list.date') : t('notice.list.priority')} {arrow}
                 </Text>
               </TouchableOpacity>
             );

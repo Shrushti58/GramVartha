@@ -4,7 +4,7 @@
     "slug": "gramvartha",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/gramvarthalogo.png",
+    "icon": "./assets/images/app-icon.png",
     "scheme": "gramvartha",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,8 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/gramvarthalogo.png"
+        "backgroundColor": "#3A2116",
+        "foregroundImage": "./assets/images/adaptive-icon.png"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,

@@ -232,21 +232,21 @@ const WorkGuideCard = ({
   // Translate day names
   const getTranslatedDay = (day: string) => {
     const dayMap: Record<string, string> = {
-      'Monday': t('work_guide.monday'),
-      'Tuesday': t('work_guide.tuesday'),
-      'Wednesday': t('work_guide.wednesday'),
-      'Thursday': t('work_guide.thursday'),
-      'Friday': t('work_guide.friday'),
-      'Saturday': t('work_guide.saturday'),
-      'Sunday': t('work_guide.sunday'),
+      'Monday': t('workGuide.monday'),
+      'Tuesday': t('workGuide.tuesday'),
+      'Wednesday': t('workGuide.wednesday'),
+      'Thursday': t('workGuide.thursday'),
+      'Friday': t('workGuide.friday'),
+      'Saturday': t('workGuide.saturday'),
+      'Sunday': t('workGuide.sunday'),
     };
     return dayMap[day] || day;
   };
 
   // Translate next visit label
   const getNextVisitLabel = () => {
-    if (nextVisit.dayLabel === 'Today') return t('work_guide.today');
-    if (nextVisit.dayLabel === 'Tomorrow') return t('work_guide.tomorrow');
+    if (nextVisit.dayLabel === 'Today') return t('workGuide.today');
+    if (nextVisit.dayLabel === 'Tomorrow') return t('workGuide.tomorrow');
     return getTranslatedDay(nextVisit.dayLabel);
   };
 
@@ -317,7 +317,7 @@ const WorkGuideCard = ({
                   },
                 ]}
               >
-                {t('work_guide.next_visit')}: {getNextVisitLabel()}
+                {t('workGuide.next_visit')}: {getNextVisitLabel()}
                 {nextVisit.timing ? `, ${nextVisit.timing.split('–')[0].trim()}` : ''}
               </Text>
             </View>
@@ -369,7 +369,7 @@ const WorkGuideCard = ({
                   </View>
                   <View style={styles.detailContent}>
                     <Text style={[styles.detailLabel, { color: colors.text.muted }]}>
-                      {t('work_guide.available_days')}
+                      {t('workGuide.available_days')}
                     </Text>
                     <View style={styles.dayPills}>
                       {item.availableDays.map(d => (
@@ -411,7 +411,7 @@ const WorkGuideCard = ({
                   </View>
                   <View style={styles.detailContent}>
                     <Text style={[styles.detailLabel, { color: colors.text.muted }]}>
-                      {t('work_guide.timing')}
+                      {t('workGuide.timing')}
                     </Text>
                     <Text style={[styles.detailValue, { color: colors.text.primary }]}>
                       {item.timing}
@@ -436,7 +436,7 @@ const WorkGuideCard = ({
                   </View>
                   <View style={styles.detailContent}>
                     <Text style={[styles.detailLabel, { color: colors.text.muted }]}>
-                      {t('work_guide.location')}
+                      {t('workGuide.location')}
                     </Text>
                     <Text style={[styles.detailValue, { color: colors.text.primary }]}>
                       {item.location}
@@ -468,7 +468,7 @@ const WorkGuideCard = ({
                   { color: isDark ? colors.primary[300] : colors.primary[600] },
                 ]}
               >
-                {t('work_guide.next_available_visit')}
+                {t('workGuide.next_available_visit')}
               </Text>
               <Text
                 style={[
@@ -499,7 +499,7 @@ const WorkGuideCard = ({
               <View style={styles.checklistSection}>
                 <View style={styles.checklistHeader}>
                   <Text style={[styles.checklistTitle, { color: colors.text.primary }]}>
-                    {t('work_guide.documents_to_bring')}
+                    {t('workGuide.documents_to_bring')}
                   </Text>
                   <Text
                     style={[
@@ -526,7 +526,7 @@ const WorkGuideCard = ({
                   >
                     <Ionicons name="checkmark-circle" size={14} color={colors.success} />
                     <Text style={[styles.allReadyText, { color: colors.success }]}>
-                      {t('work_guide.all_documents_ready')}
+                      {t('workGuide.all_documents_ready')}
                     </Text>
                   </View>
                 )}
@@ -549,7 +549,7 @@ const WorkGuideCard = ({
                   style={styles.resetBtn}
                 >
                   <Text style={[styles.resetBtnText, { color: colors.text.muted }]}>
-                    {t('work_guide.reset_checklist')}
+                    {t('workGuide.reset_checklist')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -572,7 +572,7 @@ const WorkGuideCard = ({
                 <View style={styles.noteHeaderRow}>
                   <Text style={styles.noteIcon}>⚠️</Text>
                   <Text style={[styles.noteLabel, { color: colors.warning || '#b45309' }]}>
-                    {t('work_guide.important_note')}
+                    {t('workGuide.important_note')}
                   </Text>
                 </View>
                 <Text style={[styles.noteText, { color: colors.text.secondary }]}>
@@ -772,17 +772,17 @@ export default function WorkGuideScreen() {
 
         <View style={styles.headerTitleBlock}>
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-            {t('work_guide.village_services')}
+            {t('workGuide.village_services')}
           </Text>
           <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-            {t('work_guide.title')}
+            {t('workGuide.title')}
           </Text>
           <View style={styles.headerBreadcrumb}>
             <View
               style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]}
             />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              {villageName || t('work_guide.your_village')}
+              {villageName || t('workGuide.your_village')}
             </Text>
           </View>
         </View>
@@ -796,7 +796,7 @@ export default function WorkGuideScreen() {
         {/* ── Quick Actions ── */}
         <View style={styles.quickSection}>
           <Text style={[styles.quickHeading, { color: colors.text.primary }]}>
-            {t('work_guide.what_do_you_need')}
+            {t('workGuide.what_do_you_need')}
           </Text>
           <ScrollView
             horizontal
@@ -846,7 +846,7 @@ export default function WorkGuideScreen() {
                       },
                     ]}
                   >
-                    {t(`work_guide.${action.labelKey}`)}
+                    {t(`workGuide.${action.labelKey}`)}
                   </Text>
                 </TouchableOpacity>
               );
@@ -880,7 +880,7 @@ export default function WorkGuideScreen() {
               onChangeText={handleSearch}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
-              placeholder={t('work_guide.search_placeholder')}
+              placeholder={t('workGuide.search_placeholder')}
               placeholderTextColor={colors.text.muted}
               returnKeyType="search"
             />
@@ -918,8 +918,8 @@ export default function WorkGuideScreen() {
             >
               <Text style={[styles.searchResultsLabel, { color: colors.primary[600] }]}>
                 {totalResults > 0
-                  ? `${totalResults} ${totalResults !== 1 ? t('work_guide.results_found') : t('work_guide.result_found')}`
-                  : `${t('work_guide.no_results_for')} "${searchTerm}"`}
+                  ? `${totalResults} ${totalResults !== 1 ? t('workGuide.results_found') : t('workGuide.result_found')}`
+                  : `${t('workGuide.no_results_for')} "${searchTerm}"`}
               </Text>
             </View>
           )}
@@ -930,7 +930,7 @@ export default function WorkGuideScreen() {
           <View style={styles.loadingBox}>
             <ActivityIndicator size="small" color={colors.primary[600]} />
             <Text style={[styles.loadingText, { color: colors.text.secondary }]}>
-              {t('work_guide.loading')}
+              {t('workGuide.loading')}
             </Text>
           </View>
         ) : !villageId ? (
@@ -957,17 +957,17 @@ export default function WorkGuideScreen() {
               <Ionicons name="qr-code-outline" size={32} color={colors.primary[500]} />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-              {t('work_guide.scan_village_first')}
+              {t('workGuide.scan_village_first')}
             </Text>
             <Text style={[styles.emptySub, { color: colors.text.secondary }]}>
-              {t('work_guide.scan_village_desc')}
+              {t('workGuide.scan_village_desc')}
             </Text>
             <TouchableOpacity
               style={[styles.emptyBtn, { backgroundColor: colors.primary[700] }]}
               onPress={() => router.push('/qr-scanner' as any)}
               activeOpacity={0.82}
             >
-              <Text style={styles.emptyBtnText}>{t('work_guide.scan_qr_code')}</Text>
+              <Text style={styles.emptyBtnText}>{t('workGuide.scan_qr_code')}</Text>
             </TouchableOpacity>
           </View>
         ) : totalResults === 0 ? (
@@ -998,12 +998,12 @@ export default function WorkGuideScreen() {
               />
             </View>
             <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>
-              {searchTerm ? t('work_guide.no_results') : t('work_guide.no_services')}
+              {searchTerm ? t('workGuide.no_results') : t('workGuide.no_services')}
             </Text>
             <Text style={[styles.emptySub, { color: colors.text.secondary }]}>
               {searchTerm
-                ? t('work_guide.no_results_desc')
-                : t('work_guide.no_services_desc')}
+                ? t('workGuide.no_results_desc')
+                : t('workGuide.no_services_desc')}
             </Text>
             {searchTerm ? (
               <TouchableOpacity
@@ -1011,7 +1011,7 @@ export default function WorkGuideScreen() {
                 onPress={clearSearch}
                 activeOpacity={0.82}
               >
-                <Text style={styles.emptyBtnText}>{t('work_guide.clear_search')}</Text>
+                <Text style={styles.emptyBtnText}>{t('workGuide.clear_search')}</Text>
               </TouchableOpacity>
             ) : null}
           </View>

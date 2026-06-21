@@ -42,11 +42,11 @@ interface ScannedVillage {
 }
 
 const TABS = [
-  { key: 'notices',   labelKey: 'tabs.tab_notices',  icon: 'document-text-outline' as const,  activeIcon: 'document-text' as const },
-  { key: 'complaint', labelKey: 'tabs.tab_report',   icon: 'alert-circle-outline' as const,   activeIcon: 'alert-circle' as const },
-  { key: 'scan',      labelKey: 'tabs.tab_scan',     icon: 'qr-code-outline' as const,        activeIcon: 'qr-code' as const },
-  { key: 'workguide', labelKey: 'tabs.tab_guide',    icon: 'book-outline' as const,           activeIcon: 'book' as const },
-  { key: 'assistant', labelKey: 'tabs.tab_schemes',  icon: 'ribbon-outline' as const,         activeIcon: 'ribbon' as const },
+  { key: 'notices',   labelKey: 'common.tabs.tab_notices',  icon: 'document-text-outline' as const,  activeIcon: 'document-text' as const },
+  { key: 'complaint', labelKey: 'common.tabs.tab_report',   icon: 'alert-circle-outline' as const,   activeIcon: 'alert-circle' as const },
+  { key: 'scan',      labelKey: 'common.tabs.tab_scan',     icon: 'qr-code-outline' as const,        activeIcon: 'qr-code' as const },
+  { key: 'workguide', labelKey: 'common.tabs.tab_guide',    icon: 'book-outline' as const,           activeIcon: 'book' as const },
+  { key: 'assistant', labelKey: 'common.tabs.tab_schemes',  icon: 'ribbon-outline' as const,         activeIcon: 'ribbon' as const },
 ];
 
 // ─── Skeleton ────────────────────────────────────────────────────────────────
@@ -89,53 +89,53 @@ const InfoModal = ({ visible, onClose, colors }: any) => {
   const { t } = useTranslation();
   const sections = [
     {
-      title: t('modal.scan_access_section', '📱 Scan & Access'),
+      title: t('common.modal.scan_access_section'),
       icon: 'qr-code-outline', color: colors.primary[500],
       items: [
-        t('modal.scan_access_item_1', '• Find QR code on Panchayat wall or notice board'),
-        t('modal.scan_access_item_2', '• Scan with your phone camera'),
-        t('modal.scan_access_item_3', '• Instant access to all active village notices'),
-        t('modal.scan_access_item_4', '• No registration, no login, no friction'),
+        t('common.modal.scan_access_item_1'),
+        t('common.modal.scan_access_item_2'),
+        t('common.modal.scan_access_item_3'),
+        t('common.modal.scan_access_item_4'),
       ],
     },
     {
-      title: t('modal.find_officials_section', '👥 Find Officials'),
+      title: t('common.modal.find_officials_section'),
       icon: 'people-outline', color: colors.accent.green,
       items: [
-        t('modal.find_officials_item_1', '• Search by name, designation, or responsibility'),
-        t('modal.find_officials_item_2', '• View office hours and contact information'),
-        t('modal.find_officials_item_3', '• See what documents to carry for each service'),
-        t('modal.find_officials_item_4', '• Direct contact details for quick assistance'),
+        t('common.modal.find_officials_item_1'),
+        t('common.modal.find_officials_item_2'),
+        t('common.modal.find_officials_item_3'),
+        t('common.modal.find_officials_item_4'),
       ],
     },
     {
-      title: t('modal.report_complaints_section', '📝 Report Complaints'),
-      icon: 'alert-circle-outline', color: colors.accent.orange,
+      title: t('common.modal.report_complaints_section'),
+      icon: 'alert-circle-outline', color: colors.accent.green,
       items: [
-        t('modal.report_complaints_item_1', '• File issues with photos and location'),
-        t('modal.report_complaints_item_2', '• Track status: Pending → In Progress → Resolved'),
-        t('modal.report_complaints_item_3', '• Get notified when status changes'),
-        t('modal.report_complaints_item_4', '• Real accountability and transparency'),
+        t('common.modal.report_complaints_item_1'),
+        t('common.modal.report_complaints_item_2'),
+        t('common.modal.report_complaints_item_3'),
+        t('common.modal.report_complaints_item_4'),
       ],
     },
     {
-      title: t('modal.village_notices_section', '📢 Village Notices'),
-      icon: 'document-text-outline', color: colors.accent.teal,
+      title: t('common.modal.village_notices_section'),
+      icon: 'document-text-outline', color: colors.primary[500],
       items: [
-        t('modal.village_notices_item_1', '• All official announcements in one place'),
-        t('modal.village_notices_item_2', '• Filter by category: Development, Health, Education'),
-        t('modal.village_notices_item_3', '• Priority tags: Urgent, Important, Regular'),
-        t('modal.village_notices_item_4', '• Download attached documents and forms'),
+        t('common.modal.village_notices_item_1'),
+        t('common.modal.village_notices_item_2'),
+        t('common.modal.village_notices_item_3'),
+        t('common.modal.village_notices_item_4'),
       ],
     },
     {
-      title: t('modal.work_guide_section', '📋 Work Guide'),
+      title: t('common.modal.work_guide_section'),
       icon: 'book-outline', color: colors.primary[400],
       items: [
-        t('modal.work_guide_item_1', '• Step-by-step guide for village services'),
-        t('modal.work_guide_item_2', '• Required documents checklist'),
-        t('modal.work_guide_item_3', '• Application process explained'),
-        t('modal.work_guide_item_4', '• Contact information for each service'),
+        t('common.modal.work_guide_item_1'),
+        t('common.modal.work_guide_item_2'),
+        t('common.modal.work_guide_item_3'),
+        t('common.modal.work_guide_item_4'),
       ],
     },
   ];
@@ -149,7 +149,7 @@ const InfoModal = ({ visible, onClose, colors }: any) => {
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.modalHeader}
           >
-            <Text style={styles.modalTitle}>{t('modal.how_app_works', 'How GramVartha Works')}</Text>
+            <Text style={styles.modalTitle}>{t('common.modal.how_app_works')}</Text>
             <TouchableOpacity onPress={onClose} style={styles.modalClose}>
               <Ionicons name="close" size={24} color="#fff" />
             </TouchableOpacity>
@@ -172,7 +172,7 @@ const InfoModal = ({ visible, onClose, colors }: any) => {
             ))}
             <View style={[styles.modalFooter, { borderTopColor: colors.border }]}>
               <Text style={[styles.modalFooterText, { color: colors.text.muted }]}>
-                {t('modal.modal_footer', 'No registration. Just information at your fingertips.')}
+                {t('common.modal.modal_footer')}
               </Text>
             </View>
           </ScrollView>
@@ -240,6 +240,7 @@ const QRIcon = ({ size = 36, color = '#fff' }: { size?: number; color?: string }
 const VillageCard = ({ item, onPress, onRemove, index, colors }: {
   item: ScannedVillage; onPress: () => void; onRemove: () => void; index: number; colors: any;
 }) => {
+  const { t } = useTranslation();
   const slideAnim = useRef(new Animated.Value(20)).current;
   const fadeAnim  = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -269,15 +270,15 @@ const VillageCard = ({ item, onPress, onRemove, index, colors }: {
           style={[
             styles.removeVillageButton,
             {
-              backgroundColor: `${colors.status.error}10`,
-              borderColor: `${colors.status.error}24`,
+              backgroundColor: `${colors.error}10`,
+              borderColor: `${colors.error}24`,
             },
           ]}
           activeOpacity={0.72}
           accessibilityRole="button"
-          accessibilityLabel={`Remove ${item.villageName}`}
+          accessibilityLabel={t('home.remove_saved_village_accessibility', { villageName: item.villageName })}
         >
-          <Ionicons name="trash-outline" size={16} color={colors.status.error} />
+          <Ionicons name="trash-outline" size={16} color={colors.error} />
         </TouchableOpacity>
         <View style={[styles.villageCardArrow, { backgroundColor: `${colors.primary.DEFAULT}12` }]}>
           <Text style={[styles.villageCardArrowText, { color: colors.primary.DEFAULT }]}>›</Text>
@@ -602,12 +603,12 @@ export default function HomeScreen() {
 
   const handleRemoveVillage = (village: ScannedVillage) => {
     Alert.alert(
-      t('home.remove_saved_village_title', 'Remove saved village?'),
-      t('home.remove_saved_village_message', `Remove ${village.villageName} from this device? You can scan its QR code again anytime.`),
+      t('home.remove_saved_village_title'),
+      t('home.remove_saved_village_message', { villageName: village.villageName }),
       [
-        { text: t('common.cancel', 'Cancel'), style: 'cancel' },
+        { text: t('home.cancel'), style: 'cancel' },
         {
-          text: t('common.remove', 'Remove'),
+          text: t('common.remove'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -634,8 +635,8 @@ export default function HomeScreen() {
             } catch (error) {
               console.error('Remove saved village error:', error);
               Alert.alert(
-                t('common.error', 'Error'),
-                t('home.remove_saved_village_failed', 'Could not remove the saved village. Please try again.')
+                t('common.error'),
+                t('home.remove_saved_village_failed')
               );
             }
           },
@@ -750,7 +751,7 @@ export default function HomeScreen() {
               colors={[colors.primary[500]]} // Android
               tintColor={colors.primary[500]} // iOS
               titleColor={colors.primary[500]} // iOS title color
-              title={t('common.pull_to_refresh', 'Pull to refresh')} // Optional: iOS only
+              title={t('home.pull_to_refresh')} // Optional: iOS only
             />
           }
         >
@@ -784,16 +785,16 @@ export default function HomeScreen() {
               {[
                 {
                   icon: 'people-outline', color: colors.primary[500], bg: `${colors.primary[500]}15`,
-                  titleKey: 'home.find_officials', descKey: 'home.find_officials_desc',
+                  titleKey: 'home.find_right_official', descKey: 'home.search_official_desc',
                   onPress: () => router.push('/qr-notices/workguide' as any),
                 },
                 {
-                  icon: 'alert-circle-outline', color: colors.accent.orange, bg: `${colors.accent.orange}15`,
-                  titleKey: 'home.report_track', descKey: 'home.report_track_desc',
+                  icon: 'alert-circle-outline', color: colors.accent.green, bg: `${colors.accent.green}15`,
+                  titleKey: 'home.track_complaints', descKey: 'home.tracking_note',
                   onPress: handleCreateComplaint,
                 },
                 {
-                  icon: 'book-outline', color: colors.accent.teal, bg: `${colors.accent.teal}15`,
+                  icon: 'book-outline', color: colors.primary[500], bg: `${colors.primary[500]}15`,
                   titleKey: 'home.work_guide', descKey: 'home.work_guide_desc',
                   onPress: () => router.push('/qr-notices/workguide' as any),
                 },
@@ -845,9 +846,9 @@ export default function HomeScreen() {
                 <Ionicons name="ribbon-outline" size={24} color={colors.primary[500]} />
               </View>
               <View style={styles.smartAssistantBody}>
-                <Text style={[styles.smartAssistantTitle, { color: colors.text.primary }]}>Scheme Assistance</Text>
+                <Text style={[styles.smartAssistantTitle, { color: colors.text.primary }]}>{t('home.scheme_assistance')}</Text>
                 <Text style={[styles.smartAssistantDesc, { color: colors.text.muted }]}>
-                  Find government schemes, eligibility, documents, and application steps.
+                  {t('home.scheme_assistance_desc')}
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
@@ -968,8 +969,8 @@ export default function HomeScreen() {
                 }}
                 activeOpacity={0.7}
               >
-                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.accent.orange}15` }]}>
-                  <Ionicons name="list-outline" size={24} color={colors.accent.orange} />
+                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.accent.green}15` }]}>
+                  <Ionicons name="list-outline" size={24} color={colors.accent.green} />
                 </View>
                 <View style={styles.quickAccessContent}>
                   <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>{t('home.all_village_issues')}</Text>

@@ -31,12 +31,12 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [focused, setFocused] = useState<string | null>(null);
-  const [villageName, setVillageName] = useState<string>(t('common.loading') || 'Loading...');
+  const [villageName, setVillageName] = useState<string>(t('auth.register.loading'));
 
   useEffect(() => {
     AsyncStorage.getItem("scannedVillage").then((str) => {
       const obj = parseJsonObject(str);
-      setVillageName(obj?.villageName || t('common.unknown_village') || 'Unknown Village');
+      setVillageName(obj?.villageName || t('auth.register.unknown_village'));
     });
   }, [t]);
 
@@ -44,8 +44,8 @@ export default function Register() {
     if (!name.trim() || !phone.trim() || !password.trim()) {
       Toast.show({
         type: "error",
-        text1: t('register_screen.missing_fields') || 'Missing Fields',
-        text2: t('register_screen.fill_all_fields') || 'Please fill all fields',
+        text1: t('auth.register.missing_fields'),
+        text2: t('validation.required_fields'),
       });
       return;
     }
@@ -56,8 +56,8 @@ export default function Register() {
     if (!villageObj?.villageId) {
       Toast.show({
         type: "error",
-        text1: t('register_screen.no_village_found') || 'No Village Found',
-        text2: t('register_screen.scan_village_login') || 'Please scan a village QR code before registering',
+        text1: t('auth.register.no_village_found'),
+        text2: t('auth.register.scan_village_register'),
       });
       return;
     }
@@ -76,15 +76,15 @@ export default function Register() {
       void getOrCreatePushToken();
       Toast.show({
         type: "success",
-        text1: t('register_screen.welcome') || 'Welcome!',
-        text2: t('register_screen.register_success') || 'Account created successfully!',
+        text1: t('auth.register.welcome'),
+        text2: t('auth.register.success'),
       });
       setTimeout(() => router.replace("/complaints/my-complaints"), 1200);
     } catch (err: any) {
       Toast.show({
         type: "error",
-        text1: t('register_screen.register_error') || 'Registration Failed',
-        text2: apiService.getErrorMessage(err, t('register_screen.try_again') || 'Please try again'),
+        text1: t('auth.register.failed'),
+        text2: apiService.getErrorMessage(err, t('auth.register.try_again')),
       });
     } finally {
       setLoading(false);
@@ -101,8 +101,8 @@ export default function Register() {
   const fields = [
     {
       key: "name",
-      label: t('register_screen.full_name') || 'Full Name',
-      placeholder: t('register_screen.full_name_placeholder') || 'Enter your full name',
+      label: t('auth.register.name'),
+      placeholder: t('auth.register.name_placeholder'),
       secure: false,
       value: name,
       onChange: setName,
@@ -111,8 +111,8 @@ export default function Register() {
     },
     {
       key: "phone",
-      label: t('register_screen.phone_number') || 'Phone Number',
-      placeholder: t('register_screen.phone_placeholder') || 'Enter 10-digit mobile number',
+      label: t('auth.register.phone'),
+      placeholder: t('auth.register.phone_placeholder'),
       secure: false,
       value: phone,
       onChange: formatPhoneNumber,
@@ -122,8 +122,8 @@ export default function Register() {
     },
     {
       key: "password",
-      label: t('register_screen.password') || 'Password',
-      placeholder: t('register_screen.password_placeholder') || 'Create a password',
+      label: t('auth.register.password'),
+      placeholder: t('auth.register.password_placeholder'),
       secure: true,
       value: password,
       onChange: setPassword,
@@ -170,15 +170,15 @@ export default function Register() {
 
         <View style={styles.headerTitleBlock}>
           <Text style={[styles.headerEyebrow, { color: headerEyebrowColor }]}>
-            {t('register_screen.citizen_portal') || 'CITIZEN PORTAL'}
+            {t('common.citizen_portal')}
           </Text>
           <Text style={[styles.headerTitle, { color: headerTextColor }]}>
-            {t('register_screen.title') || 'Create Account'} 📝
+            {t('auth.register.title')} 📝
           </Text>
           <View style={styles.headerBreadcrumb}>
             <View style={[styles.headerBreadcrumbDot, { backgroundColor: headerSubColor }]} />
             <Text style={[styles.headerSub, { color: headerSubColor }]}>
-              {t('register_screen.subtitle') || 'Register to access your village services'}
+              {t('auth.register.subtitle')}
             </Text>
           </View>
         </View>
@@ -203,13 +203,13 @@ export default function Register() {
           </View>
           <View style={styles.villageTextBlock}>
             <Text style={[styles.villageLabel, { color: colors.text.muted }]}>
-              {t('register_screen.village') || 'VILLAGE'}
+              {t('auth.register.village')}
             </Text>
             <Text style={[styles.villageName, { color: colors.text.primary }]}>
               {villageName}
             </Text>
             <Text style={[styles.villageVerified, { color: colors.primary[500] }]}>
-              {t('register_screen.verified_qr') || '✓ Verified via QR Code'}
+              {t('auth.register.verified_qr')}
             </Text>
           </View>
         </View>
@@ -279,7 +279,7 @@ export default function Register() {
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <Text style={[styles.registerBtnTxt, { color: "#fff" }]}>
-              {t('register_screen.register_button') || 'Register'}
+              {t('auth.register.submit')}
             </Text>
           )}
         </TouchableOpacity>
@@ -287,20 +287,20 @@ export default function Register() {
         {/* ── Login redirect ── */}
         <View style={styles.loginRow}>
           <Text style={[styles.loginHint, { color: colors.text.secondary }]}>
-            {t('register_screen.already_account') || 'Already have an account?'}
+            {t('auth.register.already_account')}
           </Text>
           <TouchableOpacity
             onPress={() => router.replace({ pathname: "/auth/login" } as any)}
             activeOpacity={0.7}
           >
             <Text style={[styles.loginLink, { color: colors.primary[500] }]}>
-              {" "}{t('register_screen.login_link') || 'Login'}
+              {" "}{t('auth.register.login_link')}
             </Text>
           </TouchableOpacity>
         </View>
 
         <Text style={[styles.terms, { color: colors.text.muted }]}>
-          {t('register_screen.terms') || 'By registering, you agree to receive village notices and updates on your device.'}
+          {t('auth.register.terms')}
         </Text>
       </ScrollView>
 

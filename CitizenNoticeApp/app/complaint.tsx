@@ -176,8 +176,8 @@ export default function Complaint() {
     if (!title.trim() || !description.trim()) {
       Toast.show({ 
         type: "error", 
-        text1: t('auth.missing_fields'), 
-        text2: t('complaint.fill_all_fields') 
+        text1: t('validation.missing_fields'), 
+        text2: t('validation.required_fields') 
       });
       return;
     }
