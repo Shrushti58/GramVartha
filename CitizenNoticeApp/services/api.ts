@@ -214,6 +214,7 @@ class ApiService {
   async loginCitizen(data: {
     phone: string;
     password: string;
+    village: string;
   }) {
     return this.post("/citizen/login", data);
   }

@@ -1,6 +1,7 @@
 const Complaint = require("../models/Complaint");
 const { analyzeImage } = require("../utlis/vision");
 const Citizen = require("../models/Citizens");
+const Village = require("../models/Village");
 const { verifyComplaintWithGemini } = require("../services/geminiComplaint.service");
 const {
   notifyComplaintRejected,
@@ -370,6 +371,22 @@ const createComplaint = async (req, res) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    const citizen = await Citizen.findById(req.user.id).select("village");
+    if (!citizen) {
+      return res.status(404).json({ message: "Citizen not found" });
+    }
+
+    const village = await Village.findOne({
+      _id: citizen.village,
+      status: "approved",
+    });
+
+    if (!village) {
+      return res.status(400).json({
+        message: "Citizen village does not exist or is not approved",
+      });
+    }
+
     const {
       type,
       title,
@@ -394,7 +411,7 @@ const createComplaint = async (req, res) => {
     if (type === "suggestion") {
       const complaint = await Complaint.create({
         citizen: req.user.id,
-        village: req.user.village,
+        village: village._id,
         type,
         title: title.trim(),
         description: description.trim(),
@@ -430,6 +447,7 @@ const createComplaint = async (req, res) => {
 
     // Duplicate nearby issue check BEFORE creating
     const nearbyIssue = await Complaint.findOne({
+      village: village._id,
       type: "issue",
       status: { $ne: "resolved" },
       "location.lat": {
@@ -452,7 +470,7 @@ const createComplaint = async (req, res) => {
     // Save complaint WITHOUT Gemini verification
     const complaint = await Complaint.create({
       citizen: req.user.id,
-      village: req.user.village,
+      village: village._id,
       type,
       title: title.trim(),
       description: description.trim(),
@@ -566,6 +584,15 @@ const getComplaintsByVillage = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
+
+    const village = await Village.findById(villageId);
+    if (!village) {
+      return res.status(404).json({ message: "Village not found" });
+    }
+
+    if (village.status !== "approved") {
+      return res.status(403).json({ message: "Village is not approved yet" });
+    }
 
     const filter = { village: villageId };
     if (req.query.type) filter.type = req.query.type;

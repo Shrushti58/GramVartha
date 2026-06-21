@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const Citizens = require("../models/Citizens");
 const Complaint = require("../models/Complaint");
+const Village = require("../models/Village");
 const { generateToken } = require("../utlis/jwt");
 const { tokenCookieOptions } = require("../utlis/cookieOptions");
 
@@ -15,6 +16,17 @@ const registerCitizen = async (req, res) => {
     if (!name || !phone || !password || !village) {
       return res.status(400).json({
         message: "All fields are required"
+      });
+    }
+
+    const existingVillage = await Village.findOne({
+      _id: village,
+      status: "approved"
+    });
+
+    if (!existingVillage) {
+      return res.status(400).json({
+        message: "Selected village does not exist or is not approved"
       });
     }
 
@@ -54,7 +66,13 @@ const registerCitizen = async (req, res) => {
 
 const loginCitizen = async (req, res) => {
   try {
-    const { phone, password } = req.body;
+    const { phone, password, village } = req.body;
+
+    if (!village) {
+      return res.status(400).json({
+        message: "Village is required. Please scan a valid village QR code."
+      });
+    }
 
     const citizen = await Citizens.findOne({ phone });
 
@@ -69,6 +87,23 @@ const loginCitizen = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({
         message: "Invalid credentials"
+      });
+    }
+
+    if (citizen.village.toString() !== village.toString()) {
+      return res.status(403).json({
+        message: "This account is not registered for the scanned village"
+      });
+    }
+
+    const existingVillage = await Village.findOne({
+      _id: citizen.village,
+      status: "approved"
+    });
+
+    if (!existingVillage) {
+      return res.status(403).json({
+        message: "Registered village does not exist or is not approved"
       });
     }
 

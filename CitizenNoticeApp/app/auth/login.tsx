@@ -65,7 +65,11 @@ export default function Login() {
 
     try {
       setLoading(true);
-      const res = await apiService.loginCitizen({ phone, password });
+      const res = await apiService.loginCitizen({
+        phone,
+        password,
+        village: villageObj.villageId,
+      });
       await saveToken(res.token);
 
       // Register for push notifications after successful login
