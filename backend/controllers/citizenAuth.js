@@ -128,7 +128,17 @@ const registerPushToken = async (req, res) => {
   try {
     const { pushToken } = req.body;
 
+    console.log("[push-token] Registration request received", {
+      userId: req.user?.id,
+      pushToken,
+    });
+
     if (!isExpoPushToken(pushToken)) {
+      console.warn("[push-token] Registration rejected: invalid Expo token", {
+        userId: req.user?.id,
+        pushToken,
+      });
+
       return res.status(400).json({
         message: "A valid Expo push token is required"
       });
@@ -142,16 +152,25 @@ const registerPushToken = async (req, res) => {
       });
     }
 
-    await Citizens.updateOne(
-      { _id: citizen._id },
-      { $addToSet: { pushTokens: pushToken } }
-    );
+    const updatedCitizen = await Citizens.findByIdAndUpdate(
+      citizen._id,
+      { $addToSet: { pushTokens: pushToken } },
+      { new: true }
+    ).select("pushTokens");
+
+    const tokenSaved = updatedCitizen?.pushTokens?.includes(pushToken) || false;
+
+    console.log("[push-token] Registration saved", {
+      userId: citizen._id,
+      pushToken,
+      tokenSaved,
+      tokensCount: updatedCitizen?.pushTokens?.length || 0,
+    });
 
     res.json({
       message: "Push token registered successfully",
-      tokensCount: citizen.pushTokens.includes(pushToken)
-        ? citizen.pushTokens.length
-        : citizen.pushTokens.length + 1
+      tokensCount: updatedCitizen?.pushTokens?.length || 0,
+      tokenSaved
     });
   } catch (error) {
     console.error("Error registering push token:", error);

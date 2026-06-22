@@ -30,13 +30,26 @@ async function sendPushNotification(pushTokens, title, body, data = {}) {
   const allTokens = pushTokens || [];
   const tokens = [...new Set(allTokens.filter(isExpoPushToken))];
   const invalidFormatTokens = allTokens.filter((token) => !isExpoPushToken(token));
+  const notificationType = data?.type || "default";
 
   if (invalidFormatTokens.length > 0) {
-    await removeInvalidPushTokens(invalidFormatTokens);
+    console.warn("[expo-push] Invalid Expo token format skipped", {
+      type: notificationType,
+      invalidCount: invalidFormatTokens.length,
+      invalidTokens: invalidFormatTokens,
+    });
   }
+
+  console.log("[expo-push] Sending notification", {
+    type: notificationType,
+    title,
+    tokenCount: allTokens.length,
+    validTokenCount: tokens.length,
+  });
 
   if (tokens.length === 0) {
     console.warn("[expo-push] No valid Expo push tokens", {
+      type: notificationType,
       providedCount: allTokens.length,
       invalidCount: invalidFormatTokens.length,
     });
@@ -84,6 +97,12 @@ async function sendPushNotification(pushTokens, title, body, data = {}) {
 
       const tickets = Array.isArray(response.data?.data) ? response.data.data : [];
 
+      console.log("[expo-push] Expo response", {
+        type: notificationType,
+        status: response.status,
+        data: response.data,
+      });
+
       tickets.forEach((ticket, index) => {
         if (ticket.status === "ok") {
           successCount += 1;
@@ -98,23 +117,41 @@ async function sendPushNotification(pushTokens, title, body, data = {}) {
         });
 
         if (ticket.details?.error === "DeviceNotRegistered") {
-          void removeInvalidPushTokens([failedToken]);
+          void removeInvalidPushTokens([failedToken]).catch((cleanupError) => {
+            console.error("[expo-push] Failed to remove unregistered token", {
+              error: cleanupError.message,
+            });
+          });
         }
       });
     } catch (error) {
       failedTokens.push(...tokenBatch);
-      console.error("Expo push notification error:", error.response?.data || error.message);
+      console.error("[expo-push] Expo request failed", {
+        type: notificationType,
+        title,
+        status: error.response?.status,
+        response: error.response?.data,
+        message: error.message,
+      });
     }
   }
 
   const uniqueFailedTokens = [...new Set(failedTokens)];
-
-  return {
+  const result = {
     success: successCount > 0,
     successCount,
     failureCount: uniqueFailedTokens.length,
     failedTokens: uniqueFailedTokens,
   };
+
+  console.log("[expo-push] Send result", {
+    type: notificationType,
+    title,
+    successCount: result.successCount,
+    failureCount: result.failureCount,
+  });
+
+  return result;
 }
 
 async function notifyVillageCitizens(citizens, title, body, data = {}) {
@@ -126,7 +163,16 @@ async function notifyVillageCitizens(citizens, title, body, data = {}) {
     }
   }
 
-  return sendPushNotification(pushTokens, title, body, data);
+  console.log("[notice-push] Citizens and tokens found", {
+    citizensFound: citizens.length,
+    totalTokens: pushTokens.length,
+  });
+
+  const result = await sendPushNotification(pushTokens, title, body, data);
+
+  console.log("[notice-push] Send result", result);
+
+  return result;
 }
 
 module.exports = {

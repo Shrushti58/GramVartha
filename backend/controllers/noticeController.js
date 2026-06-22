@@ -75,8 +75,20 @@ const uploadNotice = async (req, res) => {
           village: req.user.village
         });
 
+        const totalTokens = citizens.reduce(
+          (count, citizen) => count + (citizen.pushTokens?.length || 0),
+          0
+        );
+
+        console.log("[notice-push] Notice published", {
+          noticeId: notice._id,
+          citizensFound: citizens.length,
+          totalTokens,
+        });
+
         if (citizens && citizens.length > 0) {
-          await notifyNewNotice(citizens, title, req.user.village);
+          const pushResult = await notifyNewNotice(citizens, title, req.user.village);
+          console.log("[notice-push] Notice send result", pushResult);
           console.log(`📬 Push notifications sent to ${citizens.length} citizens`);
         }
       } catch (notifErr) {

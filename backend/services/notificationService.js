@@ -19,6 +19,12 @@ async function notifyComplaintResolved(citizen, complaintId) {
     complaintId: complaintId.toString(),
   };
 
+  console.log("[complaint-push] Notification triggered", {
+    type: data.type,
+    citizenId: citizen?._id,
+    tokenCount: citizen?.pushTokens?.length || 0,
+  });
+
   if (citizen.pushTokens && citizen.pushTokens.length > 0) {
     return sendPushNotification(citizen.pushTokens, title, body, data);
   }
@@ -34,6 +40,12 @@ async function notifyComplaintRejected(citizen, complaintId, reason) {
     complaintId: complaintId.toString(),
     reason,
   };
+
+  console.log("[complaint-push] Notification triggered", {
+    type: data.type,
+    citizenId: citizen?._id,
+    tokenCount: citizen?.pushTokens?.length || 0,
+  });
 
   if (citizen.pushTokens && citizen.pushTokens.length > 0) {
     return sendPushNotification(citizen.pushTokens, title, body, data);

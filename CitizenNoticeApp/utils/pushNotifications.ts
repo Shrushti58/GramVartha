@@ -84,6 +84,7 @@ async function getExpoPushToken() {
   }
 
   const token = await Notifications.getExpoPushTokenAsync({ projectId });
+  console.log("[push-token] Expo token generated", { token: token.data });
   return token.data;
 }
 
@@ -91,11 +92,18 @@ export async function savePushTokenToBackend(expoPushToken: string) {
   await AsyncStorage.setItem(PUSH_TOKEN_KEY, expoPushToken);
 
   const authToken = await getToken();
-  if (!authToken) return null;
+  if (!authToken) {
+    console.log("[push-token] Backend registration skipped: no auth token");
+    return null;
+  }
 
-  return apiService.post("/citizen/register-push-token", {
+  console.log("[push-token] Registering token with backend", { token: expoPushToken });
+  const result = await apiService.post("/citizen/register-push-token", {
     pushToken: expoPushToken,
   });
+  console.log("[push-token] Backend registration response", result);
+
+  return result;
 }
 
 export async function removePushTokenFromBackend() {
