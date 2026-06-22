@@ -1,0 +1,108 @@
+# ======================
+# Node.js / Express (Backend)
+# ======================
+backend/node_modules/
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/pnpm-debug.log*
+
+# Env files (backend)
+backend/.env
+backend/.env.local
+backend/.env.development.local
+backend/.env.test.local
+backend/.env.production.local
+backend/config/google-vision-key.json
+
+# Logs (backend)
+backend/logs/
+backend/*.log
+backend/*.pid
+backend/*.seed
+backend/*.pid.lock
+
+# Build output (backend)
+backend/dist/
+backend/build/
+
+
+# ======================
+# React (Frontend)
+# ======================
+frontend/node_modules/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# Env files (frontend)
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+
+# React build
+frontend/build/
+
+
+# ======================
+# Expo / React Native
+# App: CitizenNoticeApp
+# ======================
+CitizenNoticeApp/node_modules/
+CitizenNoticeApp/.expo/
+CitizenNoticeApp/.expo
+CitizenNoticeApp/.expo-shared/
+CitizenNoticeApp/google-services.json
+*firebase-adminsdk*.json
+
+# Expo web build
+CitizenNoticeApp/web-build/
+
+# Metro / RN logs
+CitizenNoticeApp/npm-debug.log*
+CitizenNoticeApp/yarn-debug.log*
+CitizenNoticeApp/yarn-error.log*
+CitizenNoticeApp/pnpm-debug.log*
+
+# Env files (expo)
+CitizenNoticeApp/.env
+CitizenNoticeApp/.env.local
+CitizenNoticeApp/.env.development.local
+CitizenNoticeApp/.env.test.local
+CitizenNoticeApp/.env.production.local
+
+# Native builds (Expo Managed Workflow)
+CitizenNoticeApp/android/
+CitizenNoticeApp/ios/
+
+# React Native cache
+CitizenNoticeApp/.metro-health-check*
+
+# Misc
+CitizenNoticeApp/*.log
+CitizenNoticeApp/*.bak
+CitizenNoticeApp/*.tmp
+
+
+# ======================
+# General
+# ======================
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Misc
+*.bak
+*.tmp
+
+backend/gramvartha-0d3028ac535a.json
