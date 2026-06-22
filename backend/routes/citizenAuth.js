@@ -18,7 +18,20 @@ router.use(rejectMongoOperators);
 
 router.post("/register", authValidators.citizenRegister, validateRequest, registerCitizen);
 router.post("/login", authValidators.citizenLogin, validateRequest, loginCitizen);
-router.post("/register-push-token", authValidators.pushToken, validateRequest, verifyToken, registerPushToken);
+router.post(
+  "/register-push-token",
+  (req, res, next) => {
+    console.log("[push-token] Route hit", {
+      hasAuthorization: Boolean(req.headers.authorization),
+      hasPushToken: Boolean(req.body?.pushToken),
+    });
+    next();
+  },
+  authValidators.pushToken,
+  validateRequest,
+  verifyToken,
+  registerPushToken
+);
 router.post("/unregister-push-token", authValidators.pushToken, validateRequest, verifyToken, unregisterPushToken);
 router.delete("/me", verifyToken, deleteCitizenAccount);
 
