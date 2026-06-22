@@ -54,8 +54,32 @@ async function notifyComplaintRejected(citizen, complaintId, reason) {
   return { success: false, message: "No push tokens for citizen" };
 }
 
+async function notifyComplaintStatusUpdated(citizen, complaintId, status) {
+  const readableStatus = status.replace("-", " ");
+  const title = "Complaint Status Updated";
+  const body = `Your complaint #${complaintId} is now ${readableStatus}`;
+  const data = {
+    type: "complaint_status_updated",
+    complaintId: complaintId.toString(),
+    status,
+  };
+
+  console.log("[complaint-push] Notification triggered", {
+    type: data.type,
+    citizenId: citizen?._id,
+    tokenCount: citizen?.pushTokens?.length || 0,
+  });
+
+  if (citizen.pushTokens && citizen.pushTokens.length > 0) {
+    return sendPushNotification(citizen.pushTokens, title, body, data);
+  }
+
+  return { success: false, message: "No push tokens for citizen" };
+}
+
 module.exports = {
   notifyNewNotice,
   notifyComplaintResolved,
   notifyComplaintRejected,
+  notifyComplaintStatusUpdated,
 };

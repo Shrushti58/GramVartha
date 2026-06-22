@@ -6,6 +6,7 @@ const { verifyComplaintWithGemini } = require("../services/geminiComplaint.servi
 const {
   notifyComplaintRejected,
   notifyComplaintResolved,
+  notifyComplaintStatusUpdated,
 } = require("../services/notificationService");
 
 const notifyCitizenAboutComplaintStatus = async (complaint, status, reason) => {
@@ -27,6 +28,8 @@ const notifyCitizenAboutComplaintStatus = async (complaint, status, reason) => {
         complaint._id,
         reason || "Updated by Gram Panchayat"
       );
+    } else {
+      result = await notifyComplaintStatusUpdated(citizen, complaint._id, status);
     }
 
     console.log("[complaint-push] Notification result", {

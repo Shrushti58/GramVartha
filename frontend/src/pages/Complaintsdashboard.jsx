@@ -353,7 +353,7 @@ function InlineDetail({
     setNewStatus(complaint.status);
     setShowResolveForm(false);
     setResolutionFile(null);
-  }, [complaint._id]);
+  }, [complaint._id, complaint.status]);
 
   useEffect(() => {
     if (!resolutionFile) {
@@ -1007,15 +1007,18 @@ export default function ComplaintsDashboard() {
       if (!expandedId || !newStatus) return;
       try {
         setUpdatingStatus(true);
-        await axios.patch(
+        const res = await axios.patch(
           `${API_BASE_URL}/complaints/${expandedId}/status`,
           { status: newStatus },
           { withCredentials: true },
         );
+        const updatedComplaint = res.data;
         toast.success(t('complaints.success.status_updated'));
         setComplaints((prev) =>
           prev.map((c) =>
-            c._id === expandedId ? { ...c, status: newStatus } : c,
+            c._id === expandedId
+              ? { ...c, ...updatedComplaint, status: updatedComplaint?.status || newStatus }
+              : c,
           ),
         );
       } catch (err) {
