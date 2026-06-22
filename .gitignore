@@ -56,6 +56,8 @@ CitizenNoticeApp/node_modules/
 CitizenNoticeApp/.expo/
 CitizenNoticeApp/.expo
 CitizenNoticeApp/.expo-shared/
+CitizenNoticeApp/google-services.json
+*firebase-adminsdk*.json
 
 # Expo web build
 CitizenNoticeApp/web-build/
