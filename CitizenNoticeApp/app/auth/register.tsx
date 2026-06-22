@@ -19,7 +19,7 @@ import { router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-import { saveToken } from "../../utils/auth";
+import { getDecodedToken, saveToken } from "../../utils/auth";
 import { getOrCreatePushToken } from "../../utils/pushNotifications";
 import { parseJsonObject } from "../../utils/safeJson";
 
@@ -74,6 +74,11 @@ export default function Register() {
 
       console.log("[push-token] Registration successful, saving auth token");
       await saveToken(res.token);
+      const decodedToken = await getDecodedToken();
+      console.log("[push-token] Saved auth token payload", {
+        citizenId: decodedToken?.id,
+        village: decodedToken?.village,
+      });
       console.log("[push-token] Auth token saved, starting push setup after registration");
       const pushToken = await getOrCreatePushToken();
       console.log("[push-token] Push setup after registration result", {

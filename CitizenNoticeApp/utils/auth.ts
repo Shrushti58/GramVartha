@@ -7,6 +7,8 @@ const LEGACY_TOKEN_KEY = "token";
 
 type JwtPayload = {
   exp?: number;
+  id?: string;
+  village?: string;
 };
 
 const isTokenExpired = (token: string) => {
@@ -60,3 +62,14 @@ export const logout = async () => {
 };
 
 export const isLoggedIn = async () => Boolean(await getToken());
+
+export const getDecodedToken = async () => {
+  const token = await getToken();
+  if (!token) return null;
+
+  try {
+    return jwtDecode<JwtPayload>(token);
+  } catch {
+    return null;
+  }
+};

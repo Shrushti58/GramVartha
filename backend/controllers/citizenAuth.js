@@ -147,6 +147,13 @@ const registerPushToken = async (req, res) => {
     const citizen = await Citizens.findById(req.user.id);
 
     if (!citizen) {
+      console.warn("[push-token] Citizen not found for token registration", {
+        userId: req.user?.id,
+        village: req.user?.village,
+        collection: Citizens.collection.name,
+        database: Citizens.db.name,
+      });
+
       return res.status(404).json({
         message: "Citizen not found"
       });

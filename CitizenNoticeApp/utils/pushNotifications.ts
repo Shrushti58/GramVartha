@@ -110,6 +110,13 @@ async function getExpoPushToken() {
 }
 
 export async function savePushTokenToBackend(expoPushToken: string) {
+  if (!isExpoPushToken(expoPushToken)) {
+    console.log("[push-token] Backend registration skipped: not an Expo token", {
+      token: expoPushToken,
+    });
+    return null;
+  }
+
   await AsyncStorage.setItem(PUSH_TOKEN_KEY, expoPushToken);
   console.log("[push-token] Token stored locally", { token: expoPushToken });
 

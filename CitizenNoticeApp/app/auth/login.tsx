@@ -21,7 +21,7 @@ import { ThemedView } from "../../components/ThemedView";
 import { ThemedText } from "../../components/ThemedText";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
-import { saveToken } from "../../utils/auth";
+import { getDecodedToken, saveToken } from "../../utils/auth";
 import { getOrCreatePushToken } from "../../utils/pushNotifications";
 import { parseJsonObject } from "../../utils/safeJson";
 
@@ -72,6 +72,11 @@ export default function Login() {
       });
       console.log("[push-token] Login successful, saving auth token");
       await saveToken(res.token);
+      const decodedToken = await getDecodedToken();
+      console.log("[push-token] Saved auth token payload", {
+        citizenId: decodedToken?.id,
+        village: decodedToken?.village,
+      });
       console.log("[push-token] Auth token saved, starting push setup after login");
 
       // Register for push notifications after successful login
