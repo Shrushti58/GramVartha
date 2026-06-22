@@ -69,7 +69,7 @@ const sections = [
   {
     title: "Account Deletion",
     body: [
-      "Users may request account deletion by contacting GramVartha at shrushtipatil0508@gmail.com. Please include the registered phone number, village information, and any details needed to identify the account.",
+      "Users may request account deletion by contacting GramVartha at gramvartha@gmail.com. Please include the registered phone number, village information, and any details needed to identify the account.",
       "After verifying the request, we will delete or anonymize personal information unless retention is required for legal, safety, dispute resolution, official record, fraud prevention, or governance purposes.",
     ],
   },
@@ -231,10 +231,10 @@ export default function PrivacyPolicy() {
                     <div className="rounded-lg border border-white/10 bg-white/5 p-4">
                       <p className="text-xs font-semibold uppercase tracking-wider text-white/45">Email</p>
                       <a
-                        href="mailto:shrushtipatil0508@gmail.com"
+                        href="mailto:gramvartha@gmail.com"
                         className="mt-2 inline-block break-all text-sm font-semibold text-primary-200 hover:text-white transition-colors duration-200"
                       >
-                        shrushtipatil0508@gmail.com
+                        gramvartha@gmail.com
                       </a>
                     </div>
                   </div>
