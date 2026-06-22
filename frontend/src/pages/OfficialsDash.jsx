@@ -572,13 +572,27 @@ export default function OfficialsDashboard() {
       if (officialVillageId) fd.append('village', officialVillageId);
     }
     try {
-      await axios.post(`${API_BASE_URL}/notice/upload`, fd, { 
+      const res = await axios.post(`${API_BASE_URL}/notice/upload`, fd, { 
         headers: { 'Content-Type': 'multipart/form-data' }, 
         withCredentials: true 
       });
+      const savedNotice = res.data?.notice;
+      if (savedNotice) {
+        setNotices((prev) => {
+          if (noticeForm && noticeForm !== 'new') {
+            return prev.map((notice) =>
+              notice._id === savedNotice._id ? savedNotice : notice
+            );
+          }
+
+          return [savedNotice, ...prev];
+        });
+        setViewNotice((prev) =>
+          prev?._id === savedNotice._id ? savedNotice : prev
+        );
+      }
       toast.success(noticeForm && noticeForm !== 'new' ? 'Notice updated successfully!' : 'Notice published successfully!');
       setNoticeForm(null);
-      fetchNotices();
     } catch(err) {
       toast.error(err.response?.data?.message || 'Failed to save notice');
     } finally { 
@@ -592,7 +606,8 @@ export default function OfficialsDashboard() {
       toast.success('Notice deleted successfully!');
       setDeleteTarget(null);
       setNoticeForm(null);
-      fetchNotices();
+      setViewNotice((prev) => (prev?._id === id ? null : prev));
+      setNotices((prev) => prev.filter((notice) => notice._id !== id));
     } catch(e) { 
       toast.error('Failed to delete notice'); 
     }

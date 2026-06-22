@@ -3,6 +3,32 @@ const NoticeView = require("../models/NoticeView");
 const Citizen = require("../models/Citizens");
 const { notifyNewNotice } = require('../services/notificationService');
 
+const notifyNoticeUpdate = async (notice, title) => {
+  try {
+    const citizens = await Citizen.find({
+      village: notice.village
+    });
+
+    const totalTokens = citizens.reduce(
+      (count, citizen) => count + (citizen.pushTokens?.length || 0),
+      0
+    );
+
+    console.log("[notice-push] Notice updated", {
+      noticeId: notice._id,
+      citizensFound: citizens.length,
+      totalTokens,
+    });
+
+    if (citizens.length > 0) {
+      const pushResult = await notifyNewNotice(citizens, `Updated: ${title}`, notice.village);
+      console.log("[notice-push] Notice update send result", pushResult);
+    }
+  } catch (notifErr) {
+    console.error("Notice update push notification error:", notifErr.message);
+  }
+};
+
 const uploadNotice = async (req, res) => {
   try {
     const {
@@ -49,6 +75,7 @@ const uploadNotice = async (req, res) => {
       }
 
       await notice.save();
+      await notifyNoticeUpdate(notice, title);
 
     } else {
       const noticeData = {
@@ -165,6 +192,7 @@ const updateNotice = async (req, res) => {
     }
 
     await notice.save();
+    await notifyNoticeUpdate(notice, notice.title);
     await notice.populate('createdBy', 'name email');
 
     res.json({
