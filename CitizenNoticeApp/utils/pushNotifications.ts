@@ -4,6 +4,7 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { router } from "expo-router";
 import { Platform } from "react-native";
+import { Config } from "../constants/config";
 import { apiService } from "../services/api";
 import { getToken } from "./auth";
 
@@ -11,6 +12,10 @@ const PUSH_TOKEN_KEY = "expoPushToken";
 const ANDROID_DEFAULT_CHANNEL_ID = "default";
 const ANDROID_COMPLAINTS_CHANNEL_ID = "complaints";
 const ANDROID_NOTICES_CHANNEL_ID = "notices";
+
+function isExpoPushToken(token?: string | null) {
+  return /^Expo(nent)?PushToken\[[\w-]+\]$/.test(token || "");
+}
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -24,6 +29,8 @@ Notifications.setNotificationHandler({
 
 async function configureAndroidNotificationChannels() {
   if (Platform.OS !== "android") return;
+
+  console.log("[push-token] Configuring Android notification channels");
 
   await Notifications.setNotificationChannelAsync(ANDROID_DEFAULT_CHANNEL_ID, {
     name: "General updates",
@@ -56,14 +63,24 @@ function getProjectId() {
 
 async function requestNotificationPermission() {
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  console.log("[push-token] Existing notification permission", { status: existingStatus });
 
-  if (existingStatus === "granted") return true;
+  if (existingStatus === "granted") {
+    console.log("[push-token] Notification permission already granted");
+    return true;
+  }
 
   const { status } = await Notifications.requestPermissionsAsync();
+  console.log("[push-token] Notification permission requested", { status });
   return status === "granted";
 }
 
 async function getExpoPushToken() {
+  console.log("[push-token] Token generation started", {
+    platform: Platform.OS,
+    isDevice: Device.isDevice,
+  });
+
   if (!Device.isDevice) {
     console.warn("Push notifications require a physical device");
     return null;
@@ -78,6 +95,10 @@ async function getExpoPushToken() {
   }
 
   const projectId = getProjectId();
+  console.log("[push-token] EAS project id check", {
+    hasProjectId: Boolean(projectId),
+  });
+
   if (!projectId) {
     console.warn("EAS projectId is missing; Expo push token registration skipped");
     return null;
@@ -90,6 +111,7 @@ async function getExpoPushToken() {
 
 export async function savePushTokenToBackend(expoPushToken: string) {
   await AsyncStorage.setItem(PUSH_TOKEN_KEY, expoPushToken);
+  console.log("[push-token] Token stored locally", { token: expoPushToken });
 
   const authToken = await getToken();
   if (!authToken) {
@@ -97,13 +119,29 @@ export async function savePushTokenToBackend(expoPushToken: string) {
     return null;
   }
 
-  console.log("[push-token] Registering token with backend", { token: expoPushToken });
-  const result = await apiService.post("/citizen/register-push-token", {
-    pushToken: expoPushToken,
+  console.log("[push-token] Registering token with backend", {
+    apiBaseUrl: Config.API_BASE_URL,
+    endpoint: "/citizen/register-push-token",
+    hasAuthToken: true,
+    token: expoPushToken,
   });
-  console.log("[push-token] Backend registration response", result);
 
-  return result;
+  try {
+    const result = await apiService.post("/citizen/register-push-token", {
+      pushToken: expoPushToken,
+    });
+    console.log("[push-token] Backend registration response", result);
+
+    return result;
+  } catch (error: any) {
+    console.error("[push-token] Backend registration failed", {
+      message: error?.message,
+      status: error?.status,
+      code: error?.code,
+      data: error?.data,
+    });
+    throw error;
+  }
 }
 
 export async function removePushTokenFromBackend() {
@@ -122,11 +160,16 @@ export async function removePushTokenFromBackend() {
 
 export async function getOrCreatePushToken() {
   try {
+    console.log("[push-token] getOrCreatePushToken started");
     const token = await getExpoPushToken();
-    if (!token) return null;
+    if (!token) {
+      console.log("[push-token] getOrCreatePushToken stopped: no Expo token");
+      return null;
+    }
 
     await savePushTokenToBackend(token);
 
+    console.log("[push-token] getOrCreatePushToken completed");
     return token;
   } catch (error) {
     console.error("Error managing push token:", error);
@@ -165,8 +208,12 @@ export function setupNotificationListeners() {
 
   const tokenSubscription = (Notifications as any).addPushTokenListener?.((token: any) => {
     const tokenValue = typeof token === "string" ? token : token?.data;
-    if (tokenValue) {
+    if (isExpoPushToken(tokenValue)) {
       void savePushTokenToBackend(tokenValue);
+    } else if (tokenValue) {
+      console.log("[push-token] Native device token changed; Expo token registration skipped", {
+        token: tokenValue,
+      });
     }
   });
 

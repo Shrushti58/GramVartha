@@ -22,14 +22,31 @@ router.post(
   "/register-push-token",
   (req, res, next) => {
     console.log("[push-token] Route hit", {
+      method: req.method,
+      path: req.originalUrl,
       hasAuthorization: Boolean(req.headers.authorization),
       hasPushToken: Boolean(req.body?.pushToken),
+      pushToken: req.body?.pushToken,
     });
     next();
   },
   authValidators.pushToken,
   validateRequest,
+  (req, res, next) => {
+    console.log("[push-token] Validation passed", {
+      hasAuthorization: Boolean(req.headers.authorization),
+      hasPushToken: Boolean(req.body?.pushToken),
+    });
+    next();
+  },
   verifyToken,
+  (req, res, next) => {
+    console.log("[push-token] Auth passed", {
+      userId: req.user?.id,
+      village: req.user?.village,
+    });
+    next();
+  },
   registerPushToken
 );
 router.post("/unregister-push-token", authValidators.pushToken, validateRequest, verifyToken, unregisterPushToken);

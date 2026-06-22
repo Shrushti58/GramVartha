@@ -70,10 +70,15 @@ export default function Login() {
         password,
         village: villageObj.villageId,
       });
+      console.log("[push-token] Login successful, saving auth token");
       await saveToken(res.token);
+      console.log("[push-token] Auth token saved, starting push setup after login");
 
       // Register for push notifications after successful login
       const pushToken = await getOrCreatePushToken();
+      console.log("[push-token] Push setup after login result", {
+        hasPushToken: Boolean(pushToken),
+      });
       if (pushToken) {
         console.log('✅ Push notification setup completed');
       }

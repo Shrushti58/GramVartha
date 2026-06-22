@@ -37,11 +37,22 @@ function verifyToken(req, res, next) {
   }
 
   if (!token) {
+    console.warn("[auth] Missing token", {
+      method: req.method,
+      path: req.originalUrl,
+    });
     return res.status(401).json({ message: "No token" });
   }
 
   jwt.verify(token, getJwtSecret(), (err, decoded) => {
-    if (err) return res.status(403).json({ message: "Invalid token" });
+    if (err) {
+      console.warn("[auth] Invalid token", {
+        method: req.method,
+        path: req.originalUrl,
+        message: err.message,
+      });
+      return res.status(403).json({ message: "Invalid token" });
+    }
 
     req.user = decoded;
     next();

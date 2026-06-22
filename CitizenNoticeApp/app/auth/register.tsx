@@ -72,8 +72,13 @@ export default function Register() {
         village: villageObj.villageId,
       });
 
+      console.log("[push-token] Registration successful, saving auth token");
       await saveToken(res.token);
-      void getOrCreatePushToken();
+      console.log("[push-token] Auth token saved, starting push setup after registration");
+      const pushToken = await getOrCreatePushToken();
+      console.log("[push-token] Push setup after registration result", {
+        hasPushToken: Boolean(pushToken),
+      });
       Toast.show({
         type: "success",
         text1: t('auth.register.welcome'),
