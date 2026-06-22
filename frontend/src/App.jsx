@@ -18,6 +18,7 @@ import QRScanner from "./components/QRScanner";
 import QRNotices from "./pages/QRNotices";
 import VillageAdminNotices from "./pages/VillageAdminNotices";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import DeleteAccount from "./pages/DeleteAccount";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/qr-scanner" element={<QRScanner />} />
           <Route path="/qr-notices/:villageId" element={<QRNotices />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/delete-account" element={<DeleteAccount />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
 

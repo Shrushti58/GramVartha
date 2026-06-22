@@ -91,6 +91,14 @@ export default function Footer() {
                   Privacy Policy
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/delete-account"
+                  className="text-xs sm:text-sm text-white/50 hover:text-primary-400 transition-colors duration-200"
+                >
+                  Delete Account
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -134,6 +142,12 @@ export default function Footer() {
               className="text-xs text-white/40 hover:text-primary-400 transition-colors duration-200"
             >
               Privacy Policy
+            </Link>
+            <Link
+              to="/delete-account"
+              className="text-xs text-white/40 hover:text-primary-400 transition-colors duration-200"
+            >
+              Delete Account
             </Link>
           </div>
         </div>
