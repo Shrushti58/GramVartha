@@ -66,18 +66,18 @@ const schemeSchema = new mongoose.Schema(
 
     verificationStatus: {
       type: String,
-      enum: ["verified", "needs_verification"],
-      default: "needs_verification",
+      enum: ["verified", "needs_verification", "needs_user_verification", "panchayat_provided"],
+      default: "needs_user_verification",
     },
 
     source: {
       type: String,
-      default: "Curated Government Scheme Dataset",
+      default: "myScheme - Government of India",
     },
 
     sourceUrl: {
       type: String,
-      default: "",
+      default: "https://www.myscheme.gov.in",
     },
 
     language: {

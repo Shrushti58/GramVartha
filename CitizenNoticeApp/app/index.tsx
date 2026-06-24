@@ -12,6 +12,7 @@ import {
   ScrollView,
   Alert,
   Modal,
+  Linking,
   RefreshControl, // Added this import
 } from 'react-native';
 import { router } from 'expo-router';
@@ -30,6 +31,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { parseJsonArray, parseJsonObject } from '../utils/safeJson';
 
 const { width, height } = Dimensions.get('window');
+const MYSCHEME_URL = 'https://www.myscheme.gov.in';
 
 interface ScannedVillage {
   villageId: string;
@@ -996,6 +998,53 @@ export default function HomeScreen() {
             </View>
           </View>
 
+          {/* Sources & Disclaimer */}
+          <View style={styles.section}>
+            <ThemedCard variant="elevated" style={styles.sourcesDisclaimerCard}>
+              <View style={styles.sourcesDisclaimerHeader}>
+                <View style={[styles.sourcesDisclaimerIcon, { backgroundColor: `${colors.primary[500]}15` }]}>
+                  <Ionicons name="information-circle-outline" size={22} color={colors.primary[500]} />
+                </View>
+                <Text style={[styles.sourcesDisclaimerTitle, { color: colors.text.primary }]}>
+                  {t('home.sources_disclaimer.title')}
+                </Text>
+              </View>
+
+              <Text style={[styles.sourcesDisclaimerLabel, { color: colors.text.primary }]}>
+                {t('home.sources_disclaimer.government_source_label')}
+              </Text>
+              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.secondary }]}>
+                {t('home.sources_disclaimer.government_source_name')}
+              </Text>
+              <TouchableOpacity
+                style={styles.sourcesDisclaimerLinkRow}
+                onPress={() => Linking.openURL(MYSCHEME_URL)}
+                activeOpacity={0.72}
+              >
+                <Ionicons name="open-outline" size={15} color={colors.primary[500]} />
+                <Text style={[styles.sourcesDisclaimerLink, { color: colors.primary[500] }]}>
+                  {MYSCHEME_URL}
+                </Text>
+              </TouchableOpacity>
+
+              <View style={[styles.sourcesDisclaimerDivider, { backgroundColor: colors.border }]} />
+
+              <Text style={[styles.sourcesDisclaimerLabel, { color: colors.text.primary }]}>
+                {t('home.sources_disclaimer.village_source_label')}
+              </Text>
+              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.secondary }]}>
+                {t('home.sources_disclaimer.village_source_text')}
+              </Text>
+
+              <Text style={[styles.sourcesDisclaimerLabel, { color: colors.text.primary }]}>
+                {t('home.sources_disclaimer.disclaimer_label')}
+              </Text>
+              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.muted }]}>
+                {t('home.sources_disclaimer.disclaimer_text')}
+              </Text>
+            </ThemedCard>
+          </View>
+
           <View style={{ height: 16 }} />
         </ScrollView>
 
@@ -1228,6 +1277,17 @@ const styles = StyleSheet.create({
   quickAccessContent:    { flex: 1 },
   quickAccessTitle:      { fontSize: 15, fontWeight: '600', marginBottom: 2 },
   quickAccessDesc:       { fontSize: 12, lineHeight: 16 },
+
+  // Sources & Disclaimer
+  sourcesDisclaimerCard: { borderRadius: 16, padding: 16 },
+  sourcesDisclaimerHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 },
+  sourcesDisclaimerIcon: { width: 38, height: 38, borderRadius: 11, justifyContent: 'center', alignItems: 'center' },
+  sourcesDisclaimerTitle: { flex: 1, fontSize: 15, fontWeight: '800' },
+  sourcesDisclaimerLabel: { fontSize: 12, fontWeight: '800', marginTop: 8, marginBottom: 3 },
+  sourcesDisclaimerText: { fontSize: 12, lineHeight: 18 },
+  sourcesDisclaimerLinkRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
+  sourcesDisclaimerLink: { flex: 1, fontSize: 12, fontWeight: '700', lineHeight: 18 },
+  sourcesDisclaimerDivider: { height: StyleSheet.hairlineWidth, marginVertical: 10 },
 
   // Tab Bar
   tabBar: {

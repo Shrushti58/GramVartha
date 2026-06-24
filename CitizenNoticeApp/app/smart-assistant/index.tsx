@@ -4,6 +4,7 @@ import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -37,6 +38,15 @@ type AssistantSuggestion = {
   query: string;
 };
 
+type SourceInfo = {
+  sourceType: "government" | "village";
+  sourceName: string;
+  sourceUrl: string | null;
+  disclaimer: string;
+  schemeId?: string;
+  schemeTitle?: string;
+};
+
 type AssistantResponse = {
   success: boolean;
   type: "smart_assistance";
@@ -46,6 +56,9 @@ type AssistantResponse = {
   cards: AssistantCard[];
   sections: { title: string; items: string[] }[];
   suggestions: AssistantSuggestion[];
+  sourceInfo?: SourceInfo | null;
+  schemeSources?: SourceInfo[];
+  disclaimer?: string;
 };
 
 type ChatMessage = {
@@ -79,6 +92,8 @@ const CARD_META: Record<AssistantCard["type"], { icon: keyof typeof Ionicons.gly
   process: { icon: "list-outline", tone: "primary" },
   scheme: { icon: "ribbon-outline", tone: "success" },
 };
+
+const OFFICIAL_SOURCE_URL = "https://www.myscheme.gov.in";
 
 const getStoredVillageId = async () => {
   const directVillageId = await AsyncStorage.getItem("villageId");
@@ -189,6 +204,16 @@ export default function SmartAssistantScreen() {
               { label: t("assistant.search_schemes"), query: "Show government schemes" },
               { label: t("assistant.student_schemes"), query: "Show student schemes" },
             ],
+            sourceInfo: {
+              sourceType: "government",
+              sourceName: "myScheme - Government of India",
+              sourceUrl: OFFICIAL_SOURCE_URL,
+              disclaimer:
+                "GramVartha is not a government app. Scheme information is for awareness only. Please verify details from the official myScheme portal before applying.",
+            },
+            schemeSources: [],
+            disclaimer:
+              "GramVartha is not a government app and is not affiliated with, endorsed by, authorized by, or representing any government entity. Scheme information is for awareness only. Please verify details from the official source or concerned department before applying.",
           },
         },
       ]);
@@ -260,6 +285,9 @@ export default function SmartAssistantScreen() {
             label: card.title,
             query: buildDetailQuery(detailType, card.title),
           })),
+          sourceInfo: response.sourceInfo,
+          schemeSources: response.schemeSources,
+          disclaimer: response.disclaimer,
         },
       },
     ]);
@@ -292,6 +320,29 @@ export default function SmartAssistantScreen() {
     if (tone === "info") return colors.info;
     return colors.primary[500];
   };
+
+  const openOfficialSource = () => {
+    Linking.openURL(OFFICIAL_SOURCE_URL).catch(() => {
+      Alert.alert("Unable to open link", `Please visit ${OFFICIAL_SOURCE_URL}`);
+    });
+  };
+
+  const renderSourceBanner = () => (
+    <View style={themedStyles.sourceBanner}>
+      <View style={themedStyles.sourceBannerIcon}>
+        <Ionicons name="information-circle-outline" size={20} color={colors.primary[500]} />
+      </View>
+      <View style={themedStyles.sourceBannerCopy}>
+        <Text style={themedStyles.sourceBannerText}>Government scheme source: myScheme - Government of India</Text>
+        <Text style={themedStyles.sourceBannerLink}>Official website: {OFFICIAL_SOURCE_URL}</Text>
+        <Text style={themedStyles.sourceBannerNote}>GramVartha is not a government app.</Text>
+      </View>
+      <Pressable style={themedStyles.sourceBannerButton} onPress={openOfficialSource}>
+        <Ionicons name="open-outline" size={18} color="#fff" />
+        <Text style={themedStyles.sourceBannerButtonText}>Open Official Source</Text>
+      </Pressable>
+    </View>
+  );
 
   const renderHelpDeskHome = () => (
     <View style={themedStyles.homeWrap}>
@@ -414,6 +465,23 @@ export default function SmartAssistantScreen() {
           ))}
         </View>
       )}
+
+      <View style={themedStyles.sourceInfoBox}>
+        <Text style={themedStyles.sourceInfoTitle}>Source Information</Text>
+        {(response.schemeSources?.length ? response.schemeSources : response.sourceInfo ? [response.sourceInfo] : []).map((source, index) => (
+          <View key={`${source.sourceName}-${source.schemeTitle || index}`} style={themedStyles.sourceInfoItem}>
+            {!!source.schemeTitle && <Text style={themedStyles.sourceInfoScheme}>{source.schemeTitle}</Text>}
+            <Text style={themedStyles.sourceInfoText}>Source: {source.sourceName}</Text>
+            {!!source.sourceUrl && (
+              <Pressable onPress={() => Linking.openURL(source.sourceUrl || OFFICIAL_SOURCE_URL)}>
+                <Text style={themedStyles.sourceInfoUrl}>Official source: {source.sourceUrl}</Text>
+              </Pressable>
+            )}
+            <Text style={themedStyles.sourceInfoDisclaimer}>{source.disclaimer}</Text>
+          </View>
+        ))}
+        {!!response.disclaimer && <Text style={themedStyles.sourceInfoDisclaimer}>{response.disclaimer}</Text>}
+      </View>
     </View>
   );
 
@@ -445,7 +513,12 @@ export default function SmartAssistantScreen() {
             <Text style={themedStyles.headerTitle}>{t("assistant.title")}</Text>
             <Text style={themedStyles.headerSubtitle}>{t("assistant.subtitle")}</Text>
           </View>
+          <Pressable style={themedStyles.headerButton} onPress={() => router.push("/sources-disclaimer" as any)}>
+            <Ionicons name="information-circle-outline" size={22} color={colors.text.primary} />
+          </Pressable>
         </View>
+
+        {renderSourceBanner()}
 
         {messages.length === 0 ? (
           <ScrollView
@@ -535,6 +608,60 @@ const createStyles = (colors: any, isDark: boolean) =>
       color: colors.text.secondary,
       fontSize: 12,
       marginTop: 2,
+    },
+    sourceBanner: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: colors.border,
+      backgroundColor: isDark ? colors.background : colors.primary[50],
+    },
+    sourceBannerIcon: {
+      width: 34,
+      height: 34,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: `${colors.primary[500]}15`,
+    },
+    sourceBannerCopy: {
+      flex: 1,
+      minWidth: 0,
+    },
+    sourceBannerText: {
+      color: colors.text.primary,
+      fontSize: 12,
+      fontWeight: "900",
+      lineHeight: 17,
+    },
+    sourceBannerLink: {
+      color: colors.primary[500],
+      fontSize: 11,
+      fontWeight: "800",
+      lineHeight: 16,
+    },
+    sourceBannerNote: {
+      color: colors.text.secondary,
+      fontSize: 11,
+      lineHeight: 16,
+    },
+    sourceBannerButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 10,
+      paddingVertical: 9,
+      borderRadius: 18,
+      justifyContent: "center",
+      backgroundColor: colors.primary[500],
+    },
+    sourceBannerButtonText: {
+      color: "#fff",
+      fontSize: 11,
+      fontWeight: "900",
     },
     homeScroll: {
       flex: 1,
@@ -822,6 +949,42 @@ const createStyles = (colors: any, isDark: boolean) =>
       color: colors.primary[500],
       fontSize: 12,
       fontWeight: "800",
+    },
+    sourceInfoBox: {
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: colors.border,
+      gap: 8,
+    },
+    sourceInfoTitle: {
+      color: colors.text.primary,
+      fontSize: 12,
+      fontWeight: "900",
+    },
+    sourceInfoItem: {
+      gap: 3,
+    },
+    sourceInfoScheme: {
+      color: colors.text.primary,
+      fontSize: 12,
+      fontWeight: "800",
+    },
+    sourceInfoText: {
+      color: colors.text.secondary,
+      fontSize: 12,
+      lineHeight: 17,
+    },
+    sourceInfoUrl: {
+      color: colors.primary[500],
+      fontSize: 12,
+      fontWeight: "800",
+      lineHeight: 17,
+    },
+    sourceInfoDisclaimer: {
+      color: colors.text.muted,
+      fontSize: 11,
+      lineHeight: 16,
     },
     typingRow: {
       flexDirection: "row",

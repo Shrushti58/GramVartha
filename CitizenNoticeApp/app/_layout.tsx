@@ -70,6 +70,7 @@ function RootLayoutContent() {
         <Stack.Screen name="complaints/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="qr-notices" options={{ headerShown: false }} />
         <Stack.Screen name="smart-assistant/index" options={{ headerShown: false }} />
+        <Stack.Screen name="sources-disclaimer" options={{ headerShown: false }} />
       </Stack>
       <Toast />
     </>

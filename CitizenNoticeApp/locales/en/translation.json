@@ -172,7 +172,16 @@
     "scheme_assistance": "Scheme Assistance",
     "scheme_assistance_desc": "Find government schemes, eligibility, documents, and application steps.",
     "work_guide": "Work Guide",
-    "work_guide_desc": "Step-by-step help for village services"
+    "work_guide_desc": "Step-by-step help for village services",
+    "sources_disclaimer": {
+      "title": "Sources & Disclaimer",
+      "government_source_label": "Government Scheme Source:",
+      "government_source_name": "myScheme - Government of India",
+      "village_source_label": "Work Guide & Village Information Source:",
+      "village_source_text": "Provided and maintained by participating Gram Panchayats and their authorized officials through GramVartha.",
+      "disclaimer_label": "Disclaimer:",
+      "disclaimer_text": "GramVartha is an independent digital platform. It is not affiliated with, endorsed by, authorized by, or representing any government authority. Users should verify government-related information from official sources or the concerned department before taking action."
+    }
   },
   "notice": {
     "details": {

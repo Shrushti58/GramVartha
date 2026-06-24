@@ -2,8 +2,12 @@ const Scheme = require("../models/Scheme");
 const Village = require("../models/Village");
 const VillageScheme = require("../models/VillageScheme");
 const SchemeRequest = require("../models/SchemeRequest");
-
-const VILLAGE_CUSTOM_SOURCE = "Village Custom Scheme";
+const {
+  GOVERNMENT_SOURCE_URL,
+  VILLAGE_SOURCE_NAME,
+  VILLAGE_CUSTOM_SOURCE,
+  normalizeSchemeSourceFields,
+} = require("../services/schemeSourceInfo");
 
 const buildSlug = (title = "") =>
   title
@@ -180,7 +184,7 @@ const mergeVillageOverrides = (schemes, overrides = [], requests = []) => {
     const override = overrideMap[scheme._id.toString()];
     const request = requestMap[scheme._id.toString()];
 
-    return {
+    return normalizeSchemeSourceFields({
       ...scheme,
       title: override?.customTitle || scheme.title,
       description: override?.customDescription || scheme.description,
@@ -191,7 +195,7 @@ const mergeVillageOverrides = (schemes, overrides = [], requests = []) => {
       amount: override?.customAmount ?? scheme.amount,
       requestStatus: request ? "pending" : "none",
       isCustom: !!override,
-    };
+    });
   });
 };
 
@@ -253,9 +257,14 @@ const getSchemesForCitizen = async (req, res) => {
           state: 1,
           beneficiary: 1,
           tags: 1,
+          source: 1,
+          sourceUrl: 1,
+          scope: 1,
+          village: 1,
+          verificationStatus: 1,
           updatedAt: 1,
         }
-      : "title slug description shortDescription amount category level state beneficiary tags updatedAt";
+      : "title slug description shortDescription amount category level state beneficiary tags source sourceUrl scope village verificationStatus updatedAt";
 
     const baseSchemes = await Scheme.find(query, projection)
       .sort(sortQuery)
@@ -282,7 +291,7 @@ const getSchemesForCitizen = async (req, res) => {
       limit: limitNum,
       totalPages: Math.ceil(total / limitNum),
       total,
-      data: merged,
+      data: merged.map(normalizeSchemeSourceFields),
     });
   } catch (err) {
     console.error("[getSchemesForCitizen]", err);
@@ -385,7 +394,7 @@ const getSchemesForOfficial = async (req, res) => {
 
     return res.json({
       success: true,
-      data: merged,
+      data: merged.map(normalizeSchemeSourceFields),
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -466,7 +475,7 @@ const getSchemeBySlug = async (req, res) => {
 
     return res.json({
       success: true,
-      data: finalScheme,
+      data: normalizeSchemeSourceFields(finalScheme),
     });
   } catch (err) {
     console.error("[getSchemeBySlug]", err);
@@ -524,7 +533,7 @@ const searchSchemes = async (req, res) => {
 
     return res.json({
       success: true,
-      data: schemes,
+      data: schemes.map(normalizeSchemeSourceFields),
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -606,8 +615,9 @@ const createVillageScheme = async (req, res) => {
       beneficiary,
       level: "Unknown",
       status: "active",
-      verificationStatus: "needs_verification",
-      source: "Village Custom Scheme",
+      verificationStatus: "panchayat_provided",
+      source: VILLAGE_SOURCE_NAME,
+      sourceUrl: null,
       scope: "village",
       village: villageId,
     });
@@ -627,7 +637,7 @@ const createVillageScheme = async (req, res) => {
       message: "Village scheme created",
       scheme: {
         ...scheme.toObject(),
-        baseScheme,
+        baseScheme: normalizeSchemeSourceFields(baseScheme.toObject ? baseScheme.toObject() : baseScheme),
       },
     });
   } catch (err) {
@@ -671,7 +681,7 @@ const getVillageSchemesForOfficial = async (req, res) => {
       .map((mapping) => {
         const scheme = mapping.schemeId;
 
-        return {
+        return normalizeSchemeSourceFields({
           _id: scheme._id,
           mappingId: mapping._id,
           title: mapping.customTitle || scheme.title,
@@ -690,12 +700,12 @@ const getVillageSchemesForOfficial = async (req, res) => {
           createdAt: scheme.createdAt,
           updatedAt: mapping.updatedAt || scheme.updatedAt,
           isCustom: true,
-        };
+        });
       });
 
     return res.json({
       success: true,
-      data: schemes,
+      data: schemes.map(normalizeSchemeSourceFields),
     });
   } catch (err) {
     console.error("[getVillageSchemesForOfficial]", err);
@@ -738,6 +748,8 @@ const updateVillageScheme = async (req, res) => {
     }
 
     const normalizedAmount = Number(amount || 0);
+    const isVillageSourceScheme =
+      scheme.scope === "village" || scheme.source === VILLAGE_CUSTOM_SOURCE;
 
     const updatedScheme = await Scheme.findByIdAndUpdate(
       schemeId,
@@ -752,6 +764,10 @@ const updateVillageScheme = async (req, res) => {
         applicationSteps: Array.isArray(applicationSteps) ? applicationSteps : [],
         category: Array.isArray(category) ? category : [],
         beneficiary,
+        source: isVillageSourceScheme ? VILLAGE_SOURCE_NAME : scheme.source,
+        sourceUrl: isVillageSourceScheme ? null : GOVERNMENT_SOURCE_URL,
+        verificationStatus:
+          isVillageSourceScheme ? "panchayat_provided" : "needs_user_verification",
       },
       { new: true }
     ).lean();
@@ -773,7 +789,7 @@ const updateVillageScheme = async (req, res) => {
       success: true,
       data: {
         ...updated.toObject(),
-        baseScheme: updatedScheme,
+        baseScheme: normalizeSchemeSourceFields(updatedScheme),
       },
     });
   } catch (err) {

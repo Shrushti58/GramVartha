@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { retrieveContext, hasTrustedContext } = require("../services/assistant/retrievalService");
 const { buildAssistantPrompt } = require("../services/assistant/promptBuilder");
 const { summarizeWithAI } = require("../services/assistant/aiService");
+const { GOVERNMENT_SOURCE_NAME, GOVERNMENT_SOURCE_URL } = require("../services/schemeSourceInfo");
 const {
   NOT_AVAILABLE,
   buildFallbackAnswer,
@@ -22,6 +23,32 @@ const sanitizeSources = (sources) => ({
   baseQuery: sources.baseQuery || "",
   detailType: sources.detailType || null,
 });
+
+const ASSISTANT_DISCLAIMER =
+  "GramVartha is not a government app and is not affiliated with, endorsed by, authorized by, or representing any government entity. Scheme information is for awareness only. Please verify details from the official source or concerned department before applying.";
+
+const getAssistantSourceInfo = (sources = {}) => {
+  const schemeSources = (sources.schemes || [])
+    .map((scheme) => scheme.sourceInfo)
+    .filter(Boolean);
+
+  return (
+    schemeSources[0] || {
+      sourceType: "government",
+      sourceName: GOVERNMENT_SOURCE_NAME,
+      sourceUrl: GOVERNMENT_SOURCE_URL,
+      disclaimer:
+        "GramVartha is not a government app. Scheme information is for awareness only. Please verify details from the official myScheme portal before applying.",
+    }
+  );
+};
+
+const getAssistantSchemeSources = (sources = {}) =>
+  (sources.schemes || []).map((scheme) => ({
+    schemeId: scheme.id,
+    schemeTitle: scheme.title,
+    ...(scheme.sourceInfo || getAssistantSourceInfo({ schemes: [scheme] })),
+  }));
 
 const allowedCardTypes = new Set([
   "documents",
@@ -61,6 +88,9 @@ const sanitizeAssistantAnswer = (answer = {}) => ({
         }))
         .slice(0, 4)
     : [],
+  sourceInfo: answer.sourceInfo || null,
+  schemeSources: Array.isArray(answer.schemeSources) ? answer.schemeSources : [],
+  disclaimer: answer.disclaimer || ASSISTANT_DISCLAIMER,
 });
 
 const chatWithAssistant = async (req, res) => {
@@ -88,7 +118,12 @@ const chatWithAssistant = async (req, res) => {
     });
 
     if (!hasTrustedContext(sources)) {
-      const unavailableAnswer = sanitizeAssistantAnswer(buildUnavailableAnswer());
+      const unavailableAnswer = sanitizeAssistantAnswer({
+        ...buildUnavailableAnswer(),
+        sourceInfo: getAssistantSourceInfo(sources),
+        schemeSources: [],
+        disclaimer: ASSISTANT_DISCLAIMER,
+      });
 
       return res.status(200).json({
         success: true,
@@ -111,7 +146,12 @@ const chatWithAssistant = async (req, res) => {
       console.error("[assistant ai summary skipped]", error.message);
     }
 
-    const safeAnswer = sanitizeAssistantAnswer(assistantAnswer);
+    const safeAnswer = sanitizeAssistantAnswer({
+      ...assistantAnswer,
+      sourceInfo: getAssistantSourceInfo(sources),
+      schemeSources: getAssistantSchemeSources(sources),
+      disclaimer: ASSISTANT_DISCLAIMER,
+    });
 
     return res.status(200).json({
       success: true,

@@ -1,6 +1,7 @@
 const Scheme = require("../../models/Scheme");
 const Village = require("../../models/Village");
 const VillageScheme = require("../../models/VillageScheme");
+const { getSchemeSourceInfo } = require("../schemeSourceInfo");
 
 const VILLAGE_CUSTOM_SOURCE = "Village Custom Scheme";
 
@@ -204,9 +205,13 @@ const normalizeScheme = (scheme) => ({
   category: scheme.category || [],
   beneficiary: scheme.beneficiary,
   amount: scheme.amount,
+  source: scheme.source || "",
   sourceUrl: scheme.sourceUrl || "",
+  scope: scheme.scope || "global",
+  village: scheme.village || null,
   state: scheme.state || "Unknown",
-  verificationStatus: scheme.verificationStatus || "needs_verification",
+  verificationStatus: scheme.verificationStatus || "needs_user_verification",
+  sourceInfo: getSchemeSourceInfo(scheme),
   score: scheme._assistantScore || 0,
 });
 
