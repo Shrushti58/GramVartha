@@ -9,7 +9,7 @@ const sections = [
   {
     title: "Information We Collect",
     body: [
-      "GramVartha collects only the information required to provide village governance, notice, complaint, suggestion, notification, scheme, work guide, and village service features.",
+      "GramVartha collects only the information required to provide village communication, notice, complaint, suggestion, notification, scheme, work guide, and village service features.",
     ],
     items: [
       "Name, phone number, user ID, and village information.",
@@ -23,10 +23,10 @@ const sections = [
   {
     title: "How We Use Information",
     body: [
-      "We use collected information to operate GramVartha and provide the services requested by citizens, village administrators, and officials.",
+      "We use collected information to operate GramVartha and provide the platform services requested by citizens, village administrators, and officials.",
     ],
     items: [
-      "To display village notices and government scheme information.",
+      "To display village notices and scheme information.",
       "To submit, manage, review, and respond to complaints and suggestions.",
       "To attach photos and optional location context to complaint records.",
       "To send push notifications about notices, complaint updates, service updates, and important village information.",
@@ -62,21 +62,21 @@ const sections = [
   {
     title: "Data Retention",
     body: [
-      "We retain information only for as long as necessary to provide GramVartha services, maintain official complaint and notice records, meet legal requirements, resolve disputes, and improve platform security.",
-      "Complaint records, photos, and related location details may be retained while the complaint is active and for a reasonable period after closure for audit, governance, or service quality purposes.",
+      "We retain information only for as long as necessary to provide GramVartha services, maintain complaint and notice records, meet legal requirements, resolve disputes, and improve platform security.",
+      "Complaint records, photos, and related location details may be retained while the complaint is active and for a reasonable period after closure for audit, communication, or service quality purposes.",
     ],
   },
   {
     title: "Account Deletion",
     body: [
       "Users may request account deletion by contacting GramVartha at gramvartha@gmail.com. Please include the registered phone number, village information, and any details needed to identify the account.",
-      "After verifying the request, we will delete or anonymize personal information unless retention is required for legal, safety, dispute resolution, official record, fraud prevention, or governance purposes.",
+      "After verifying the request, we will delete or anonymize personal information unless retention is required for legal, safety, dispute resolution, record keeping, fraud prevention, or platform service purposes.",
     ],
   },
   {
     title: "Children's Privacy",
     body: [
-      "GramVartha is intended for village governance and public service access. It is not directed to children under 13 years of age. We do not knowingly collect personal information from children under 13.",
+      "GramVartha is intended for village communication and public information access. It is not directed to children under 13 years of age. We do not knowingly collect personal information from children under 13.",
       "If a parent or guardian believes that a child has provided personal information, they may contact us and we will take reasonable steps to delete the information where appropriate.",
     ],
   },
@@ -93,6 +93,15 @@ const sections = [
       "We may update this Privacy Policy from time to time to reflect changes in our services, legal requirements, or operational practices. The latest version will be posted on this page with an updated Last Updated date.",
     ],
   },
+  {
+    title: "Information Sources",
+    body: [
+      "Some information available through GramVartha, including scheme information and service guidance, may be sourced from publicly available government portals or provided by participating Gram Panchayats.",
+      "Where applicable, users should refer to the original government website for the latest information. GramVartha does not modify official government policies, eligibility criteria, or application procedures.",
+      "Source: MyScheme – Government of India",
+      "https://www.myscheme.gov.in",
+    ],
+  },
 ];
 
 const summaryItems = [
@@ -101,7 +110,7 @@ const summaryItems = [
   "Upload complaint photos",
   "Attach location to complaints when selected",
   "Receive push notifications",
-  "Access government schemes, work guides, and village services",
+  "Access scheme information, work guides, and village services",
 ];
 
 const setMetaTag = (name, content) => {
@@ -119,7 +128,7 @@ export default function PrivacyPolicy() {
     document.title = "Privacy Policy | GramVartha";
     setMetaTag(
       "description",
-      "Privacy Policy for GramVartha, a village governance platform for notices, complaints, suggestions, photos, optional location, notifications, schemes, work guides, and village services."
+      "Privacy Policy for GramVartha, an independent village communication platform for notices, complaints, suggestions, photos, optional location, notifications, scheme information, work guides, and village services."
     );
     setMetaTag("robots", "index, follow");
   }, []);
@@ -147,7 +156,7 @@ export default function PrivacyPolicy() {
                 Privacy Policy
               </h1>
               <p className="mt-5 text-base sm:text-lg text-text-secondary dark:text-dark-text-secondary leading-relaxed">
-                This Privacy Policy explains how GramVartha collects, uses, shares, retains, and protects information when citizens and officials use our village governance platform.
+                This Privacy Policy explains how GramVartha collects, uses, shares, retains, and protects information when citizens and officials use our independent village communication platform.
               </p>
               <p className="mt-5 inline-flex items-center rounded-full border border-primary-200 dark:border-dark-border bg-white/80 dark:bg-dark-surface/80 px-4 py-2 text-sm font-medium text-text-secondary dark:text-dark-text-secondary">
                 Last Updated: {lastUpdated}
@@ -165,7 +174,7 @@ export default function PrivacyPolicy() {
                     About GramVartha
                   </h2>
                   <p className="mt-4 text-sm sm:text-base text-text-secondary dark:text-dark-text-secondary leading-relaxed">
-                    GramVartha is a village governance platform that helps citizens view village notices, file complaints and suggestions, upload complaint photos, attach location while filing complaints, receive push notifications, and access government scheme information, work guides, and village services.
+                    GramVartha is an independent communication platform. It is not affiliated with, endorsed by, authorized by, or representing any government entity. Participating Gram Panchayats use the platform to communicate with citizens about village notices, complaints and suggestions, complaint photos, optional complaint location, push notifications, scheme information, work guides, and village services.
                   </p>
                   <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {summaryItems.map((item) => (
@@ -247,7 +256,7 @@ export default function PrivacyPolicy() {
                     Policy Summary
                   </h2>
                   <ul className="mt-4 space-y-3 text-sm text-text-secondary dark:text-dark-text-secondary">
-                    <li>Data is used to operate village governance services.</li>
+                    <li>Data is used to operate village communication services.</li>
                     <li>Location is collected only when attached to a complaint.</li>
                     <li>Photos are used as complaint evidence when uploaded.</li>
                     <li>Personal information is not sold.</li>
