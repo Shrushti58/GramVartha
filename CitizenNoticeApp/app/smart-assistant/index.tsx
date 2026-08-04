@@ -329,17 +329,19 @@ export default function SmartAssistantScreen() {
 
   const renderSourceBanner = () => (
     <View style={themedStyles.sourceBanner}>
-      <View style={themedStyles.sourceBannerIcon}>
-        <Ionicons name="information-circle-outline" size={20} color={colors.primary[500]} />
-      </View>
-      <View style={themedStyles.sourceBannerCopy}>
-        <Text style={themedStyles.sourceBannerText}>Government scheme source: myScheme - Government of India</Text>
-        <Text style={themedStyles.sourceBannerLink}>Official website: {OFFICIAL_SOURCE_URL}</Text>
-        <Text style={themedStyles.sourceBannerNote}>GramVartha is not a government app.</Text>
+      <View style={themedStyles.sourceBannerTop}>
+        <View style={themedStyles.sourceBannerIcon}>
+          <Ionicons name="shield-checkmark-outline" size={20} color={colors.primary[500]} />
+        </View>
+        <View style={themedStyles.sourceBannerCopy}>
+          <Text style={themedStyles.sourceBannerText}>{t("assistant.source_title")}</Text>
+          <Text style={themedStyles.sourceBannerLink}>{t("assistant.source_name")}</Text>
+          <Text style={themedStyles.sourceBannerNote}>{t("assistant.source_disclaimer")}</Text>
+        </View>
       </View>
       <Pressable style={themedStyles.sourceBannerButton} onPress={openOfficialSource}>
         <Ionicons name="open-outline" size={18} color="#fff" />
-        <Text style={themedStyles.sourceBannerButtonText}>Open Official Source</Text>
+        <Text style={themedStyles.sourceBannerButtonText}>{t("assistant.open_official_source")}</Text>
       </Pressable>
     </View>
   );
@@ -400,6 +402,8 @@ export default function SmartAssistantScreen() {
           </Pressable>
         ))}
       </View>
+
+      {renderSourceBanner()}
     </View>
   );
 
@@ -466,15 +470,16 @@ export default function SmartAssistantScreen() {
         </View>
       )}
 
+      {!!(response.schemeSources?.length || response.sourceInfo || response.disclaimer) && (
       <View style={themedStyles.sourceInfoBox}>
-        <Text style={themedStyles.sourceInfoTitle}>Source Information</Text>
+        <Text style={themedStyles.sourceInfoTitle}>{t("assistant.source_information")}</Text>
         {(response.schemeSources?.length ? response.schemeSources : response.sourceInfo ? [response.sourceInfo] : []).map((source, index) => (
           <View key={`${source.sourceName}-${source.schemeTitle || index}`} style={themedStyles.sourceInfoItem}>
             {!!source.schemeTitle && <Text style={themedStyles.sourceInfoScheme}>{source.schemeTitle}</Text>}
-            <Text style={themedStyles.sourceInfoText}>Source: {source.sourceName}</Text>
+            <Text style={themedStyles.sourceInfoText}>{t("assistant.source_label", { source: source.sourceName })}</Text>
             {!!source.sourceUrl && (
               <Pressable onPress={() => Linking.openURL(source.sourceUrl || OFFICIAL_SOURCE_URL)}>
-                <Text style={themedStyles.sourceInfoUrl}>Official source: {source.sourceUrl}</Text>
+                <Text style={themedStyles.sourceInfoUrl}>{t("assistant.official_source_label", { source: source.sourceUrl })}</Text>
               </Pressable>
             )}
             <Text style={themedStyles.sourceInfoDisclaimer}>{source.disclaimer}</Text>
@@ -482,6 +487,7 @@ export default function SmartAssistantScreen() {
         ))}
         {!!response.disclaimer && <Text style={themedStyles.sourceInfoDisclaimer}>{response.disclaimer}</Text>}
       </View>
+      )}
     </View>
   );
 
@@ -517,8 +523,6 @@ export default function SmartAssistantScreen() {
             <Ionicons name="information-circle-outline" size={22} color={colors.text.primary} />
           </Pressable>
         </View>
-
-        {renderSourceBanner()}
 
         {messages.length === 0 ? (
           <ScrollView
@@ -610,15 +614,15 @@ const createStyles = (colors: any, isDark: boolean) =>
       marginTop: 2,
     },
     sourceBanner: {
-      flexDirection: "row",
-      alignItems: "center",
       gap: 10,
-      paddingHorizontal: 14,
-      paddingVertical: 10,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderBottomColor: colors.border,
+      marginTop: 22,
+      padding: 14,
+      borderRadius: 16,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.border,
       backgroundColor: isDark ? colors.background : colors.primary[50],
     },
+    sourceBannerTop: { flexDirection: "row", alignItems: "flex-start", gap: 10 },
     sourceBannerIcon: {
       width: 34,
       height: 34,
@@ -656,6 +660,7 @@ const createStyles = (colors: any, isDark: boolean) =>
       paddingVertical: 9,
       borderRadius: 18,
       justifyContent: "center",
+      alignSelf: "flex-start",
       backgroundColor: colors.primary[500],
     },
     sourceBannerButtonText: {

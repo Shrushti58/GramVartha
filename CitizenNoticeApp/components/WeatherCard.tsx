@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../context/ThemeContext";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { apiService } from "../services/api";
 import { parseJsonObject } from "../utils/safeJson";
@@ -22,34 +22,35 @@ export default function WeatherCard() {
   const [loading, setLoading] = useState(true);
   const [weather, setWeather] = useState<any>(null);
   const [village, setVillage] = useState<any>(null);
+  const [hasScannedVillage, setHasScannedVillage] = useState(false);
 
-  useEffect(() => {
-    loadWeatherAdvice();
-  }, []);
-
-  const loadWeatherAdvice = async () => {
+  const loadWeatherAdvice = useCallback(async () => {
     try {
       setLoading(true);
 
       const storedVillage = await AsyncStorage.getItem("scannedVillage");
 
       if (!storedVillage) {
-        setWeather(null);
-        setLoading(false);
-        return;
-      }
-
-      const parsedVillage = parseJsonObject(storedVillage);
-      if (!parsedVillage) {
+        setHasScannedVillage(false);
         setVillage(null);
         setWeather(null);
         return;
       }
 
+      const parsedVillage = parseJsonObject(storedVillage);
+      if (!parsedVillage) {
+        setHasScannedVillage(false);
+        setVillage(null);
+        setWeather(null);
+        return;
+      }
+
+      setHasScannedVillage(true);
       setVillage(parsedVillage);
 
       const villageId = parsedVillage.villageId || parsedVillage._id;
       if (!villageId) {
+        setHasScannedVillage(false);
         setWeather(null);
         return;
       }
@@ -67,7 +68,15 @@ export default function WeatherCard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // The scanner writes the village while this card is offscreen. Reload when
+  // the home screen regains focus so the weather stays in sync.
+  useFocusEffect(
+    useCallback(() => {
+      void loadWeatherAdvice();
+    }, [loadWeatherAdvice])
+  );
 
   const getTranslatedStatLabel = (label: string): string => {
     const labelMap: Record<string, string> = {
@@ -181,15 +190,22 @@ export default function WeatherCard() {
           },
         ]}
       >
-        <Text style={[styles.noDataText, { color: colors.text.muted }]}>
-          {t("weather.card.data_not_available")}
+        <Text style={[styles.title, { color: colors.text.primary }]}>
+          {t("weather.card.todays_weather")}
         </Text>
-        <TouchableOpacity 
-          onPress={loadWeatherAdvice}
+        <Text style={[styles.noDataText, { color: colors.text.muted }]}>
+          {hasScannedVillage
+            ? t("weather.card.data_not_available")
+            : t("weather.advisory.scan_village_first")}
+        </Text>
+        <TouchableOpacity
+          onPress={hasScannedVillage
+            ? loadWeatherAdvice
+            : () => router.push("/qr-scanner" as any)}
           style={[styles.retryButton, { backgroundColor: colors.primary[500] }]}
         >
           <Text style={styles.retryButtonText}>
-            {t("common.retry")}
+            {hasScannedVillage ? t("common.retry") : t("home.scan_first")}
           </Text>
         </TouchableOpacity>
       </View>

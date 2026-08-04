@@ -1,7 +1,6 @@
 const Scheme = require("../models/Scheme");
 const Village = require("../models/Village");
 const VillageScheme = require("../models/VillageScheme");
-const SchemeRequest = require("../models/SchemeRequest");
 const {
   GOVERNMENT_SOURCE_URL,
   VILLAGE_SOURCE_NAME,
@@ -164,9 +163,8 @@ const findEditableVillageScheme = async (schemeId, villageId) => {
   return scheme;
 };
 
-const mergeVillageOverrides = (schemes, overrides = [], requests = []) => {
+const mergeVillageOverrides = (schemes, overrides = []) => {
   const overrideMap = {};
-  const requestMap = {};
 
   overrides.forEach((o) => {
     if (o.schemeId) {
@@ -174,15 +172,8 @@ const mergeVillageOverrides = (schemes, overrides = [], requests = []) => {
     }
   });
 
-  requests.forEach((r) => {
-    if (r.schemeId) {
-      requestMap[r.schemeId.toString()] = r;
-    }
-  });
-
   return schemes.map((scheme) => {
     const override = overrideMap[scheme._id.toString()];
-    const request = requestMap[scheme._id.toString()];
 
     return normalizeSchemeSourceFields({
       ...scheme,
@@ -193,7 +184,6 @@ const mergeVillageOverrides = (schemes, overrides = [], requests = []) => {
         scheme.shortDescription ||
         scheme.description?.slice(0, 160),
       amount: override?.customAmount ?? scheme.amount,
-      requestStatus: request ? "pending" : "none",
       isCustom: !!override,
     });
   });
@@ -377,20 +367,12 @@ const getSchemesForOfficial = async (req, res) => {
 
     const schemeIds = baseSchemes.map((s) => s._id);
 
-    const [overrides, requests] = await Promise.all([
-      VillageScheme.find({
-        villageId,
-        schemeId: { $in: schemeIds },
-      }).lean(),
+    const overrides = await VillageScheme.find({
+      villageId,
+      schemeId: { $in: schemeIds },
+    }).lean();
 
-      SchemeRequest.find({
-        villageId,
-        status: "pending",
-        schemeId: { $in: schemeIds },
-      }).lean(),
-    ]);
-
-    const merged = mergeVillageOverrides(baseSchemes, overrides, requests);
+    const merged = mergeVillageOverrides(baseSchemes, overrides);
 
     return res.json({
       success: true,

@@ -1,5 +1,5 @@
 // app/index.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,9 @@ import {
   ScrollView,
   Alert,
   Modal,
-  Linking,
   RefreshControl, // Added this import
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isLoggedIn } from "../utils/auth";
 import { useTheme } from '../context/ThemeContext';
@@ -31,7 +30,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { parseJsonArray, parseJsonObject } from '../utils/safeJson';
 
 const { width, height } = Dimensions.get('window');
-const MYSCHEME_URL = 'https://www.myscheme.gov.in';
 
 interface ScannedVillage {
   villageId: string;
@@ -91,53 +89,51 @@ const InfoModal = ({ visible, onClose, colors }: any) => {
   const { t } = useTranslation();
   const sections = [
     {
-      title: t('common.modal.scan_access_section'),
+      title: t('home.scan_access'),
       icon: 'qr-code-outline', color: colors.primary[500],
       items: [
         t('common.modal.scan_access_item_1'),
         t('common.modal.scan_access_item_2'),
-        t('common.modal.scan_access_item_3'),
-        t('common.modal.scan_access_item_4'),
       ],
     },
     {
-      title: t('common.modal.find_officials_section'),
-      icon: 'people-outline', color: colors.accent.green,
-      items: [
-        t('common.modal.find_officials_item_1'),
-        t('common.modal.find_officials_item_2'),
-        t('common.modal.find_officials_item_3'),
-        t('common.modal.find_officials_item_4'),
-      ],
-    },
-    {
-      title: t('common.modal.report_complaints_section'),
-      icon: 'alert-circle-outline', color: colors.accent.green,
-      items: [
-        t('common.modal.report_complaints_item_1'),
-        t('common.modal.report_complaints_item_2'),
-        t('common.modal.report_complaints_item_3'),
-        t('common.modal.report_complaints_item_4'),
-      ],
-    },
-    {
-      title: t('common.modal.village_notices_section'),
+      title: t('home.notices'),
       icon: 'document-text-outline', color: colors.primary[500],
       items: [
         t('common.modal.village_notices_item_1'),
         t('common.modal.village_notices_item_2'),
-        t('common.modal.village_notices_item_3'),
-        t('common.modal.village_notices_item_4'),
       ],
     },
     {
-      title: t('common.modal.work_guide_section'),
+      title: t('home.complaints'),
+      icon: 'alert-circle-outline', color: colors.accent.green,
+      items: [
+        t('common.modal.report_complaints_item_1'),
+        t('common.modal.report_complaints_item_2'),
+      ],
+    },
+    {
+      title: t('home.scheme_assistance'),
+      icon: 'ribbon-outline', color: '#8B5CF6',
+      items: [
+        t('common.modal.scheme_assistant_item_1'),
+        t('common.modal.scheme_assistant_item_2'),
+      ],
+    },
+    {
+      title: t('weather.card.todays_weather'),
+      icon: 'partly-sunny-outline', color: '#F59E0B',
+      items: [
+        t('common.modal.weather_item_1'),
+        t('common.modal.weather_item_2'),
+      ],
+    },
+    {
+      title: t('home.work_guide'),
       icon: 'book-outline', color: colors.primary[400],
       items: [
         t('common.modal.work_guide_item_1'),
         t('common.modal.work_guide_item_2'),
-        t('common.modal.work_guide_item_3'),
-        t('common.modal.work_guide_item_4'),
       ],
     },
   ];
@@ -151,7 +147,7 @@ const InfoModal = ({ visible, onClose, colors }: any) => {
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
             style={styles.modalHeader}
           >
-            <Text style={styles.modalTitle}>{t('common.modal.how_app_works')}</Text>
+            <Text style={styles.modalTitle}>{t('common.modal.app_features')}</Text>
             <TouchableOpacity onPress={onClose} style={styles.modalClose}>
               <Ionicons name="close" size={24} color="#fff" />
             </TouchableOpacity>
@@ -571,6 +567,28 @@ export default function HomeScreen() {
   const contentOpacity = useRef(new Animated.Value(0)).current;
   const contentSlide   = useRef(new Animated.Value(24)).current;
 
+  const loadRecentVillages = useCallback(async () => {
+    setIsDataLoading(true);
+    try {
+      const stored = await AsyncStorage.getItem('recentVillages');
+      setRecentVillages(parseJsonArray<ScannedVillage>(stored).slice(0, 5));
+    } catch (e) { console.error(e); }
+    finally { setIsDataLoading(false); }
+  }, []);
+
+  const showScanFeedback = useCallback(async () => {
+    const feedback = parseJsonObject<{ status?: string; villageName?: string }>(
+      await AsyncStorage.getItem('scanFeedback')
+    );
+    if (!feedback || feedback.status !== 'success') return;
+
+    await AsyncStorage.removeItem('scanFeedback');
+    Alert.alert(
+      t('qrScanner.village_found'),
+      t('qrScanner.village_found_message', { villageName: feedback.villageName })
+    );
+  }, [t]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       Animated.parallel([
@@ -583,18 +601,16 @@ export default function HomeScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    if (!isLoading) loadRecentVillages();
-  }, [isLoading]);
-
-  const loadRecentVillages = async () => {
-    setIsDataLoading(true);
-    try {
-      const stored = await AsyncStorage.getItem('recentVillages');
-      setRecentVillages(parseJsonArray<ScannedVillage>(stored).slice(0, 5));
-    } catch (e) { console.error(e); }
-    finally { setIsDataLoading(false); }
-  };
+  // The QR scanner updates AsyncStorage while this screen is offscreen. Reload
+  // whenever the user returns so a newly scanned village appears immediately.
+  useFocusEffect(
+    useCallback(() => {
+      if (!isLoading) {
+        void loadRecentVillages();
+        void showScanFeedback();
+      }
+    }, [isLoading, loadRecentVillages, showScanFeedback])
+  );
 
   // Pull-to-refresh handler
   const onRefresh = async () => {
@@ -733,7 +749,12 @@ export default function HomeScreen() {
 
           {/* Compact actions row: info + 72px lang pill + theme */}
           <View style={styles.headerActions}>
-            <TouchableOpacity onPress={() => setShowInfoModal(true)} style={styles.infoButton}>
+            <TouchableOpacity
+              onPress={() => setShowInfoModal(true)}
+              style={styles.infoButton}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.modal.app_features')}
+            >
               <Ionicons name="information-circle-outline" size={24} color={colors.text.secondary} />
             </TouchableOpacity>
             <LanguageSwitcher />
@@ -782,80 +803,30 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Feature Cards */}
+          </View>
+          <View style={styles.section}>
+            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('home.main_features')}</Text>
             <View style={styles.featureGrid}>
               {[
-                {
-                  icon: 'people-outline', color: colors.primary[500], bg: `${colors.primary[500]}15`,
-                  titleKey: 'home.find_right_official', descKey: 'home.search_official_desc',
-                  onPress: () => router.push('/qr-notices/workguide' as any),
-                },
-                {
-                  icon: 'alert-circle-outline', color: colors.accent.green, bg: `${colors.accent.green}15`,
-                  titleKey: 'home.track_complaints', descKey: 'home.tracking_note',
-                  onPress: handleCreateComplaint,
-                },
-                {
-                  icon: 'book-outline', color: colors.primary[500], bg: `${colors.primary[500]}15`,
-                  titleKey: 'home.work_guide', descKey: 'home.work_guide_desc',
-                  onPress: () => router.push('/qr-notices/workguide' as any),
-                },
-              ].map((f, i) => (
-                <TouchableOpacity
-                  key={i}
-                  style={[styles.featureCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                  onPress={f.onPress}
-                >
-                  <View style={[styles.featureIcon, { backgroundColor: f.bg }]}>
-                    <Ionicons name={f.icon as any} size={24} color={f.color} />
+                { icon: 'document-text-outline', titleKey: 'home.notices', descKey: 'home.notices_desc', color: colors.primary[500], onPress: () => recentVillages.length ? router.push(`/qr-notices/${recentVillages[0].villageId}` as any) : router.push('/qr-scanner' as any) },
+                { icon: 'alert-circle-outline', titleKey: 'home.complaints', descKey: 'home.complaints_desc', color: colors.accent.green, onPress: handleCreateComplaint },
+                { icon: 'ribbon-outline', titleKey: 'home.scheme_assistance', descKey: 'home.scheme_assistance_desc', color: '#8B5CF6', onPress: () => router.push('/smart-assistant' as any) },
+                { icon: 'book-outline', titleKey: 'home.work_guide', descKey: 'home.work_guide_desc', color: '#F59E0B', onPress: () => router.push('/qr-notices/workguide' as any) },
+              ].map((feature) => (
+                <TouchableOpacity key={feature.titleKey} style={[styles.featureCard, { backgroundColor: colors.surface, borderColor: colors.border }]} onPress={feature.onPress} activeOpacity={0.78}>
+                  <View style={styles.featureCardTop}>
+                    <View style={[styles.featureIcon, { backgroundColor: `${feature.color}18` }]}>
+                      <Ionicons name={feature.icon as any} size={23} color={feature.color} />
+                    </View>
+                    <Ionicons name="arrow-forward" size={17} color={colors.text.muted} />
                   </View>
-                  <Text style={[styles.featureTitle, { color: colors.text.primary }]}>{t(f.titleKey)}</Text>
-                  <Text style={[styles.featureDesc,  { color: colors.text.muted }]}>{t(f.descKey)}</Text>
+                  <Text style={[styles.featureTitle, { color: colors.text.primary }]}>{t(feature.titleKey)}</Text>
+                  <Text style={[styles.featureDesc, { color: colors.text.muted }]}>{t(feature.descKey)}</Text>
                 </TouchableOpacity>
-              ))}
-            </View>
-
-            <TouchableOpacity
-              style={[styles.secondaryButton, { borderColor: colors.primary[500], backgroundColor: `${colors.primary[500]}10` }]}
-              onPress={handleCreateComplaint} activeOpacity={0.8}
-            >
-              <Ionicons name="alert-circle-outline" size={16} color={colors.primary[700]} style={{ marginRight: 6 }} />
-              <Text style={[styles.secondaryButtonText, { color: colors.primary[700] }]}>{t('home.raise_issue')}</Text>
-            </TouchableOpacity>
-
-            <View style={styles.pillRow}>
-              {[
-                { icon: 'checkmark-circle', label: t('common.no_login') },
-                { icon: 'flash',            label: t('common.instant_access') },
-                { icon: 'infinite',         label: t('common.free_forever') },
-              ].map(p => (
-                <View key={p.label} style={[styles.pill, { backgroundColor: `${colors.primary[500]}12` }]}>
-                  <Ionicons name={p.icon as any} size={12} color={colors.primary[500]} />
-                  <Text style={[styles.pillText, { color: colors.primary[700] }]}>{p.label}</Text>
-                </View>
               ))}
             </View>
           </View>
           <WeatherCard />
-
-          <View style={styles.section}>
-            <TouchableOpacity
-              style={[styles.smartAssistantCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              onPress={() => router.push('/smart-assistant' as any)}
-              activeOpacity={0.78}
-            >
-              <View style={[styles.smartAssistantIcon, { backgroundColor: `${colors.primary[500]}15` }]}>
-                <Ionicons name="ribbon-outline" size={24} color={colors.primary[500]} />
-              </View>
-              <View style={styles.smartAssistantBody}>
-                <Text style={[styles.smartAssistantTitle, { color: colors.text.primary }]}>{t('home.scheme_assistance')}</Text>
-                <Text style={[styles.smartAssistantDesc, { color: colors.text.muted }]}>
-                  {t('home.scheme_assistance_desc')}
-                </Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
-            </TouchableOpacity>
-          </View>
 
           {/* Recent Villages */}
           {!isDataLoading && recentVillages.length > 0 && (
@@ -886,162 +857,29 @@ export default function HomeScreen() {
             </View>
           )}
 
-          {/* How It Works */}
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('home.how_it_works')}</Text>
-            <ThemedCard variant="elevated" style={styles.stepsCard}>
-              {[
-                { n:'1', label: t('home.find_qr'),       sub: t('home.find_qr_sub'),       icon: 'qr-code-outline',       details: t('home.find_qr_detail') },
-                { n:'2', label: t('home.scan_access'),   sub: t('home.scan_access_sub'),   icon: 'camera-outline',        details: t('home.scan_access_detail') },
-                { n:'3', label: t('home.stay_informed'), sub: t('home.stay_informed_sub'), icon: 'notifications-outline', details: t('home.stay_informed_detail') },
-              ].map((step, i, arr) => (
-                <View key={step.n}>
-                  <View style={styles.stepRow}>
-                    <LinearGradient colors={[colors.primary[500], colors.primary[700]]} style={styles.stepBadge} start={{x:0,y:0}} end={{x:1,y:1}}>
-                      <Text style={styles.stepBadgeText}>{step.n}</Text>
-                    </LinearGradient>
-                    <View style={styles.stepBody}>
-                      <Text style={[styles.stepLabel,  { color: colors.text.primary }]}>{step.label}</Text>
-                      <Text style={[styles.stepSub,    { color: colors.text.secondary }]}>{step.sub}</Text>
-                      <Text style={[styles.stepDetail, { color: colors.text.muted }]}>{step.details}</Text>
-                    </View>
-                    <Ionicons name={step.icon as any} size={20} color={colors.text.muted} />
-                  </View>
-                  {i < arr.length - 1 && <View style={[styles.stepConnector, { backgroundColor: colors.border }]} />}
-                </View>
-              ))}
-            </ThemedCard>
-          </View>
-
-          {/* Find Officials */}
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('home.find_right_official')}</Text>
-            <ThemedCard variant="elevated" style={styles.servicesCard}>
-              {[
-                { icon: 'person-outline',        title: t('home.search_official'), desc: t('home.search_official_desc') },
-                { icon: 'time-outline',          title: t('home.office_hours'),    desc: t('home.office_hours_desc') },
-                { icon: 'document-text-outline', title: t('home.required_docs'),   desc: t('home.required_docs_desc') },
-              ].map((item, i, arr) => (
-                <View key={item.title}>
-                  <View style={styles.serviceItem}>
-                    <Ionicons name={item.icon as any} size={20} color={colors.primary[500]} />
-                    <View style={styles.serviceContent}>
-                      <Text style={[styles.serviceTitle, { color: colors.text.primary }]}>{item.title}</Text>
-                      <Text style={[styles.serviceDesc,  { color: colors.text.muted }]}>{item.desc}</Text>
-                    </View>
-                  </View>
-                  {i < arr.length - 1 && <View style={[styles.serviceDivider, { backgroundColor: colors.border }]} />}
-                </View>
-              ))}
-            </ThemedCard>
-          </View>
-
-          {/* Complaint Tracking */}
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('home.track_complaints')}</Text>
-            <ThemedCard variant="elevated" style={styles.trackingCard}>
-              <View style={styles.trackingStatus}>
-                {[
-                  { dot: colors.status.pending,    label: t('home.pending') },
-                  { dot: colors.status.inProgress, label: t('home.in_progress') },
-                  { dot: colors.status.completed,  label: t('home.resolved') },
-                ].map((s, i, arr) => (
-                  <React.Fragment key={s.label}>
-                    <View style={styles.statusStep}>
-                      <View style={[styles.statusDot, { backgroundColor: s.dot }]} />
-                      <Text style={[styles.statusText, { color: colors.text.secondary }]}>{s.label}</Text>
-                    </View>
-                    {i < arr.length - 1 && <View style={[styles.statusLine, { backgroundColor: colors.border }]} />}
-                  </React.Fragment>
-                ))}
-              </View>
-              <Text style={[styles.trackingNote, { color: colors.text.muted }]}>{t('home.tracking_note')}</Text>
-            </ThemedCard>
-          </View>
-
-          {/* View Complaints */}
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.text.primary }]}>{t('home.view_complaints')}</Text>
-            <View style={styles.complaintsQuickAccess}>
-              <TouchableOpacity
-                style={[styles.quickAccessButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                onPress={() => {
-                  if (!recentVillages.length) { Alert.alert(t('home.no_village'), t('home.scan_village_complaints')); return; }
-                  router.push(`/complaints/all-complaints?villageId=${recentVillages[0].villageId}` as any);
-                }}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.accent.green}15` }]}>
-                  <Ionicons name="list-outline" size={24} color={colors.accent.green} />
-                </View>
-                <View style={styles.quickAccessContent}>
-                  <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>{t('home.all_village_issues')}</Text>
-                  <Text style={[styles.quickAccessDesc,  { color: colors.text.muted }]}>{t('home.all_village_issues_desc')}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.quickAccessButton, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                onPress={() => router.push('/complaints/my-complaints' as any)}
-                activeOpacity={0.7}
-              >
-                <View style={[styles.quickAccessIcon, { backgroundColor: `${colors.primary[500]}15` }]}>
-                  <Ionicons name="checkmark-done-outline" size={24} color={colors.primary[500]} />
-                </View>
-                <View style={styles.quickAccessContent}>
-                  <Text style={[styles.quickAccessTitle, { color: colors.text.primary }]}>{t('home.my_complaints')}</Text>
-                  <Text style={[styles.quickAccessDesc,  { color: colors.text.muted }]}>{t('home.my_complaints_desc')}</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={20} color={colors.text.secondary} />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Sources & Disclaimer */}
+          {/* About GramVartha */}
           <View style={styles.section}>
             <ThemedCard variant="elevated" style={styles.sourcesDisclaimerCard}>
               <View style={styles.sourcesDisclaimerHeader}>
                 <View style={[styles.sourcesDisclaimerIcon, { backgroundColor: `${colors.primary[500]}15` }]}>
                   <Ionicons name="information-circle-outline" size={22} color={colors.primary[500]} />
                 </View>
-                <Text style={[styles.sourcesDisclaimerTitle, { color: colors.text.primary }]}>
-                  {t('home.sources_disclaimer.title')}
-                </Text>
+                <Text style={[styles.sourcesDisclaimerTitle, { color: colors.text.primary }]}>{t('home.about_gramvartha')}</Text>
               </View>
+              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.secondary }]}>{t('home.about_gramvartha_desc')}</Text>
+            </ThemedCard>
+          </View>
 
-              <Text style={[styles.sourcesDisclaimerLabel, { color: colors.text.primary }]}>
-                {t('home.sources_disclaimer.government_source_label')}
-              </Text>
-              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.secondary }]}>
-                {t('home.sources_disclaimer.government_source_name')}
-              </Text>
-              <TouchableOpacity
-                style={styles.sourcesDisclaimerLinkRow}
-                onPress={() => Linking.openURL(MYSCHEME_URL)}
-                activeOpacity={0.72}
-              >
-                <Ionicons name="open-outline" size={15} color={colors.primary[500]} />
-                <Text style={[styles.sourcesDisclaimerLink, { color: colors.primary[500] }]}>
-                  {MYSCHEME_URL}
-                </Text>
-              </TouchableOpacity>
-
-              <View style={[styles.sourcesDisclaimerDivider, { backgroundColor: colors.border }]} />
-
-              <Text style={[styles.sourcesDisclaimerLabel, { color: colors.text.primary }]}>
-                {t('home.sources_disclaimer.village_source_label')}
-              </Text>
-              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.secondary }]}>
-                {t('home.sources_disclaimer.village_source_text')}
-              </Text>
-
-              <Text style={[styles.sourcesDisclaimerLabel, { color: colors.text.primary }]}>
-                {t('home.sources_disclaimer.disclaimer_label')}
-              </Text>
-              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.muted }]}>
-                {t('home.sources_disclaimer.disclaimer_text')}
-              </Text>
+          {/* Disclaimer */}
+          <View style={styles.section}>
+            <ThemedCard variant="elevated" style={styles.sourcesDisclaimerCard}>
+              <View style={styles.sourcesDisclaimerHeader}>
+                <View style={[styles.sourcesDisclaimerIcon, { backgroundColor: `${colors.primary[500]}15` }]}>
+                  <Ionicons name="shield-checkmark-outline" size={22} color={colors.primary[500]} />
+                </View>
+                <Text style={[styles.sourcesDisclaimerTitle, { color: colors.text.primary }]}>{t('home.sources_disclaimer.disclaimer_label')}</Text>
+              </View>
+              <Text style={[styles.sourcesDisclaimerText, { color: colors.text.muted }]}>{t('home.sources_disclaimer.disclaimer_text')}</Text>
             </ThemedCard>
           </View>
 
@@ -1165,11 +1003,12 @@ const styles = StyleSheet.create({
   },
   ctaLabel: { fontSize: 13, fontWeight: '700', color: '#fff', letterSpacing: 0.2, textAlign: 'center' },
 
-  featureGrid:  { gap: 12, marginBottom: 16 },
-  featureCard:  { padding: 16, borderRadius: 16, borderWidth: 1 },
-  featureIcon:  { width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
-  featureTitle: { fontSize: 16, fontWeight: '700', marginBottom: 4 },
-  featureDesc:  { fontSize: 13, lineHeight: 18 },
+  featureGrid:    { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  featureCard:    { width: '48%', minHeight: 160, padding: 14, borderRadius: 18, borderWidth: 1 },
+  featureCardTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 },
+  featureIcon:    { width: 42, height: 42, borderRadius: 13, justifyContent: 'center', alignItems: 'center' },
+  featureTitle:   { fontSize: 15, fontWeight: '800', marginBottom: 5 },
+  featureDesc:    { fontSize: 12, lineHeight: 17 },
 
   secondaryButton: {
     marginTop: 16, alignSelf: 'center',

@@ -26,6 +26,8 @@ backend/*.pid.lock
 backend/dist/
 backend/build/
 
+docs
+
 
 # ======================
 # React (Frontend)

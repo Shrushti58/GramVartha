@@ -1,5 +1,4 @@
 const Notice = require("../models/Notice");
-const NoticeView = require("../models/NoticeView");
 const Citizen = require("../models/Citizens");
 const { notifyNewNotice } = require('../services/notificationService');
 
@@ -325,71 +324,6 @@ const deleteNotice = async (req, res) => {
   }
 };
 
-const trackNoticeView = async (req, res) => {
-  try {
-    const { visitorId } = req.body;
-    const noticeId = req.params.id;
-
-    // Validate if noticeId is a valid ObjectId
-    if (!noticeId || !noticeId.match(/^[0-9a-fA-F]{24}$/)) {
-      return res.status(400).json({
-        error: "Invalid notice ID format"
-      });
-    }
-
-    if (!visitorId) {
-      return res.status(400).json({ error: 'Visitor ID is required' });
-    }
-
-    const notice = await Notice.findById(noticeId);
-    if (!notice) {
-      return res.status(404).json({ error: 'Notice not found' });
-    }
-
-    const existingView = await NoticeView.findOne({
-      noticeId: noticeId,
-      visitorId: visitorId
-    });
-
-    if (existingView) {
-      return res.json({
-        success: true,
-        views: notice.views,
-        alreadyViewed: true
-      });
-    }
-    const noticeView = new NoticeView({
-      noticeId: noticeId,
-      visitorId: visitorId,
-      userAgent: req.get('User-Agent') || '',
-      ipAddress: req.ip || req.connection.remoteAddress
-    });
-
-    await noticeView.save();
-
-    notice.views += 1;
-    await notice.save();
-
-    res.json({
-      success: true,
-      views: notice.views,
-      firstView: true
-    });
-  } catch (error) {
-    console.error('Error tracking view:', error);
-    if (error.code === 11000) {
-      const notice = await Notice.findById(req.params.id);
-      return res.json({
-        success: true,
-        views: notice.views,
-        alreadyViewed: true
-      });
-    }
-
-    res.status(500).json({ error: 'Failed to track view' });
-  }
-};
-
 const getPopularNotices = async (req, res) => {
   try {
     const { limit = 10, category } = req.query;
@@ -510,7 +444,6 @@ module.exports = {
   fetchOfficialNotices,
   updateNotice,
   deleteNotice,
-  trackNoticeView,
   getPopularNotices,
   getNoticeById,
   getNoticesByVillage

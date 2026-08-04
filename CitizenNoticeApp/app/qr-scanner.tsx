@@ -225,26 +225,13 @@ export default function QRScannerScreen() {
 
       // Show success animation
       setShowSuccess(true);
-      setTimeout(() => {
+      setTimeout(async () => {
         setShowSuccess(false);
-        Alert.alert(
-          t('qrScanner.village_found'),
-          t('qrScanner.village_found_message', { villageName: villageData.name }),
-          [
-            {
-              text: t('qrScanner.view_notices'),
-              onPress: () => router.push(`qr-notices/${villageData._id}` as any),
-            },
-            {
-              text: t('qrScanner.scan_another'),
-              style: "cancel",
-              onPress: () => {
-                setScanned(false);
-                setLoading(false);
-              },
-            },
-          ]
+        await AsyncStorage.setItem(
+          'scanFeedback',
+          JSON.stringify({ status: 'success', villageName: villageData.name })
         );
+        router.back();
       }, 500);
       
     } catch (err: unknown) {

@@ -21,6 +21,5 @@ router.get("/popular", pagination, validateRequest, noticeController.getPopularN
 router.put("/update/:id", verifyToken, upload.single("file"), noticeValidators.update, validateRequest, noticeController.updateNotice);
 router.delete("/delete/:id", objectIdParam("id"), validateRequest, verifyToken, noticeController.deleteNotice);
 router.get("/:id", objectIdParam("id"), validateRequest, noticeController.getNoticeById);
-router.post("/:id/view", noticeValidators.trackView, validateRequest, noticeController.trackNoticeView);
 
 module.exports = router;
