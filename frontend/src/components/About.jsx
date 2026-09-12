@@ -1,131 +1,691 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
+import React, { useEffect, useRef, useState } from "react";
 
-const stats = [
-  { value: "10K+", labelKey: "active_readers" },
-  { value: "50+", labelKey: "villages_served" },
-  { value: "100%", labelKey: "free_access" },
-];
+const About = () => {
+  const sectionRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
 
-const features = [
-  "feature.no_login",
-  "feature.local_lang",
-  "feature.verified",
-];
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      {
+        threshold: 0.15,
+      }
+    );
 
-export default function About() {
-  const { t } = useTranslation();
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="about"
-      className="py-12 sm:py-16 md:py-20 lg:py-28 bg-white dark:bg-dark-background font-sans transition-colors duration-300"
+      className="
+        relative
+        -mt-[1px]
+        overflow-hidden
+        bg-[#fdf6f2]
+        px-5
+        pt-6
+        pb-24
+        sm:px-8
+        sm:pt-8
+        lg:px-12
+        lg:pt-10
+      "
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* =====================================================
+          BACKGROUND
+      ====================================================== */}
 
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-10 lg:gap-14 items-center">
+      {/* Top-left glow */}
+      <div
+        className={`pointer-events-none absolute -left-40 -top-40 h-[500px] w-[500px] rounded-full bg-primary-100/50 blur-[110px] transition-all duration-[1600ms] ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
-          {/* Left — Image */}
-          <div className="relative order-2 lg:order-1">
-            <div className="absolute -inset-3 sm:-inset-4 bg-accent-mist dark:bg-dark-surface rounded-3xl -z-10" />
+      {/* Right glow */}
+      <div
+        className={`pointer-events-none absolute -right-48 top-[25%] h-[500px] w-[500px] rounded-full bg-primary-50 blur-[120px] transition-all duration-[1800ms] ${
+          isVisible ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
-            <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-large dark:shadow-dark-large">
-              <img
-                src="/about.jpg"
-                alt="GramVartha in action"
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+      {/* Bottom glow */}
+      <div className="pointer-events-none absolute -bottom-60 left-1/2 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-primary-100/25 blur-[120px]" />
 
-              {/* Badge bottom left */}
-              <div className="absolute bottom-3 sm:bottom-5 left-3 sm:left-5 bg-white dark:bg-dark-surface rounded-lg sm:rounded-xl shadow-medium px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-                <div className="w-7 sm:w-9 h-7 sm:h-9 bg-primary-100 dark:bg-primary-900/60 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-4 sm:w-5 h-4 sm:h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs text-text-muted dark:text-dark-text-muted">{t('villages_served')}</p>
-                  <p className="text-xs sm:text-sm font-bold text-text-primary dark:text-dark-text-primary">50+ {t('villages_served')}</p>
-                </div>
-              </div>
+      {/* Subtle dots */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-[0.13]"
+        style={{
+          backgroundImage:
+            "radial-gradient(#c0613a 1px, transparent 1px)",
+          backgroundSize: "30px 30px",
+          maskImage:
+            "linear-gradient(to bottom, black, transparent 75%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black, transparent 75%)",
+        }}
+      />
 
-              {/* Badge top right */}
-              <div className="absolute top-3 sm:top-5 right-3 sm:right-5 bg-primary-800 dark:bg-primary-900 rounded-lg sm:rounded-xl px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
-                <div className="w-7 sm:w-9 h-7 sm:h-9 bg-primary-600/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg className="w-4 sm:w-5 h-4 sm:h-5 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-xs text-white/50">{t('active_readers')}</p>
-                  <p className="text-xs sm:text-sm font-bold text-white">10,000+</p>
-                </div>
-              </div>
-            </div>
+      {/* Decorative dots */}
+      <div className="pointer-events-none absolute left-[8%] top-[20%] h-3 w-3 rounded-full bg-primary-300/50" />
 
-            {/* Live bar */}
-            <div className="mt-3 sm:mt-4 bg-primary-800 dark:bg-primary-900 rounded-xl sm:rounded-2xl px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <span className="w-2 h-2 bg-primary-400 rounded-full animate-pulse" />
-                <p className="text-white text-xs sm:text-sm font-medium">{t('actively_serving')}</p>
-              </div>
-              <span className="text-primary-400 text-xs sm:text-sm font-semibold">Live</span>
-            </div>
+      <div className="pointer-events-none absolute left-[12%] top-[60%] h-2 w-2 rounded-full bg-primary-400/40" />
+
+      <div className="pointer-events-none absolute right-[10%] top-[18%] h-4 w-4 rounded-full border border-primary-300/50" />
+
+      <div className="pointer-events-none absolute right-[7%] bottom-[20%] h-3 w-3 rounded-full bg-primary-300/40" />
+
+      {/* =====================================================
+          MAIN CONTENT
+      ====================================================== */}
+
+      <div className="relative z-10 mx-auto max-w-6xl">
+
+        {/* =====================================================
+            INTRO
+        ====================================================== */}
+
+        <div className="mx-auto max-w-3xl text-center">
+
+          {/* Label */}
+          <div
+            className={`mb-5 transition-all duration-700 ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-5 opacity-0"
+            }`}
+          >
+            <span
+              className="
+                inline-flex
+                items-center
+                rounded-full
+                border
+                border-primary-200
+                bg-white/90
+                px-4
+                py-2
+                text-xs
+                font-semibold
+                uppercase
+                tracking-[0.18em]
+                text-primary-600
+                shadow-sm
+                backdrop-blur-sm
+              "
+            >
+              About GramVartha
+            </span>
           </div>
 
-          {/* Right — Content */}
-          <div className="space-y-6 sm:space-y-8 order-1 lg:order-2">
+          {/* Heading */}
+          <h2
+            className={`font-display text-4xl font-extrabold leading-tight tracking-tight text-text-primary transition-all duration-700 delay-100 sm:text-5xl lg:text-6xl ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-8 opacity-0"
+            }`}
+          >
+            Stay connected.
+            <br />
 
-            <div>
-              <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-3 sm:mb-4">
-                <span className="w-4 sm:w-6 h-px bg-primary-600 dark:bg-primary-400" />
-                {t('about_us')}
+            <span className="text-primary-500">
+              Stay informed.
+            </span>
+          </h2>
+
+          {/* Description */}
+          <p
+            className={`mx-auto mt-6 max-w-2xl text-sm leading-7 text-text-secondary transition-all duration-700 delay-200 sm:text-base ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-6 opacity-0"
+            }`}
+          >
+            GramVartha connects your Gram Panchayat with the people
+            of your village. Get important notices, discover
+            government schemes, and raise complaints — all in one
+            place.
+          </p>
+
+          {/* CTA */}
+          <div
+            className={`mt-8 transition-all duration-700 delay-300 ${
+              isVisible
+                ? "scale-100 opacity-100"
+                : "scale-90 opacity-0"
+            }`}
+          >
+            <a
+              href="#features"
+              className="
+                group
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                bg-primary-600
+                px-6
+                py-3
+                text-sm
+                font-semibold
+                text-white
+                shadow-lg
+                shadow-primary-600/20
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:bg-primary-700
+                hover:shadow-xl
+              "
+            >
+              Explore GramVartha
+
+              <span className="transition-transform duration-300 group-hover:translate-x-1">
+                →
               </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary dark:text-dark-text-primary leading-tight mt-2">
-                {t('governance_title')}
-              </h2>
-              <p className="mt-3 sm:mt-4 text-sm sm:text-base text-text-muted dark:text-dark-text-muted leading-relaxed">
-                {t('governance_desc')}
-              </p>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 py-4 sm:py-6 border-y border-border dark:border-dark-border">
-              {stats.map((s, i) => (
-                <div key={i}>
-                  <p className="text-xl sm:text-2xl md:text-3xl font-bold text-primary-600 dark:text-primary-400">{s.value}</p>
-                  <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">{t(s.labelKey)}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Checklist */}
-            <div className="space-y-2 sm:space-y-3">
-              {features.map((key, i) => (
-                <div key={i} className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-5 h-5 bg-primary-100 dark:bg-primary-900/60 rounded-full flex items-center justify-center flex-shrink-0">
-                    <svg className="w-3 h-3 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <p className="text-xs sm:text-sm text-text-secondary dark:text-dark-text-secondary">{t(key)}</p>
-                </div>
-              ))}
-            </div>
-
-            {/* Vision quote */}
-            <div className="bg-accent-mist dark:bg-dark-surface border border-border dark:border-dark-border rounded-xl sm:rounded-2xl px-4 sm:px-6 py-4 sm:py-5">
-              <p className="text-xs sm:text-sm font-medium text-text-secondary dark:text-dark-text-secondary italic">
-                "{t('vision.quote')}"
-              </p>
-              <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">{t('vision.author')}</p>
-            </div>
-
+            </a>
           </div>
         </div>
+
+        {/* =====================================================
+            WHAT YOU GET
+        ====================================================== */}
+
+        <div className="mt-20 sm:mt-24">
+
+          {/* Section heading */}
+          <div
+            className={`mb-10 transition-all duration-700 delay-300 ${
+              isVisible
+                ? "translate-y-0 opacity-100"
+                : "translate-y-6 opacity-0"
+            }`}
+          >
+            <p
+              className="
+                text-sm
+                font-semibold
+                uppercase
+                tracking-[0.16em]
+                text-primary-500
+              "
+            >
+              What you get here?
+            </p>
+
+            <div className="mt-3 h-1 w-12 rounded-full bg-primary-400" />
+          </div>
+
+          {/* =====================================================
+              CARDS
+          ====================================================== */}
+
+          <div className="grid gap-6 lg:grid-cols-2">
+
+            {/* ===================================================
+                PANCHAYAT CARD
+            ==================================================== */}
+
+            <div
+              className={`group relative min-h-[370px] overflow-hidden rounded-[2rem] border border-primary-200/70 bg-white/95 p-7 shadow-[0_20px_60px_rgba(138,60,36,0.07)] backdrop-blur-sm transition-all duration-700 hover:-translate-y-2 hover:shadow-[0_28px_70px_rgba(138,60,36,0.12)] sm:p-9 ${
+                isVisible
+                  ? "translate-x-0 opacity-100"
+                  : "-translate-x-20 opacity-0"
+              }`}
+            >
+              {/* Background blob */}
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  -bottom-20
+                  -right-20
+                  h-72
+                  w-72
+                  rounded-full
+                  bg-primary-50
+                  transition-transform
+                  duration-700
+                  group-hover:scale-105
+                "
+              />
+
+              {/* Inner glow */}
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  bottom-10
+                  right-14
+                  h-48
+                  w-48
+                  rounded-full
+                  bg-primary-100/40
+                  blur-2xl
+                "
+              />
+
+              <div className="relative z-10 flex h-full flex-col">
+
+                {/* Icon */}
+                <div
+                  className="
+                    flex
+                    h-12
+                    w-12
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-primary-50
+                    text-primary-600
+                    transition-all
+                    duration-500
+                    group-hover:-rotate-3
+                    group-hover:scale-105
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-6 w-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 21h18"
+                    />
+
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 21V8l7-4 7 4v13"
+                    />
+
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 21v-5h6v5"
+                    />
+                  </svg>
+                </div>
+
+                {/* Text */}
+                <div className="mt-7 max-w-[47%]">
+
+                  <h3
+                    className="
+                      text-2xl
+                      font-extrabold
+                      leading-tight
+                      tracking-tight
+                      text-text-primary
+                      sm:text-3xl
+                    "
+                  >
+                    For Your
+                    <br />
+                    Panchayat
+                  </h3>
+
+                  <div
+                    className="
+                      mt-3
+                      h-1
+                      w-11
+                      rounded-full
+                      bg-primary-400
+                      transition-all
+                      duration-500
+                      group-hover:w-16
+                    "
+                  />
+
+                  <p
+                    className="
+                      mt-5
+                      text-sm
+                      leading-7
+                      text-text-secondary
+                      sm:text-base
+                    "
+                  >
+                    Publish village notices, upload government
+                    schemes, and view complaints from villagers.
+                  </p>
+                </div>
+
+                {/* Panchayat Illustration */}
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    bottom-0
+                    right-[-15px]
+                    z-10
+                    w-[52%]
+                    max-w-[310px]
+                    sm:right-[-20px]
+                    sm:w-[52%]
+                    sm:max-w-[310px]
+                    lg:w-[52%]
+                    lg:max-w-[310px]
+                  "
+                >
+                  <img
+                    src="/illustrations/panchayat-removebg-preview.png"
+                    alt=""
+                    className="
+                      block
+                      w-full
+                      scale-110
+                      object-contain
+                      drop-shadow-sm
+                      transition-transform
+                      duration-700
+                      group-hover:-translate-y-2
+                      group-hover:scale-[1.16]
+                    "
+                  />
+                </div>
+
+                {/* Button */}
+                <div className="relative z-20 mt-auto pt-8">
+                  <a
+                    href="/panchayat"
+                    className="
+                      group/btn
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-full
+                      border
+                      border-primary-200
+                      bg-white
+                      px-5
+                      py-2.5
+                      text-sm
+                      font-semibold
+                      text-text-primary
+                      shadow-sm
+                      transition-all
+                      duration-300
+                      hover:-translate-y-0.5
+                      hover:border-primary-300
+                      hover:bg-primary-50
+                    "
+                  >
+                    Manage Village
+
+                    <span
+                      className="
+                        transition-transform
+                        duration-300
+                        group-hover/btn:translate-x-1
+                      "
+                    >
+                      →
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* ===================================================
+                VILLAGER CARD
+            ==================================================== */}
+
+            <div
+              className={`group relative min-h-[370px] overflow-hidden rounded-[2rem] border border-primary-200/70 bg-white/95 p-7 shadow-[0_20px_60px_rgba(138,60,36,0.07)] backdrop-blur-sm transition-all duration-700 delay-150 hover:-translate-y-2 hover:shadow-[0_28px_70px_rgba(138,60,36,0.12)] sm:p-9 ${
+                isVisible
+                  ? "translate-x-0 opacity-100"
+                  : "translate-x-20 opacity-0"
+              }`}
+            >
+              {/* Background blob */}
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  -bottom-20
+                  -right-20
+                  h-72
+                  w-72
+                  rounded-full
+                  bg-primary-50
+                  transition-transform
+                  duration-700
+                  group-hover:scale-105
+                "
+              />
+
+              {/* Inner glow */}
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  bottom-10
+                  right-14
+                  h-48
+                  w-48
+                  rounded-full
+                  bg-primary-100/40
+                  blur-2xl
+                "
+              />
+
+              <div className="relative z-10 flex h-full flex-col">
+
+                {/* Icon */}
+                <div
+                  className="
+                    flex
+                    h-12
+                    w-12
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-primary-50
+                    text-primary-600
+                    transition-all
+                    duration-500
+                    group-hover:rotate-3
+                    group-hover:scale-105
+                  "
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-6 w-6"
+                  >
+                    <rect
+                      x="5"
+                      y="2"
+                      width="14"
+                      height="20"
+                      rx="3"
+                    />
+
+                    <path
+                      strokeLinecap="round"
+                      d="M9 18h6"
+                    />
+
+                    <path
+                      strokeLinecap="round"
+                      d="M9 6h6"
+                    />
+                  </svg>
+                </div>
+
+                {/* Text */}
+                <div className="mt-7 max-w-[48%]">
+
+                  <h3
+                    className="
+                      text-2xl
+                      font-extrabold
+                      leading-tight
+                      tracking-tight
+                      text-text-primary
+                      sm:text-3xl
+                    "
+                  >
+                    For Villagers
+                  </h3>
+
+                  <div
+                    className="
+                      mt-3
+                      h-1
+                      w-11
+                      rounded-full
+                      bg-primary-400
+                      transition-all
+                      duration-500
+                      group-hover:w-16
+                    "
+                  />
+
+                  <p
+                    className="
+                      mt-5
+                      text-sm
+                      leading-7
+                      text-text-secondary
+                      sm:text-base
+                    "
+                  >
+                    Stay updated with notices and schemes, and raise
+                    complaints directly with your Gram Panchayat.
+                  </p>
+                </div>
+
+                {/* Village Illustration */}
+                <div
+                  className="
+                    pointer-events-none
+                    absolute
+                    bottom-5
+                    right-3
+                    z-10
+                    w-[39%]
+                    max-w-[225px]
+                    sm:right-5
+                    sm:w-[39%]
+                    sm:max-w-[235px]
+                  "
+                >
+                  <img
+                    src="/illustrations/village-removebg-preview.png"
+                    alt=""
+                    className="
+                      block
+                      w-full
+                      object-contain
+                      drop-shadow-sm
+                      transition-transform
+                      duration-700
+                      group-hover:-translate-y-2
+                      group-hover:scale-[1.03]
+                    "
+                  />
+                </div>
+
+                {/* Button */}
+                <div className="relative z-20 mt-auto pt-8">
+                  <a
+                    href="/village"
+                    className="
+                      group/btn
+                      inline-flex
+                      items-center
+                      gap-2
+                      rounded-full
+                      border
+                      border-primary-200
+                      bg-white
+                      px-5
+                      py-2.5
+                      text-sm
+                      font-semibold
+                      text-text-primary
+                      shadow-sm
+                      transition-all
+                      duration-300
+                      hover:-translate-y-0.5
+                      hover:border-primary-300
+                      hover:bg-primary-50
+                    "
+                  >
+                    Explore Village
+
+                    <span
+                      className="
+                        transition-transform
+                        duration-300
+                        group-hover/btn:translate-x-1
+                      "
+                    >
+                      →
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* =====================================================
+            BOTTOM STATEMENT
+        ====================================================== */}
+
+        <div
+          className={`mt-20 text-center transition-all duration-700 delay-500 ${
+            isVisible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-6 opacity-0"
+          }`}
+        >
+          <p className="text-sm font-medium text-text-muted sm:text-base">
+            Simple information.
+
+            <span className="mx-2 text-primary-400">
+              •
+            </span>
+
+            Better communication.
+
+            <span className="mx-2 text-primary-400">
+              •
+            </span>
+
+            Stronger villages.
+          </p>
+        </div>
+
       </div>
     </section>
   );
-}
+};
+
+export default About;

@@ -1,164 +1,662 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 export default function Hero() {
-  const { dark } = useTheme();
   const { t } = useTranslation();
 
+  const scrollTo = (id) => {
+    const element = document.getElementById(id);
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  };
+
   return (
-    <section className="relative min-h-screen bg-accent-mist dark:bg-dark-background overflow-hidden flex items-center font-sans transition-colors duration-300">
+    <section
+      className="
+        relative
+        w-full
+        min-h-[100svh]
+        overflow-hidden
+        bg-primary-600
+        dark:bg-primary-800
+        font-sans
+      "
+    >
+      {/* =====================================================
+          BACKGROUND
+      ====================================================== */}
 
-      {/* Background image overlay */}
-      <div className="absolute inset-0">
-        <img
-          src="/smallgirls.jpg"
-          alt=""
-          className="w-full h-full object-cover opacity-10 dark:opacity-20"
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Top-right glow */}
+        <div
+          className="
+            absolute
+            -top-32
+            -right-32
+            h-[280px]
+            w-[280px]
+            sm:h-[380px]
+            sm:w-[380px]
+            lg:h-[450px]
+            lg:w-[450px]
+            rounded-full
+            bg-white/[0.06]
+            blur-3xl
+          "
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-accent-mist/98 via-accent-mist/90 to-accent-mist/60 dark:from-dark-background/98 dark:via-dark-background/85 dark:to-dark-background/50" />
+
+        {/* Phone area glow */}
+        <div
+          className="
+            absolute
+            right-[10%]
+            top-[30%]
+            h-[220px]
+            w-[220px]
+            sm:h-[300px]
+            sm:w-[300px]
+            lg:h-[360px]
+            lg:w-[360px]
+            rounded-full
+            bg-accent-lime/[0.06]
+            blur-3xl
+          "
+        />
+
+        {/* Background text */}
+        <div
+          className="
+            absolute
+            right-[-5%]
+            top-[8%]
+            select-none
+            whitespace-nowrap
+            text-[25vw]
+            sm:text-[18vw]
+            lg:text-[13vw]
+            font-black
+            uppercase
+            tracking-[-0.09em]
+            leading-none
+            text-white/[0.035]
+          "
+        >
+          GRAM
+        </div>
+
+        {/* Circle */}
+        <div
+          className="
+            absolute
+            right-[25%]
+            top-[28%]
+            h-20
+            w-20
+            sm:h-24
+            sm:w-24
+            lg:h-28
+            lg:w-28
+            rounded-full
+            border
+            border-white/[0.06]
+          "
+        />
+
+        {/* Dot */}
+        <div
+          className="
+            absolute
+            right-[8%]
+            bottom-[22%]
+            h-2.5
+            w-2.5
+            sm:h-3
+            sm:w-3
+            rounded-full
+            bg-accent-lime/40
+          "
+        />
       </div>
 
-      {/* Decorative blobs */}
-      <div className="absolute top-20 right-10 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-primary-200/30 dark:bg-primary-900/30 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 sm:bottom-20 sm:left-10 w-64 sm:w-72 h-64 sm:h-72 bg-accent-lime/10 dark:bg-accent-lime/5 rounded-full blur-3xl pointer-events-none" />
+      {/* =====================================================
+          MAIN CONTAINER
+      ====================================================== */}
 
-      {/* Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-16 sm:py-20 md:py-24 lg:py-28">
-        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-center">
+      <div
+        className="
+          relative
+          z-10
+          mx-auto
+          w-full
+          max-w-7xl
+          px-5
+          sm:px-8
+          md:px-10
+          lg:px-12
+        "
+      >
+        <div
+          className="
+            grid
+            min-h-[100svh]
+            grid-cols-1
+            items-center
+            lg:grid-cols-[0.9fr_1.1fr]
+            xl:grid-cols-[0.85fr_1.15fr]
+          "
+        >
 
-          {/* Left */}
-          <div className="space-y-8 animate-fade-in-up">
+          {/* =================================================
+              LEFT — TEXT
+          ================================================== */}
 
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-primary-100 dark:bg-primary-900/60 border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm">
-              <span className="w-2 h-2 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-              {t('serving_rural_communities')}
+          <div
+            className="
+              relative
+              z-40
+              max-w-xl
+              pt-28
+              pb-4
+              sm:pt-32
+              sm:pb-6
+              md:pt-32
+              lg:pt-20
+              lg:pb-20
+              animate-hero-text
+            "
+          >
+            {/* Decorative mark */}
+            <div
+              className="
+                absolute
+                left-0
+                top-24
+                hidden
+                sm:block
+                lg:top-14
+              "
+            >
+              <span
+                className="
+                  block
+                  h-1
+                  w-4
+                  rounded-full
+                  bg-white
+                  rotate-[8deg]
+                "
+              />
+
+              <span
+                className="
+                  ml-4
+                  -mt-1
+                  block
+                  h-4
+                  w-1
+                  rounded-full
+                  bg-white
+                  rotate-[-20deg]
+                "
+              />
             </div>
 
-            {/* Heading */}
-            <div className="space-y-3 sm:space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-text-primary dark:text-dark-text-primary leading-[1.1] sm:leading-[1.08] lg:leading-[1.05] tracking-tight">
-                {t('welcome_to')}<br />
-                <span className="text-primary-600 dark:text-primary-400">{t('brand')}</span>
-              </h1>
-              <p className="text-base sm:text-lg text-text-secondary dark:text-dark-text-secondary max-w-lg leading-relaxed font-light">
-                {t('tagline')}
-              </p>
-            </div>
+            {/* =================================================
+                HEADLINE
+            ================================================== */}
 
-           {/* CTA Section */}
-<div className="flex flex-col sm:flex-row gap-4 pt-2">
-  {/* Primary CTA - Register Village */}
-  <Link
-    to="/village/register"
-    className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl dark:shadow-dark-lg hover:-translate-y-0.5 active:translate-y-0 overflow-hidden"
-  >
-    {/* Animated background effect */}
-    <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-    
-    {/* Icon */}
-    <svg 
-      className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-      fill="none" 
-      stroke="currentColor" 
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-    </svg>
-    
-    <span>{t('register_village')}</span>
-    
-    {/* Arrow indicator */}
-    <svg 
-      className="w-4 h-4 transition-all duration-300 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0" 
-      fill="none" 
-      stroke="currentColor" 
-      viewBox="0 0 24 24"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-    </svg>
-  </Link>
+            <h1
+              className="
+                font-black
+                leading-[0.87]
+                tracking-[-0.065em]
+                text-white
+                text-[3.1rem]
+                xs:text-[3.4rem]
+                sm:text-[4rem]
+                md:text-[4.6rem]
+                lg:text-[4.2rem]
+                xl:text-[5rem]
+              "
+            >
+              <span className="block">
+                Need an
+              </span>
 
-  
-</div>
+              <span
+                className="
+                  relative
+                  inline-block
+                  font-extrabold
+                  italic
+                  tracking-[-0.07em]
+                  text-accent-lime
+                "
+              >
+                update?
 
-            {/* Stats */}
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-10 pt-4 border-t border-border dark:border-dark-border">
-              <div>
-                <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary">10,000+</p>
-                <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('active_readers')}</p>
-              </div>
-              <div className="hidden sm:block w-px bg-border dark:bg-dark-border" />
-              <div>
-                <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary">50+</p>
-                <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">{t('villages_served')}</p>
-              </div>
-              <div className="hidden sm:block w-px bg-border dark:bg-dark-border" />
-              <div>
-                <p className="text-2xl sm:text-3xl font-bold text-text-primary dark:text-dark-text-primary">500+</p>
-                <p className="text-xs sm:text-sm text-text-muted dark:text-dark-text-muted mt-1">Notices Published</p>
-              </div>
+                {/* Underline */}
+                <svg
+                  className="
+                    absolute
+                    -bottom-1
+                    left-0
+                    h-2
+                    w-[106%]
+                    sm:-bottom-2
+                    sm:h-3
+                  "
+                  viewBox="0 0 400 20"
+                  preserveAspectRatio="none"
+                  fill="none"
+                >
+                  <path
+                    d="M5 12C95 17 245 5 395 10"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+
+              <span className="mt-2 block sm:mt-3">
+                Your village
+              </span>
+
+              <span
+                className="
+                  block
+                  tracking-[-0.07em]
+                  text-primary-100
+                "
+              >
+                has it.
+              </span>
+            </h1>
+
+            {/* =================================================
+                DESCRIPTION
+            ================================================== */}
+
+            <p
+              className="
+                mt-5
+                max-w-[390px]
+                text-sm
+                font-medium
+                leading-relaxed
+                text-white/65
+                sm:mt-6
+                sm:text-base
+              "
+            >
+              Notices, updates and services from your
+              Gram Panchayat — all in one place.
+            </p>
+
+            {/* =================================================
+                CTA
+            ================================================== */}
+
+            <div
+              className="
+                mt-5
+                flex
+                flex-wrap
+                items-center
+                gap-2
+                sm:mt-6
+                sm:gap-3
+              "
+            >
+              <Link
+                to="/village/register"
+                className="
+                  group
+                  inline-flex
+                  items-center
+                  gap-2.5
+                  rounded-full
+                  bg-white
+                  px-4
+                  py-2.5
+                  text-sm
+                  font-bold
+                  text-primary-700
+                  shadow-lg
+                  transition-all
+                  duration-300
+                  hover:-translate-y-0.5
+                  hover:shadow-xl
+                  sm:gap-3
+                  sm:px-5
+                  sm:py-3
+                "
+              >
+                <span>
+                  {t("register_village")}
+                </span>
+
+                <span
+                  className="
+                    flex
+                    h-6
+                    w-6
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-primary-600
+                    text-xs
+                    text-white
+                    transition-transform
+                    group-hover:translate-x-1
+                  "
+                >
+                  →
+                </span>
+              </Link>
+
+              <button
+                onClick={() => scrollTo("features")}
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  px-2
+                  py-2.5
+                  text-sm
+                  font-semibold
+                  text-white/70
+                  transition-colors
+                  hover:text-white
+                  sm:px-3
+                  sm:py-3
+                "
+              >
+                Explore
+                <span>↓</span>
+              </button>
             </div>
           </div>
 
-          {/* Right — floating cards */}
-          <div className="hidden lg:flex flex-col gap-3 xl:gap-4 items-end">
+          {/* =================================================
+              RIGHT — 3 PHONE FAN
+          ================================================== */}
 
-            {/* Card 1 */}
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-4 xl:p-5 w-56 xl:w-64 hover:-translate-y-1 transition-all duration-300 shadow-medium dark:shadow-dark-medium">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/60 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <span className="w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
-              </div>
-              <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">New Notices</p>
-              <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">Just added to your feed</p>
+          <div
+            className="
+              relative
+              mx-auto
+              h-[330px]
+              w-full
+              max-w-[500px]
+              sm:h-[400px]
+              sm:max-w-[600px]
+              md:h-[470px]
+              lg:h-[600px]
+              lg:max-w-none
+            "
+          >
+
+            {/* =================================================
+                LEFT PHONE
+            ================================================== */}
+
+            <div
+              className="
+                absolute
+                z-10
+
+                left-[5%]
+                top-[15%]
+
+                w-[115px]
+
+                sm:left-[10%]
+                sm:top-[14%]
+                sm:w-[145px]
+
+                md:left-[10%]
+                md:w-[165px]
+
+                lg:left-[5%]
+                lg:top-[17%]
+                lg:w-[200px]
+
+                xl:left-[9%]
+                xl:w-[215px]
+
+                rotate-[-9deg]
+
+                animate-hero-left
+              "
+            >
+              <img
+                src="/notice.png"
+                alt="GramVartha Notices"
+                className="
+                  block
+                  h-auto
+                  w-full
+                  object-contain
+                  drop-shadow-[0_20px_35px_rgba(0,0,0,0.30)]
+                  sm:drop-shadow-[0_25px_45px_rgba(0,0,0,0.32)]
+                  animate-float-slow
+                "
+              />
             </div>
 
-            {/* Card 2 */}
-            <div className="bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl p-4 xl:p-5 w-56 xl:w-64 hover:-translate-y-1 transition-all duration-300 shadow-medium dark:shadow-dark-medium">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-primary-100 dark:bg-primary-900/60 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">Village Coverage</p>
-              <p className="text-xs text-text-muted dark:text-dark-text-muted mt-1">Across Maharashtra & beyond</p>
+            {/* =================================================
+                CENTER PHONE
+            ================================================== */}
+
+            <div
+              className="
+                absolute
+                z-30
+
+                left-1/2
+                top-[52%]
+
+                w-[150px]
+
+                sm:w-[185px]
+
+                md:w-[215px]
+
+                lg:top-1/2
+                lg:w-[265px]
+
+                xl:w-[285px]
+
+                -translate-x-1/2
+                -translate-y-1/2
+
+                animate-hero-center
+              "
+            >
+              <img
+                src="/mainscreen.png"
+                alt="GramVartha Citizen App"
+                className="
+                  block
+                  h-auto
+                  w-full
+                  object-contain
+                  drop-shadow-[0_25px_50px_rgba(0,0,0,0.38)]
+                  sm:drop-shadow-[0_30px_60px_rgba(0,0,0,0.40)]
+                  lg:drop-shadow-[0_35px_70px_rgba(0,0,0,0.42)]
+                  animate-float
+                "
+              />
             </div>
 
-            {/* Card 3 */}
-            <div className="bg-primary-600 dark:bg-primary-800 border border-primary-500 dark:border-primary-700 rounded-2xl p-4 xl:p-5 w-56 xl:w-64 hover:-translate-y-1 transition-all duration-300 shadow-large dark:shadow-dark-large">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                </div>
-              </div>
-              <p className="text-sm font-semibold text-white">Simple & Fast</p>
-              <p className="text-xs text-white/70 mt-1">Accessible to all citizens</p>
+            {/* =================================================
+                RIGHT PHONE
+            ================================================== */}
+
+            <div
+              className="
+                absolute
+                z-10
+
+                right-[5%]
+                top-[15%]
+
+                w-[115px]
+
+                sm:right-[10%]
+                sm:top-[14%]
+                sm:w-[145px]
+
+                md:right-[10%]
+                md:w-[165px]
+
+                lg:right-[5%]
+                lg:top-[17%]
+                lg:w-[200px]
+
+                xl:right-[8%]
+                xl:w-[215px]
+
+                rotate-[9deg]
+
+                animate-hero-right
+              "
+            >
+              <img
+                src="/comp.png"
+                alt="GramVartha Complaints"
+                className="
+                  block
+                  h-auto
+                  w-full
+                  object-contain
+                  drop-shadow-[0_20px_35px_rgba(0,0,0,0.30)]
+                  sm:drop-shadow-[0_25px_45px_rgba(0,0,0,0.32)]
+                  animate-float-side
+                "
+              />
             </div>
 
+            {/* =================================================
+                DECORATIVE STARS
+            ================================================== */}
+
+            <span
+              className="
+                absolute
+                bottom-[17%]
+                left-[15%]
+                z-40
+                text-base
+                text-white/60
+                sm:text-xl
+              "
+            >
+              ✦
+            </span>
+
+            <span
+              className="
+                absolute
+                bottom-[15%]
+                right-[12%]
+                z-40
+                text-sm
+                text-accent-lime/70
+                sm:text-lg
+              "
+            >
+              ✦
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <p className="text-xs text-text-muted dark:text-dark-text-muted uppercase tracking-widest font-medium">Scroll</p>
-        <div className="w-5 h-8 border border-border dark:border-dark-border rounded-full flex justify-center pt-1.5">
-          <div className="w-1 h-2 bg-primary-400 dark:bg-primary-500 rounded-full animate-bounce" />
-        </div>
+      {/* =====================================================
+          BOTTOM WAVE
+      ====================================================== */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          bottom-[-1px]
+          left-0
+          z-40
+          h-[42px]
+          w-full
+          sm:h-[55px]
+          md:h-[65px]
+          lg:h-[85px]
+        "
+      >
+        <svg
+          className="h-full w-full"
+          viewBox="0 0 1440 120"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="
+              M0 80
+              C180 15 330 15 500 65
+              C690 120 830 115 1000 90
+              C1180 65 1300 65 1440 30
+              L1440 120
+              L0 120
+              Z
+            "
+            className="
+              fill-accent-mist
+              dark:fill-dark-background
+            "
+          />
+        </svg>
       </div>
 
+      {/* =====================================================
+          SCROLL
+      ====================================================== */}
+
+      <button
+        onClick={() => scrollTo("features")}
+        className="
+          absolute
+          bottom-2
+          left-1/2
+          z-50
+          hidden
+          -translate-x-1/2
+          items-center
+          gap-2
+          text-white/35
+          transition-colors
+          hover:text-white/70
+          lg:flex
+        "
+      >
+        <span
+          className="
+            text-[8px]
+            font-bold
+            uppercase
+            tracking-[0.3em]
+          "
+        >
+          Scroll
+        </span>
+
+        <span className="animate-bounce text-xs">
+          ↓
+        </span>
+      </button>
     </section>
   );
 }

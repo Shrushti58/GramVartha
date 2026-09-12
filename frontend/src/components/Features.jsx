@@ -1,247 +1,779 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useEffect, useState } from "react";
+import {
+  ArrowRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  MapPin,
+  ShieldCheck,
+  Smartphone,
+  CloudSun,
+  Users,
+} from "lucide-react";
 
-const features = [
+const steps = [
   {
-    titleKey: "feature1_title",
-    tagKey: "feature1_tag",
-    descKey: "feature1_desc",
-    image: "/qr.jpeg",
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-      </svg>
-    ),
+    number: "01",
+    title: "Register Your Village",
+    description:
+      "Your Gram Panchayat registers the village on GramVartha and creates its digital village space.",
+    icon: MapPin,
+    image: "/illustrations/panchayat-removebg-preview.png",
   },
   {
-    titleKey: "feature2_title",
-    tagKey: "feature2_tag",
-    descKey: "feature2_desc",
-    image: "/f3.png",
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-    ),
+    number: "02",
+    title: "Admin & Official Access",
+    description:
+      "Panchayat administrators and authorised officials get access to manage notices, schemes and complaints.",
+    icon: ShieldCheck,
+    image: "/illustrations/panchayat-removebg-preview.png",
   },
   {
-    titleKey: "feature3_title",
-    tagKey: "feature3_tag",
-    descKey: "feature3_desc",
-    image: "/f2.jpg",
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-      </svg>
-    ),
+    number: "03",
+    title: "Download GramVartha",
+    description:
+      "Villagers download the GramVartha app to access their village information anytime, anywhere.",
+    icon: Download,
+    image: "/mainscreen.png",
   },
   {
-    titleKey: "feature4_title",
-    tagKey: "feature4_tag",
-    descKey: "feature4_desc",
-    image: "/illu1.png",
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-      </svg>
-    ),
+    number: "04",
+    title: "Explore Village Services",
+    description:
+      "Access QR-based notices, complaints, Work Guide, government schemes and the Scheme Assistant.",
+    icon: Smartphone,
+    image: "/notice.png",
+  },
+  {
+    number: "05",
+    title: "Stay Informed",
+    description:
+      "Get important village updates, weather advisories and useful information directly through GramVartha.",
+    icon: CloudSun,
+    image: "/comp.png",
   },
 ];
 
-const DURATION = 5000;
+const HowItWorks = () => {
+  const [active, setActive] = useState(2);
+  const [direction, setDirection] = useState("next");
 
-export default function Features() {
-  const { t } = useTranslation();
-  const [active, setActive] = useState(0);
-  const [prev, setPrev] = useState(null);
-  const [transitioning, setTransitioning] = useState(false);
-  const [paused, setPaused] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const progressRef = useRef(null);
-  const startTimeRef = useRef(null);
-  const rafRef = useRef(null);
-
-  const goTo = (index) => {
-    if (index === active || transitioning) return;
-    setPrev(active);
-    setTransitioning(true);
-    setProgress(0);
-    setTimeout(() => {
-      setActive(index);
-      setPrev(null);
-      setTransitioning(false);
-    }, 600);
+  const goTo = (index, dir = "next") => {
+    setDirection(dir);
+    setActive(index);
   };
 
-  const next = () => goTo((active + 1) % features.length);
-  const prevSlide = () => goTo((active - 1 + features.length) % features.length);
+  const next = () => {
+    setDirection("next");
+    setActive((prev) => (prev + 1) % steps.length);
+  };
 
-  // Progress ticker
+  const previous = () => {
+    setDirection("prev");
+    setActive((prev) => (prev - 1 + steps.length) % steps.length);
+  };
+
   useEffect(() => {
-    if (paused) {
-      cancelAnimationFrame(rafRef.current);
-      return;
-    }
+    const interval = setInterval(() => {
+      setDirection("next");
+      setActive((prev) => (prev + 1) % steps.length);
+    }, 5000);
 
-    startTimeRef.current = performance.now() - progress * DURATION;
+    return () => clearInterval(interval);
+  }, []);
 
-    const tick = (now) => {
-      const elapsed = now - startTimeRef.current;
-      const p = Math.min(elapsed / DURATION, 1);
-      setProgress(p);
-      if (p >= 1) {
-        next();
-      } else {
-        rafRef.current = requestAnimationFrame(tick);
-      }
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [active, paused]);
-
-  const current = features[active];
+  const current = steps[active];
+  const CurrentIcon = current.icon;
 
   return (
     <section
-      id="features"
-      className="py-12 sm:py-16 md:py-20 lg:py-28 bg-white dark:bg-dark-background font-sans transition-colors duration-300"
+      id="how-it-works"
+      className="
+        relative
+        overflow-hidden
+        bg-[#fdf6f2]
+        px-5
+        py-24
+        sm:px-8
+        lg:px-12
+        lg:py-32
+      "
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* =====================================================
+          BACKGROUND
+      ====================================================== */}
 
-        {/* Header */}
-        <div className="max-w-xl mb-8 sm:mb-10 md:mb-12">
-          <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 text-xs sm:text-sm font-semibold uppercase tracking-wider mb-3 sm:mb-4">
-            <span className="w-4 sm:w-6 h-px bg-primary-600 dark:bg-primary-400" />
-            {t('features_header')}
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text-primary dark:text-dark-text-primary leading-tight">
-            {t('features_title')}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -left-40
+          top-32
+          h-[400px]
+          w-[400px]
+          rounded-full
+          bg-primary-100/30
+          blur-[120px]
+        "
+      />
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -right-40
+          bottom-10
+          h-[450px]
+          w-[450px]
+          rounded-full
+          bg-primary-100/25
+          blur-[130px]
+        "
+      />
+
+      <div className="relative mx-auto max-w-7xl">
+        {/* =====================================================
+            HEADING
+        ====================================================== */}
+
+        <div className="mx-auto max-w-3xl text-center">
+          <p
+            className="
+              mb-5
+              text-[11px]
+              font-bold
+              uppercase
+              tracking-[0.25em]
+              text-primary-500
+              animate-how-text
+            "
+          >
+            How it works
+          </p>
+
+          <h2
+            className="
+              font-display
+              text-4xl
+              font-extrabold
+              leading-[1.05]
+              tracking-[-0.04em]
+              text-text-primary
+              sm:text-5xl
+              lg:text-6xl
+              animate-how-text
+            "
+          >
+            One village.
+            <br />
+            <span className="text-primary-400">
+              One connected journey.
+            </span>
           </h2>
+
+          <p
+            className="
+              mx-auto
+              mt-6
+              max-w-xl
+              text-sm
+              leading-7
+              text-text-muted
+              sm:text-base
+              animate-how-text
+            "
+          >
+            From your Panchayat's first registration to everyday
+            communication with villagers.
+          </p>
         </div>
 
-        {/* Cinematic Carousel */}
-        <div
-          className="relative rounded-2xl sm:rounded-3xl overflow-hidden"
-          style={{ minHeight: "280px" }}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-        >
+        {/* =====================================================
+            JOURNEY NAVIGATION
+        ====================================================== */}
 
-          {/* Slides */}
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="absolute inset-0 transition-opacity duration-700"
-              style={{
-                opacity: index === active ? 1 : 0,
-                zIndex: index === active ? 2 : 1,
-                pointerEvents: index === active ? "auto" : "none",
-              }}
-            >
-              {/* BG Image */}
-              <img
-                src={feature.image}
-                alt={feature.title}
-                className="absolute inset-0 w-full h-full object-cover scale-105 transition-transform duration-700"
-                style={{
-                  transform: index === active ? "scale(1)" : "scale(1.05)",
-                }}
-              />
+        <div className="relative mx-auto mt-16 max-w-5xl">
+          {/* Journey line */}
 
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary-900/95 via-primary-900/75 to-primary-900/30 dark:from-black/95 dark:via-black/75 dark:to-black/30" />
+          <div className="absolute left-[7%] right-[7%] top-[24px] hidden h-px bg-primary-200 md:block" />
 
-              {/* Content */}
-              <div
-                className="absolute inset-0 flex flex-col justify-end p-5 sm:p-8 md:p-12 lg:p-16 transition-all duration-700"
-                style={{
-                  opacity: index === active && !transitioning ? 1 : 0,
-                  transform: index === active && !transitioning ? "translateY(0)" : "translateY(24px)",
-                }}
-              >
-                {/* Tag */}
-                <span className="inline-flex items-center gap-2 bg-primary-400/20 border border-primary-400/30 text-primary-300 text-xs font-semibold uppercase tracking-wider px-2 sm:px-3 py-1 sm:py-1.5 rounded-full w-fit mb-4 sm:mb-6">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-400" />
-                  {t(feature.tagKey)}
-                </span>
+          {/* Active progress */}
 
-                {/* Icon + Title */}
-                <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-                  <div className="w-10 sm:w-12 h-10 sm:h-12 bg-white/10 border border-white/20 rounded-lg sm:rounded-xl flex items-center justify-center text-white flex-shrink-0">
-                    {feature.icon}
+          <div
+            className="
+              absolute
+              left-[7%]
+              top-[23px]
+              hidden
+              h-[3px]
+              rounded-full
+              bg-primary-400
+              transition-all
+              duration-700
+              ease-[cubic-bezier(0.22,1,0.36,1)]
+              md:block
+            "
+            style={{
+              width: `${(active / (steps.length - 1)) * 86}%`,
+            }}
+          />
+
+          {/* Step points */}
+
+          <div className="relative flex items-start justify-between">
+            {steps.map((step, index) => {
+              const isActive = index === active;
+              const isPast = index < active;
+
+              return (
+                <button
+                  key={step.number}
+                  onClick={() =>
+                    goTo(index, index > active ? "next" : "prev")
+                  }
+                  className="
+                    group
+                    flex
+                    w-[20%]
+                    flex-col
+                    items-center
+                    text-center
+                    outline-none
+                  "
+                >
+                  {/* Point */}
+
+                  <div
+                    className={`
+                      relative
+                      z-10
+                      flex
+                      h-12
+                      w-12
+                      items-center
+                      justify-center
+                      rounded-full
+                      border
+                      transition-all
+                      duration-500
+                      ${
+                        isActive
+                          ? "scale-110 border-text-primary bg-text-primary text-white shadow-[0_8px_25px_rgba(61,32,24,0.18)]"
+                          : isPast
+                          ? "border-primary-400 bg-primary-400 text-white"
+                          : "border-primary-200 bg-[#fdf6f2] text-text-light group-hover:border-primary-400 group-hover:text-primary-500"
+                      }
+                    `}
+                  >
+                    {isPast ? (
+                      <Check size={16} strokeWidth={2.5} />
+                    ) : (
+                      <span className="text-xs font-bold">
+                        {step.number}
+                      </span>
+                    )}
                   </div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
-                    {t(feature.titleKey)}
-                  </h3>
+
+                  {/* Label */}
+
+                  <span
+                    className={`
+                      mt-4
+                      hidden
+                      max-w-[120px]
+                      text-[11px]
+                      font-semibold
+                      leading-4
+                      transition-all
+                      duration-500
+                      sm:block
+                      ${
+                        isActive
+                          ? "text-text-primary"
+                          : "text-text-light group-hover:text-text-secondary"
+                      }
+                    `}
+                  >
+                    {step.title}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* =====================================================
+            MAIN JOURNEY CARD
+        ====================================================== */}
+
+        <div
+          key={`${active}-${direction}`}
+          className="
+            relative
+            mx-auto
+            mt-14
+            max-w-6xl
+            animate-how-slide
+          "
+        >
+          <div
+            className="
+              relative
+              overflow-hidden
+              rounded-[2.5rem]
+              border
+              border-primary-100
+              bg-white
+              shadow-[0_30px_100px_rgba(61,32,24,0.08)]
+            "
+          >
+            <div className="grid min-h-[570px] lg:grid-cols-[0.85fr_1.15fr]">
+              {/* =================================================
+                  LEFT CONTENT
+              ================================================== */}
+
+              <div
+                className="
+                  relative
+                  z-20
+                  flex
+                  flex-col
+                  justify-center
+                  px-7
+                  py-12
+                  sm:px-12
+                  sm:py-16
+                  lg:px-16
+                  lg:py-20
+                "
+              >
+                {/* Small label */}
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-3
+                    animate-how-text
+                  "
+                >
+                  <span
+                    className="
+                      h-2
+                      w-2
+                      rounded-full
+                      bg-primary-400
+                    "
+                  />
+
+                  <span
+                    className="
+                      text-[10px]
+                      font-bold
+                      uppercase
+                      tracking-[0.2em]
+                      text-text-light
+                    "
+                  >
+                    Step {current.number} of 05
+                  </span>
                 </div>
 
+                {/* Giant number */}
+
+                <div
+                  className="
+                    mt-7
+                    font-display
+                    text-[90px]
+                    font-black
+                    leading-[0.75]
+                    tracking-[-0.08em]
+                    text-primary-50
+                    sm:text-[120px]
+                    lg:text-[135px]
+                    animate-how-number
+                  "
+                >
+                  {current.number}
+                </div>
+
+                {/* Icon */}
+
+                <div
+                  className="
+                    mt-8
+                    flex
+                    h-11
+                    w-11
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-primary-50
+                    text-primary-500
+                    animate-how-text
+                  "
+                >
+                  <CurrentIcon size={20} strokeWidth={2} />
+                </div>
+
+                {/* Heading */}
+
+                <h3
+                  className="
+                    mt-6
+                    max-w-xl
+                    font-display
+                    text-3xl
+                    font-extrabold
+                    leading-[1.08]
+                    tracking-[-0.035em]
+                    text-text-primary
+                    sm:text-4xl
+                    lg:text-5xl
+                    animate-how-text
+                  "
+                >
+                  {current.title}
+                </h3>
+
+                {/* Underline */}
+
+                <div
+                  className="
+                    mt-6
+                    h-1
+                    w-12
+                    rounded-full
+                    bg-primary-400
+                    animate-how-text
+                  "
+                />
+
                 {/* Description */}
-                <p className="text-white/65 text-sm sm:text-base leading-relaxed max-w-lg mb-6 sm:mb-8">
-                  {t(feature.descKey)}
+
+                <p
+                  className="
+                    mt-6
+                    max-w-md
+                    text-sm
+                    leading-7
+                    text-text-muted
+                    sm:text-base
+                    animate-how-text
+                  "
+                >
+                  {current.description}
                 </p>
 
-                {/* Bottom controls row */}
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-6 w-full">
+                {/* Bottom mini indicator */}
 
-                  {/* Feature tabs */}
-                  <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap w-full sm:w-auto order-2 sm:order-1">
-                    {features.map((f, i) => (
-                      <button
-                        key={i}
-                        onClick={() => goTo(i)}
-                        className={`text-xs font-medium px-2.5 sm:px-4 py-1 sm:py-2 rounded-full border transition-all duration-300 whitespace-nowrap ${
-                          i === active
-                            ? "bg-white text-primary-800 border-white"
-                            : "bg-white/10 text-white/60 border-white/20 hover:bg-white/20 hover:text-white"
-                        }`}
-                      >
-                        {t(f.titleKey)}
-                      </button>
-                    ))}
-                  </div>
+                <div
+                  className="
+                    mt-10
+                    flex
+                    items-center
+                    gap-3
+                    animate-how-text
+                  "
+                >
+                  <span className="text-xs font-semibold text-text-secondary">
+                    {current.number}
+                  </span>
 
-                  {/* Arrows */}
-                  <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 order-1 sm:order-2">
-                    <button
-                      onClick={prevSlide}
-                      className="w-7 sm:w-10 h-7 sm:h-10 rounded-lg sm:rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center flex-shrink-0"
-                    >
-                      <svg className="w-3 sm:w-4 h-3 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={next}
-                      className="w-7 sm:w-10 h-7 sm:h-10 rounded-lg sm:rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white transition-all duration-200 flex items-center justify-center flex-shrink-0"
-                    >
-                      <svg className="w-3 sm:w-4 h-3 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </div>
+                  <div className="h-px w-16 bg-primary-200" />
+
+                  <span className="text-xs text-text-light">
+                    GramVartha journey
+                  </span>
+                </div>
+              </div>
+
+              {/* =================================================
+                  RIGHT VISUAL
+              ================================================== */}
+
+              <div
+                className="
+                  relative
+                  flex
+                  min-h-[350px]
+                  items-center
+                  justify-center
+                  overflow-hidden
+                  bg-primary-50
+                  lg:min-h-[570px]
+                "
+              >
+                {/* Organic circles */}
+
+                <div
+                  className="
+                    absolute
+                    left-1/2
+                    top-1/2
+                    h-[280px]
+                    w-[280px]
+                    -translate-x-1/2
+                    -translate-y-1/2
+                    rounded-full
+                    bg-primary-100
+                    sm:h-[380px]
+                    sm:w-[380px]
+                    lg:h-[470px]
+                    lg:w-[470px]
+                  "
+                />
+
+                <div
+                  className="
+                    absolute
+                    left-1/2
+                    top-1/2
+                    h-[210px]
+                    w-[210px]
+                    -translate-x-1/2
+                    -translate-y-1/2
+                    rounded-full
+                    border
+                    border-white/80
+                    sm:h-[290px]
+                    sm:w-[290px]
+                    lg:h-[360px]
+                    lg:w-[360px]
+                  "
+                />
+
+                {/* Decorative number */}
+
+                <span
+                  className="
+                    absolute
+                    right-8
+                    top-8
+                    font-display
+                    text-8xl
+                    font-black
+                    leading-none
+                    tracking-[-0.08em]
+                    text-white/60
+                    sm:text-9xl
+                  "
+                >
+                  {current.number}
+                </span>
+
+                {/* Main image */}
+
+                <div
+                  className="
+                    relative
+                    z-10
+                    flex
+                    h-full
+                    w-full
+                    items-center
+                    justify-center
+                    p-8
+                    animate-how-image
+                    sm:p-12
+                  "
+                >
+                  <img
+                    src={current.image}
+                    alt=""
+                    className="
+                      max-h-[300px]
+                      max-w-[72%]
+                      object-contain
+                      drop-shadow-[0_30px_35px_rgba(61,32,24,0.18)]
+                      animate-how-float
+                      sm:max-h-[390px]
+                      lg:max-h-[440px]
+                    "
+                  />
+                </div>
+
+                {/* Floating location badge */}
+
+                <div
+                  className="
+                    absolute
+                    bottom-7
+                    left-7
+                    z-20
+                    flex
+                    items-center
+                    gap-2
+                    rounded-full
+                    border
+                    border-white/70
+                    bg-white/85
+                    px-4
+                    py-2.5
+                    text-[10px]
+                    font-semibold
+                    text-text-secondary
+                    shadow-sm
+                    backdrop-blur-md
+                  "
+                >
+                  <MapPin size={13} />
+                  Your village
                 </div>
               </div>
             </div>
-          ))}
+          </div>
+        </div>
 
-          {/* Progress bar */}
-          <div className="absolute top-0 left-0 right-0 h-0.5 bg-white/10 z-10">
-            <div
-              className="h-full bg-primary-400 transition-none"
-              style={{ width: `${progress * 100}%` }}
-            />
+        {/* =====================================================
+            CONTROLS
+        ====================================================== */}
+
+        <div className="mx-auto mt-8 flex max-w-6xl items-center justify-between">
+          {/* Previous */}
+
+          <button
+            onClick={previous}
+            aria-label="Previous step"
+            className="
+              group
+              flex
+              items-center
+              gap-2
+              text-xs
+              font-semibold
+              text-text-muted
+              transition-colors
+              duration-300
+              hover:text-text-primary
+            "
+          >
+            <span
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-primary-100
+                bg-white
+                transition-all
+                duration-300
+                group-hover:-translate-x-1
+                group-hover:border-primary-200
+                group-hover:shadow-sm
+              "
+            >
+              <ChevronLeft size={17} />
+            </span>
+
+            <span className="hidden sm:block">
+              Previous
+            </span>
+          </button>
+
+          {/* Center progress */}
+
+          <div className="flex items-center gap-2">
+            {steps.map((step, index) => (
+              <button
+                key={step.number}
+                onClick={() =>
+                  goTo(index, index > active ? "next" : "prev")
+                }
+                aria-label={`Go to step ${index + 1}`}
+                className={`
+                  h-1.5
+                  rounded-full
+                  transition-all
+                  duration-500
+                  ${
+                    index === active
+                      ? "w-10 bg-primary-400"
+                      : "w-1.5 bg-primary-200 hover:bg-primary-300"
+                  }
+                `}
+              />
+            ))}
           </div>
 
-          {/* Paused indicator */}
-          {paused && (
-            <div className="absolute top-5 right-5 z-10 bg-black/30 backdrop-blur-sm text-white/60 text-xs px-3 py-1.5 rounded-full border border-white/10">
-              Paused
-            </div>
-          )}
+          {/* Next */}
 
+          <button
+            onClick={next}
+            aria-label="Next step"
+            className="
+              group
+              flex
+              items-center
+              gap-2
+              text-xs
+              font-semibold
+              text-text-muted
+              transition-colors
+              duration-300
+              hover:text-text-primary
+            "
+          >
+            <span className="hidden sm:block">
+              Next
+            </span>
+
+            <span
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                bg-text-primary
+                text-white
+                transition-all
+                duration-300
+                group-hover:translate-x-1
+                group-hover:shadow-md
+              "
+            >
+              <ChevronRight size={17} />
+            </span>
+          </button>
+        </div>
+
+        {/* =====================================================
+            BOTTOM STATEMENT
+        ====================================================== */}
+
+        <div
+          className="
+            mx-auto
+            mt-20
+            max-w-2xl
+            text-center
+          "
+        >
+          <p
+            className="
+              font-display
+              text-lg
+              font-semibold
+              tracking-tight
+              text-text-secondary
+              sm:text-xl
+            "
+          >
+            From Panchayat
+            <span className="mx-2 text-primary-400">→</span>
+            to every villager.
+          </p>
         </div>
       </div>
     </section>
   );
-}
+};
+
+export default HowItWorks;

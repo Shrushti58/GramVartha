@@ -6,25 +6,40 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 const scrollTo = (id) => {
   const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth" });
+  if (el) {
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
 };
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
   const { dark, toggleTheme } = useTheme();
   const location = useLocation();
-  const isHome = location.pathname === "/";
   const { t } = useTranslation();
 
+  const isHome = location.pathname === "/";
+
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 40);
+    };
+
     window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const handleNavClick = (id) => {
     setIsMenuOpen(false);
+
     if (isHome) {
       scrollTo(id);
     } else {
@@ -34,194 +49,437 @@ export default function Navbar() {
 
   return (
     <>
+      {/* Floating Navbar */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 font-sans transition-all duration-300 ${
-          scrolled
-            ? "bg-white/95 dark:bg-dark-surface/95 backdrop-blur-lg shadow-medium dark:shadow-dark-medium border-b border-border dark:border-dark-border"
-            : "bg-white/90 dark:bg-dark-surface/90 backdrop-blur-md border-b border-border/60 dark:border-dark-border/60"
-        }`}
+        className={`
+          fixed top-4 sm:top-5 left-1/2 -translate-x-1/2
+          z-50
+          w-[calc(100%-24px)]
+          sm:w-[calc(100%-40px)]
+          max-w-6xl
+          transition-all duration-300
+          ${scrolled ? "scale-[0.98]" : "scale-100"}
+        `}
       >
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-14 sm:h-16">
+        <div
+          className={`
+            relative
+            flex items-center justify-between
+            h-16 sm:h-[72px]
+            px-4 sm:px-6 lg:px-7
+            rounded-full
+            border
+            backdrop-blur-xl
+            transition-all duration-300
 
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-1.5 sm:space-x-2 md:space-x-3 group flex-shrink-0">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-lg overflow-hidden border border-primary-200 dark:border-primary-700 flex items-center justify-center bg-accent-mist dark:bg-dark-surface2 flex-shrink-0">
-                <img
-                  src="/gramvarthalogo.png"
-                  alt="GramVartha Logo"
-                  className="w-full h-full object-contain"
+            ${
+              scrolled
+                ? "bg-white/95 dark:bg-dark-surface/95 border-white/70 dark:border-dark-border shadow-xl"
+                : "bg-white/75 dark:bg-dark-surface/75 border-white/60 dark:border-dark-border/60 shadow-lg"
+            }
+          `}
+        >
+          {/* Logo */}
+          <Link
+            to="/"
+            className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0 group"
+          >
+            <div
+              className="
+                w-9 h-9 sm:w-10 sm:h-10
+                rounded-full
+                overflow-hidden
+                flex items-center justify-center
+                bg-primary-50
+                dark:bg-dark-surface2
+              "
+            >
+              <img
+                src="/gramvarthalogo.png"
+                alt="GramVartha"
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            <span
+              className="
+                text-lg sm:text-xl
+                font-bold
+                tracking-tight
+                text-gray-950
+                dark:text-white
+                group-hover:opacity-70
+                transition-opacity
+              "
+            >
+              Gram<span className="text-primary-600">Vartha</span>
+            </span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-1">
+            <button
+              onClick={() => handleNavClick("about")}
+              className="
+                px-4 py-2
+                text-sm font-medium
+                text-gray-700 dark:text-gray-200
+                rounded-full
+                hover:bg-black/5
+                dark:hover:bg-white/10
+                transition-all
+              "
+            >
+              {t("nav_about")}
+            </button>
+
+            <button
+              onClick={() => handleNavClick("features")}
+              className="
+                px-4 py-2
+                text-sm font-medium
+                text-gray-700 dark:text-gray-200
+                rounded-full
+                hover:bg-black/5
+                dark:hover:bg-white/10
+                transition-all
+              "
+            >
+              {t("nav_features")}
+            </button>
+
+            <button
+              onClick={() => handleNavClick("how-it-works")}
+              className="
+                px-4 py-2
+                text-sm font-medium
+                text-gray-700 dark:text-gray-200
+                rounded-full
+                hover:bg-black/5
+                dark:hover:bg-white/10
+                transition-all
+              "
+            >
+              How It Works
+            </button>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center gap-2">
+            {/* Theme */}
+            <button
+              onClick={toggleTheme}
+              className="
+                w-9 h-9
+                rounded-full
+                flex items-center justify-center
+                text-gray-700 dark:text-gray-200
+                hover:bg-black/5
+                dark:hover:bg-white/10
+                transition-all
+              "
+              aria-label="Toggle theme"
+            >
+              {dark ? (
+                <svg
+                  className="w-[18px] h-[18px]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07-6.07-.7.7M6.34 17.66l-.7.7m12.02 0-.7-.7M6.34 6.34l-.7-.7M12 7a5 5 0 100 10A5 5 0 0012 7z"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-[18px] h-[18px]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
+                  />
+                </svg>
+              )}
+            </button>
+
+            <LanguageSwitcher />
+
+            {/* Login Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setIsLoginOpen(!isLoginOpen)}
+                className="
+                  px-4 py-2
+                  rounded-full
+                  text-sm font-semibold
+                  text-gray-900 dark:text-white
+                  hover:bg-black/5
+                  dark:hover:bg-white/10
+                  transition-all
+                "
+              >
+                Login
+              </button>
+
+              {isLoginOpen && (
+                <div
+                  className="
+                    absolute right-0 top-12
+                    w-48
+                    p-2
+                    rounded-2xl
+                    bg-white
+                    dark:bg-dark-surface
+                    border border-gray-200
+                    dark:border-dark-border
+                    shadow-xl
+                  "
+                >
+                  <Link
+                    to="/officials/login"
+                    onClick={() => setIsLoginOpen(false)}
+                    className="
+                      block px-4 py-3
+                      rounded-xl
+                      text-sm font-medium
+                      hover:bg-primary-50
+                      dark:hover:bg-dark-surface2
+                    "
+                  >
+                    Officials Login
+                  </Link>
+
+                  <Link
+                    to="/admin/login"
+                    onClick={() => setIsLoginOpen(false)}
+                    className="
+                      block px-4 py-3
+                      rounded-xl
+                      text-sm font-medium
+                      hover:bg-primary-50
+                      dark:hover:bg-dark-surface2
+                    "
+                  >
+                    Admin Login
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Main CTA */}
+            <Link
+              to="/village/register"
+              className="
+                inline-flex items-center gap-2
+                px-5 sm:px-6
+                py-3
+                rounded-full
+                bg-primary-600
+                hover:bg-primary-700
+                dark:bg-primary-500
+                dark:hover:bg-primary-400
+                text-white
+                text-sm
+                font-semibold
+                shadow-sm
+                hover:shadow-md
+                transition-all duration-200
+              "
+            >
+              Register Village
+
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 12h14m-6-6 6 6-6 6"
                 />
-              </div>
-              <span className="text-sm sm:text-base md:text-lg font-bold tracking-tight text-text-primary dark:text-dark-text-primary group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200 line-clamp-1">
-                GramVartha
-              </span>
+              </svg>
             </Link>
+          </div>
 
-            {/* Desktop Nav */}
-            <div className="hidden md:flex items-center space-x-1">
-              <button
-                onClick={() => handleNavClick("about")}
-                className="text-xs sm:text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
-              >
-                {t('nav_about')}
-              </button>
-              <button
-                onClick={() => handleNavClick("features")}
-                className="text-xs sm:text-sm font-medium text-text-secondary dark:text-dark-text-secondary hover:text-primary-600 dark:hover:text-primary-400 px-3 sm:px-4 py-2 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
-              >
-                {t('nav_features')}
-              </button>
+          {/* Mobile */}
+          <div className="flex md:hidden items-center gap-1">
+            <button
+              onClick={toggleTheme}
+              className="
+                w-9 h-9
+                rounded-full
+                flex items-center justify-center
+                hover:bg-black/5
+                dark:hover:bg-white/10
+              "
+            >
+              {dark ? "☀️" : "🌙"}
+            </button>
 
-              <div className="w-px h-5 bg-border dark:bg-dark-border mx-2" />
-
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg border border-border dark:border-dark-border hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
-                aria-label="Toggle theme"
-              >
-                {dark ? (
-                  // Sun icon
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07-6.07-.7.7M6.34 17.66l-.7.7m12.02 0-.7-.7M6.34 6.34l-.7-.7M12 7a5 5 0 100 10A5 5 0 0012 7z"
-                    />
-                  </svg>
-                ) : (
-                  // Moon icon
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
-                    />
-                  </svg>
-                )}
-              </button>
-
-              {/* Language Switcher */}
-              <LanguageSwitcher />
-
-              <Link
-                to="/officials/login"
-                className="text-xs sm:text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
-              >
-                {t('nav_officials_login')}
-              </Link>
-              <Link
-                to="/admin/login"
-                className="text-xs sm:text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
-              >
-                {t('nav_admin_login')}
-              </Link>
-              <Link
-                to="/village/register"
-                className="text-xs sm:text-sm font-semibold text-white px-4 sm:px-5 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-all duration-200 shadow-soft"
-              >
-                {t('register_village')}
-              </Link>
-            </div>
-
-            {/* Mobile Right — Theme Toggle + Language Switcher + Hamburger */}
-            <div className="md:hidden flex items-center gap-1.5 sm:gap-2">
-              <button
-                onClick={toggleTheme}
-                className="p-1.5 sm:p-2 rounded-lg border border-border dark:border-dark-border hover:bg-accent-mist dark:hover:bg-dark-surface2 text-text-muted dark:text-dark-text-muted transition-all duration-200"
-                aria-label="Toggle theme"
-              >
-                {dark ? (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 3v1m0 16v1m8.66-9h-1M4.34 12h-1m15.07-6.07-.7.7M6.34 17.66l-.7.7m12.02 0-.7-.7M6.34 6.34l-.7-.7M12 7a5 5 0 100 10A5 5 0 0012 7z"
-                    />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"
-                    />
-                  </svg>
-                )}
-              </button>
-
-              <LanguageSwitcher />
-
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-1.5 sm:p-2 rounded-lg text-text-secondary dark:text-dark-text-secondary hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
-              </button>
-            </div>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="
+                w-10 h-10
+                rounded-full
+                flex items-center justify-center
+                bg-gray-100
+                dark:bg-dark-surface2
+              "
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        <div
-          className={`md:hidden overflow-hidden transition-all duration-300 ease-out ${
-            isMenuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="bg-white dark:bg-dark-surface border-t border-border dark:border-dark-border px-4 sm:px-6 py-3 sm:py-4 space-y-1.5 sm:space-y-2">
+        {isMenuOpen && (
+          <div
+            className="
+              lg:hidden
+              mt-3
+              p-3
+              rounded-3xl
+              bg-white/95
+              dark:bg-dark-surface/95
+              backdrop-blur-xl
+              border border-white/60
+              dark:border-dark-border
+              shadow-xl
+            "
+          >
             <button
               onClick={() => handleNavClick("about")}
-              className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
+              className="
+                block w-full text-left
+                px-4 py-3
+                rounded-xl
+                text-sm font-medium
+                hover:bg-gray-100
+                dark:hover:bg-dark-surface2
+              "
             >
-              {t('nav_about')}
+              {t("nav_about")}
             </button>
+
             <button
               onClick={() => handleNavClick("features")}
-              className="block w-full text-left text-sm font-medium text-text-secondary dark:text-dark-text-secondary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg hover:bg-accent-mist dark:hover:bg-dark-surface2 hover:text-primary-600 dark:hover:text-primary-400 transition-all duration-200"
+              className="
+                block w-full text-left
+                px-4 py-3
+                rounded-xl
+                text-sm font-medium
+                hover:bg-gray-100
+                dark:hover:bg-dark-surface2
+              "
             >
-              {t('nav_features')}
+              {t("nav_features")}
             </button>
 
-            <div className="pt-2 sm:pt-3 border-t border-border dark:border-dark-border space-y-2 mt-2 sm:mt-3">
-              <p className="text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider px-3 sm:px-4 pb-1 sm:pb-2">
-                {t('login_portals')}
-              </p>
-              <Link
-                to="/officials/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
-              >
-                <span>{t('nav_officials_login')}</span>
-                <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <Link
-                to="/admin/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="flex items-center justify-between text-sm font-medium text-text-primary dark:text-dark-text-primary px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg border border-border dark:border-dark-border hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-accent-mist dark:hover:bg-dark-surface2 transition-all duration-200"
-              >
-                <span>{t('nav_admin_login')}</span>
-                <svg className="w-4 h-4 text-text-muted dark:text-dark-text-muted flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </Link>
-              <Link
-                to="/village/register"
-                onClick={() => setIsMenuOpen(false)}
-                className="block text-sm font-semibold text-white text-center px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-all duration-200 w-full"
-              >
-                {t('register_village')}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+            <button
+              onClick={() => handleNavClick("how-it-works")}
+              className="
+                block w-full text-left
+                px-4 py-3
+                rounded-xl
+                text-sm font-medium
+                hover:bg-gray-100
+                dark:hover:bg-dark-surface2
+              "
+            >
+              How It Works
+            </button>
 
-      {/* Spacer — matches navbar height */}
-      <div className="h-14 sm:h-16" />
+            <div className="border-t border-gray-200 dark:border-dark-border my-2" />
+
+            <Link
+              to="/officials/login"
+              onClick={() => setIsMenuOpen(false)}
+              className="
+                block px-4 py-3
+                rounded-xl
+                text-sm font-medium
+                hover:bg-gray-100
+                dark:hover:bg-dark-surface2
+              "
+            >
+              Officials Login
+            </Link>
+
+            <Link
+              to="/admin/login"
+              onClick={() => setIsMenuOpen(false)}
+              className="
+                block px-4 py-3
+                rounded-xl
+                text-sm font-medium
+                hover:bg-gray-100
+                dark:hover:bg-dark-surface2
+              "
+            >
+              Admin Login
+            </Link>
+
+            <Link
+              to="/village/register"
+              onClick={() => setIsMenuOpen(false)}
+              className="
+                flex items-center justify-center gap-2
+                w-full
+                mt-2
+                px-4 py-3
+                rounded-full
+                bg-primary-600
+                text-white
+                text-sm font-semibold
+              "
+            >
+              Register Village
+              <span>→</span>
+            </Link>
+          </div>
+        )}
+      </nav>
     </>
   );
 }
