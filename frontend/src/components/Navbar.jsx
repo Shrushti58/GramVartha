@@ -134,21 +134,6 @@ export default function Navbar() {
             </button>
 
             <button
-              onClick={() => handleNavClick("features")}
-              className="
-                px-4 py-2
-                text-sm font-medium
-                text-gray-700 dark:text-gray-200
-                rounded-full
-                hover:bg-black/5
-                dark:hover:bg-white/10
-                transition-all
-              "
-            >
-              {t("nav_features")}
-            </button>
-
-            <button
               onClick={() => handleNavClick("how-it-works")}
               className="
                 px-4 py-2
@@ -400,20 +385,6 @@ export default function Navbar() {
               "
             >
               {t("nav_about")}
-            </button>
-
-            <button
-              onClick={() => handleNavClick("features")}
-              className="
-                block w-full text-left
-                px-4 py-3
-                rounded-xl
-                text-sm font-medium
-                hover:bg-gray-100
-                dark:hover:bg-dark-surface2
-              "
-            >
-              {t("nav_features")}
             </button>
 
             <button

@@ -47,7 +47,8 @@ export default function Hero() {
             lg:w-[450px]
             rounded-full
             bg-white/[0.06]
-            blur-3xl
+            blur-xl
+            sm:blur-3xl
           "
         />
 
@@ -65,7 +66,8 @@ export default function Hero() {
             lg:w-[360px]
             rounded-full
             bg-accent-lime/[0.06]
-            blur-3xl
+            blur-xl
+            sm:blur-3xl
           "
         />
 
@@ -330,7 +332,7 @@ export default function Hero() {
                   font-bold
                   text-primary-700
                   shadow-lg
-                  transition-all
+                  transition-[transform,box-shadow]
                   duration-300
                   hover:-translate-y-0.5
                   hover:shadow-xl
@@ -393,12 +395,16 @@ export default function Hero() {
             className="
               relative
               mx-auto
+              translate-y-3
               h-[330px]
               w-full
               max-w-[500px]
+              sm:translate-y-4
               sm:h-[400px]
               sm:max-w-[600px]
+              md:translate-y-5
               md:h-[470px]
+              lg:translate-y-7
               lg:h-[600px]
               lg:max-w-none
             "
@@ -438,14 +444,20 @@ export default function Hero() {
               "
             >
               <img
-                src="/notice.png"
+                src="/notice.webp"
                 alt="GramVartha Notices"
+                width="640"
+                height="1261"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 className="
                   block
                   h-auto
                   w-full
+                  max-w-full
                   object-contain
-                  drop-shadow-[0_20px_35px_rgba(0,0,0,0.30)]
+                  drop-shadow-sm
                   sm:drop-shadow-[0_25px_45px_rgba(0,0,0,0.32)]
                   animate-float-slow
                 "
@@ -482,14 +494,20 @@ export default function Hero() {
               "
             >
               <img
-                src="/mainscreen.png"
+                src="/mainscreen.webp"
                 alt="GramVartha Citizen App"
+                width="640"
+                height="1261"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 className="
                   block
                   h-auto
                   w-full
+                  max-w-full
                   object-contain
-                  drop-shadow-[0_25px_50px_rgba(0,0,0,0.38)]
+                  drop-shadow-sm
                   sm:drop-shadow-[0_30px_60px_rgba(0,0,0,0.40)]
                   lg:drop-shadow-[0_35px_70px_rgba(0,0,0,0.42)]
                   animate-float
@@ -531,14 +549,20 @@ export default function Hero() {
               "
             >
               <img
-                src="/comp.png"
+                src="/comp.webp"
                 alt="GramVartha Complaints"
+                width="640"
+                height="1261"
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
                 className="
                   block
                   h-auto
                   w-full
+                  max-w-full
                   object-contain
-                  drop-shadow-[0_20px_35px_rgba(0,0,0,0.30)]
+                  drop-shadow-sm
                   sm:drop-shadow-[0_25px_45px_rgba(0,0,0,0.32)]
                   animate-float-side
                 "
