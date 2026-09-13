@@ -4242,6 +4242,10 @@ video {
   color: rgb(255 255 255 / 0.15);
 }
 
+.underline{
+  text-decoration-line: underline;
+}
+
 .placeholder-gray-300::-moz-placeholder{
   --tw-placeholder-opacity: 1;
   color: rgb(209 213 219 / var(--tw-placeholder-opacity, 1));

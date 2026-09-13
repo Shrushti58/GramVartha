@@ -153,7 +153,6 @@ export default function Hero() {
             xl:grid-cols-[0.85fr_1.15fr]
           "
         >
-
           {/* =================================================
               LEFT — TEXT
           ================================================== */}
@@ -228,9 +227,10 @@ export default function Hero() {
               "
             >
               <span className="block">
-                Need an
+                Digital
               </span>
 
+              {/* Highlighted word + underline */}
               <span
                 className="
                   relative
@@ -241,9 +241,9 @@ export default function Hero() {
                   text-accent-lime
                 "
               >
-                update?
+                Panchayat
 
-                {/* Underline */}
+                {/* Same hand-drawn underline */}
                 <svg
                   className="
                     absolute
@@ -268,7 +268,7 @@ export default function Hero() {
               </span>
 
               <span className="mt-2 block sm:mt-3">
-                Your village
+                with
               </span>
 
               <span
@@ -278,7 +278,7 @@ export default function Hero() {
                   text-primary-100
                 "
               >
-                has it.
+                GramVartha.
               </span>
             </h1>
 
@@ -365,7 +365,7 @@ export default function Hero() {
               </Link>
 
               <button
-                onClick={() => scrollTo("features")}
+                onClick={() => scrollTo("how-it-works")}
                 className="
                   inline-flex
                   items-center
@@ -409,7 +409,6 @@ export default function Hero() {
               lg:max-w-none
             "
           >
-
             {/* =================================================
                 LEFT PHONE
             ================================================== */}
@@ -418,28 +417,20 @@ export default function Hero() {
               className="
                 absolute
                 z-10
-
                 left-[5%]
                 top-[15%]
-
                 w-[115px]
-
                 sm:left-[10%]
                 sm:top-[14%]
                 sm:w-[145px]
-
                 md:left-[10%]
                 md:w-[165px]
-
                 lg:left-[5%]
                 lg:top-[17%]
                 lg:w-[200px]
-
                 xl:left-[9%]
                 xl:w-[215px]
-
                 rotate-[-9deg]
-
                 animate-hero-left
               "
             >
@@ -472,24 +463,16 @@ export default function Hero() {
               className="
                 absolute
                 z-30
-
                 left-1/2
                 top-[52%]
-
                 w-[150px]
-
                 sm:w-[185px]
-
                 md:w-[215px]
-
                 lg:top-1/2
                 lg:w-[265px]
-
                 xl:w-[285px]
-
                 -translate-x-1/2
                 -translate-y-1/2
-
                 animate-hero-center
               "
             >
@@ -523,28 +506,20 @@ export default function Hero() {
               className="
                 absolute
                 z-10
-
                 right-[5%]
                 top-[15%]
-
                 w-[115px]
-
                 sm:right-[10%]
                 sm:top-[14%]
                 sm:w-[145px]
-
                 md:right-[10%]
                 md:w-[165px]
-
                 lg:right-[5%]
                 lg:top-[17%]
                 lg:w-[200px]
-
                 xl:right-[8%]
                 xl:w-[215px]
-
                 rotate-[9deg]
-
                 animate-hero-right
               "
             >
@@ -650,7 +625,7 @@ export default function Hero() {
       ====================================================== */}
 
       <button
-        onClick={() => scrollTo("features")}
+        onClick={() => scrollTo("how-it-works")}
         className="
           absolute
           bottom-2
