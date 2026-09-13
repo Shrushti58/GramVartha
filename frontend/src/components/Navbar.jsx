@@ -6,6 +6,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 
 const scrollTo = (id) => {
   const el = document.getElementById(id);
+
   if (el) {
     el.scrollIntoView({
       behavior: "smooth",
@@ -71,7 +72,6 @@ export default function Navbar() {
             border
             backdrop-blur-xl
             transition-all duration-300
-
             ${
               scrolled
                 ? "bg-white/95 dark:bg-dark-surface/95 border-white/70 dark:border-dark-border shadow-xl"
@@ -236,6 +236,7 @@ export default function Navbar() {
                       block px-4 py-3
                       rounded-xl
                       text-sm font-medium
+                      text-gray-700 dark:text-gray-200
                       hover:bg-primary-50
                       dark:hover:bg-dark-surface2
                     "
@@ -250,6 +251,7 @@ export default function Navbar() {
                       block px-4 py-3
                       rounded-xl
                       text-sm font-medium
+                      text-gray-700 dark:text-gray-200
                       hover:bg-primary-50
                       dark:hover:bg-dark-surface2
                     "
@@ -306,6 +308,7 @@ export default function Navbar() {
                 w-9 h-9
                 rounded-full
                 flex items-center justify-center
+                text-gray-700 dark:text-gray-200
                 hover:bg-black/5
                 dark:hover:bg-white/10
               "
@@ -323,6 +326,7 @@ export default function Navbar() {
                 flex items-center justify-center
                 bg-gray-100
                 dark:bg-dark-surface2
+                text-gray-700 dark:text-gray-200
               "
               aria-label={t("nav_toggle_menu")}
             >
@@ -382,6 +386,7 @@ export default function Navbar() {
                 px-4 py-3
                 rounded-xl
                 text-sm font-medium
+                text-gray-700 dark:text-gray-200
                 hover:bg-gray-100
                 dark:hover:bg-dark-surface2
               "
@@ -396,6 +401,7 @@ export default function Navbar() {
                 px-4 py-3
                 rounded-xl
                 text-sm font-medium
+                text-gray-700 dark:text-gray-200
                 hover:bg-gray-100
                 dark:hover:bg-dark-surface2
               "
@@ -412,6 +418,7 @@ export default function Navbar() {
                 block px-4 py-3
                 rounded-xl
                 text-sm font-medium
+                text-gray-700 dark:text-gray-200
                 hover:bg-gray-100
                 dark:hover:bg-dark-surface2
               "
@@ -426,6 +433,7 @@ export default function Navbar() {
                 block px-4 py-3
                 rounded-xl
                 text-sm font-medium
+                text-gray-700 dark:text-gray-200
                 hover:bg-gray-100
                 dark:hover:bg-dark-surface2
               "
