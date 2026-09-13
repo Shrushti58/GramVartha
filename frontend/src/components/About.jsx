@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const About = () => {
+  const { t } = useTranslation();
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -131,7 +133,7 @@ const About = () => {
                 sm:text-xs
               "
             >
-              About GramVartha
+              {t("about_label")}
             </span>
           </div>
 
@@ -143,10 +145,10 @@ const About = () => {
                 : "translate-y-8 opacity-0"
             }`}
           >
-            Stay connected.
+            {t("about_heading_connected")}
             <br />
             <span className="text-primary-500">
-              Stay informed.
+              {t("about_heading_informed")}
             </span>
           </h2>
 
@@ -158,10 +160,7 @@ const About = () => {
                 : "translate-y-6 opacity-0"
             }`}
           >
-            GramVartha connects your Gram Panchayat with the people
-            of your village. Get important notices, discover
-            government schemes, and raise complaints — all in one
-            place.
+            {t("about_description")}
           </p>
 
           {/* CTA */}
@@ -198,7 +197,7 @@ const About = () => {
                 sm:text-sm
               "
             >
-              Explore GramVartha
+              {t("about_explore")}
 
               <span className="transition-transform duration-300 group-hover:translate-x-1">
                 →
@@ -232,7 +231,7 @@ const About = () => {
                 sm:tracking-[0.16em]
               "
             >
-              What you get here?
+              {t("about_what_you_get")}
             </p>
 
             <div className="mt-2.5 h-1 w-10 rounded-full bg-primary-400 sm:mt-3 sm:w-12" />
@@ -358,9 +357,9 @@ const About = () => {
                       sm:text-3xl
                     "
                   >
-                    For Your
+                    {t("about_panchayat_title_first")}
                     <br />
-                    Panchayat
+                    {t("about_panchayat_title_second")}
                   </h3>
 
                   <div
@@ -391,8 +390,7 @@ const About = () => {
                       sm:leading-7
                     "
                   >
-                    Publish village notices, upload government
-                    schemes, and view complaints from villagers.
+                    {t("about_panchayat_description")}
                   </p>
                 </div>
 
@@ -470,7 +468,7 @@ const About = () => {
                       sm:text-sm
                     "
                   >
-                    Manage Village
+                    {t("about_manage_village")}
 
                     <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
                       →
@@ -594,7 +592,7 @@ const About = () => {
                       sm:text-3xl
                     "
                   >
-                    For Villagers
+                    {t("about_villagers_title")}
                   </h3>
 
                   <div
@@ -625,9 +623,7 @@ const About = () => {
                       sm:leading-7
                     "
                   >
-                    Stay updated with notices and schemes, and
-                    raise complaints directly with your Gram
-                    Panchayat.
+                    {t("about_villagers_description")}
                   </p>
                 </div>
 
@@ -703,7 +699,7 @@ const About = () => {
                       sm:text-sm
                     "
                   >
-                    Explore Village
+                    {t("about_explore_village")}
 
                     <span className="transition-transform duration-300 group-hover/btn:translate-x-1">
                       →
@@ -727,19 +723,19 @@ const About = () => {
           }`}
         >
           <p className="text-xs font-medium text-text-muted sm:text-base">
-            Simple information.
+            {t("about_simple_information")}
 
             <span className="mx-1.5 text-primary-400 sm:mx-2">
               •
             </span>
 
-            Better communication.
+            {t("about_better_communication")}
 
             <span className="mx-1.5 text-primary-400 sm:mx-2">
               •
             </span>
 
-            Stronger villages.
+            {t("about_stronger_villages")}
           </p>
         </div>
 

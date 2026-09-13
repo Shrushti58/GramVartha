@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Check,
   ChevronLeft,
@@ -13,9 +14,8 @@ import {
 const steps = [
   {
     number: "01",
-    title: "Register Your Village",
-    description:
-      "Your Gram Panchayat registers the village on GramVartha and creates its digital village space.",
+    titleKey: "how_step_1_title",
+    descriptionKey: "how_step_1_description",
     icon: MapPin,
     image: "/illustrations/f1.webp",
     width: 680,
@@ -23,9 +23,8 @@ const steps = [
   },
   {
     number: "02",
-    title: "Admin & Official Access",
-    description:
-      "Panchayat administrators and authorised officials get access to manage notices, schemes and complaints.",
+    titleKey: "how_step_2_title",
+    descriptionKey: "how_step_2_description",
     icon: ShieldCheck,
     image: "/illustrations/f2.webp",
     width: 450,
@@ -33,9 +32,8 @@ const steps = [
   },
   {
     number: "03",
-    title: "Download GramVartha",
-    description:
-      "Villagers download the GramVartha app to access their village information anytime, anywhere.",
+    titleKey: "how_step_3_title",
+    descriptionKey: "how_step_3_description",
     icon: Download,
     image: "/mainscreen.webp",
     width: 640,
@@ -43,9 +41,8 @@ const steps = [
   },
   {
     number: "04",
-    title: "Explore Village Services",
-    description:
-      "Access QR-based notices, complaints, Work Guide, government schemes and the Scheme Assistant.",
+    titleKey: "how_step_4_title",
+    descriptionKey: "how_step_4_description",
     icon: Smartphone,
     image: "/notice.webp",
     width: 640,
@@ -53,9 +50,8 @@ const steps = [
   },
   {
     number: "05",
-    title: "Stay Informed",
-    description:
-      "Get important village updates, weather advisories and useful information directly through GramVartha.",
+    titleKey: "how_step_5_title",
+    descriptionKey: "how_step_5_description",
     icon: CloudSun,
     image: "/comp.webp",
     width: 640,
@@ -64,6 +60,7 @@ const steps = [
 ];
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
   const [active, setActive] = useState(2);
   const [direction, setDirection] = useState("next");
 
@@ -169,7 +166,7 @@ const HowItWorks = () => {
               sm:text-[10px]
             "
           >
-            How it works
+            {t("how_header")}
           </p>
 
           <h2
@@ -185,10 +182,10 @@ const HowItWorks = () => {
               lg:text-5xl
             "
           >
-            One village.
+            {t("how_heading_village")}
             <br />
             <span className="text-primary-400">
-              One connected journey.
+              {t("how_heading_journey")}
             </span>
           </h2>
 
@@ -206,8 +203,7 @@ const HowItWorks = () => {
               md:text-base
             "
           >
-            From your Panchayat's first registration to everyday
-            communication with villagers.
+            {t("how_description")}
           </p>
         </div>
 
@@ -350,7 +346,7 @@ const HowItWorks = () => {
                       }
                     `}
                   >
-                    {step.title}
+                    {t(step.titleKey)}
                   </span>
                 </button>
               );
@@ -450,7 +446,7 @@ const HowItWorks = () => {
                       sm:text-[9px]
                     "
                   >
-                    Step {current.number} of 05
+                    {t("how_step_of", { current: current.number })}
                   </span>
                 </div>
 
@@ -514,7 +510,7 @@ const HowItWorks = () => {
                     lg:text-4xl
                   "
                 >
-                  {current.title}
+                  {t(current.titleKey)}
                 </h3>
 
                 {/* Underline */}
@@ -544,7 +540,7 @@ const HowItWorks = () => {
                     sm:leading-6
                   "
                 >
-                  {current.description}
+                  {t(current.descriptionKey)}
                 </p>
 
                 {/* Bottom indicator */}
@@ -566,7 +562,7 @@ const HowItWorks = () => {
                   <div className="h-px w-9 bg-primary-200 sm:w-12" />
 
                   <span className="text-[9px] text-text-light sm:text-[10px]">
-                    GramVartha journey
+                    {t("how_journey_label")}
                   </span>
                 </div>
               </div>
@@ -714,7 +710,7 @@ const HowItWorks = () => {
                   "
                 >
                   <MapPin size={10} />
-                  Your village
+                  {t("how_your_village")}
                 </div>
               </div>
             </div>
@@ -740,7 +736,7 @@ const HowItWorks = () => {
           {/* Previous */}
           <button
             onClick={previous}
-            aria-label="Previous step"
+            aria-label={t("how_previous_step")}
             className="
               group
               flex
@@ -780,7 +776,7 @@ const HowItWorks = () => {
             </span>
 
             <span className="hidden sm:block">
-              Previous
+              {t("how_previous")}
             </span>
           </button>
 
@@ -792,7 +788,7 @@ const HowItWorks = () => {
                 onClick={() =>
                   goTo(index, index > active ? "next" : "prev")
                 }
-                aria-label={`Go to step ${index + 1}`}
+                aria-label={t("how_go_to_step", { step: index + 1 })}
                 className={`
                   h-1.5
                   rounded-full
@@ -811,7 +807,7 @@ const HowItWorks = () => {
           {/* Next */}
           <button
             onClick={next}
-            aria-label="Next step"
+            aria-label={t("how_next_step")}
             className="
               group
               flex
@@ -828,7 +824,7 @@ const HowItWorks = () => {
             "
           >
             <span className="hidden sm:block">
-              Next
+              {t("how_next")}
             </span>
 
             <span
@@ -878,11 +874,11 @@ const HowItWorks = () => {
               md:text-lg
             "
           >
-            From Panchayat
+            {t("how_from_panchayat")}
             <span className="mx-2 text-primary-400">
               →
             </span>
-            to every villager.
+            {t("how_to_every_villager")}
           </p>
         </div>
       </div>

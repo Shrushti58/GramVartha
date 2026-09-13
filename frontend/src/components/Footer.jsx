@@ -151,7 +151,7 @@ export default function Footer() {
               >
                 <img
                   src="/gramvarthalogo.png"
-                  alt="GramVartha"
+                  alt={t("footer_logo_alt")}
                   className="h-full w-full object-contain"
                 />
               </div>
@@ -248,7 +248,7 @@ export default function Footer() {
                   sm:text-sm
                 "
               >
-                How It Works
+                {t("nav_how_it_works")}
               </button>
 
               {/* Register */}
@@ -333,7 +333,7 @@ export default function Footer() {
                   hover:text-white/70
                 "
               >
-                Privacy Policy
+                {t("footer_privacy_policy")}
               </Link>
 
               <span
@@ -353,7 +353,7 @@ export default function Footer() {
                   hover:text-white/70
                 "
               >
-                Delete Account
+                {t("footer_delete_account")}
               </Link>
             </div>
           </div>

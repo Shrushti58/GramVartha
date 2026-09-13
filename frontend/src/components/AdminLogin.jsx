@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import * as api from '../services/api';
-import { useTheme } from '../context/ThemeContext';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import * as api from "../services/api";
+import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
-// ─── Skeleton Components ──────────────────────────────────────────────────────
+/* =========================================================
+   SKELETON COMPONENTS
+========================================================= */
 
 const LoginFormSkeleton = () => (
   <div className="space-y-4 animate-pulse">
@@ -13,31 +15,21 @@ const LoginFormSkeleton = () => (
       <div className="h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-1.5" />
       <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
     </div>
+
     <div>
       <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded mb-1.5" />
       <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl" />
     </div>
+
     <div className="h-11 w-full bg-gray-200 dark:bg-gray-700 rounded-xl mt-2" />
   </div>
 );
 
 const HeaderSkeleton = () => (
-  <div className="flex items-center justify-between mb-5 relative animate-pulse">
-    <div className="flex items-center gap-2.5">
-      <div className="w-9 h-9 bg-gray-200 dark:bg-gray-700 rounded-xl" />
-      <div>
-        <div className="h-2.5 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-1" />
-        <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded" />
-      </div>
-    </div>
-    <div className="h-7 w-28 bg-gray-200 dark:bg-gray-700 rounded-full" />
-  </div>
-);
-
-const HeadingSkeleton = () => (
-  <div className="mb-5 animate-pulse">
-    <div className="h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-1.5" />
-    <div className="h-3 w-56 bg-gray-200 dark:bg-gray-700 rounded" />
+  <div className="mb-6 animate-pulse">
+    <div className="h-3 w-28 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+    <div className="h-7 w-48 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+    <div className="h-3 w-64 bg-gray-200 dark:bg-gray-700 rounded" />
   </div>
 );
 
@@ -49,9 +41,10 @@ const DividerSkeleton = () => (
   </div>
 );
 
-const ToggleButtonSkeleton = () => (
+const ToggleSkeleton = () => (
   <div className="text-center space-y-3 animate-pulse">
     <div className="h-4 w-44 bg-gray-200 dark:bg-gray-700 rounded mx-auto" />
+
     <div className="flex items-center justify-center gap-2">
       <div className="h-3.5 w-3.5 bg-gray-200 dark:bg-gray-700 rounded" />
       <div className="h-3.5 w-28 bg-gray-200 dark:bg-gray-700 rounded" />
@@ -66,11 +59,21 @@ const BackLinkSkeleton = () => (
   </div>
 );
 
-// ─── Eye Icon Component ───────────────────────────────────────────────────────
+/* =========================================================
+   EYE ICON
+========================================================= */
 
 function EyeIcon({ open }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
       {open ? (
         <>
           <path
@@ -86,6 +89,7 @@ function EyeIcon({ open }) {
             strokeLinejoin="round"
             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
           />
+
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -97,68 +101,111 @@ function EyeIcon({ open }) {
   );
 }
 
-// ─── Main Login Component ─────────────────────────────────────────────────────
+/* =========================================================
+   MAIN COMPONENT
+========================================================= */
 
 const LoginPage = () => {
   const { t } = useTranslation();
   const { dark } = useTheme();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
+
   const [isLoading, setIsLoading] = useState(false);
   const [isRegisterMode, setIsRegisterMode] = useState(false);
+
   const [initialLoading, setInitialLoading] = useState(true);
+
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  /* =========================================================
+     INITIAL LOADING
+  ========================================================= */
+
+  useEffect(() => {
     const timer = setTimeout(() => {
       setInitialLoading(false);
-    }, 500);
+    }, 450);
+
     return () => clearTimeout(timer);
   }, []);
 
+  /* =========================================================
+     LOGIN
+  ========================================================= */
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
     setIsLoading(true);
+
     try {
       const res = await api.adminLogin(email, password);
+
       if (res.status === 200) {
         const profileRes = await api.getAdminProfile();
+
         const userRole = profileRes.data.role;
-        toast.success(t('login.success'));
+
+        toast.success(t("login.success"));
+
         setTimeout(() => {
-          if (userRole === 'superadmin') navigate("/admin/superadmin");
-          else if (userRole === 'admin') navigate("/admin/village");
-          else { toast.error(t('login.role_error')); navigate("/admin/login"); }
+          if (userRole === "superadmin") {
+            navigate("/admin/superadmin");
+          } else if (userRole === "admin") {
+            navigate("/admin/village");
+          } else {
+            toast.error(t("login.role_error"));
+            navigate("/admin/login");
+          }
         }, 500);
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || t('login.error'));
+      toast.error(
+        err.response?.data?.message || t("login.error")
+      );
     } finally {
       setIsLoading(false);
     }
   };
+
+  /* =========================================================
+     REGISTER
+  ========================================================= */
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
     setIsLoading(true);
+
     try {
       const res = await api.adminRegister(email, password);
+
       if (res.status === 201) {
-        toast.success(t('register.success'));
+        toast.success(t("register.success"));
+
         setIsRegisterMode(false);
-        setEmail('');
-        setPassword('');
+        setEmail("");
+        setPassword("");
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || t('register.error'));
+      toast.error(
+        err.response?.data?.message || t("register.error")
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
+  /* =========================================================
+     STYLES
+  ========================================================= */
+
   const inputClass =
-    "w-full px-3.5 py-2.5 rounded-xl border " +
+    "w-full h-[44px] px-3.5 py-2.5 rounded-xl border " +
     "bg-white dark:bg-dark-surface2 " +
     "border-border dark:border-dark-border " +
     "text-text-primary dark:text-dark-text-primary " +
@@ -170,224 +217,794 @@ const LoginPage = () => {
     "disabled:opacity-50 disabled:cursor-not-allowed";
 
   const labelClass =
-    "block text-[11px] font-semibold uppercase tracking-wider " +
-    "text-text-secondary dark:text-dark-text-muted mb-1";
+    "block text-[11px] font-semibold " +
+    "text-text-primary dark:text-dark-text-primary mb-1.5";
 
-  const isInitialLoading = initialLoading;
+  /* =========================================================
+     RENDER
+  ========================================================= */
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow hidden sm:block" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium hidden md:block" />
-        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast hidden lg:block" />
-        <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="mesh-admin" patternUnits="userSpaceOnUse" width="40" height="40">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary-300 dark:text-primary-700" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#mesh-admin)" />
-        </svg>
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
-      </div>
+    <div
+      className="
+        min-h-screen
+        w-full
+        bg-accent-mist
+        dark:bg-dark-background
+        flex
+        items-center
+        justify-center
+        overflow-hidden
+        font-sans
+      "
+    >
+      <div className="w-full min-h-screen lg:h-screen flex">
 
-      {/* Decorative circles */}
-      <div className="absolute top-10 left-10 w-24 h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
-      <div className="absolute bottom-10 right-10 w-32 h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
+        {/* =====================================================
+            LEFT EDITORIAL PANEL
+        ===================================================== */}
 
-      {/* Main Card */}
-      <div className="relative z-10 w-full max-w-md mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl shadow-2xl dark:shadow-dark-2xl p-5 animate-fade-in-up">
-        <div className="absolute -top-2 -right-2 w-16 h-16 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
+        <section
+          className="
+            hidden
+            lg:flex
+            lg:w-[52%]
+            items-center
+            justify-center
+            px-12
+            xl:px-16
+          "
+        >
+          <div className="w-full max-w-[560px]">
 
-        {isInitialLoading ? (
-          <HeaderSkeleton />
-        ) : (
-          <div className="flex items-center justify-between mb-5 relative">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
-                <img src="/gramvarthalogo.png" alt="GramVartha" className="w-full h-full object-contain" />
-              </div>
-              <div>
-                <p className="text-[11px] font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
-                  GramVartha
-                </p>
-                <h1 className="text-sm font-bold text-text-primary dark:text-dark-text-primary leading-tight">
-                  {isRegisterMode ? t('register.title') : t('login.title')}
-                </h1>
-              </div>
-            </div>
-            <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2.5 py-1 rounded-full text-[10px] font-medium shadow-sm">
-              <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-              {t('login.secure_portal')}
-            </div>
-          </div>
-        )}
+            {/* Small label */}
 
-        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-5" />
+            <div className="mb-5">
+              <span
+                className="
+                  inline-flex
+                  items-center
+                  gap-2
+                  text-[10px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.18em]
+                  text-primary-500
+                  dark:text-primary-300
+                "
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-400" />
 
-        {isInitialLoading ? (
-          <HeadingSkeleton />
-        ) : (
-          <div className="mb-5">
-            <h2 className="text-base font-semibold text-text-primary dark:text-dark-text-primary">
-              {isRegisterMode ? t('register.heading') : t('login.heading')}
-            </h2>
-            <p className="text-[11px] text-text-muted dark:text-dark-text-muted mt-1">
-              {isRegisterMode ? t('register.subheading') : t('login.subheading')}
-            </p>
-          </div>
-        )}
-
-        {isInitialLoading ? (
-          <LoginFormSkeleton />
-        ) : (
-          <form onSubmit={isRegisterMode ? handleRegister : handleLogin} className="space-y-4">
-            <div>
-              <label htmlFor="email" className={labelClass}>{t('login.email')}</label>
-              <input 
-                id="email" 
-                type="email" 
-                required 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                placeholder={t('login.email_placeholder')} 
-                disabled={isLoading} 
-                className={inputClass}
-              />
+                {t("admin_portal_label")}
+              </span>
             </div>
 
-            <div>
-              <label htmlFor="password" className={labelClass}>{t('login.password')}</label>
-              <div className="relative">
-                <input 
-                  id="password" 
-                  type={showPassword ? "text" : "password"} 
-                  required 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
-                  placeholder={t('login.password_placeholder')} 
-                  disabled={isLoading} 
-                  className={inputClass + " pr-9"}
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowPassword(!showPassword)} 
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  tabIndex={-1}
+            {/* Main heading */}
+
+            <h1
+              className="
+                text-[50px]
+                xl:text-[60px]
+                font-bold
+                leading-[0.98]
+                tracking-[-0.055em]
+                text-text-primary
+                dark:text-dark-text-primary
+              "
+            >
+              {t("admin_login_heading")}
+              <br />
+
+              <span className="relative inline-block mt-2">
+                <span
+                  className="
+                    italic
+                    font-extrabold
+                    text-primary-500
+                    dark:text-primary-300
+                    tracking-[-0.065em]
+                  "
                 >
-                  <EyeIcon open={showPassword} />
-                </button>
+                  {t("admin_login_heading_panchayat")}
+                </span>
+
+                {/* Hand-drawn underline */}
+
+                <svg
+                  className="
+                    absolute
+                    left-0
+                    -bottom-3
+                    w-full
+                    h-[10px]
+                  "
+                  viewBox="0 0 260 10"
+                  fill="none"
+                  preserveAspectRatio="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M3 7C50 8 90 3 135 5C175 7 215 3 257 5"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+            </h1>
+
+            {/* Description */}
+
+            <p
+              className="
+                mt-8
+                max-w-[430px]
+                text-sm
+                xl:text-[15px]
+                leading-7
+                text-text-secondary
+                dark:text-dark-text-secondary
+              "
+            >
+              {t("admin_login_description")}
+            </p>
+
+            {/* Small capability pills */}
+
+            <div className="mt-8 flex flex-wrap gap-2">
+              {[
+                "admin_village_management",
+                "admin_notices",
+                "admin_schemes",
+                "admin_analytics",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="
+                    px-3
+                    py-1.5
+                    rounded-full
+                    border
+                    border-border
+                    dark:border-dark-border
+                    bg-white/70
+                    dark:bg-dark-surface
+                    text-[10px]
+                    font-medium
+                    text-text-secondary
+                    dark:text-dark-text-secondary
+                  "
+                >
+                  {t(item)}
+                </span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* =====================================================
+            RIGHT FORM PANEL
+        ===================================================== */}
+
+        <section
+          className="
+            w-full
+            lg:w-[48%]
+            min-h-screen
+            flex
+            items-center
+            justify-center
+            px-4
+            sm:px-6
+            lg:px-8
+            py-6
+            bg-white
+            dark:bg-dark-surface
+            overflow-y-auto
+          "
+        >
+          <div className="w-full max-w-[390px]">
+
+            {/* =================================================
+                MOBILE HEADING
+            ================================================= */}
+
+            <div className="lg:hidden mb-7">
+
+              <div className="mb-4">
+                <span
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.16em]
+                    text-primary-500
+                    dark:text-primary-300
+                  "
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary-400" />
+
+                  {t("admin_portal_label")}
+                </span>
               </div>
+
+              <h1
+                className="
+                  text-[31px]
+                  sm:text-[35px]
+                  font-bold
+                  leading-[1]
+                  tracking-[-0.05em]
+                  text-text-primary
+                  dark:text-dark-text-primary
+                "
+              >
+                {t("admin_login_heading")}
+                <br />
+
+                <span className="relative inline-block mt-1">
+                  <span
+                    className="
+                      italic
+                      font-extrabold
+                      text-primary-500
+                      dark:text-primary-300
+                      tracking-[-0.06em]
+                    "
+                  >
+                    {t("admin_login_heading_panchayat")}
+                  </span>
+
+                  <svg
+                    className="
+                      absolute
+                      left-0
+                      -bottom-2
+                      w-full
+                      h-[8px]
+                    "
+                    viewBox="0 0 260 10"
+                    fill="none"
+                    preserveAspectRatio="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M3 7C50 8 90 3 135 5C175 7 215 3 257 5"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+              </h1>
+
+              <p
+                className="
+                  mt-6
+                  text-xs
+                  leading-6
+                  text-text-secondary
+                  dark:text-dark-text-secondary
+                "
+              >
+                {t("admin_login_mobile_description")}
+              </p>
             </div>
 
-            <button 
-              type="submit" 
-              disabled={isLoading} 
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-1 relative overflow-hidden group"
+            {/* =================================================
+                FORM CARD
+            ================================================= */}
+
+            <div
+              className="
+                rounded-[24px]
+                border
+                border-border
+                dark:border-dark-border
+                bg-white
+                dark:bg-dark-surface
+                p-5
+                sm:p-6
+                shadow-[0_12px_40px_rgba(59,20,8,0.07)]
+                dark:shadow-none
+              "
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  {isRegisterMode ? t('register.loading') : t('login.loading')}
-                </>
+
+              {/* =================================================
+                  HEADER
+              ================================================= */}
+
+              {initialLoading ? (
+                <HeaderSkeleton />
               ) : (
-                <>
-                  {isRegisterMode ? t('register.button') : t('login.button')}
-                  <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </>
+                <div className="mb-6">
+
+                  <div className="flex items-center justify-between gap-3 mb-2">
+
+                    <p
+                      className="
+                        text-[10px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.15em]
+                        text-primary-500
+                        dark:text-primary-300
+                      "
+                    >
+                      GramVartha
+                    </p>
+
+                    <span
+                      className="
+                        inline-flex
+                        items-center
+                        gap-1.5
+                        px-2.5
+                        py-1
+                        rounded-full
+                        bg-primary-50
+                        dark:bg-primary-900/30
+                        border
+                        border-primary-100
+                        dark:border-primary-800
+                        text-[9px]
+                        font-medium
+                        text-primary-600
+                        dark:text-primary-300
+                      "
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary-400" />
+
+                      {t("login.secure_portal")}
+                    </span>
+
+                  </div>
+
+                  <h2
+                    className="
+                      text-xl
+                      font-bold
+                      tracking-[-0.025em]
+                      text-text-primary
+                      dark:text-dark-text-primary
+                    "
+                  >
+                    {isRegisterMode
+                      ? t("register.title")
+                      : t("login.title")}
+                  </h2>
+
+                  <p
+                    className="
+                      text-[11px]
+                      mt-1
+                      leading-5
+                      text-text-muted
+                      dark:text-dark-text-muted
+                    "
+                  >
+                    {isRegisterMode
+                      ? t("register.subheading")
+                      : t("login.subheading")}
+                  </p>
+
+                </div>
               )}
-            </button>
-          </form>
-        )}
 
-        {isInitialLoading ? (
-          <DividerSkeleton />
-        ) : (
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-border dark:bg-dark-border" />
-            <span className="text-[11px] text-text-light dark:text-dark-text-muted font-medium">{t('common.or')}</span>
-            <div className="flex-1 h-px bg-border dark:bg-dark-border" />
-          </div>
-        )}
+              {/* =================================================
+                  DIVIDER
+              ================================================= */}
 
-        {isInitialLoading ? (
-          <ToggleButtonSkeleton />
-        ) : (
-          <div className="text-center space-y-3">
-            <button 
-              type="button" 
-              onClick={() => {
-                setIsRegisterMode(!isRegisterMode);
-                setEmail('');
-                setPassword('');
-              }} 
-              className="inline-flex items-center gap-1.5 text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
-            >
-              {isRegisterMode ? t('login.switch') : t('register.switch')}
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+              {!initialLoading && (
+                <div className="h-px bg-border dark:bg-dark-border mb-6" />
+              )}
 
-            <div className="flex items-center justify-center gap-2 text-[11px] text-text-light dark:text-dark-text-muted">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              {t('login.secure_access')}
+              {/* =================================================
+                  FORM HEADING
+              ================================================= */}
+
+              {initialLoading ? (
+                <div className="mb-5">
+                  <div className="h-6 w-40 bg-gray-200 dark:bg-gray-700 rounded mb-2 animate-pulse" />
+                  <div className="h-3 w-60 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              ) : (
+                <div className="mb-5">
+
+                  <h3
+                    className="
+                      text-base
+                      font-semibold
+                      text-text-primary
+                      dark:text-dark-text-primary
+                    "
+                  >
+                    {isRegisterMode
+                      ? t("register.heading")
+                      : t("login.heading")}
+                  </h3>
+
+                  <p
+                    className="
+                      text-[11px]
+                      mt-1
+                      text-text-muted
+                      dark:text-dark-text-muted
+                    "
+                  >
+                    {isRegisterMode
+                      ? t("register.subheading")
+                      : t("login.subheading")}
+                  </p>
+
+                </div>
+              )}
+
+              {/* =================================================
+                  FORM
+              ================================================= */}
+
+              {initialLoading ? (
+                <LoginFormSkeleton />
+              ) : (
+                <form
+                  onSubmit={
+                    isRegisterMode
+                      ? handleRegister
+                      : handleLogin
+                  }
+                  className="space-y-4"
+                >
+
+                  {/* EMAIL */}
+
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className={labelClass}
+                    >
+                      {t("login.email")}
+                    </label>
+
+                    <input
+                      id="email"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) =>
+                        setEmail(e.target.value)
+                      }
+                      placeholder={t(
+                        "login.email_placeholder"
+                      )}
+                      disabled={isLoading}
+                      autoComplete="email"
+                      className={inputClass}
+                    />
+                  </div>
+
+                  {/* PASSWORD */}
+
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className={labelClass}
+                    >
+                      {t("login.password")}
+                    </label>
+
+                    <div className="relative">
+
+                      <input
+                        id="password"
+                        type={
+                          showPassword
+                            ? "text"
+                            : "password"
+                        }
+                        required
+                        value={password}
+                        onChange={(e) =>
+                          setPassword(e.target.value)
+                        }
+                        placeholder={t(
+                          "login.password_placeholder"
+                        )}
+                        disabled={isLoading}
+                        autoComplete={
+                          isRegisterMode
+                            ? "new-password"
+                            : "current-password"
+                        }
+                        className={
+                          inputClass + " pr-10"
+                        }
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowPassword(
+                            !showPassword
+                          )
+                        }
+                        className="
+                          absolute
+                          right-3
+                          top-1/2
+                          -translate-y-1/2
+                          p-1
+                          text-text-light
+                          dark:text-dark-text-muted
+                          hover:text-primary-600
+                          dark:hover:text-primary-300
+                          transition-colors
+                        "
+                        tabIndex={-1}
+                        aria-label={
+                          showPassword
+                            ? "Hide password"
+                            : "Show password"
+                        }
+                      >
+                        <EyeIcon
+                          open={showPassword}
+                        />
+                      </button>
+
+                    </div>
+                  </div>
+
+                  {/* SUBMIT */}
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="
+                      w-full
+                      h-[44px]
+                      mt-2
+                      flex
+                      items-center
+                      justify-center
+                      gap-2
+                      px-4
+                      rounded-xl
+                      bg-primary-600
+                      hover:bg-primary-700
+                      active:bg-primary-800
+                      text-white
+                      text-sm
+                      font-semibold
+                      transition-all
+                      duration-200
+                      shadow-sm
+                      hover:shadow-md
+                      disabled:opacity-50
+                      disabled:cursor-not-allowed
+                    "
+                  >
+
+                    {isLoading ? (
+                      <>
+                        <svg
+                          className="animate-spin w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+
+                        {isRegisterMode
+                          ? t("register.loading")
+                          : t("login.loading")}
+                      </>
+                    ) : (
+                      <>
+                        {isRegisterMode
+                          ? t("register.button")
+                          : t("login.button")}
+
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          aria-hidden="true"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </>
+                    )}
+
+                  </button>
+
+                </form>
+              )}
+
+              {/* =================================================
+                  DIVIDER
+              ================================================= */}
+
+              {initialLoading ? (
+                <DividerSkeleton />
+              ) : (
+                <div className="flex items-center gap-3 my-5">
+
+                  <div className="flex-1 h-px bg-border dark:bg-dark-border" />
+
+                  <span
+                    className="
+                      text-[10px]
+                      font-medium
+                      text-text-light
+                      dark:text-dark-text-muted
+                    "
+                  >
+                    {t("common.or")}
+                  </span>
+
+                  <div className="flex-1 h-px bg-border dark:bg-dark-border" />
+
+                </div>
+              )}
+
+              {/* =================================================
+                  SWITCH LOGIN / REGISTER
+              ================================================= */}
+
+              {initialLoading ? (
+                <ToggleSkeleton />
+              ) : (
+                <div className="text-center">
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsRegisterMode(
+                        !isRegisterMode
+                      );
+
+                      setEmail("");
+                      setPassword("");
+                      setShowPassword(false);
+                    }}
+                    className="
+                      inline-flex
+                      items-center
+                      gap-1.5
+                      text-xs
+                      font-semibold
+                      text-primary-500
+                      dark:text-primary-300
+                      hover:text-primary-600
+                      dark:hover:text-primary-200
+                      transition-colors
+                    "
+                  >
+                    {isRegisterMode
+                      ? t("login.switch")
+                      : t("register.switch")}
+
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* Secure text */}
+
+                  <div
+                    className="
+                      flex
+                      items-center
+                      justify-center
+                      gap-1.5
+                      mt-4
+                      text-[10px]
+                      text-text-light
+                      dark:text-dark-text-muted
+                    "
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
+                    </svg>
+
+                    {t("login.secure_access")}
+                  </div>
+
+                </div>
+              )}
+
+              {/* =================================================
+                  BACK HOME
+              ================================================= */}
+
+              {initialLoading ? (
+                <BackLinkSkeleton />
+              ) : (
+                <Link
+                  to="/"
+                  className="
+                    flex
+                    items-center
+                    justify-center
+                    gap-1.5
+                    text-xs
+                    text-text-muted
+                    dark:text-dark-text-muted
+                    hover:text-text-primary
+                    dark:hover:text-dark-text-primary
+                    transition-colors
+                    mt-5
+                    pt-4
+                    border-t
+                    border-border
+                    dark:border-dark-border
+                  "
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+
+                  {t("common.back_home")}
+                </Link>
+              )}
+
             </div>
           </div>
-        )}
-
-        {isInitialLoading ? (
-          <BackLinkSkeleton />
-        ) : (
-          <Link 
-            to="/" 
-            className="flex items-center justify-center gap-1.5 text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-5 pt-4 border-t border-border dark:border-dark-border"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('common.back_home')}
-          </Link>
-        )}
+        </section>
       </div>
-
-      <style jsx>{`
-        @keyframes float-slow {0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(20px,-20px) scale(1.1);}}
-        @keyframes float-medium {0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-15px,15px) scale(1.05);}}
-        @keyframes float-fast {0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(10px,-10px) scale(1.08);}}
-        @keyframes pulse-slow {0%,100%{opacity:0.3;transform:scale(1);}50%{opacity:0.5;transform:scale(1.05);}}
-        @keyframes fade-in-up {from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-        
-        .animate-float-slow{animation:float-slow 12s ease-in-out infinite;}
-        .animate-float-medium{animation:float-medium 10s ease-in-out infinite;}
-        .animate-float-fast{animation:float-fast 8s ease-in-out infinite;}
-        .animate-pulse-slow{animation:pulse-slow 4s ease-in-out infinite;}
-        .animate-fade-in-up{animation:fade-in-up 0.5s ease-out;}
-        .animation-delay-1000{animation-delay:1s;}
-        .bg-gradient-radial{background-image: radial-gradient(circle at center, var(--tw-gradient-stops));}
-        
-        /* Mobile responsive */
-        @media (max-width: 640px) {
-          .max-w-md {
-            max-width: 92%;
-          }
-          
-          input, button {
-            font-size: 14px;
-          }
-        }
-      `}</style>
     </div>
   );
 };

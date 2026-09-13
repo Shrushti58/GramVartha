@@ -145,7 +145,7 @@ export default function Navbar() {
                 transition-all
               "
             >
-              How It Works
+              {t("nav_how_it_works")}
             </button>
           </div>
 
@@ -163,7 +163,7 @@ export default function Navbar() {
                 dark:hover:bg-white/10
                 transition-all
               "
-              aria-label="Toggle theme"
+              aria-label={t("nav_toggle_theme")}
             >
               {dark ? (
                 <svg
@@ -212,7 +212,7 @@ export default function Navbar() {
                   transition-all
                 "
               >
-                Login
+                {t("nav_login")}
               </button>
 
               {isLoginOpen && (
@@ -240,7 +240,7 @@ export default function Navbar() {
                       dark:hover:bg-dark-surface2
                     "
                   >
-                    Officials Login
+                    {t("nav_officials_login")}
                   </Link>
 
                   <Link
@@ -254,7 +254,7 @@ export default function Navbar() {
                       dark:hover:bg-dark-surface2
                     "
                   >
-                    Admin Login
+                    {t("nav_admin_login")}
                   </Link>
                 </div>
               )}
@@ -280,7 +280,7 @@ export default function Navbar() {
                 transition-all duration-200
               "
             >
-              Register Village
+              {t("register_village")}
 
               <svg
                 className="w-4 h-4"
@@ -313,6 +313,8 @@ export default function Navbar() {
               {dark ? "☀️" : "🌙"}
             </button>
 
+            <LanguageSwitcher />
+
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="
@@ -322,7 +324,7 @@ export default function Navbar() {
                 bg-gray-100
                 dark:bg-dark-surface2
               "
-              aria-label="Toggle menu"
+              aria-label={t("nav_toggle_menu")}
             >
               {isMenuOpen ? (
                 <svg
@@ -398,7 +400,7 @@ export default function Navbar() {
                 dark:hover:bg-dark-surface2
               "
             >
-              How It Works
+              {t("nav_how_it_works")}
             </button>
 
             <div className="border-t border-gray-200 dark:border-dark-border my-2" />
@@ -414,7 +416,7 @@ export default function Navbar() {
                 dark:hover:bg-dark-surface2
               "
             >
-              Officials Login
+              {t("nav_officials_login")}
             </Link>
 
             <Link
@@ -428,7 +430,7 @@ export default function Navbar() {
                 dark:hover:bg-dark-surface2
               "
             >
-              Admin Login
+              {t("nav_admin_login")}
             </Link>
 
             <Link
@@ -445,7 +447,7 @@ export default function Navbar() {
                 text-sm font-semibold
               "
             >
-              Register Village
+              {t("register_village")}
               <span>→</span>
             </Link>
           </div>

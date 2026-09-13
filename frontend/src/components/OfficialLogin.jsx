@@ -7,27 +7,69 @@ import { officialLogin } from "../services/api";
 export default function OfficialLogin({ onLogin }) {
   const { dark } = useTheme();
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState({ text: "", success: false });
+
+  const [message, setMessage] = useState({
+    text: "",
+    success: false,
+  });
+
   const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
+  /* =========================================
+     HANDLE INPUT
+  ========================================= */
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
+
+  /* =========================================
+     LOGIN
+  ========================================= */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     setLoading(true);
-    setMessage({ text: "", success: false });
+
+    setMessage({
+      text: "",
+      success: false,
+    });
+
     try {
-      const res = await officialLogin(formData.email, formData.password);
-      setMessage({ text: res.data.message || t('official.login.success'), success: true });
-      if (res.data.official) navigate("/officials/dashboard");
+      const res = await officialLogin(
+        formData.email,
+        formData.password
+      );
+
+      setMessage({
+        text:
+          res.data.message ||
+          t("official.login.success"),
+        success: true,
+      });
+
+      if (res.data.official) {
+        navigate("/officials/dashboard");
+      }
     } catch (err) {
       setMessage({
-        text: err.response?.data?.message || t('official.login.error'),
+        text:
+          err.response?.data?.message ||
+          t("official.login.error"),
         success: false,
       });
     } finally {
@@ -35,8 +77,12 @@ export default function OfficialLogin({ onLogin }) {
     }
   };
 
+  /* =========================================
+     STYLES
+  ========================================= */
+
   const inputClass =
-    "w-full px-3.5 py-2.5 rounded-xl border " +
+    "w-full px-3 py-2.5 rounded-xl border " +
     "bg-white dark:bg-dark-surface2 " +
     "border-border dark:border-dark-border " +
     "text-text-primary dark:text-dark-text-primary " +
@@ -49,199 +95,766 @@ export default function OfficialLogin({ onLogin }) {
 
   const labelClass =
     "block text-[11px] font-semibold uppercase tracking-wider " +
-    "text-text-secondary dark:text-dark-text-muted mb-1";
+    "text-text-secondary dark:text-dark-text-muted mb-1.5";
+
+  /* =========================================
+     JSX
+  ========================================= */
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex items-center justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background">
-      
-      {/* Animated Gradient Background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
-        
-        {/* Floating Orbs - hidden on mobile */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow hidden sm:block" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium hidden md:block" />
-        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast hidden lg:block" />
-        
-        {/* Mesh Gradient Pattern */}
-        <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="mesh-login" patternUnits="userSpaceOnUse" width="40" height="40">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary-300 dark:text-primary-700" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#mesh-login)" />
-        </svg>
-        
-        {/* Radial Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
-      </div>
+    <div
+      className="
+        min-h-[100svh]
+        w-full
+        bg-accent-mist
+        dark:bg-dark-background
+        text-text-primary
+        dark:text-dark-text-primary
+        transition-colors duration-300
+        overflow-x-hidden
+      "
+    >
+      <div
+        className="
+          min-h-[100svh]
+          max-w-[1200px]
+          mx-auto
+          grid
+          lg:grid-cols-[0.9fr_1.1fr]
+          gap-8
+          lg:gap-14
+          px-4
+          sm:px-6
+          lg:px-10
+          xl:px-14
+          py-5
+          lg:py-6
+          items-center
+        "
+      >
 
-      {/* Decorative Elements - hidden on mobile */}
-      <div className="absolute top-10 left-10 w-20 h-20 sm:w-24 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
-      <div className="absolute bottom-10 right-10 w-24 h-24 sm:w-32 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
-      
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-[92%] sm:max-w-md mx-4 bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-5 sm:p-7 animate-fade-in-up">
-        
-        {/* Card Header Glow Effect */}
-        <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 w-14 h-14 sm:w-20 sm:h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
-        
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-5 sm:mb-6 relative">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
-              <img
-                src="/gramvarthalogo.png"
-                alt="GramVartha"
-                className="w-full h-full object-contain"
+        {/* =====================================
+            LEFT SIDE
+        ===================================== */}
+
+        <section
+          className="
+            hidden
+            lg:flex
+            flex-col
+            justify-center
+            min-h-0
+          "
+        >
+          <div className="max-w-md">
+
+            {/* Small label */}
+
+            <div
+              className="
+                inline-flex
+                items-center
+                gap-2
+                mb-5
+                text-[10px]
+                font-semibold
+                uppercase
+                tracking-[0.18em]
+                text-text-muted
+                dark:text-dark-text-muted
+              "
+            >
+              <span
+                className="
+                  w-6
+                  h-px
+                  bg-primary-500
+                "
               />
+
+              {t("official_login_access_label")}
             </div>
-            <div>
-              <p className="text-[10px] sm:text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
-                GramVartha
+
+            {/* Heading */}
+
+            <h1
+              className="
+                text-4xl
+                xl:text-5xl
+                font-semibold
+                tracking-[-0.055em]
+                leading-[0.98]
+                text-text-primary
+                dark:text-dark-text-primary
+              "
+            >
+              {t("official_login_heading")}
+
+              <span
+                className="
+                  block
+                  italic
+                  font-extrabold
+                  text-primary-500
+                  tracking-[-0.07em]
+                  mt-1
+                "
+              >
+                GramVartha.
+              </span>
+            </h1>
+
+            {/* Hand drawn underline */}
+
+            <div
+              className="
+                mt-3
+                relative
+                w-[170px]
+                h-4
+              "
+            >
+              <svg
+                viewBox="0 0 220 24"
+                className="
+                  absolute
+                  left-0
+                  top-0
+                  w-[170px]
+                  h-4
+                  text-primary-500
+                "
+                fill="none"
+              >
+                <path
+                  d="M4 13C45 19 112 5 216 11"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+
+            {/* Description */}
+
+            <p
+              className="
+                mt-5
+                text-sm
+                leading-6
+                text-text-secondary
+                dark:text-dark-text-secondary
+                max-w-sm
+              "
+            >
+              {t("official_login_desktop_description")}
+            </p>
+
+            {/* Bottom statement */}
+
+            <div
+              className="
+                mt-8
+                pt-5
+                border-t
+                border-border
+                dark:border-dark-border
+                max-w-sm
+              "
+            >
+              <p
+                className="
+                  text-[10px]
+                  font-semibold
+                  uppercase
+                  tracking-[0.16em]
+                  text-text-muted
+                  dark:text-dark-text-muted
+                  mb-2
+                "
+              >
+                {t("official_login_account_label")}
               </p>
-              <h1 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
-                {t('official.login.title')}
-              </h1>
+
+              <p
+                className="
+                  text-sm
+                  leading-6
+                  text-text-secondary
+                  dark:text-dark-text-secondary
+                "
+              >
+                {t("official_login_account_description")}
+              </p>
             </div>
           </div>
-          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium shadow-sm self-start sm:self-auto">
-            <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-            {t('official.login.badge')}
+        </section>
+
+        {/* =====================================
+            MOBILE HEADING
+        ===================================== */}
+
+        <div
+          className="
+            lg:hidden
+            pt-2
+            pb-1
+          "
+        >
+          <div
+            className="
+              flex
+              items-center
+              gap-2
+              mb-3
+              text-[10px]
+              font-semibold
+              uppercase
+              tracking-[0.18em]
+              text-text-muted
+              dark:text-dark-text-muted
+            "
+          >
+            <span
+              className="
+                w-5
+                h-px
+                bg-primary-500
+              "
+            />
+
+            {t("official_login_access_label")}
           </div>
-        </div>
 
-        {/* Divider with Gradient */}
-        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-5 sm:mb-6" />
+          <h1
+            className="
+              text-3xl
+              sm:text-4xl
+              font-semibold
+              tracking-[-0.05em]
+              leading-[1]
+              text-text-primary
+              dark:text-dark-text-primary
+            "
+          >
+            {t("official_login_heading")}{" "}
 
-        {/* Heading */}
-        <div className="mb-5 sm:mb-6">
-          <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-dark-text-primary">
-            {t('official.login.welcome')}
-          </h2>
-          <p className="text-[11px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-1">
-            {t('official.login.subtitle')}
+            <span
+              className="
+                italic
+                font-extrabold
+                text-primary-500
+              "
+            >
+              GramVartha.
+            </span>
+          </h1>
+
+          <p
+            className="
+              mt-3
+              text-sm
+              leading-6
+              text-text-secondary
+              dark:text-dark-text-secondary
+              max-w-lg
+            "
+          >
+            {t("official_login_mobile_description")}
           </p>
         </div>
 
-        {/* Status message */}
-        {message.text && (
+        {/* =====================================
+            LOGIN CARD
+        ===================================== */}
+
+        <section
+          className="
+            w-full
+            flex
+            justify-center
+            lg:justify-end
+          "
+        >
           <div
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs border mb-5 animate-slide-down ${
-              message.success
-                ? "bg-primary-50 dark:bg-primary-900/30 border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300"
-                : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400"
-            }`}
+            className="
+              w-full
+              max-w-[500px]
+              bg-white
+              dark:bg-dark-surface
+              border
+              border-border
+              dark:border-dark-border
+              rounded-2xl
+              sm:rounded-3xl
+              shadow-sm
+              dark:shadow-black/20
+              p-5
+              sm:p-6
+              lg:p-7
+            "
           >
-            <svg
-              className="w-3 h-3 flex-shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+
+            {/* =================================
+                CARD HEADER
+            ================================= */}
+
+            <div
+              className="
+                flex
+                items-start
+                justify-between
+                gap-4
+                mb-5
+              "
             >
-              {message.success ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              )}
-            </svg>
-            {message.text}
-          </div>
-        )}
+              <div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="email" className={labelClass}>
-              {t('official.login.email')}
-            </label>
-            <input
-              id="email"
-              type="email"
-              name="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder={t('official.login.email_placeholder')}
-              disabled={loading}
-              className={inputClass}
-            />
-          </div>
+                <p
+                  className="
+                    text-[10px]
+                    font-semibold
+                    uppercase
+                    tracking-[0.16em]
+                    text-text-muted
+                    dark:text-dark-text-muted
+                    mb-1
+                  "
+                >
+                  GramVartha
+                </p>
 
-          <div>
-            <label htmlFor="password" className={labelClass}>
-              {t('official.login.password')}
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                name="password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                placeholder={t('official.login.password_placeholder')}
-                disabled={loading}
-                className={inputClass + " pr-9"}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                tabIndex={-1}
-                aria-label={showPassword ? t('official.login.hide_password') : t('official.login.show_password')}
+                <h2
+                  className="
+                    text-xl
+                    sm:text-2xl
+                    font-semibold
+                    tracking-[-0.035em]
+                    text-text-primary
+                    dark:text-dark-text-primary
+                  "
+                >
+                  {t("official.login.title")}
+                </h2>
+
+              </div>
+
+              <div
+                className="
+                  inline-flex
+                  items-center
+                  gap-1.5
+                  px-2.5
+                  py-1
+                  rounded-full
+                  bg-primary-50
+                  dark:bg-primary-900/30
+                  border
+                  border-primary-100
+                  dark:border-primary-800
+                  text-[10px]
+                  font-medium
+                  text-primary-600
+                  dark:text-primary-400
+                  flex-shrink-0
+                "
               >
-                <EyeIcon open={showPassword} />
-              </button>
-            </div>
-          </div>
+                <span
+                  className="
+                    w-1.5
+                    h-1.5
+                    rounded-full
+                    bg-primary-500
+                    animate-pulse
+                  "
+                />
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 mt-1 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            {loading ? (
-              <>
+                {t("official.login.badge")}
+              </div>
+            </div>
+
+            {/* Divider */}
+
+            <div
+              className="
+                h-px
+                bg-border
+                dark:bg-dark-border
+                mb-5
+              "
+            />
+
+            {/* =================================
+                WELCOME
+            ================================= */}
+
+            <div className="mb-5">
+
+              <h3
+                className="
+                  text-base
+                  sm:text-lg
+                  font-semibold
+                  text-text-primary
+                  dark:text-dark-text-primary
+                  tracking-[-0.02em]
+                "
+              >
+                {t("official.login.welcome")}
+              </h3>
+
+              <p
+                className="
+                  text-[11px]
+                  sm:text-xs
+                  text-text-muted
+                  dark:text-dark-text-muted
+                  mt-1
+                  leading-5
+                "
+              >
+                {t("official.login.subtitle")}
+              </p>
+
+            </div>
+
+            {/* =================================
+                MESSAGE
+            ================================= */}
+
+            {message.text && (
+              <div
+                className={`
+                  flex
+                  items-center
+                  gap-2
+                  px-3
+                  py-2.5
+                  rounded-xl
+                  text-xs
+                  border
+                  mb-4
+                  ${
+                    message.success
+                      ? `
+                        bg-primary-50
+                        dark:bg-primary-900/30
+                        border-primary-200
+                        dark:border-primary-700
+                        text-primary-700
+                        dark:text-primary-300
+                      `
+                      : `
+                        bg-red-50
+                        dark:bg-red-900/20
+                        border-red-200
+                        dark:border-red-800
+                        text-red-600
+                        dark:text-red-400
+                      `
+                  }
+                `}
+              >
+
                 <svg
-                  className="animate-spin w-3.5 h-3.5"
+                  className="
+                    w-3.5
+                    h-3.5
+                    flex-shrink-0
+                  "
                   fill="none"
+                  stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
+                  {message.success ? (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  ) : (
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  )}
                 </svg>
-                {t('official.login.signing_in')}
-              </>
-            ) : (
-              <>
-                {t('official.login.login_button')}
+
+                <span>{message.text}</span>
+
+              </div>
+            )}
+
+            {/* =================================
+                FORM
+            ================================= */}
+
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4"
+            >
+
+              {/* Email */}
+
+              <div>
+
+                <label
+                  htmlFor="email"
+                  className={labelClass}
+                >
+                  {t("official.login.email")}
+                </label>
+
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  required
+                  autoComplete="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder={t(
+                    "official.login.email_placeholder"
+                  )}
+                  disabled={loading}
+                  className={inputClass}
+                />
+
+              </div>
+
+              {/* Password */}
+
+              <div>
+
+                <label
+                  htmlFor="password"
+                  className={labelClass}
+                >
+                  {t("official.login.password")}
+                </label>
+
+                <div className="relative">
+
+                  <input
+                    id="password"
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    name="password"
+                    required
+                    autoComplete="current-password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder={t(
+                      "official.login.password_placeholder"
+                    )}
+                    disabled={loading}
+                    className={`${inputClass} pr-10`}
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowPassword(
+                        !showPassword
+                      )
+                    }
+                    className="
+                      absolute
+                      right-3
+                      top-1/2
+                      -translate-y-1/2
+                      text-text-light
+                      dark:text-dark-text-muted
+                      hover:text-primary-600
+                      dark:hover:text-primary-400
+                      transition-colors
+                    "
+                    tabIndex={-1}
+                    aria-label={
+                      showPassword
+                        ? t(
+                            "official.login.hide_password"
+                          )
+                        : t(
+                            "official.login.show_password"
+                          )
+                    }
+                  >
+                    <EyeIcon
+                      open={showPassword}
+                    />
+                  </button>
+
+                </div>
+
+              </div>
+
+              {/* =================================
+                  LOGIN BUTTON
+              ================================= */}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="
+                  w-full
+                  flex
+                  items-center
+                  justify-center
+                  gap-2
+                  bg-primary-600
+                  hover:bg-primary-700
+                  dark:bg-primary-500
+                  dark:hover:bg-primary-600
+                  text-white
+                  font-semibold
+                  text-sm
+                  px-5
+                  py-2.5
+                  rounded-xl
+                  transition-all
+                  duration-200
+                  shadow-sm
+                  hover:shadow-md
+                  disabled:opacity-50
+                  disabled:cursor-not-allowed
+                  mt-1
+                "
+              >
+
+                {loading ? (
+                  <>
+                    <svg
+                      className="
+                        animate-spin
+                        w-3.5
+                        h-3.5
+                      "
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+
+                    {t(
+                      "official.login.signing_in"
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {t(
+                      "official.login.login_button"
+                    )}
+
+                    <svg
+                      className="w-3.5 h-3.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </>
+                )}
+
+              </button>
+
+            </form>
+
+            {/* =================================
+                DIVIDER
+            ================================= */}
+
+            <div
+              className="
+                flex
+                items-center
+                gap-3
+                my-5
+              "
+            >
+              <div
+                className="
+                  flex-1
+                  h-px
+                  bg-border
+                  dark:bg-dark-border
+                "
+              />
+
+              <span
+                className="
+                  text-[10px]
+                  text-text-light
+                  dark:text-dark-text-muted
+                  font-medium
+                "
+              >
+                {t("official.login.or")}
+              </span>
+
+              <div
+                className="
+                  flex-1
+                  h-px
+                  bg-border
+                  dark:bg-dark-border
+                "
+              />
+            </div>
+
+            {/* =================================
+                REGISTER
+            ================================= */}
+
+            <div className="text-center">
+
+              <Link
+                to="/officials/register"
+                className="
+                  inline-flex
+                  items-center
+                  gap-1.5
+                  text-xs
+                  sm:text-sm
+                  text-primary-600
+                  dark:text-primary-400
+                  hover:text-primary-700
+                  dark:hover:text-primary-300
+                  font-medium
+                  transition-colors
+                "
+              >
+                {t(
+                  "official.login.register_link"
+                )}
+
                 <svg
-                  className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform"
+                  className="w-3 h-3"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -253,136 +866,73 @@ export default function OfficialLogin({ onLogin }) {
                     d="M9 5l7 7-7 7"
                   />
                 </svg>
-              </>
-            )}
-          </button>
-        </form>
+              </Link>
 
-        {/* Divider */}
-        <div className="flex items-center gap-3 my-5 sm:my-6">
-          <div className="flex-1 h-px bg-border dark:bg-dark-border" />
-          <span className="text-[11px] sm:text-xs text-text-light dark:text-dark-text-muted font-medium">{t('official.login.or')}</span>
-          <div className="flex-1 h-px bg-border dark:bg-dark-border" />
-        </div>
+            </div>
 
-        {/* Footer Links */}
-        <div className="text-center space-y-3 sm:space-y-4">
-          <Link
-            to="/officials/register"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors duration-200"
-          >
-            {t('official.login.register_link')}
-            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
-          
-          <div className="flex items-center justify-center gap-2 text-[10px] sm:text-xs text-text-light dark:text-dark-text-muted">
-            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            {t('official.login.secure_access')}
+            {/* =================================
+                SECURITY
+            ================================= */}
+
+            <div
+              className="
+                flex
+                items-center
+                justify-center
+                gap-1.5
+                mt-4
+                pt-3
+                border-t
+                border-border
+                dark:border-dark-border
+                text-[10px]
+                text-text-light
+                dark:text-dark-text-muted
+              "
+            >
+
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+
+              {t(
+                "official.login.secure_access"
+              )}
+
+            </div>
+
           </div>
-        </div>
+        </section>
 
-        {/* Back Link */}
-        <Link
-          to="/"
-          className="flex items-center justify-center gap-1.5 text-xs sm:text-sm text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200 mt-5 sm:mt-6 pt-4 border-t border-border dark:border-dark-border"
-        >
-          <svg
-            className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          {t('official.login.back_home')}
-        </Link>
       </div>
-
-      <style jsx>{`
-        @keyframes float-slow {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(20px, -20px) scale(1.1); }
-        }
-        @keyframes float-medium {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(-15px, 15px) scale(1.05); }
-        }
-        @keyframes float-fast {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(10px, -10px) scale(1.08); }
-        }
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.05); }
-        }
-        @keyframes slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-float-slow {
-          animation: float-slow 12s ease-in-out infinite;
-        }
-        .animate-float-medium {
-          animation: float-medium 10s ease-in-out infinite;
-        }
-        .animate-float-fast {
-          animation: float-fast 8s ease-in-out infinite;
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 4s ease-in-out infinite;
-        }
-        .animate-slide-down {
-          animation: slide-down 0.3s ease-out;
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.5s ease-out;
-        }
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-        .bg-gradient-radial {
-          background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
-        }
-        
-        /* Mobile responsive */
-        @media (max-width: 640px) {
-          input, button {
-            font-size: 14px;
-          }
-        }
-      `}</style>
     </div>
   );
 }
 
+/* =========================================
+   EYE ICON
+========================================= */
+
 function EyeIcon({ open }) {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg
+      width="15"
+      height="15"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
       {open ? (
         <>
           <path
@@ -398,6 +948,7 @@ function EyeIcon({ open }) {
             strokeLinejoin="round"
             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
           />
+
           <path
             strokeLinecap="round"
             strokeLinejoin="round"

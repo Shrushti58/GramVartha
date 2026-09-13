@@ -298,8 +298,7 @@ export default function Hero() {
                 sm:text-base
               "
             >
-              Notices, updates and services from your
-              Gram Panchayat — all in one place.
+              {t("hero_description")}
             </p>
 
             {/* =================================================
@@ -381,7 +380,7 @@ export default function Hero() {
                   sm:py-3
                 "
               >
-                Explore
+                {t("hero_explore")}
                 <span>↓</span>
               </button>
             </div>
@@ -436,7 +435,7 @@ export default function Hero() {
             >
               <img
                 src="/notice.webp"
-                alt="GramVartha Notices"
+                alt={t("hero_notices_alt")}
                 width="640"
                 height="1261"
                 loading="eager"
@@ -478,7 +477,7 @@ export default function Hero() {
             >
               <img
                 src="/mainscreen.webp"
-                alt="GramVartha Citizen App"
+                alt={t("hero_citizen_app_alt")}
                 width="640"
                 height="1261"
                 loading="eager"
@@ -525,7 +524,7 @@ export default function Hero() {
             >
               <img
                 src="/comp.webp"
-                alt="GramVartha Complaints"
+                alt={t("hero_complaints_alt")}
                 width="640"
                 height="1261"
                 loading="eager"
@@ -649,7 +648,7 @@ export default function Hero() {
             tracking-[0.3em]
           "
         >
-          Scroll
+          {t("hero_scroll")}
         </span>
 
         <span className="animate-bounce text-xs">
