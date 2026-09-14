@@ -155,500 +155,289 @@ export default function VillageRegistration() {
   );
 
   return (
-    <div className="h-screen w-screen overflow-auto flex items-start justify-center font-sans transition-colors duration-300 relative bg-accent-mist dark:bg-dark-background py-6 px-4 sm:py-8">
-      
-      {/* Animated Gradient Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-100/40 via-transparent to-primary-200/30 dark:from-primary-900/20 dark:via-transparent dark:to-primary-800/20" />
-        
-        {/* Floating Orbs - hidden on mobile */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-300/20 dark:bg-primary-500/10 rounded-full blur-3xl animate-float-slow hidden sm:block" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-primary-400/20 dark:bg-primary-600/10 rounded-full blur-3xl animate-float-medium hidden md:block" />
-        <div className="absolute top-2/3 left-1/2 w-72 h-72 bg-primary-200/30 dark:bg-primary-400/15 rounded-full blur-3xl animate-float-fast hidden lg:block" />
-        
-        {/* Mesh Gradient Pattern */}
-        <svg className="absolute inset-0 w-full h-full opacity-30 dark:opacity-20" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="mesh-village" patternUnits="userSpaceOnUse" width="40" height="40">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary-300 dark:text-primary-700" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#mesh-village)" />
-        </svg>
-        
-        {/* Radial Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-accent-mist/50 dark:to-dark-background/50" />
-      </div>
+    <div className="min-h-screen w-full bg-accent-mist dark:bg-dark-background font-sans text-text-primary dark:text-dark-text-primary">
+      <div className="min-h-screen max-w-[1450px] mx-auto grid grid-cols-1 lg:grid-cols-[0.75fr_1.25fr] items-center gap-8 lg:gap-14 px-5 sm:px-8 lg:px-12 py-8 lg:py-10">
 
-      {/* Decorative Elements - hidden on mobile */}
-      <div className="fixed top-10 left-10 w-20 h-20 sm:w-24 sm:h-24 border border-primary-200/50 dark:border-primary-700/30 rounded-full opacity-30 animate-pulse-slow hidden sm:block" />
-      <div className="fixed bottom-10 right-10 w-24 h-24 sm:w-32 sm:h-32 border border-primary-300/40 dark:border-primary-600/20 rounded-full opacity-30 animate-pulse-slow animation-delay-1000 hidden sm:block" />
-      
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-2xl mx-auto bg-white/95 dark:bg-dark-surface/95 backdrop-blur-sm border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-2xl dark:shadow-dark-2xl p-5 sm:p-6 md:p-7 animate-fade-in-up">
-        
-        {/* Card Header Glow Effect */}
-        <div className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 w-14 h-14 sm:w-20 sm:h-20 bg-primary-400/30 dark:bg-primary-500/20 rounded-full blur-2xl" />
-        
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5 relative">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl overflow-hidden bg-primary-100 dark:bg-primary-900/60 border border-border dark:border-dark-border flex items-center justify-center flex-shrink-0 shadow-md">
-              <img
-                src="/gramvarthalogo.png"
-                alt="GramVartha"
-                className="w-full h-full object-contain"
-              />
-            </div>
+        {/* Left — same editorial layout as OfficialRegister */}
+        <section className="hidden lg:flex flex-col justify-center pr-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted dark:text-dark-text-muted mb-5">
+            {t('village.register.title')}
+          </p>
+
+          <h1 className="text-5xl xl:text-6xl font-extrabold tracking-[-0.055em] leading-[0.95]">
+            <span className="block">{t('village.register.heading_join', 'Bring your')}</span>
+            <span className="relative inline-block font-extrabold italic text-primary-600 dark:text-primary-400 tracking-[-0.07em]">
+              Panchayat
+              <svg
+                className="absolute left-0 -bottom-2 w-[220px] h-4 pointer-events-none"
+                viewBox="0 0 220 18"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M4 13C45 19 112 5 216 11"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+            <span className="block mt-3">{t('village.register.heading_to', 'to')}</span>
+            <span className="block text-primary-600 dark:text-primary-400 tracking-[-0.07em]">
+              GramVartha.
+            </span>
+          </h1>
+
+          <p className="mt-8 max-w-md text-sm leading-7 text-text-secondary dark:text-dark-text-muted">
+            {t('village.register.desktop_description', 'Register your village with GramVartha and bring essential digital communication to your Gram Panchayat.')}
+          </p>
+
+          <div className="mt-8 flex items-center gap-3 text-xs text-text-muted dark:text-dark-text-muted">
+            <span className="w-8 h-px bg-border dark:bg-dark-border" />
+            {t('village.register.review_note', 'Your registration will be reviewed before approval.')}
+          </div>
+        </section>
+
+        {/* Mobile heading */}
+        <section className="lg:hidden pt-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted dark:text-dark-text-muted mb-3">
+            GramVartha
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-[-0.05em] leading-[0.95]">
+            <span>{t('village.register.heading_join', 'Bring your')} </span>
+            <span className="relative inline-block italic text-primary-600 dark:text-primary-400">
+              Panchayat
+              <svg className="absolute left-0 -bottom-1 w-[135px] h-3" viewBox="0 0 220 18" fill="none">
+                <path d="M4 13C45 19 112 5 216 11" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </span>
+            <span> {t('village.register.heading_to', 'to')} </span>
+            <span className="text-primary-600 dark:text-primary-400">GramVartha.</span>
+          </h1>
+        </section>
+
+        {/* Right — same card language as OfficialRegister */}
+        <div className="w-full max-w-2xl lg:max-w-xl xl:max-w-2xl mx-auto bg-white dark:bg-dark-surface border border-border dark:border-dark-border rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-5 md:p-6">
+
+          <div className="flex items-center justify-between gap-3 mb-5">
             <div>
               <p className="text-[10px] sm:text-xs font-semibold text-text-muted dark:text-dark-text-muted uppercase tracking-wider">
                 GramVartha
               </p>
-              <h1 className="text-sm sm:text-base font-bold text-text-primary dark:text-dark-text-primary leading-tight">
+              <h2 className="text-sm sm:text-base font-bold leading-tight">
                 {t('village.register.title')}
-              </h1>
+              </h2>
+            </div>
+            <div className="inline-flex items-center gap-1.5 bg-primary-50 dark:bg-primary-900/40 border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-medium">
+              <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
+              {t('village.register.badge')}
             </div>
           </div>
-          <div className="inline-flex items-center gap-1.5 bg-primary-100/80 dark:bg-primary-900/60 backdrop-blur-sm border border-primary-200 dark:border-primary-700 text-primary-700 dark:text-primary-300 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-[9px] sm:text-xs font-medium shadow-sm self-start sm:self-auto">
-            <span className="w-1.5 h-1.5 bg-primary-500 dark:bg-primary-400 rounded-full animate-pulse" />
-            {t('village.register.badge')}
-          </div>
-        </div>
 
-        {/* Divider with Gradient */}
-        <div className="h-px bg-gradient-to-r from-transparent via-border dark:via-dark-border to-transparent mb-5" />
+          <div className="h-px bg-border dark:bg-dark-border mb-5" />
 
-        {/* Step Indicators */}
-        <div className="mb-5">
-          <div className="flex items-center gap-2 mb-3">
-            {STEPS.map((s, i) => (
-              <React.Fragment key={s.id}>
-                <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all flex-shrink-0 ${
-                  step > s.id 
-                    ? 'bg-primary-500 text-white' 
-                    : step === s.id 
-                    ? 'bg-primary-600 dark:bg-primary-500 text-white' 
-                    : 'bg-border dark:bg-dark-border text-text-muted dark:text-dark-text-muted'
-                }`}>
-                  {step > s.id ? '✓' : s.id}
-                </div>
-                {i < STEPS.length - 1 && (
-                  <div className={`flex-1 h-px transition-all ${step > s.id ? 'bg-primary-400' : 'bg-border dark:bg-dark-border'}`} />
-                )}
-              </React.Fragment>
-            ))}
-          </div>
-          <p className="text-[10px] sm:text-xs font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-0.5">
-            {t('village.register.step')} {step} {t('village.register.of')} {STEPS.length}
-          </p>
-          <h2 className="text-base sm:text-lg font-semibold text-text-primary dark:text-dark-text-primary">
-            {step === 1 && t('village.register.steps.village_info')}
-            {step === 2 && t('village.register.steps.admin_account')}
-            {step === 3 && t('village.register.steps.document_proof')}
-          </h2>
-          <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-1">
-            {step === 1 && t('village.register.step_descriptions.village_info')}
-            {step === 2 && t('village.register.step_descriptions.admin_account')}
-            {step === 3 && t('village.register.step_descriptions.document_proof')}
-          </p>
-        </div>
-
-        {/* Step Content */}
-        {step === 1 && (
-          <div className="space-y-4">
-            <div>
-              <label className={labelClass}>
-                {t('village.register.village_name')} <span className="text-primary-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder={t('village.register.village_name_placeholder')}
-                className={inputClass}
-              />
+          {/* Compact progress — visually aligned with OfficialRegister */}
+          <div className="mb-5">
+            <div className="flex gap-1.5 mb-3">
+              {STEPS.map((s) => (
+                <div
+                  key={s.id}
+                  className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
+                    step >= s.id
+                      ? 'bg-primary-500 dark:bg-primary-400'
+                      : 'bg-border dark:bg-dark-border'
+                  }`}
+                />
+              ))}
             </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex items-end justify-between gap-4">
               <div>
-                <label className={labelClass}>{t('village.register.district')}</label>
-                <input
-                  type="text"
-                  name="district"
-                  value={formData.district}
-                  onChange={handleChange}
-                  placeholder={t('village.register.district_placeholder')}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className={labelClass}>{t('village.register.state')}</label>
-                <input
-                  type="text"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  placeholder={t('village.register.state_placeholder')}
-                  className={inputClass}
-                />
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">
+                  {t('village.register.step')} {step} {t('village.register.of')} {STEPS.length}
+                </p>
+                <h3 className="text-base sm:text-lg font-semibold mt-0.5">
+                  {step === 1 && t('village.register.steps.village_info')}
+                  {step === 2 && t('village.register.steps.admin_account')}
+                  {step === 3 && t('village.register.steps.document_proof')}
+                </h3>
               </div>
             </div>
-            
-            <div>
-              <label className={labelClass}>{t('village.register.pincode')}</label>
-              <input
-                type="text"
-                name="pincode"
-                value={formData.pincode}
-                onChange={handleChange}
-                placeholder={t('village.register.pincode_placeholder')}
-                className={inputClass}
-              />
-            </div>
-            
-            <div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-1.5">
-                <label className="block text-[11px] font-semibold uppercase tracking-wider text-text-secondary dark:text-dark-text-muted">
-                  {t('village.register.coordinates')} <span className="text-primary-500">*</span>
-                </label>
-                <button
-                  type="button"
-                  onClick={handleDetectLocation}
-                  disabled={locating}
-                  className="inline-flex items-center justify-center gap-1.5 text-[10px] sm:text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 border border-primary-200 dark:border-primary-700 px-2 py-1 rounded-lg transition-all disabled:opacity-60"
-                >
-                  {locating ? (
-                    <>
-                      <svg className="animate-spin w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                      {t('village.register.detecting')}
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      {t('village.register.auto_detect')}
-                    </>
-                  )}
-                </button>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="number"
-                  name="latitude"
-                  value={formData.latitude}
-                  onChange={handleChange}
-                  placeholder={t('village.register.latitude_placeholder')}
-                  step="0.0001"
-                  className={inputClass}
-                />
-                <input
-                  type="number"
-                  name="longitude"
-                  value={formData.longitude}
-                  onChange={handleChange}
-                  placeholder={t('village.register.longitude_placeholder')}
-                  step="0.0001"
-                  className={inputClass}
-                />
-              </div>
-            </div>
-            
-            <button
-              onClick={handleNext}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 mt-2 relative overflow-hidden group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              {t('village.register.continue')}
-              <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
-        )}
-
-        {step === 2 && (
-          <div className="space-y-4">
-            <div>
-              <label className={labelClass}>
-                {t('village.register.email')} <span className="text-primary-500">*</span>
-              </label>
-              <input
-                type="email"
-                name="requesterEmail"
-                value={formData.requesterEmail}
-                onChange={handleChange}
-                placeholder={t('village.register.email_placeholder')}
-                className={inputClass}
-              />
-            </div>
-            
-            <div>
-              <label className={labelClass}>
-                {t('village.register.password')} <span className="text-primary-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="requesterPassword"
-                  value={formData.requesterPassword}
-                  onChange={handleChange}
-                  placeholder={t('village.register.password_placeholder')}
-                  className={inputClass + " pr-9"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  tabIndex={-1}
-                >
-                  <EyeIcon open={showPassword} />
-                </button>
-              </div>
-            </div>
-            
-            <div>
-              <label className={labelClass}>
-                {t('village.register.confirm_password')} <span className="text-primary-500">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder={t('village.register.confirm_placeholder')}
-                  className={inputClass + " pr-9"}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                  tabIndex={-1}
-                >
-                  <EyeIcon open={showConfirmPassword} />
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex gap-3 mt-2">
-              <button
-                onClick={handleBack}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                {t('village.register.back')}
-              </button>
-              <button
-                onClick={handleNext}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                {t('village.register.continue')}
-                <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <p className="text-[11px] sm:text-xs text-text-muted dark:text-dark-text-muted leading-relaxed">
-              {t('village.register.document_description')}
+            <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-1">
+              {step === 1 && t('village.register.step_descriptions.village_info')}
+              {step === 2 && t('village.register.step_descriptions.admin_account')}
+              {step === 3 && t('village.register.step_descriptions.document_proof')}
             </p>
+          </div>
 
-            {documentPreview ? (
-              <div className="relative inline-block">
-                <img
-                  src={documentPreview}
-                  alt={t('village.register.preview')}
-                  className="max-w-full max-h-32 rounded-xl border border-border dark:border-dark-border object-contain"
-                />
-                <button
-                  type="button"
-                  onClick={removeDocument}
-                  disabled={loading}
-                  className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors"
-                >
-                  ×
-                </button>
+          {step === 1 && (
+            <div className="space-y-4">
+              <div>
+                <label className={labelClass}>{t('village.register.village_name')} <span className="text-primary-500">*</span></label>
+                <input type="text" name="name" value={formData.name} onChange={handleChange}
+                  placeholder={t('village.register.village_name_placeholder')} className={inputClass} />
               </div>
-            ) : (
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 bg-gray-50 dark:bg-dark-surface2 hover:bg-primary-50/50 dark:hover:bg-primary-900/20 rounded-xl p-4 sm:p-6 text-center cursor-pointer transition-all duration-200"
-              >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-100 dark:border-primary-800 flex items-center justify-center mx-auto mb-2">
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                  </svg>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className={labelClass}>{t('village.register.district')}</label>
+                  <input type="text" name="district" value={formData.district} onChange={handleChange}
+                    placeholder={t('village.register.district_placeholder')} className={inputClass} />
                 </div>
-                <p className="text-sm font-semibold text-text-primary dark:text-dark-text-primary">{t('village.register.click_to_upload')}</p>
-                <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('village.register.file_requirements')}</p>
+                <div>
+                  <label className={labelClass}>{t('village.register.state')}</label>
+                  <input type="text" name="state" value={formData.state} onChange={handleChange}
+                    placeholder={t('village.register.state_placeholder')} className={inputClass} />
+                </div>
               </div>
-            )}
 
-            {documentFile && (
-              <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-gray-50 dark:bg-dark-surface2 border border-border dark:border-dark-border text-sm">
-                <span className="text-text-primary dark:text-dark-text-primary font-medium truncate max-w-[150px] sm:max-w-[200px] text-xs">
-                  {documentFile.name}
-                </span>
-                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                  <span className="text-text-muted dark:text-dark-text-muted text-[10px] sm:text-xs">
-                    {(documentFile.size / 1024).toFixed(0)} KB
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-xs font-medium"
-                    disabled={loading}
-                  >
-                    {t('village.register.change')}
+              <div>
+                <label className={labelClass}>{t('village.register.pincode')}</label>
+                <input type="text" name="pincode" value={formData.pincode} onChange={handleChange}
+                  placeholder={t('village.register.pincode_placeholder')} className={inputClass} />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between gap-3 mb-1.5">
+                  <label className={labelClass + " mb-0"}>{t('village.register.coordinates')} <span className="text-primary-500">*</span></label>
+                  <button type="button" onClick={handleDetectLocation} disabled={locating}
+                    className="text-[10px] sm:text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors disabled:opacity-60">
+                    {locating ? t('village.register.detecting') : t('village.register.auto_detect')}
+                  </button>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <input type="number" name="latitude" value={formData.latitude} onChange={handleChange}
+                    placeholder={t('village.register.latitude_placeholder')} step="0.0001" className={inputClass} />
+                  <input type="number" name="longitude" value={formData.longitude} onChange={handleChange}
+                    placeholder={t('village.register.longitude_placeholder')} step="0.0001" className={inputClass} />
+                </div>
+              </div>
+
+              <button type="button" onClick={handleNext}
+                className="w-full flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white font-semibold text-sm px-6 py-3 rounded-xl transition-all duration-200 mt-2">
+                {t('village.register.continue')}
+                <span>→</span>
+              </button>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-4">
+              <div>
+                <label className={labelClass}>{t('village.register.email')} <span className="text-primary-500">*</span></label>
+                <input type="email" name="requesterEmail" value={formData.requesterEmail} onChange={handleChange}
+                  placeholder={t('village.register.email_placeholder')} className={inputClass} />
+              </div>
+
+              <div>
+                <label className={labelClass}>{t('village.register.password')} <span className="text-primary-500">*</span></label>
+                <div className="relative">
+                  <input type={showPassword ? "text" : "password"} name="requesterPassword"
+                    value={formData.requesterPassword} onChange={handleChange}
+                    placeholder={t('village.register.password_placeholder')} className={inputClass + " pr-9"} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} tabIndex={-1}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400">
+                    <EyeIcon open={showPassword} />
                   </button>
                 </div>
               </div>
-            )}
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              onChange={handleDocumentChange}
-              className="hidden"
-              disabled={loading}
-            />
+              <div>
+                <label className={labelClass}>{t('village.register.confirm_password')} <span className="text-primary-500">*</span></label>
+                <div className="relative">
+                  <input type={showConfirmPassword ? "text" : "password"} name="confirmPassword"
+                    value={formData.confirmPassword} onChange={handleChange}
+                    placeholder={t('village.register.confirm_placeholder')} className={inputClass + " pr-9"} />
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} tabIndex={-1}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-light dark:text-dark-text-muted hover:text-primary-600 dark:hover:text-primary-400">
+                    <EyeIcon open={showConfirmPassword} />
+                  </button>
+                </div>
+              </div>
 
-            <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 text-[10px] sm:text-xs text-primary-700 dark:text-primary-300">
-              <svg className="w-3 h-3 mt-0.5 flex-shrink-0 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              {t('village.register.review_note')}
+              <div className="flex gap-3 mt-2">
+                <button type="button" onClick={handleBack}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-3 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 text-sm font-semibold rounded-xl transition-all">
+                  ← {t('village.register.back')}
+                </button>
+                <button type="button" onClick={handleNext}
+                  className="flex-1 flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white text-sm font-semibold rounded-xl transition-all">
+                  {t('village.register.continue')} →
+                </button>
+              </div>
             </div>
+          )}
 
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={handleBack}
-                disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 px-3 py-2.5 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 hover:text-text-primary dark:hover:text-dark-text-primary text-sm font-semibold rounded-xl transition-all duration-200"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-                {t('village.register.back')}
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 dark:from-primary-500 dark:to-primary-600 dark:hover:from-primary-600 dark:hover:to-primary-700 text-white font-semibold text-sm px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:translate-y-0 relative overflow-hidden group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                {loading ? (
-                  <>
-                    <svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    {t('village.register.submitting')}
-                  </>
-                ) : (
-                  <>
-                    {t('village.register.submit')}
-                    <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-        )}
+          {step === 3 && (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <p className="text-[11px] sm:text-xs text-text-muted dark:text-dark-text-muted leading-relaxed">
+                {t('village.register.document_description')}
+              </p>
 
-        {/* Footer */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6 pt-4 border-t border-border dark:border-dark-border">
-          <div className="flex items-center gap-2 text-[10px] sm:text-xs text-text-light dark:text-dark-text-muted">
-            <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            {t('village.register.secure_access')}
+              {documentPreview ? (
+                <div className="relative inline-block">
+                  <img src={documentPreview} alt={t('village.register.preview')}
+                    className="max-w-full max-h-32 rounded-xl border border-border dark:border-dark-border object-contain" />
+                  <button type="button" onClick={removeDocument} disabled={loading}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <div onClick={() => fileInputRef.current?.click()}
+                  className="border border-dashed border-border dark:border-dark-border hover:border-primary-400 dark:hover:border-primary-500 rounded-xl p-5 text-center cursor-pointer transition-all bg-gray-50/60 dark:bg-dark-surface2/60">
+                  <div className="w-9 h-9 rounded-xl bg-primary-50 dark:bg-primary-900/30 border border-primary-100 dark:border-primary-800 flex items-center justify-center mx-auto mb-2">
+                    <span className="text-primary-600 dark:text-primary-400">↑</span>
+                  </div>
+                  <p className="text-sm font-semibold">{t('village.register.click_to_upload')}</p>
+                  <p className="text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted mt-0.5">{t('village.register.file_requirements')}</p>
+                </div>
+              )}
+
+              {documentFile && (
+                <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl bg-gray-50 dark:bg-dark-surface2 border border-border dark:border-dark-border">
+                  <span className="text-xs font-medium truncate">{documentFile.name}</span>
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-[10px] text-text-muted dark:text-dark-text-muted">{(documentFile.size / 1024).toFixed(0)} KB</span>
+                    <button type="button" onClick={() => fileInputRef.current?.click()} disabled={loading}
+                      className="text-xs font-semibold text-primary-600 dark:text-primary-400">
+                      {t('village.register.change')}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              <input ref={fileInputRef} type="file" accept=".jpg,.jpeg,.png" onChange={handleDocumentChange}
+                className="hidden" disabled={loading} />
+
+              <div className="flex items-start gap-2 px-3 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-700 text-[10px] sm:text-xs text-primary-700 dark:text-primary-300">
+                <span className="font-bold">i</span>
+                {t('village.register.review_note')}
+              </div>
+
+              <div className="flex gap-3">
+                <button type="button" onClick={handleBack} disabled={loading}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-3 border border-border dark:border-dark-border text-text-secondary dark:text-dark-text-muted hover:border-primary-300 dark:hover:border-primary-600 text-sm font-semibold rounded-xl transition-all">
+                  ← {t('village.register.back')}
+                </button>
+                <button type="submit" disabled={loading}
+                  className="flex-1 flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 text-white text-sm font-semibold rounded-xl transition-all disabled:opacity-50">
+                  {loading ? t('village.register.submitting') : <>{t('village.register.submit')} →</>}
+                </button>
+              </div>
+            </form>
+          )}
+
+          <div className="flex items-center justify-between gap-3 mt-6 pt-4 border-t border-border dark:border-dark-border">
+            <Link to="/" className="text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors">
+              ← {t('village.register.back_home')}
+            </Link>
+            <span className="text-[10px] sm:text-xs text-text-light dark:text-dark-text-muted">
+              {t('village.register.secure_access')}
+            </span>
           </div>
-          <Link
-            to="/"
-            className="flex items-center gap-1 text-[10px] sm:text-xs text-text-muted dark:text-dark-text-muted hover:text-text-primary dark:hover:text-dark-text-primary transition-colors duration-200"
-          >
-            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-            {t('village.register.back_home')}
-          </Link>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes float-slow {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(20px, -20px) scale(1.1); }
-        }
-        @keyframes float-medium {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(-15px, 15px) scale(1.05); }
-        }
-        @keyframes float-fast {
-          0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(10px, -10px) scale(1.08); }
-        }
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.3; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.05); }
-        }
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-float-slow {
-          animation: float-slow 12s ease-in-out infinite;
-        }
-        .animate-float-medium {
-          animation: float-medium 10s ease-in-out infinite;
-        }
-        .animate-float-fast {
-          animation: float-fast 8s ease-in-out infinite;
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 4s ease-in-out infinite;
-        }
-        .animate-fade-in-up {
-          animation: fade-in-up 0.5s ease-out;
-        }
-        .animation-delay-1000 {
-          animation-delay: 1s;
-        }
-        .bg-gradient-radial {
-          background-image: radial-gradient(circle at center, var(--tw-gradient-stops));
-        }
-        
-        /* Mobile responsive */
-        @media (max-width: 640px) {
-          input, button, select {
-            font-size: 14px;
-          }
-        }
-      `}</style>
     </div>
   );
 }
+

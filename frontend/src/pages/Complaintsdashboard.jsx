@@ -72,6 +72,20 @@ const toJpg = (url) => {
     .replace(/\/upload\/(?!v\d)/, "/upload/f_jpg,q_auto/");
 };
 
+const getDirectionsUrl = (location) => {
+  if (
+    !location ||
+    location.lat === undefined ||
+    location.lat === null ||
+    location.lng === undefined ||
+    location.lng === null
+  ) {
+    return null;
+  }
+
+  return `https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`;
+};
+
 // ─── Spinner ──────────────────────────────────────────────────────────────────
 
 const Spinner = ({ size = 16 }) => (
@@ -164,6 +178,7 @@ const ComplaintCard = ({
   const { t } = useTranslation();
   const [newStatus, setNewStatus] = useState(complaint.status);
   const [showResolve, setShowResolve] = useState(false);
+  const [showFullImage, setShowFullImage] = useState(false);
   const [file, setFile] = useState(null);
 
   const fraudScore = complaint.aiVerification?.fraudScore || 0;
@@ -232,17 +247,53 @@ const ComplaintCard = ({
         </svg>
       </div>
 
+      {/* Full image viewer */}
+      {showFullImage && hasImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setShowFullImage(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setShowFullImage(false)}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-2xl transition-colors"
+            aria-label="Close image"
+          >
+            ×
+          </button>
+
+          <img
+            src={complaint.imageUrl}
+            alt={complaint.title}
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-full max-h-[90vh] object-contain rounded-xl"
+          />
+        </div>
+      )}
+
       {/* Expanded content */}
       {expanded && (
         <div className="border-t border-border dark:border-dark-border p-4 space-y-4">
           {/* Image */}
           {hasImage && (
             <div className="rounded-lg overflow-hidden border border-border dark:border-dark-border">
-              <img 
-                src={toJpg(complaint.imageUrl)} 
-                alt={complaint.title}
-                className="w-full max-h-64 object-cover"
-              />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFullImage(true);
+                }}
+                className="group block w-full cursor-zoom-in"
+                title="View full image"
+              >
+                <img
+                  src={toJpg(complaint.imageUrl)}
+                  alt={complaint.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-[170px] sm:h-[200px] object-contain bg-accent-mist dark:bg-dark-surface2 group-hover:opacity-90 transition-opacity"
+                />
+              </button>
             </div>
           )}
 
@@ -290,14 +341,42 @@ const ComplaintCard = ({
           )}
 
           {/* Location */}
-          {complaint.location?.lat && (
-            <div className="flex items-center justify-between text-sm bg-accent-mist dark:bg-dark-surface2 px-3 py-2 rounded-lg">
-              <span className="text-text-muted dark:text-dark-text-muted">{t('complaints.detail.location')}</span>
-              <span className="font-mono text-text-primary dark:text-dark-text-primary">
-                {complaint.location.lat.toFixed(6)}, {complaint.location.lng.toFixed(6)}
-              </span>
-            </div>
-          )}
+          {complaint.location?.lat !== undefined &&
+            complaint.location?.lat !== null &&
+            complaint.location?.lng !== undefined &&
+            complaint.location?.lng !== null && (
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-accent-mist dark:bg-dark-surface2 px-3.5 py-3 rounded-xl border border-border/60 dark:border-dark-border">
+                <div className="min-w-0">
+                  <p className="text-xs font-medium text-text-muted dark:text-dark-text-muted mb-1">
+                    {t('complaints.detail.location')}
+                  </p>
+                  <p className="font-mono text-sm text-text-primary dark:text-dark-text-primary truncate">
+                    {complaint.location.lat.toFixed(6)}, {complaint.location.lng.toFixed(6)}
+                  </p>
+                </div>
+
+                {getDirectionsUrl(complaint.location) && (
+                  <a
+                    href={getDirectionsUrl(complaint.location)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 text-white text-sm font-semibold transition-colors shadow-sm whitespace-nowrap"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9-7-9-7v5c-5 0-8 2-10 6 3-2 6-2 10-2v5z" />
+                    </svg>
+                    Get Directions
+                  </a>
+                )}
+              </div>
+            )}
 
           {/* Actions */}
           {complaint.status !== 'resolved' ? (
@@ -325,14 +404,32 @@ const ComplaintCard = ({
               {isIssue && (
                 <>
                   <button
+                    type="button"
                     onClick={() => setShowResolve(!showResolve)}
-                    className="w-full px-4 py-2 text-sm font-semibold text-text-primary dark:text-dark-text-primary bg-accent-mist dark:bg-dark-surface2 hover:bg-border dark:hover:bg-dark-border rounded-lg transition-colors"
+                    className={`w-full px-4 py-3 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 border ${
+                      showResolve
+                        ? "text-text-primary dark:text-dark-text-primary bg-accent-mist dark:bg-dark-surface2 border-border dark:border-dark-border"
+                        : "text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30"
+                    }`}
                   >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      {showResolve ? (
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      ) : (
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      )}
+                    </svg>
                     {showResolve ? t('complaints.detail.cancel') : t('complaints.detail.mark_resolved')}
                   </button>
 
                   {showResolve && (
-                    <div className="space-y-2 bg-accent-mist dark:bg-dark-surface2 p-3 rounded-lg">
+                    <div className="space-y-3 bg-accent-mist dark:bg-dark-surface2 p-4 rounded-xl border border-border dark:border-dark-border">
                       <p className="text-xs text-text-muted dark:text-dark-text-muted">
                         {t('complaints.detail.resolution_instruction')}
                       </p>
@@ -340,12 +437,12 @@ const ComplaintCard = ({
                         type="file"
                         accept="image/*"
                         onChange={(e) => setFile(e.target.files[0])}
-                        className="w-full text-sm text-text-primary dark:text-dark-text-primary file:mr-2 file:py-1.5 file:px-3 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-400 file:border file:border-border dark:file:border-dark-border file:rounded-lg hover:file:bg-primary-100 dark:hover:file:bg-primary-900/50"
+                        className="w-full text-sm text-text-primary dark:text-dark-text-primary file:mr-3 file:py-2 file:px-3.5 file:text-sm file:font-semibold file:bg-white dark:file:bg-dark-surface file:text-text-primary dark:file:text-dark-text-primary file:border file:border-border dark:file:border-dark-border file:rounded-lg hover:file:bg-primary-50 dark:hover:file:bg-dark-surface2"
                       />
                       <button
                         onClick={() => onResolve(file)}
                         disabled={!file || loading}
-                        className="w-full px-4 py-2 text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                        className="w-full px-4 py-3 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-400 rounded-xl disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 shadow-sm"
                       >
                         {loading && <Spinner size={14} />}
                         {t('complaints.detail.submit_resolution')}
